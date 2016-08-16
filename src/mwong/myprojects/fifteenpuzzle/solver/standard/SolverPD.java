@@ -13,27 +13,24 @@
  *
  ****************************************************************************/
 
-package mwong.myprojects.fifteenpuzzle.solver;
+package mwong.myprojects.fifteenpuzzle.solver.standard;
 
-import mwong.myprojects.fifteenpuzzle.solver.components.AdvancedAccumulator;
-import mwong.myprojects.fifteenpuzzle.solver.components.AdvancedBoard;
-import mwong.myprojects.fifteenpuzzle.solver.components.AdvancedMoves;
+import mwong.myprojects.fifteenpuzzle.solver.AbstractSolver;
+import mwong.myprojects.fifteenpuzzle.solver.HeuristicType;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
-import mwong.myprojects.fifteenpuzzle.solver.components.PDCombo;
-import mwong.myprojects.fifteenpuzzle.solver.components.PDElement;
-import mwong.myprojects.fifteenpuzzle.solver.components.PDPresetPatterns;
-import mwong.myprojects.utilities.Stopwatch;
+import mwong.myprojects.fifteenpuzzle.solver.components.PatternDatabase;
+import mwong.myprojects.fifteenpuzzle.solver.components.PatternElement;
+import mwong.myprojects.fifteenpuzzle.solver.components.PatternElementMode;
+import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
+import mwong.myprojects.fifteenpuzzle.solver.components.PatternProperties;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
-public class SolverPD extends SolverAbstract {
-    private static final PDPresetPatterns defaultPattern = PDPresetPatterns.Pattern_663;
-    private static final int offsetDir = 2;
-    private static final PDElement.Mode mode = PDElement.Mode.PuzzleSolver;
+public class SolverPD extends AbstractSolver {
+    protected static final PatternOptions defaultPattern = PatternOptions.Pattern_663;
+    private final int offsetDir = 2;
+    private final PatternElementMode mode = PatternElementMode.PUZZLE_SOLVER;
 
     // Additive Pattern Database Components
     private byte[] patternGroups;
@@ -50,16 +47,16 @@ public class SolverPD extends SolverAbstract {
     private int[][] rotateKeysByPos;
     private int[] maxShiftX2;
 
-    private PDPresetPatterns inUsePattern;
+    protected PatternOptions inUsePattern;
     private byte[] inUsePtnArray;
 
-    private int[] pdKeys;
-    private int szGroup;
-    private int szPdKeys;
-    private int offsetPdSym;
-    private byte pdValReg = 0;
-    private byte pdValSym = 0;
-    private Board lastSearchBoard;
+    protected int[] pdKeys;
+    protected int szGroup;
+    protected int szPdKeys;
+    protected int offsetPdSym;
+    protected byte pdValReg = 0;
+    protected byte pdValSym = 0;
+    protected int idaCount;
 
     /**
      *  Initializes SolverPD object using default preset pattern.
@@ -73,7 +70,7 @@ public class SolverPD extends SolverAbstract {
      *
      *  @param presetPattern the given preset pattern type
      */
-    public SolverPD(PDPresetPatterns presetPattern) {
+    public SolverPD(PatternOptions presetPattern) {
         this(presetPattern, 0);
     }
 
@@ -83,17 +80,17 @@ public class SolverPD extends SolverAbstract {
      *  @param presetPattern the given preset pattern type
      *  @param choice the number of preset pattern option
      */
-    public SolverPD(PDPresetPatterns presetPattern, int choice) {
-        flagMessage = SWITCH_ON;
-        loadPDComponents(presetPattern, choice);
+    public SolverPD(PatternOptions presetPattern, int choice) {
+    	super();
+    	loadPDComponents(presetPattern, choice);
         loadPDElements(presetPattern.getElements());
         inUsePattern = presetPattern;
         inUsePtnArray = presetPattern.getPattern(choice);
-        if (presetPattern == PDPresetPatterns.Pattern_555) {
+        if (presetPattern == PatternOptions.Pattern_555) {
             inUseHeuristic = HeuristicType.PD555;
-        } else if (presetPattern == PDPresetPatterns.Pattern_663) {
+        } else if (presetPattern == PatternOptions.Pattern_663) {
             inUseHeuristic = HeuristicType.PD663;
-        } else if (presetPattern == PDPresetPatterns.Pattern_78) {
+        } else if (presetPattern == PatternOptions.Pattern_78) {
             inUseHeuristic = HeuristicType.PD78;
         } else {
             System.err.println("SolverPD init error");
@@ -107,12 +104,9 @@ public class SolverPD extends SolverAbstract {
      *  @param elementGroups boolean array of groups reference to given pattern
      */
     public SolverPD(byte[] customPattern, boolean[] elementGroups) {
-        flagMessage = SWITCH_ON;
-        flagTimeout = SWITCH_ON;
-        searchTimeoutLimit = 30;
-        customPDComponents(customPattern);
+    	customPDComponents(customPattern);
         loadPDElements(elementGroups);
-        inUsePattern = PDPresetPatterns.Custom;
+        inUsePattern = PatternOptions.Custom;
         inUsePtnArray = customPattern;
         inUseHeuristic = HeuristicType.PDCustom;
     }
@@ -120,12 +114,12 @@ public class SolverPD extends SolverAbstract {
     // load preset additive pattern database from a data file, if file not exists
     // generate a new set.  Estimate takes 15s for 555 pattern, 2 minutes for 663 pattern,
     // 2.5 - 3 hours for 78 pattern also require minimum 2gigabytes memory -Xms2g.
-    private void loadPDComponents(PDPresetPatterns presetPattern, int choice) {
-        PDCombo pd15 = new PDCombo(presetPattern, choice);
+    private void loadPDComponents(PatternOptions presetPattern, int choice) {
+        PatternDatabase pd15 = new PatternDatabase(presetPattern, choice);
         patternGroups = pd15.getPatternGroups();
         patternFormatSize = new int[patternGroups.length];
         for (int i = 0; i < patternGroups.length; i++) {
-            patternFormatSize[i] = PDElement.getFormatSize(patternGroups[i]);
+            patternFormatSize[i] = PatternProperties.getFormatSize()[patternGroups[i]];
         }
         patternSet = pd15.getPatternSet();
         val2ptnKey = pd15.getVal2ptnKey();
@@ -138,11 +132,11 @@ public class SolverPD extends SolverAbstract {
     // generate the additive pattern database components with give user defined
     // custom pattern
     private void customPDComponents(byte[] customPattern) {
-        PDCombo pd15 = new PDCombo(customPattern);
+    	PatternDatabase pd15 = new PatternDatabase(customPattern);
         patternGroups = pd15.getPatternGroups();
         patternFormatSize = new int[patternGroups.length];
         for (int i = 0; i < patternGroups.length; i++) {
-            patternFormatSize[i] = PDElement.getFormatSize(patternGroups[i]);
+            patternFormatSize[i] = PatternProperties.getFormatSize()[patternGroups[i]];
         }
         patternSet = pd15.getPatternSet();
         val2ptnKey = pd15.getVal2ptnKey();
@@ -155,7 +149,7 @@ public class SolverPD extends SolverAbstract {
     // load detected pattern key and format from a data file, if file not exists,
     // generate a new set
     private void loadPDElements(boolean[] elementGroups) {
-        PDElement pd15e = new PDElement(elementGroups, mode);
+        PatternElement pd15e = new PatternElement(elementGroups, mode);
         keys = pd15e.getKeys();
         formats = pd15e.getFormats();
         linkFormatMove = new int[szGroup][];
@@ -165,7 +159,7 @@ public class SolverPD extends SolverAbstract {
             int group = patternGroups[i];
             linkFormatMove[i] = pd15e.getLinkFormatMoveSet(group);
             rotateKeysByPos[i] = pd15e.getKeyShiftSet(group);
-            maxShiftX2[i] = PDElement.getShiftMaxX2(group);
+            maxShiftX2[i] = PatternProperties.getMaxShiftX2()[group];
         }
     }
 
@@ -179,7 +173,7 @@ public class SolverPD extends SolverAbstract {
     }
 
     // Print the additive pattern currently in use.
-    private void printInUsePattern() {
+    protected void printInUsePattern() {
         System.out.print("Pattern in use" + " : ");
         int ct = 0;
         for (int group : inUsePtnArray) {
@@ -202,29 +196,28 @@ public class SolverPD extends SolverAbstract {
      *
      *  @param board the initial puzzle Board object to solve
      *  @param estimate the given initial limit to solve the puzzle
-     */
+     *
     public void findOptimalPath(Board board, byte estimate) {
         if (board.isSolvable()) {
             clearHistory();
             stopwatch = new Stopwatch();
-            priority1stMove = new int[ROW_SIZE * 2];
-            System.arraycopy(board.getValidMoves(), 0, priority1stMove, ROW_SIZE, ROW_SIZE);
+            priority1stMove = new int[rowSize * 2];
+            System.arraycopy(board.getValidMoves(), 0, priority1stMove, rowSize, rowSize);
             // initializes the board by calling heuristic function using original priority
             // then solve the puzzle with given estimate instead
-            heuristic(board, tagOriginal, tagSearch);
+            heuristic(board, tagSearch);
             idaStar(estimate);
             stopwatch = null;
         }
     }
-
+*/
     // calculate the heuristic value of the given board and save the properties
-    byte heuristic(Board board, boolean inAdvanced, boolean inSearch) {
+	protected byte heuristic(Board board, boolean isAdvanced, boolean isSearch) {
         if (!board.isSolvable()) {
             return -1;
         }
 
-        priorityAdvanced = -1;
-        if (!board.equals(lastBoard) || inSearch) {
+        if (!board.equals(lastBoard) || isSearch) {
             lastBoard = board;
             tiles = board.getTiles();
             zeroX = board.getZeroX();
@@ -239,117 +232,20 @@ public class SolverPD extends SolverAbstract {
                 pdValReg += pdKeys[i];
                 pdValSym += pdKeys[i +  offsetPdSym];
             }
-
             priorityGoal = (byte) Math.max(pdValReg, pdValSym);
+            priorityAdvanced = priorityGoal;
         }
-
-        if (!inAdvanced) {
-            return priorityGoal;
-        }
-
-        if (priorityAdvanced != -1) {
-            if (inSearch) {
-                advancedContains(board, inSearch);
-            }
-            return priorityAdvanced;
-        }
-
-        advancedContains(board, inSearch);
-        if (priorityAdvanced != -1) {
-            return priorityAdvanced;
-        }
-
-        priorityAdvanced = priorityGoal;
-        if (priorityAdvanced < CUTOFF_ADV_PRIORITY) {
-            return priorityAdvanced;
-        }
-
-        int[] orgKeys = pdKeys.clone();
-        byte orgReg = pdValReg;
-        byte orgSym = pdValSym;
-
-        if (advancedEstimate(board)) {
-            clearHistory();
-            zeroX = board.getZeroX();
-            zeroY = board.getZeroY();
-            tiles = board.getTiles();
-            pdKeys = orgKeys;
-            pdValReg = orgReg;
-            pdValSym = orgSym;
-            priority1stMove = new int [ROW_SIZE * 2];
-            System.arraycopy(board.getValidMoves(), 0, priority1stMove, ROW_SIZE, ROW_SIZE);
-        }
-
-        if ((priorityAdvanced - priorityGoal) % 2 == 1) {
-            priorityAdvanced++;
-        }
-        return priorityAdvanced;
-    }
-
-    // calculate the advanced estimate from stored reference boards
-    private boolean advancedEstimate(Board board) {
-        Map<AdvancedBoard, AdvancedMoves> advMap;
-        if (advAccumulator == null) {
-            advMap = AdvancedAccumulator.getDefaultMap();
-        } else {
-            advMap = advAccumulator.getActiveMap();
-        }
-
-        byte maxEstimate = priorityGoal;
-        byte[] orgTiles = tiles.clone();
-        boolean reset = false;
-        for (Entry<AdvancedBoard, AdvancedMoves> entry
-                : advMap.entrySet()) {
-            byte[] transTiles = entry.getKey().transformer(orgTiles);
-            byte[] transTilesSym = tiles2sym(transTiles);
-
-            int[] transPD = convert2pd(transTiles, transTilesSym, szGroup);
-            int sumPdReg = 0;
-            int sumPdSym = 0;
-            for (int j = szGroup; j < szGroup * 2; j++) {
-                sumPdReg += transPD[j];
-                sumPdSym += transPD[j + szGroup * 2];
-            }
-
-            int transPriority = Math.max(sumPdReg, sumPdSym);
-            if (transPriority > CUTOFF_ADV_PRIORITY) {
-                continue;
-            }
-            if (entry.getValue().getEstimate() - transPriority <= maxEstimate) {
-                continue;
-            }
-
-            reset = true;
-            clearHistory();
-            Board temp = new Board(transTiles);
-            zeroX = temp.getZeroX();
-            zeroY = temp.getZeroY();
-            tiles = temp.getTiles();
-            pdKeys = transPD;
-            pdValReg = (byte) sumPdReg;
-            pdValSym = (byte) sumPdSym;
-            System.arraycopy(temp.getValidMoves(), 0, priority1stMove, ROW_SIZE, ROW_SIZE);
-
-            idaStar(transPriority, entry.getValue().getEstimate() - maxEstimate);
-            if (!stopwatch.isActive()) {
-                stopwatch.start();
-            }
-            if (solved) {
-                maxEstimate = (byte) (entry.getValue().getEstimate() - steps);
-            }
-        }
-        priorityAdvanced = maxEstimate;
-        return reset;
+        return priorityGoal;
     }
 
     // convert 16 tiles to a sequence of pairs of element key and format combo
     // of the static pattern
-    private int[] convert2pd(byte[] regular, byte[] symmetry, int sizeGroup) {
+    protected int[] convert2pd(byte[] regular, byte[] symmetry, int sizeGroup) {
         int[] orgFmt = new int[offsetPdSym];
         int[] orgKey = new int[offsetPdSym];
         int[] pdFactor = new int[szPdKeys];
 
-        for (int i = 0; i < BOARD_SIZE; i++) {
+        for (int i = 0; i < puzzleSize; i++) {
             for (int j = 0; j < sizeGroup; j++) {
                 orgFmt[j] <<= 1;
                 orgFmt[j + sizeGroup] <<= 1;
@@ -379,47 +275,15 @@ public class SolverPD extends SolverAbstract {
         return pdFactor;
     }
 
+    // TODO dummy
+    public void findOptimalPath(Board board, byte estimate) {
+        // dummy
+    }
+
     // solve the puzzle using interactive deepening A* algorithm
-    void idaStar(int limit) {
-        if (inUsePattern == PDPresetPatterns.Pattern_78) {
-            lastSearchBoard = new Board(tiles);
-        }
-
-        if (solutionMove[1] != null) {
-            advancedSearch(limit);
-            return;
-        }
-
-        int countDir = 0;
-        for (int i = 0; i < ROW_SIZE; i++) {
-            if (priority1stMove[i + ROW_SIZE] > 0) {
-                countDir++;
-            }
-        }
-
-        // quick scan for advanced priority, determine the start order for optimization
-        if (flagAdvancedPriority && countDir > 1) {
-            int initLimit = priorityGoal;
-            while (initLimit < limit) {
-                idaCount = 0;
-                dfs1stPrio(zeroX, zeroY, 0, initLimit, pdValReg, pdValSym);
-                initLimit += 2;
-
-                boolean overload = false;
-                for (int i = ROW_SIZE; i < ROW_SIZE * 2; i++) {
-                    if (priority1stMove[i] > 10000) {
-                        overload = true;
-                        break;
-                    }
-                }
-                if (overload) {
-                    break;
-                }
-            }
-        }
-
+    protected void idaStar(int limit) {
         // start searching for solution
-        while (limit <= MAX_MOVES) {
+        while (limit <= maxMoves) {
             idaCount = 0;
             if (flagMessage) {
                 System.out.print("ida limit " + limit);
@@ -439,30 +303,6 @@ public class SolverPD extends SolverAbstract {
                 } 
             	
             	if (solved) {
-            		// if currently using pattern database 7-8 and it takes long than cutoff limit
-                    // to solve, add the board and solutions to reference boards collection.
-                    if (inUseHeuristic == HeuristicType.PD78
-                            && stopwatch.currentTime() >  advAccumulator.getCutoffLimit()) {
-                        // backup original solutions
-                        final Stopwatch backupTime = stopwatch;
-                        final byte backupSteps = steps;
-                        final int backupIdaCount = searchNodeCount;
-                        final Direction[] backupSolution = solutionMove.clone();
-
-                        searchTime = stopwatch.currentTime();
-                        stopwatch = new Stopwatch();
-                        // only update cached advanced priority if using original priority search
-                        // and the initial board has added to the reference boards
-                        if (advAccumulator.addBoard(this) && !flagAdvancedPriority) {
-                            priorityAdvanced = backupSteps;
-                        }
-
-                        // restore original solutions
-                        stopwatch = backupTime;
-                        steps = backupSteps;
-                        searchNodeCount = backupIdaCount;
-                        solutionMove = backupSolution;
-                    }
                     return;
             	}
             }
@@ -470,114 +310,54 @@ public class SolverPD extends SolverAbstract {
         }
     }
 
-    // overload idaStar to solve the puzzle with the given max limit for advancedEstimate
-    void idaStar(int limit, int maxLimit) {
-        while (limit <= maxLimit) {
-            dfs1stPrio(zeroX, zeroY, 0, limit, pdValReg, pdValSym);
-            if (solved) {
-                return;
-            }
-            limit += 2;
-        }
-    }
-
-    // skip the first 8 moves from stored record then solve the remaining puzzle
-    // using depth first search with exact number of steps of optimal solution
-    private void advancedSearch(int limit) {
-        Direction[] dupSolution = new Direction[limit + 1];
-        System.arraycopy(solutionMove, 1, dupSolution, 1, ADV_PARTIAL_MOVES);
-
-        Board board = new Board(tiles);
-        for (int i = 1; i < ADV_PARTIAL_MOVES; i++) {
-            board = board.shift(dupSolution[i]);
-            if (board == null) {
-                System.out.println(i + "board is null");
-                System.out.println(Arrays.toString(solutionMove));
-                System.out.println(new Board(tiles));
-            }
-        }
-        heuristic(board, tagOriginal, tagSearch);
-
-        int firstDirValue = dupSolution[ADV_PARTIAL_MOVES].getValue();
-        for (int i = 0; i < 4; i++) {
-            if (i != firstDirValue) {
-                priority1stMove[i + 4] = 0;
-            } else {
-                priority1stMove[i + 4] = 1;
-            }
-        }
-
-        idaCount = ADV_PARTIAL_MOVES;
-        if (flagMessage) {
-            System.out.print("ida limit " + limit);
-        }
-        dfs1stPrio(zeroX, zeroY, 0, limit - ADV_PARTIAL_MOVES + 1, pdValReg, pdValSym);
-        if (solved) {
-            System.arraycopy(solutionMove, 2, dupSolution, ADV_PARTIAL_MOVES + 1,
-                    limit - ADV_PARTIAL_MOVES);
-            solutionMove = dupSolution;
-        }
-        steps = (byte) limit;
-        searchDepth = limit;
-        searchNodeCount += idaCount;
-
-        if (flagMessage) {
-            if (timeout) {
-            	System.out.println("\tNodes : " + num2string(idaCount) + "\ttimeout");
-            } else {
-            	System.out.println("\tNodes : " + num2string(idaCount) + stopwatch.currentTime() + "s");
-            }
-        }
-    }
-
     // recursive depth first search until it reach the goal state or timeout, the least estimate and
     // node counts will be use to determine the starting order of next search
-    private void dfs1stPrio(int orgX, int orgY, int cost, int limit, int orgValReg, int orgValSym) {
-        int zeroPos = orgY * ROW_SIZE + orgX;
-        int zeroSym = SYMMETRY_POS[zeroPos];
+    protected void dfs1stPrio(int orgX, int orgY, int cost, int limit, int orgValReg, int orgValSym) {
+        int zeroPos = orgY * rowSize + orgX;
+        int zeroSym = symmetryPos[zeroPos];
         int costPlus1 = cost + 1;
         int[] orgCopy = new int[szPdKeys];
         System.arraycopy(pdKeys, 0, orgCopy, 0, szPdKeys);
-        int[] estimate1stMove = new int[ROW_SIZE * 2];
-        System.arraycopy(priority1stMove, 0, estimate1stMove, 0, ROW_SIZE * 2);
+        int[] estimate1stMove = new int[rowSize * 2];
+        System.arraycopy(priority1stMove, 0, estimate1stMove, 0, rowSize * 2);
 
         int estimate = limit;
         do {
             int firstMoveIdx = -1;  // 0 - Right, 1 - Down, 2 - Left, 3 - Up
             int nodeCount = 0;
 
-            estimate = END_OF_SEARCH;
+            estimate = endOfSearch;
             for (int i = 0; i < 4; i++) {
-                if (estimate1stMove[i] == END_OF_SEARCH) {
+                if (estimate1stMove[i] == endOfSearch) {
                     continue;
-                } else if (priority1stMove[i + ROW_SIZE] > nodeCount) {
+                } else if (priority1stMove[i + rowSize] > nodeCount) {
                     estimate = estimate1stMove[i];
-                    nodeCount = priority1stMove[i + ROW_SIZE];
+                    nodeCount = priority1stMove[i + rowSize];
                     firstMoveIdx = i;
                 } else {
-                    priority1stMove[i] = END_OF_SEARCH;
+                    priority1stMove[i] = endOfSearch;
                 }
             }
 
-            if (estimate < END_OF_SEARCH) {
+            if (estimate < endOfSearch) {
                 int startCounter = idaCount++;
-                if (firstMoveIdx == 0) {
+                if (firstMoveIdx == Direction.RIGHT.getValue()) {
                     priority1stMove[firstMoveIdx] = shiftRight(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy) - 1;
-                } else if (firstMoveIdx == 1) {
+                } else if (firstMoveIdx == Direction.DOWN.getValue()) {
                     priority1stMove[firstMoveIdx] = shiftDown(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy) - 1;
-                } else if (firstMoveIdx == 2) {
+                } else if (firstMoveIdx == Direction.LEFT.getValue()) {
                     priority1stMove[firstMoveIdx] = shiftLeft(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy) - 1;
-                } else if (firstMoveIdx == 3) {
+                } else if (firstMoveIdx == Direction.UP.getValue()) {
                     priority1stMove[firstMoveIdx] = shiftUp(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy) - 1;
                 }
-                priority1stMove[firstMoveIdx + ROW_SIZE] = idaCount - startCounter;
-                estimate1stMove[firstMoveIdx] = END_OF_SEARCH;
+                priority1stMove[firstMoveIdx + rowSize] = idaCount - startCounter;
+                estimate1stMove[firstMoveIdx] = endOfSearch;
             }
-        } while (!terminated && estimate != END_OF_SEARCH);
+        } while (!terminated && estimate != endOfSearch);
     }
 
     // recursive depth first search until it reach the goal state or timeout
@@ -585,18 +365,18 @@ public class SolverPD extends SolverAbstract {
             int orgValSym) {
         idaCount++;
         if (terminated) {
-            return END_OF_SEARCH;
+            return endOfSearch;
         }
         if (flagTimeout && stopwatch.currentTime() > searchTimeoutLimit) {
             stopwatch.stop();
             timeout = true;
             terminated = true;
-            return END_OF_SEARCH;
+            return endOfSearch;
         }
         assert stopwatch.isActive() : "stopwatch is not running.";
 
-        int zeroPos = orgY * ROW_SIZE + orgX;
-        int zeroSym = SYMMETRY_POS[zeroPos];
+        int zeroPos = orgY * rowSize + orgX;
+        int zeroSym = symmetryPos[zeroPos];
         int costPlus1 = cost + 1;
         int newEstimate = Math.max(orgValReg, orgValSym);
         int[] orgCopy = new int[pdKeys.length];
@@ -615,7 +395,7 @@ public class SolverPD extends SolverAbstract {
         Direction prevMove = solutionMove[cost];
         if (prevMove == Direction.RIGHT) {
             // RIGHT
-            if (orgX < ROW_SIZE - 1) {
+            if (orgX < rowSize - 1) {
                 newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
                         costPlus1, limit, orgValReg, orgValSym, orgCopy));
             }
@@ -626,14 +406,14 @@ public class SolverPD extends SolverAbstract {
                             costPlus1, limit, orgValReg, orgValSym, orgCopy));
                 }
                 // DOWN
-                if (orgY < ROW_SIZE - 1) {
+                if (orgY < rowSize - 1) {
                     newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy));
                 }
             }
         } else if (prevMove == Direction.DOWN) {
             // DOWN
-            if (orgY < ROW_SIZE - 1) {
+            if (orgY < rowSize - 1) {
                 newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
                         costPlus1, limit, orgValReg, orgValSym, orgCopy));
             }
@@ -644,7 +424,7 @@ public class SolverPD extends SolverAbstract {
                             costPlus1, limit, orgValReg, orgValSym, orgCopy));
                 }
                 // RIGHT
-                if (orgX < ROW_SIZE - 1) {
+                if (orgX < rowSize - 1) {
                     newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy));
                 }
@@ -657,7 +437,7 @@ public class SolverPD extends SolverAbstract {
             }
             if (nonIdentical) {
                 // DOWN
-                if (orgY < ROW_SIZE - 1) {
+                if (orgY < rowSize - 1) {
                     newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy));
                 }
@@ -675,7 +455,7 @@ public class SolverPD extends SolverAbstract {
             }
             if (nonIdentical) {
                 // RIGHT
-                if (orgX < ROW_SIZE - 1) {
+                if (orgX < rowSize - 1) {
                     newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy));
                 }
@@ -693,12 +473,12 @@ public class SolverPD extends SolverAbstract {
     private int shiftRight(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
             int orgValReg, int orgValSym, int[] orgCopy) {
         if (terminated) {
-            return END_OF_SEARCH;
+            return endOfSearch;
         }
         int nextPos = zeroPos + 1;
         int value = tiles[nextPos];
         int ptnReg = val2ptnOrder[value];
-        int ptnSym = val2ptnOrder[SYMMETRY_VAL[value]];
+        int ptnSym = val2ptnOrder[symmetryVal[value]];
         int keySymPos = ptnSym + offsetPdSym;
 
         shift(zeroPos, ptnReg, ptnReg, zeroSym, ptnSym, keySymPos, 0);
@@ -711,12 +491,12 @@ public class SolverPD extends SolverAbstract {
     private int shiftDown(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
             int orgValReg, int orgValSym, int[] orgCopy) {
         if (terminated) {
-            return END_OF_SEARCH;
+            return endOfSearch;
         }
-        int nextPos = zeroPos + ROW_SIZE;
+        int nextPos = zeroPos + rowSize;
         int value = tiles[nextPos];
         int ptnReg = val2ptnOrder[value];
-        int ptnSym = val2ptnOrder[SYMMETRY_VAL[value]];
+        int ptnSym = val2ptnOrder[symmetryVal[value]];
         int keySymPos = ptnSym + offsetPdSym;
 
         shift(zeroSym, ptnSym, keySymPos, zeroPos, ptnReg, ptnReg, 0);
@@ -729,12 +509,12 @@ public class SolverPD extends SolverAbstract {
     private int shiftLeft(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
             int orgValReg, int orgValSym, int[] orgCopy) {
         if (terminated) {
-            return END_OF_SEARCH;
+            return endOfSearch;
         }
         int nextPos = zeroPos - 1;
         int value = tiles[nextPos];
         int ptnReg = val2ptnOrder[value];
-        int ptnSym = val2ptnOrder[SYMMETRY_VAL[value]];
+        int ptnSym = val2ptnOrder[symmetryVal[value]];
         int keySymPos = ptnSym + offsetPdSym;
 
         shift(zeroPos, ptnReg, ptnReg, zeroSym, ptnSym, keySymPos, offsetDir);
@@ -747,12 +527,12 @@ public class SolverPD extends SolverAbstract {
     private int shiftUp(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
             int orgValReg, int orgValSym, int[] orgCopy) {
         if (terminated) {
-            return END_OF_SEARCH;
+            return endOfSearch;
         }
-        int nextPos = zeroPos - ROW_SIZE;
+        int nextPos = zeroPos - rowSize;
         int value = tiles[nextPos];
         int ptnReg = val2ptnOrder[value];
-        int ptnSym = val2ptnOrder[SYMMETRY_VAL[value]];
+        int ptnSym = val2ptnOrder[symmetryVal[value]];
         int keySymPos = ptnSym + offsetPdSym;
 
         shift(zeroSym, ptnSym, keySymPos, zeroPos, ptnReg, ptnReg, offsetDir);
@@ -801,7 +581,7 @@ public class SolverPD extends SolverAbstract {
             steps = (byte) cost;
             solved = true;
             terminated = true;
-            return END_OF_SEARCH;
+            return endOfSearch;
         } else if (priority < limit) {
             tiles[zeroPos] = tiles[nextPos];
             tiles[nextPos] = 0;
@@ -836,15 +616,6 @@ public class SolverPD extends SolverAbstract {
      *
      * @return boolean represents the advanced priority in use
      */
-    public final boolean getPriorityFlag() {
-        return flagAdvancedPriority;
-    }
-
-    /**
-     * Returns the boolean represents the advanced priority in use.
-     *
-     * @return boolean represents the advanced priority in use
-     */
     public final boolean getTimeoutFlag() {
         return flagTimeout;
     }
@@ -856,17 +627,5 @@ public class SolverPD extends SolverAbstract {
      */
     public final boolean getMessageFlag() {
         return flagMessage;
-    }
-
-    /**
-     * Returns the board object of last search.
-     *
-     * @return board object of last search
-     */
-    public final Board lastSearchBoard() {
-        if (inUsePattern != PDPresetPatterns.Pattern_78) {
-            throw new UnsupportedOperationException();
-        }
-        return lastSearchBoard;
     }
 }

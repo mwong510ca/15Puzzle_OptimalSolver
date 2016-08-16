@@ -15,109 +15,20 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Board {
-    /**
-     *  15 puzzle board difficult level that can be used.
-     *  <li>{@link #RIGHT}</li>
-     *  <li>{@link #DOWN}</li>
-     *  <li>{@link #LEFT}</li>
-     *  <li>{@link #UP}</li>
-     *  <li>{@link #NONE}</li>
-     */
-    public enum Level {
-        /**
-         *  Difficult level easyt.
-         */
-        Easy,
-        /**
-         *  Difficult level moderate.
-         */
-        Moderate,
-        /**
-         *  Difficult level hard.
-         */
-        Hard,
-        /**
-         *  Difficult level random.
-         */
-        Random;
-    }
-
-    private static final byte rowSize = 4;
-    private static final byte size = 16;
-    private static final byte maxMoves = 80;
-    // initializes the goal state to be use to generate random board
-    private static final byte [] goalBoard =
-        {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0};
-    private static final int goalHash1 = 0x12345678;
-    private static final int goalHash2 = 0x9ABCDEF0;
-
-    // initializes hard boards to be use to generate random board
-    private static final byte [][] presetHardZero0 = {
-        {0, 11,  9, 13, 12, 15, 10, 14,  3,  7,  6,  2,  4,  8,  5,  1},
-        {0, 15,  9, 13, 11, 12, 10, 14,  3,  7,  6,  2,  4,  8,  5,  1},
-        {0, 12,  9, 13, 15, 11, 10, 14,  3,  7,  6,  2,  4,  8,  5,  1},
-        {0, 12,  9, 13, 15, 11, 10, 14,  3,  7,  2,  5,  4,  8,  6,  1},
-        {0, 12, 10, 13, 15, 11, 14,  9,  3,  7,  2,  5,  4,  8,  6,  1},
-        {0, 12, 14, 13, 15, 11,  9, 10,  3,  7,  6,  2,  4,  8,  5,  1},
-        {0, 12, 10, 13, 15, 11, 14,  9,  3,  7,  6,  2,  4,  8,  5,  1},
-        {0, 12, 11, 13, 15, 14, 10,  9,  3,  7,  6,  2,  4,  8,  5,  1},
-        {0, 12, 10, 13, 15, 11,  9, 14,  7,  3,  6,  2,  4,  8,  5,  1},
-        {0, 12,  9, 13, 15, 11, 14, 10,  3,  8,  6,  2,  4,  7,  5,  1},
-        {0, 12,  9, 13, 15, 11, 10, 14,  8,  3,  6,  2,  4,  7,  5,  1},
-        {0, 12, 14, 13, 15, 11,  9, 10,  8,  3,  6,  2,  4,  7,  5,  1},
-        {0, 12,  9, 13, 15, 11, 10, 14,  7,  8,  6,  2,  4,  3,  5,  1},
-        {0, 12, 10, 13, 15, 11, 14,  9,  7,  8,  6,  2,  4,  3,  5,  1},
-        {0, 12,  9, 13, 15,  8, 10, 14, 11,  7,  6,  2,  4,  3,  5,  1},
-        {0, 12,  9, 13, 15, 11, 10, 14,  3,  7,  5,  6,  4,  8,  2,  1},
-        {0, 12,  9, 13, 15, 11, 10, 14,  7,  8,  5,  6,  4,  3,  2,  1},
-        {0, 15, 14, 13, 12, 11, 10,  9,  8,  7,  6,  5,  4,  3,  2,  1},
-        {0, 15,  8,  3, 12, 11,  7,  4, 14, 10,  6,  5,  9, 13,  2,  1},
-        {0, 12, 14,  4, 15, 11,  7,  3,  8, 10,  6,  5, 13,  9,  2,  1},
-        {0, 12,  7,  3, 15, 11,  8,  4, 10, 14,  6,  2,  9, 13,  5,  1},
-        {0, 12,  7,  4, 15, 11,  8,  3, 10, 14,  6,  2, 13,  9,  5,  1},
-        {0, 12,  8,  3, 15, 11, 10,  4, 14,  7,  6,  5,  9, 13,  2,  1},
-        {0, 12,  8,  3, 15, 11,  7,  4, 14, 10,  6,  2,  9, 13,  5,  1},
-        {0, 12,  8,  4, 15, 11,  7,  3, 14, 10,  6,  2, 13,  9,  5,  1},
-        {0, 12,  8,  7, 15, 11,  4,  3, 14, 13,  6,  2, 10,  9,  5,  1},
-        {0, 15,  4, 10, 12, 11,  8,  3, 13, 14,  6,  2,  7,  9,  5,  1},
-        {0, 15,  7,  4, 12, 11,  8,  5, 10, 14,  6,  3, 13,  2,  9,  1},
-        {0, 15,  7,  8, 12, 11,  4,  3, 10, 13,  6,  5, 14,  9,  2,  1},
-        {0, 15,  8, 10, 12, 11,  4,  3, 14, 13,  6,  2,  7,  9,  5,  1},
-        {0, 15,  8,  3, 12, 11, 10,  4, 14,  7,  6,  2,  9, 13,  5,  1},
-        {0, 15,  8,  4, 12, 11,  7,  3, 14, 10,  6,  5, 13,  9,  2,  1},
-        {0, 15,  8,  4, 12, 11,  7,  5, 14, 10,  6,  3, 13,  2,  9,  1},
-        {0, 15,  8,  7, 12, 11,  4,  3, 14, 13,  6,  5, 10,  9,  2,  1},
-        {0,  2,  9, 13,  5,  1, 10, 14,  3,  7,  6, 15,  4,  8, 12, 11},
-        {0,  5,  9, 13,  2,  1, 10, 14,  3,  7, 11, 15,  4,  8, 12,  6},
-        {0,  5,  9, 13,  2,  6, 10, 14,  3,  7,  1, 15,  4,  8, 12, 11},
-        {0,  5,  9, 14,  2,  6, 10, 13,  3,  7,  1, 15,  8,  4, 12, 11}
-    };
-    // initializes hard boards to be use to generate random board
-    private static final byte [][] presetHardZero15 = {
-        {1, 10, 14, 13,  7,  6,  5,  9,  8,  2, 11, 15,  4,  3, 12,  0},
-        {1, 10,  9, 13,  7,  6,  5, 14,  3,  2, 11, 15,  4,  8, 12,  0},
-        {1,  5, 14, 13,  2,  6, 10,  9,  8,  7, 11, 15,  4,  3, 12,  0},
-        {1,  5,  9, 13,  2,  6, 10, 14,  3,  7, 11, 15,  4,  8, 12,  0},
-        {6,  5, 13,  9,  2,  1, 10, 14,  4,  7, 11, 12,  3,  8, 15,  0},
-        {6,  5, 14, 13,  2,  1, 10,  9,  8,  7, 11, 12,  4,  3, 15,  0},
-        {6,  5,  9, 13,  2,  1, 10, 14,  3,  7, 11, 12,  4,  8, 15,  0},
-        {6,  5,  9, 14,  2,  1, 10, 13,  3,  7, 11, 12,  8,  4, 15,  0}
-    };
-
-    // Symmetry board tile value conversion
-    private static final byte [] symmetryVal =
-        {0, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15, 4, 8, 12};
-    // Symmetry board tile position conversion
-    private static final byte [] symmetryPos =
-        {0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15};
+    private final int goalHash1 = 0x12345678;
+    private final int goalHash2 = 0x9ABCDEF0;
+    private final byte size = PuzzleProperties.getSize();
+    private final byte rowSize = PuzzleProperties.getRowSize();
+    private final byte[] symmetryPos = PuzzleProperties.getSymmetryPos();
+    private final byte[] symmetryVal = PuzzleProperties.getSymmetryVal();
 
     private boolean isSolvable;
     private boolean isIdenticalSymmetry;
     private int zeroX;
     private int zeroY;
+    private int hashcode;
     private int hash1;
     private int hash2;
-    private int hashcode;
     private byte[] tiles;
     private byte[] tilesSym;
     private int[] validMoves;
@@ -126,7 +37,7 @@ public class Board {
      * Initializes a Board object, generate a random board.
      */
     public Board() {
-        this(Level.Random);
+        this(PuzzleDifficultyLevel.RANDOM);
     }
 
     /**
@@ -135,8 +46,8 @@ public class Board {
      *
      * @param level the given difficulty level
      */
-    public Board(Level level) {
-        if (level == Level.Random) {
+    public Board(PuzzleDifficultyLevel level) {
+        if (level == PuzzleDifficultyLevel.RANDOM) {
             generateRandomBoard();
         } else {
             generateBoard(level);
@@ -244,8 +155,8 @@ public class Board {
     }
 
     // generate a solvable random board with a given difficulty level
-    private void generateBoard(Level level) {
-        if (level == Level.Moderate) {
+    private void generateBoard(PuzzleDifficultyLevel level) {
+        if (level == PuzzleDifficultyLevel.MODERATE) {
             int estimate;
             do {
                 generateRandomBoard();
@@ -256,18 +167,21 @@ public class Board {
             int zero = 15;
 
             while (true) {
-                System.arraycopy(goalBoard, 0, blocks, 0, size);
+                System.arraycopy(PuzzleProperties.getGoalTiles(), 0, blocks, 0, size);
                 zero = 15;
-                if (level == Level.Hard) {
+                if (level == PuzzleDifficultyLevel.HARD) {
                     int rand = new Random().nextInt(5);
                     if (rand == 0) {
-                        rand = new Random().nextInt(presetHardZero15.length);
-                        System.arraycopy(presetHardZero15[rand], 0, blocks, 0, size);
-                        zero = 15;
+                    	if (PuzzleProperties.getHardZero15Size() > 0) {
+                    		rand = new Random().nextInt(PuzzleProperties.getHardZero15Size());
+                    		System.arraycopy(PuzzleProperties.getHardZero15(rand), 0, blocks, 0, size);
+                    	}
                     } else {
-                        rand = new Random().nextInt(presetHardZero0.length);
-                        System.arraycopy(presetHardZero0[rand], 0, blocks, 0, size);
-                        zero = 0;
+                    	if (PuzzleProperties.getHardZero0Size() > 0) {
+                        	rand = new Random().nextInt(PuzzleProperties.getHardZero0Size());
+                        	System.arraycopy(PuzzleProperties.getHardZero0(rand), 0, blocks, 0, size);
+                        	zero = 0;
+                    	}
                     }
                 }
 
@@ -301,10 +215,9 @@ public class Board {
 
                 tiles = new byte[size];
                 System.arraycopy(blocks, 0, tiles, 0, size);
-                if (level == Level.Hard && heuristic() > 40) {
+                if (level == PuzzleDifficultyLevel.HARD && heuristic() > 40) {
                     break;
-                }
-                if (heuristic() < 25) {
+                } else if (level == PuzzleDifficultyLevel.EASY && heuristic() < 25) {
                     break;
                 }
             }
@@ -474,60 +387,6 @@ public class Board {
             }
         }
         return true;
-    }
-
-    /**
-     * Returns the number of board dimension N.
-     *
-     * @return number of board dimension N
-     */
-    public static byte getRowSize() {
-        return rowSize;
-    }
-
-    /**
-     * Returns the number of board size.
-     *
-     * @return number of board size
-     */
-    public static int getSize() {
-        return size;
-    }
-
-    /**
-     * Returns the number of maximum moves.
-     *
-     * @return number of maximum moves
-     */
-    public static int getMaxMoves() {
-        return maxMoves;
-    }
-
-    /**
-     * Returns the byte array of goal state.
-     *
-     * @return byte array of goal state
-     */
-    public static byte[] getBoardgoal() {
-        return goalBoard;
-    }
-
-    /**
-     * Returns the byte array of symmetry value conversion.
-     *
-     * @return byte array of symmetry value conversion
-     */
-    public static byte[] getSymValConversion() {
-        return symmetryVal;
-    }
-
-    /**
-     * Returns the byte array of symmetry position conversion.
-     *
-     * @return byte array of symmetry position conversion
-     */
-    public static byte[] getSymPosConversion() {
-        return symmetryPos;
     }
 
     /**

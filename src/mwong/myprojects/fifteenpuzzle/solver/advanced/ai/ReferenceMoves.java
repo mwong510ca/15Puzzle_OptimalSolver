@@ -9,25 +9,34 @@
  *
  ****************************************************************************/
 
-package mwong.myprojects.fifteenpuzzle.solver.components;
+package mwong.myprojects.fifteenpuzzle.solver.advanced.ai;
 
-import mwong.myprojects.fifteenpuzzle.solver.SolverPD;
+import mwong.myprojects.fifteenpuzzle.solver.components.Board;
+import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
+import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPD;
 
-public class AdvancedMoves {
-    private static final byte[] advanceStatus = {1, 2, 4, 8};
-    private static final byte advanceComplete = 15;
-    // store as short in 16 bits, 2 bits per move
-    private static final byte advancePartialMoves = 8;
-    private static final boolean tagSymmetry = true;
-
+public class ReferenceMoves {
+	private final byte[] statusBit;
+	private final byte statusCompleted;
+	private final int numPartialMoves;
+	private final boolean symmetry;
+	
     byte[] moves = new byte[4];
     short[] initMoves = new short[4];
     byte status = 0;
 
+    private ReferenceMoves() {
+    	statusBit = ReferenceProperties.getStatusBit();
+    	statusCompleted = ReferenceProperties.getStatusCompleted();
+    	numPartialMoves = ReferenceProperties.getNumPartialMoves();
+    	symmetry = ReferenceProperties.isSymmetry();
+    }
+    
     // initializes AdvancedMoves object with given zero position with given
     // unverified estimate and no partial solution
-    AdvancedMoves(byte zeroPos, byte steps) {
-        int refLookup = AdvancedBoard.getLookupKey(zeroPos);
+    ReferenceMoves(byte zeroPos, byte steps) {
+    	this();
+        int refLookup = ReferenceProperties.getReferenceLookup(zeroPos);
         moves[refLookup] = steps;
         int count = 1;
         while (refLookup - count > -1) {
@@ -42,7 +51,8 @@ public class AdvancedMoves {
     }
 
     // initializes AdvancedMoves object with stored variables
-    AdvancedMoves(byte[] moves, short[] initMoves, byte status) {
+    ReferenceMoves(byte[] moves, short[] initMoves, byte status) {
+    	this();
         this.moves = moves.clone();
         this.initMoves = initMoves.clone();
         this.status = status;
@@ -64,32 +74,34 @@ public class AdvancedMoves {
 
     // update moves and partial solution at the given lookup key
     void updateSolution(byte lookup, byte steps, Direction[] solution, boolean symmetry) {
-        status |= advanceStatus[lookup];
+        status |= statusBit[lookup];
         moves[lookup] = steps;
         initMoves[lookup] = initialMoves2value(solution, symmetry);
     }
 
     // update a full set of moves and partial solutions with a given reference board
     // and a solverPD object
-    void updateSolutions(AdvancedBoard advBoard, SolverPD solver) {
+    void updateSolutions(ReferenceBoard advBoard, SolverPD solver) {
+    	assert solver != null : "SolverPD is null";
         byte group = advBoard.group;
         byte[] blocks = advBoard.getTiles().clone();
         for (int lookup = 0; lookup < 4; lookup++) {
-            if ((status & advanceStatus[lookup]) == 0) {
+            if ((status & statusBit[lookup]) == 0) {
                 Board board = new Board(blocks);
                 solver.findOptimalPath(board, moves[lookup]);
+                assert solver.solution() != null : "No solution from updateSolutions function";
                 moves[lookup] = solver.moves();
-                initMoves[lookup] = initialMoves2value(solver.solution(), !tagSymmetry);
+                initMoves[lookup] = initialMoves2value(solver.solution(), !symmetry);
             }
             shiftOne(blocks, group, lookup);
         }
-        status = advanceComplete;
+        status = statusCompleted;
     }
 
     // convert the first 8 directions from the given array into short value
     private short initialMoves2value(Direction[] dir, boolean isSymmetry) {
         short value = 0;
-        for (int i = advancePartialMoves; i > 1; i--) {
+        for (int i = numPartialMoves; i > 1; i--) {
             if (isSymmetry) {
                 value |= dir[i].symmetryDirection().getValue();
             } else {
@@ -115,8 +127,8 @@ public class AdvancedMoves {
      */
     public Direction[] getInitialMoves(int lookup, boolean isSymmetry) {
         short value = initMoves[lookup];
-        Direction[] movesDir = new Direction[advancePartialMoves];
-        for (int i = 0; i < advancePartialMoves; i++) {
+        Direction[] movesDir = new Direction[numPartialMoves];
+        for (int i = 0; i < numPartialMoves; i++) {
             int dir = value & 0x03;
             if (dir == 0) {
                 movesDir[i] = Direction.RIGHT;
@@ -131,7 +143,7 @@ public class AdvancedMoves {
         }
 
         if (isSymmetry) {
-            for (int i = 0; i < advancePartialMoves; i++) {
+            for (int i = 0; i < numPartialMoves; i++) {
                 movesDir[i] = movesDir[i].symmetryDirection();
             }
         }
@@ -193,7 +205,7 @@ public class AdvancedMoves {
      * @return boolean represents the full set has been verified
      */
     public boolean isCompleted() {
-        return status == advanceComplete;
+        return status == statusCompleted;
     }
 
     /**
@@ -213,23 +225,5 @@ public class AdvancedMoves {
      */
     public byte getEstimate(int lookup) {
         return moves[lookup];
-    }
-
-    /**
-     * Return the byte of number of stored partial moves.
-     *
-     * @return byte of number of stored partial moves
-     */
-    public static byte getPartialMoves() {
-        return advancePartialMoves;
-    }
-
-    /**
-     * Return the boolean of the indicator of symmetry board.
-     *
-     * @return byte of the indicator of symmetry board
-     */
-    public static boolean isSymmetry() {
-        return tagSymmetry;
     }
 }

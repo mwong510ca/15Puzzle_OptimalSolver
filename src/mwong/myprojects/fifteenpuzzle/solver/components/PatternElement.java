@@ -26,35 +26,21 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.TreeSet;
 
-public class PDElement {
-    // Additive pattern element mode can be use
-    public enum Mode {
-        // For pattern database generator
-        Generator,
-        // For puzzle solver
-        PuzzleSolver
-    }
-
-    // Remarks - key size : group of 3 = 3! = 6, group of 6 = 6! = 120
-    private static final int[] keySize = {0, 1, 2, 6, 24, 120, 720, 5040, 40320};
-    // Remarks - format size : group of 3 = 16C3 = 560, group of 6 = 16C6 = 8008
-    private static final int[] formatSize = {0, 16, 120, 560, 1820, 4368, 8008, 11440, 12870};
-    // 16 bits represent the position of the tile
-    private static final int[] bitPos16 = {1 << 15, 1 << 14, 1 << 13, 1 << 12, 1 << 11, 1 << 10,
-        1 << 9, 1 << 8, 1 << 7, 1 << 6, 1 << 5, 1 << 4, 1 << 3, 1 << 2, 1 << 1, 1};
-
-    private static final String directory = "database";
-    private static final String seperator = System.getProperty("file.separator");
-    private static final String filePath = directory + seperator + "pattern_element_";
+public class PatternElement {
     // Standard group are 3, 5, 6, 7, 8 for patterns (663, 555 oar 78)
-    private static final boolean[] standardGroups
+    private static final boolean[] STANDATD_GROUPS
             = {false, false, false, true, false, true, true, true, true};
-    private static final int[] maxShiftX2 = {0, 0, 2, 4, 6, 6, 6, 6, 6};
-    private static final int maxGroupSize = 8;
-    private static final int puzzleSize = Board.getSize();
-    // partial key - last # of keys (4 bits each)
-    private static final int[] partialBits
-            = {0, 0x000F, 0x00FF, 0x0FFF, 0x0000FFFF, 0x000FFFFF, 0x00FFFFFF, 0x0FFFFFFF};
+
+    private final String directory;
+    private final String filePathPrefix;
+    private final String fileSuffix;
+    private final int puzzleSize;
+    private final int[] partialBits;
+    private final int[] keySize;
+    private final int[] formatSize;
+    private final int maxGroupSize;
+    private final int[] maxShiftX2;
+    private final int[] formatBit16;
 
     private HashMap<Integer, Integer> keys;
     private HashMap<Integer, Integer> formats;
@@ -71,8 +57,8 @@ public class PDElement {
     /**
      * Initializes the PDElement with standard groups and generator mode.
      */
-    public PDElement() {
-        this(standardGroups, Mode.Generator);
+    public PatternElement() {
+        this(STANDATD_GROUPS, PatternElementMode.GENERATOR);
     }
 
     /**
@@ -81,8 +67,22 @@ public class PDElement {
      * @param patternGroups boolean array of pattern groups in use
      * @param mode Enum Mode of Generator or PuzzleSolver
      */
-    public PDElement(boolean [] patternGroups, Mode mode) {
-        if (patternGroups.length != maxGroupSize + 1) {
+    public PatternElement(boolean [] patternGroups, PatternElementMode mode) {
+        directory = "database";
+        String seperator = System.getProperty("file.separator");
+        filePathPrefix = directory + seperator + "pattern_element_";
+        fileSuffix = ".db";
+        puzzleSize = PuzzleProperties.getSize();
+        // partial key - last # of keys (4 bits each)
+        partialBits = new int[] {0, 0x000F, 0x00FF, 0x0FFF, 0x0000FFFF, 0x000FFFFF,
+                                 0x00FFFFFF, 0x0FFFFFFF};
+        keySize = PatternProperties.getKeySize();
+        formatSize = PatternProperties.getFormatSize();
+        maxGroupSize = PatternProperties.getMaxGroupSize();
+        maxShiftX2 = PatternProperties.getMaxShiftX2();
+        formatBit16 = PatternProperties.getFormatBit16();
+
+        if (patternGroups.length != PatternProperties.getMaxGroupSize() + 1) {
             System.err.println("Invalid input - require boolean array of size 9");
             throw new IllegalArgumentException();
         }
@@ -90,7 +90,7 @@ public class PDElement {
     }
 
     // load the database pattern components from file
-    private void loadData(boolean [] patternGroups, Mode mode) {
+    private void loadData(boolean [] patternGroups, PatternElementMode mode) {
         keys = new HashMap<Integer, Integer>();
         formats = new HashMap<Integer, Integer>();
         linkFormatCombo = new int[maxGroupSize + 1][0][0];
@@ -100,14 +100,14 @@ public class PDElement {
         formats2combo = new int [maxGroupSize + 1][0];
 
         boolean printMsg = true;
-        if (mode == Mode.PuzzleSolver) {
+        if (mode == PatternElementMode.PUZZLE_SOLVER) {
             printMsg = false;
         }
         Stopwatch stopwatch = new Stopwatch();
 
         for (int group = 2; group <= maxGroupSize; group++) {
             if (patternGroups[group]) {
-                try (FileInputStream fin = new FileInputStream(filePath + group + ".db");
+                try (FileInputStream fin = new FileInputStream(getFilePath(group));
                         FileChannel inChannel = fin.getChannel();) {
                     ByteBuffer buffer =
                             inChannel.map(FileChannel.MapMode.READ_ONLY, 0, inChannel.size());
@@ -129,7 +129,7 @@ public class PDElement {
                         formats.put(formats2combo[group][i], i);
                     }
 
-                    if (mode == Mode.PuzzleSolver) {
+                    if (mode == PatternElementMode.PUZZLE_SOLVER) {
                         linkFormatMove[group] = new int[formatSize[group] * 64];
                         for (int i = 0; i < linkFormatMove[group].length; i++) {
                             linkFormatMove[group][i] = buffer.getInt();
@@ -172,11 +172,12 @@ public class PDElement {
         // store key components from group 2 to 8 in data file
         for (int group = 2; group <= maxGroupSize; group++) {
             if (patternGroups[group]) {
-                if ((new File(filePath + group + ".db")).exists()) {
-                    (new File(filePath + group + ".db")).delete();
+                final String filepath = getFilePath(group);
+                if (new File(filepath).exists()) {
+                    (new File(filepath)).delete();
                 }
 
-                try (FileOutputStream fout = new FileOutputStream(filePath + group + ".db");
+                try (FileOutputStream fout = new FileOutputStream(filepath);
                         FileChannel outChannel = fout.getChannel();) {
                     ByteBuffer buffer = ByteBuffer.allocateDirect(keySize[group] * 4);
                     for (int combo : keys2combo[group]) {
@@ -219,8 +220,8 @@ public class PDElement {
                         System.out.println("PD15Element - save data in file failed.");
                     }
                     for (int group2 = 2; group2 <= maxGroupSize; group2++) {
-                        if ((new File(filePath + group2 + ".db")).exists()) {
-                            (new File(filePath + group2 + ".db")).delete();
+                        if ((new File(filePathPrefix + group2 + ".db")).exists()) {
+                            (new File(filePathPrefix + group2 + ".db")).delete();
                         }
                     }
                     return;
@@ -234,7 +235,7 @@ public class PDElement {
     }
 
     // clear all unused components
-    private void wrapup(boolean [] groups, Mode mode) {
+    private void wrapup(boolean [] groups, PatternElementMode mode) {
         for (int group = 1; group < groups.length; group++) {
             if (!groups[group]) {
                 if (group > 1) {
@@ -253,9 +254,9 @@ public class PDElement {
             }
         }
 
-        if (mode == Mode.Generator) {
+        if (mode == PatternElementMode.GENERATOR) {
             linkFormatMove = null;
-        } else if (mode == Mode.PuzzleSolver) {
+        } else if (mode == PatternElementMode.PUZZLE_SOLVER) {
             keys2combo = null;
             formats2combo = null;
             linkFormatCombo = null;
@@ -479,23 +480,23 @@ public class PDElement {
                 linkFormatCombo[group][fmtIdx] = new int [group * 4];
 
                 for (int pos = 0; pos < puzzleSize; pos++) {
-                    if ((fmt & bitPos16[pos]) > 0) {
+                    if ((fmt & formatBit16[pos]) > 0) {
                         int [] next = {-1, -1, -1, -1};
                         int [] shift = {0, 0, 0, 0};
-                        int base = fmt ^ bitPos16[pos];
+                        int base = fmt ^ formatBit16[pos];
                         // space right, tile left
                         if (pos % 4 > 0) {
-                            if ((fmt & bitPos16[pos - 1]) == 0) {
-                                next[Direction.RIGHT.getValue()] = base | bitPos16[pos - 1];
+                            if ((fmt & formatBit16[pos - 1]) == 0) {
+                                next[Direction.RIGHT.getValue()] = base | formatBit16[pos - 1];
                             }
                         }
                         // space down, tile up
                         if (pos > 3) {
-                            if ((fmt & bitPos16[pos - 4]) == 0) {
-                                next[Direction.DOWN.getValue()] = base | bitPos16[pos - 4];
+                            if ((fmt & formatBit16[pos - 4]) == 0) {
+                                next[Direction.DOWN.getValue()] = base | formatBit16[pos - 4];
                                 int numShift = 0;
                                 for (int keyShift = 1; keyShift < 4; keyShift++) {
-                                    if ((fmt & bitPos16[pos - keyShift]) > 0) {
+                                    if ((fmt & formatBit16[pos - keyShift]) > 0) {
                                         numShift++;
                                     }
                                 }
@@ -506,17 +507,17 @@ public class PDElement {
                         }
                         // space left, tile right
                         if (pos % 4 < 3) {
-                            if ((fmt & bitPos16[pos + 1]) == 0) {
-                                next[Direction.LEFT.getValue()] = base | bitPos16[pos + 1];
+                            if ((fmt & formatBit16[pos + 1]) == 0) {
+                                next[Direction.LEFT.getValue()] = base | formatBit16[pos + 1];
                             }
                         }
                         // space up, tile down
                         if (pos < 12) {
-                            if ((fmt & bitPos16[pos + 4]) == 0) {
-                                next[Direction.UP.getValue()] = base | bitPos16[pos + 4];
+                            if ((fmt & formatBit16[pos + 4]) == 0) {
+                                next[Direction.UP.getValue()] = base | formatBit16[pos + 4];
                                 int numShift = 0;
                                 for (int keyShift = 1; keyShift < 4; keyShift++) {
-                                    if ((fmt & bitPos16[pos + keyShift]) > 0) {
+                                    if ((fmt & formatBit16[pos + keyShift]) > 0) {
                                         numShift++;
                                     }
                                 }
@@ -555,61 +556,13 @@ public class PDElement {
     }
 
     /**
-     * Returns the integer array that the '1' bit represent the position of the board.
-     *
-     * @return integer array that the '1' bit represent the position of the board
-     */
-    public static int[] getBitPos16() {
-        return bitPos16;
-    }
-
-    /**
-     * Returns the integer of maximum group size of pattern.
-     *
-     * @return integer of maximum group size of pattern
-     */
-    public static int getMaxGroupSize() {
-        return maxGroupSize;
-    }
-
-    /**
-     * Returns the integer of the key size of the given group.
-     *
-     * @param group the given group size
-     * @return integer of the key size of the given group
-     */
-    public static int getKeySize(int group) {
-        return keySize[group];
-    }
-
-    /**
-     * Returns the integer of the format size of the given group.
-     *
-     * @param group the given group size
-     * @return integer of the format size of the given group
-     */
-    public static int getFormatSize(int group) {
-        return formatSize[group];
-    }
-
-    /**
-     * Returns the integer of the double value of maximum key shift of the given group.
-     *
-     * @param group the given group size
-     * @return integer of the double value of maximum key shift of the given group
-     */
-    public static int getShiftMaxX2(int group) {
-        return maxShiftX2[group];
-    }
-
-    /**
      * Returns the string of the file path of the given group.
      *
      * @param group the given group size
      * @return string of the file path of the given group
      */
-    public static String getFilePath(int group) {
-        return filePath + group + ".db";
+    private String getFilePath(int group) {
+        return filePathPrefix + group + fileSuffix;
     }
 
     /**
@@ -636,7 +589,7 @@ public class PDElement {
      * @param group the given group size
      * @return integer array of 16 bits format pattern with the given group
      */
-    protected final int [] getFormatCombo(int group) {
+    final int [] getFormatCombo(int group) {
         return formats2combo[group];
     }
 
@@ -666,7 +619,7 @@ public class PDElement {
      * @param group the given group size
      * @return integer array of format change set with the given group
      */
-    protected final int[][] getLinkFormatComboSet(int group) {
+    final int[][] getLinkFormatComboSet(int group) {
         return linkFormatCombo[group];
     }
 

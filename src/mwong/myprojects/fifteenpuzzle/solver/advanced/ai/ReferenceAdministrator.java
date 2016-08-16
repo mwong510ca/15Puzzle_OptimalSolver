@@ -12,15 +12,16 @@
  *
  ****************************************************************************/
 
-package mwong.myprojects.fifteenpuzzle.solver.components;
+package mwong.myprojects.fifteenpuzzle.solver.advanced.ai;
 
-import mwong.myprojects.fifteenpuzzle.solver.SolverPD;
+import mwong.myprojects.fifteenpuzzle.solver.components.Board;
+import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPD;
 
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class ManageAdvancedAccumulator {
-    enum Action {
+public class ReferenceAdministrator {
+    private enum Action {
         // Add a board without checking the total time to solve
         AddAlways,
         // Add a board if it takes more than preset limit to solve
@@ -39,9 +40,9 @@ public class ManageAdvancedAccumulator {
      *  @param args standard argument main function
      */
     public static void main(String[] args) {
-        AdvancedAccumulator advAccumulator = new AdvancedAccumulator();
+    	ReferenceAccumulator advAccumulator = new ReferenceAccumulator();
         advAccumulator.printStatus();
-        int sizePuzzle = Board.getSize();
+        int sizePuzzle = ReferenceProperties.getPuzzleSize();
         Action action = Action.Add;
         boolean bypass = true;
 
@@ -167,8 +168,8 @@ public class ManageAdvancedAccumulator {
                 if (initial.isSolvable()) {
                     if (action == Action.Remove) {
                         ++count;
-                        AdvancedBoard advBoard
-                                = new AdvancedBoard(initial);
+                        ReferenceBoard advBoard
+                                = new ReferenceBoard(initial);
                         if (!advAccumulator.getActiveMap().containsKey(advBoard)) {
                             System.out.println(count + " : \t\tNo changed, not in system");
                         } else {

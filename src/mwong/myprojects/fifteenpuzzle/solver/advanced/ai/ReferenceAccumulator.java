@@ -3,7 +3,7 @@
  *            www.linkedin.com/pub/macy-wong/46/550/37b/
  *
  *  Compilation  : javac AdvancedAccumulator.java
- *  Dependencies : AdvancedBoard.java, AdvancedMoves.java, Board.java,
+ *  Dependencies : ReferenceBoard.java, ReferenceMoves.java, Board.java,
  *                 SolverInterface.java, SolverPD.java
  *
  *  A data type of collection of reference boards.  It analysis each
@@ -12,11 +12,14 @@
  *
  ****************************************************************************/
 
-package mwong.myprojects.fifteenpuzzle.solver.components;
+package mwong.myprojects.fifteenpuzzle.solver.advanced.ai;
 
-import mwong.myprojects.fifteenpuzzle.solver.SolverInterface;
-import mwong.myprojects.fifteenpuzzle.solver.SolverInterface.HeuristicType;
-import mwong.myprojects.fifteenpuzzle.solver.SolverPD;
+import mwong.myprojects.fifteenpuzzle.solver.Solver;
+import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPD;
+import mwong.myprojects.fifteenpuzzle.solver.HeuristicType;
+import mwong.myprojects.fifteenpuzzle.solver.components.Board;
+import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
+import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,75 +32,34 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-public class AdvancedAccumulator {
-    private static final String directory = "database";
-    private static final String seperator = System.getProperty("file.separator");
-    private static final String filePath = directory + seperator + "advanced_accumulator.db";
+public class ReferenceAccumulator {
+    private final String directory = "database";
+    private final String seperator = System.getProperty("file.separator");
+    private final String filePath = directory + seperator + "advanced_accumulator.db";
 
-    private static final int defaultCutoffLimit = 10;
-    private static final double defaultCutoffBuffer = 0.95;
-    private static final int puzzleSize = Board.getSize();
-    private static HashMap<AdvancedBoard, AdvancedMoves> defaultMap =
-            new HashMap<AdvancedBoard, AdvancedMoves>();
-
-    private HashMap<AdvancedBoard, AdvancedMoves> activeMap;
+    private HashMap<ReferenceBoard, ReferenceMoves> referenceMap;
     private int cutoffSetting;
     private double cutoffLimit;
     private boolean fileReady = false;
-    private final boolean isSymmetry = AdvancedMoves.isSymmetry();
+    private final boolean symmetry;
 
-    // selected reference baords for default setting, total 40 after generation.
-    private static final byte[][][] PRESET_BOARDS = {
-            {{ 0, 15,  8,  3, 12, 11,  7,  4, 14, 10,  6,  5,  9, 13,  2,  1}, {0,  70}},
-            {{ 6,  5,  9, 13,  2,  1, 10, 14,  3,  7,  0, 15,  4,  8, 12, 11}, {10, 72}},
-            {{ 0, 12,  8,  4, 15, 11,  7,  3, 14, 10,  6,  2, 13,  9,  5,  1}, {0,  72}},
-            {{ 6,  5, 14, 13,  2,  1, 10,  9,  8,  7,  0, 15,  4,  3, 12, 11}, {10, 70}},
-            {{ 0,  5,  9, 13,  2,  1, 10, 14,  3,  7, 11, 15,  4,  8, 12,  6}, {0,  72}},
-            {{ 0, 12,  7,  4, 15, 11,  8,  3, 10, 14,  6,  2, 13,  9,  5,  1}, {0,  70}},
-            {{ 0, 15,  8,  7, 12, 11,  4,  3, 14, 13,  6,  5, 10,  9,  2,  1}, {0,  72}},
-            {{11, 12,  8,  3, 15,  0,  7,  4, 14, 10,  6,  5,  9, 13,  2,  1}, {5,  66}},
-            {{ 1,  5,  9, 13,  2,  6, 10, 14,  3,  7, 11, 15,  4,  8, 12,  0}, {15, 72}},
-            {{ 0, 15,  8,  4, 12, 11,  7,  5, 14, 10,  6,  3, 13,  2,  9,  1}, {0,  70}},
-            {{ 1, 10, 14, 13,  7,  6,  5,  9,  8,  2, 11, 15,  4,  3, 12,  0}, {15, 72}},
-            {{ 0, 12,  8,  7, 15, 11,  4,  3, 14, 13,  6,  2, 10,  9,  5,  1}, {0,  72}},
-            {{ 6,  5, 14, 13,  2,  1, 10,  9,  8,  7, 11, 12,  4,  3, 15,  0}, {15, 70}},
-            {{ 0,  5,  9, 13,  2,  6, 10, 14,  3,  7,  1, 15,  4,  8, 12, 11}, {0,  72}},
-            {{ 6,  5, 13,  9,  2,  1, 10, 14,  4,  7, 11, 12,  3,  8, 15,  0}, {15, 68}},
-            {{ 6,  5,  9, 13,  2,  1, 10, 14,  3,  7, 11, 12,  4,  8, 15,  0}, {15, 70}},
-            {{11, 15,  8,  3, 12,  0,  7,  4, 14, 10,  6,  2,  9, 13,  5,  1}, {5,  66}},
-            {{ 1, 10,  9, 13,  7,  0,  5, 14,  3,  2,  6, 15,  4,  8, 12, 11}, {5,  70}},
-
-            {{ 0, 15,  9, 13, 11, 12, 10, 14,  3,  7,  6,  2,  4,  8,  5,  1}, { 0, 80}},
-            {{ 0, 12,  9, 13, 15, 11, 10, 14,  8,  3,  6,  2,  4,  7,  5,  1}, { 0, 80}},
-            {{ 0, 12,  9, 13, 15, 11, 10, 14,  7,  8,  6,  2,  4,  3,  5,  1}, { 0, 80}},
-            {{ 0, 12,  9, 13, 15,  8, 10, 14,  11, 7,  6,  2,  4,  3,  5,  1}, { 0, 80}},
-            {{ 0, 12,  9, 13, 15, 11, 10, 14,  3,  7,  5,  6,  4,  8,  2,  1}, { 0, 80}},
-            {{ 0, 12,  9, 13, 15, 11, 10, 14,  7,  8,  5,  6,  4,  3,  2,  1}, { 0, 80}},
-            {{ 0, 12,  9, 13, 15, 11, 10, 14,  3,  7,  6,  2,  4,  8,  5,  1}, { 0, 80}},
-            {{ 0, 12,  9, 13, 15, 11, 14, 10,  3,  8,  6,  2,  4,  7,  5,  1}, { 0, 80}},
-            {{ 0, 12, 10, 13, 15, 11,  9, 14,  7,  3,  6,  2,  4,  8,  5,  1}, { 0, 80}},
-            {{ 0, 12, 14, 13, 15, 11,  9, 10,  8,  3,  6,  2,  4,  7,  5,  1}, { 0, 80}},
-            {{ 0, 12, 10, 13, 15, 11, 14,  9,  7,  8,  6,  2,  4,  3,  5,  1}, { 0, 80}},
-            {{ 0, 15,  8, 13, 12, 11,  9, 10, 14,  3,  6,  2,  4,  7,  5,  1}, { 0, 78}},
-            {{11, 15,  9, 13, 12,  0, 10, 14,  3,  7,  6,  2,  4,  8,  5,  1}, { 5, 78}},
-            {{ 0, 12,  5, 13, 15,  6, 10,  9,  2,  7, 11, 14,  4,  3,  8,  1}, { 0, 78}},
-            {{ 0, 12,  8, 13, 15, 11,  7,  9, 14, 10,  6,  2,  4,  3,  5,  1}, { 0, 78}},
-            {{ 0, 14, 15, 13,  8, 11, 10,  5, 12,  7,  6,  9,  4,  2,  3,  1}, { 0, 78}}
-    };
-
+    //private static boolean SWITCH_ON = true;
+    //private static boolean SWITCH_OFF = false;
+    
+    /*
     static {
         if (defaultMap.size() == 0) {
             for (byte[][] preset : PRESET_BOARDS) {
-                AdvancedBoard advBoard = new AdvancedBoard(new Board(preset[0]));
-                AdvancedMoves advMoves = new AdvancedMoves(preset[1][0], preset[1][1]);
+                ReferenceBoard advBoard = new ReferenceBoard(new Board(preset[0]));
+                ReferenceMoves advMoves = new ReferenceMoves(preset[1][0], preset[1][1]);
                 defaultMap.put(advBoard, advMoves);
 
                 if (preset[1][0] == 5) {
                     byte[] tiles = preset[0].clone();
                     tiles[5] = tiles[6];
                     tiles[6] = 0;
-                    advBoard = new AdvancedBoard(new Board(tiles));
-                    advMoves = new AdvancedMoves((byte) 6, (byte) (preset[1][1] - 1));
+                    advBoard = new ReferenceBoard(new Board(tiles));
+                    advMoves = new ReferenceMoves((byte) 6, (byte) (preset[1][1] - 1));
                     defaultMap.put(advBoard, advMoves);
                 }
 
@@ -105,8 +67,8 @@ public class AdvancedAccumulator {
                     byte[] tiles = preset[0].clone();
                     tiles[10] = tiles[6];
                     tiles[6] = 0;
-                    advBoard = new AdvancedBoard(new Board(tiles));
-                    advMoves = new AdvancedMoves((byte) 6, (byte) (preset[1][1] - 1));
+                    advBoard = new ReferenceBoard(new Board(tiles));
+                    advMoves = new ReferenceMoves((byte) 6, (byte) (preset[1][1] - 1));
                     defaultMap.put(advBoard, advMoves);
                 }
             }
@@ -116,44 +78,59 @@ public class AdvancedAccumulator {
     /**
      * Initializes A object.  Load the stored boards from file or use default set.
      */
-    public AdvancedAccumulator() {
+    public ReferenceAccumulator() {
+    	symmetry = ReferenceProperties.isSymmetry();
         try {
-            activeMap = new HashMap<AdvancedBoard, AdvancedMoves>();
+        	referenceMap = new HashMap<ReferenceBoard, ReferenceMoves>();
             System.out.println("Load data and system update - archived hard board. "
                     + "Please wait.");
             loadFile();
             System.out.println();
         } catch (IOException ex) {
-            System.out.println("Default setting : cutoff archive limit - "
-                    + defaultCutoffLimit);
-            cutoffSetting = defaultCutoffLimit;
-            cutoffLimit = cutoffSetting * defaultCutoffBuffer;
-
-            activeMap = new HashMap<AdvancedBoard, AdvancedMoves>();
-            for (Entry<AdvancedBoard, AdvancedMoves> entry : defaultMap.entrySet()) {
-                activeMap.put(entry.getKey(), entry.getValue());
-            }
-            createFile();
+            loadDefault();
         }
         updateData(createSolver());
+        refreshFile();
     }
 
-    /**
-     * Returns a HashMap of default set of reference boards.
-     *
-     * @return HashMap of default set of reference boards
-     */
-    public static final HashMap<AdvancedBoard, AdvancedMoves> getDefaultMap() {
-        return defaultMap;
-    }
+    private void loadDefault() {
+    	cutoffSetting = ReferenceProperties.getDefaultCutoffLimit();
+        System.out.println("Default setting : cutoff archive limit - "
+                + cutoffSetting);
+        cutoffLimit = cutoffSetting * ReferenceProperties.getDefaultCutoffBuffer();
+        referenceMap = new HashMap<ReferenceBoard, ReferenceMoves>();
+    	for (byte[][] preset : ReferenceProperties.getDefaultBoards()) {
+        	ReferenceBoard advBoard = new ReferenceBoard(new Board(preset[0]));
+        	ReferenceMoves advMoves = new ReferenceMoves(preset[1][0], preset[1][1]);
+        	referenceMap.put(advBoard, advMoves);
 
+            if (preset[1][0] == 5) {
+                byte[] tiles = preset[0].clone();
+                tiles[5] = tiles[6];
+                tiles[6] = 0;
+                advBoard = new ReferenceBoard(new Board(tiles));
+                advMoves = new ReferenceMoves((byte) 6, (byte) (preset[1][1] - 1));
+                referenceMap.put(advBoard, advMoves);
+            }
+
+            if (preset[1][0] == 10) {
+                byte[] tiles = preset[0].clone();
+                tiles[10] = tiles[6];
+                tiles[6] = 0;
+                advBoard = new ReferenceBoard(new Board(tiles));
+                advMoves = new ReferenceMoves((byte) 6, (byte) (preset[1][1] - 1));
+                referenceMap.put(advBoard, advMoves);
+            }
+        }
+    }
+    
     /**
      * Returns a HashMap of collection of reference boards.
      *
      * @return HashMap of collection of reference boards
      */
-    public final HashMap<AdvancedBoard, AdvancedMoves> getActiveMap() {
-        return activeMap;
+    public final HashMap<ReferenceBoard, ReferenceMoves> getActiveMap() {
+        return referenceMap;
     }
 
     /**
@@ -181,17 +158,17 @@ public class AdvancedAccumulator {
         ByteBuffer buffer = inChannel.map(FileChannel.MapMode.READ_ONLY, 0, inChannel.size());
 
         cutoffSetting = buffer.getInt();
-        cutoffLimit = cutoffSetting * defaultCutoffBuffer;
+        cutoffLimit = cutoffSetting * ReferenceProperties.getDefaultCutoffBuffer();
 
         while (buffer.remaining() >= 34) {
-            AdvancedBoard advBoard = null;
+            ReferenceBoard advBoard = null;
 
             long transformKey = buffer.getLong();
             byte group = buffer.get();
             int hash1 = buffer.getInt();
             int hash2 = buffer.getInt();
             int hashcode = buffer.getInt();
-            advBoard = new AdvancedBoard(transformKey, group, hash1, hash2, hashcode);
+            advBoard = new ReferenceBoard(transformKey, group, hash1, hash2, hashcode);
 
             byte[] moves = new byte[4];
             buffer.get(moves);
@@ -200,12 +177,12 @@ public class AdvancedAccumulator {
                 initMoves[i] = buffer.getShort();
             }
             byte status = buffer.get();
-            if (activeMap.containsKey(advBoard)) {
-                AdvancedMoves advMoves = activeMap.get(advBoard);
+            if (referenceMap.containsKey(advBoard)) {
+                ReferenceMoves advMoves = referenceMap.get(advBoard);
                 advMoves.updateMoves(moves, initMoves, status);
             } else {
-                AdvancedMoves advMoves = new AdvancedMoves(moves, initMoves, status);
-                activeMap.put(advBoard, advMoves);
+                ReferenceMoves advMoves = new ReferenceMoves(moves, initMoves, status);
+                referenceMap.put(advBoard, advMoves);
             }
         }
 
@@ -248,7 +225,7 @@ public class AdvancedAccumulator {
     }
 
     // append a reference board with moves and partial solutions to file.
-    private void add2file(AdvancedBoard advBoard, AdvancedMoves advMoves) {
+    private void add2file(ReferenceBoard advBoard, ReferenceMoves advMoves) {
         if (!fileReady) {
             createFile();
         }
@@ -286,13 +263,16 @@ public class AdvancedAccumulator {
     }
 
     // create and return a SolverPD object.
-    SolverPD createSolver() {
+    SmartSolverPD createSolver() {
         try {
-            SolverPD solver = new SolverPD(PDPresetPatterns.Pattern_78);
-            solver.setAdvancedAccumulator(this);
-            solver.messageSwitch(SolverInterface.SWITCH_OFF);
-            solver.timeoutSwitch(SolverInterface.SWITCH_OFF);
-            solver.advPrioritySwitch(SolverInterface.SWITCH_ON);
+        	SmartSolverPD solver = new SmartSolverPD(PatternOptions.Pattern_78, this);
+            //TODO 
+            /*
+            solver.setReferencedAccumulator(this);
+            solver.messageSwitch(false);
+            solver.timeoutSwitch(false);
+            solver.advPrioritySwitch(true);
+            */
             return solver;
         } catch (OutOfMemoryError ex) {
             return null;
@@ -300,7 +280,7 @@ public class AdvancedAccumulator {
     }
 
     // verify the given solver is SolverPD object using pattern database 7-8
-    private boolean validateSolver(SolverInterface inSolver) {
+    private boolean validateSolver(Solver inSolver) {
         if (inSolver != null && inSolver.getHeuristicType() == HeuristicType.PD78) {
             return true;
         }
@@ -309,8 +289,8 @@ public class AdvancedAccumulator {
 
     // verify the given solver is using pattern database 7-8, scan the full
     // collection, if the reference board is not verified, verify it now.
-    void updateData(SolverInterface inSolver) {
-        SolverInterface solver = inSolver;
+    void updateData(Solver inSolver) {
+        Solver solver = inSolver;
         if (inSolver == null || !validateSolver(inSolver)) {
             solver = createSolver();
         }
@@ -318,7 +298,7 @@ public class AdvancedAccumulator {
             System.out.println("System update failed - not enough memory.");
             return;
         }
-        updateAll((SolverPD) solver);
+        updateAll((SmartSolverPD) solver);
     }
 
     /**
@@ -327,35 +307,39 @@ public class AdvancedAccumulator {
      *
      *  @param inSolver the SolverInterface object in use
      */
-    public void updatePending(SolverInterface inSolver) {
+    public void updatePending(Solver inSolver) {
         if (inSolver == null || !validateSolver(inSolver)) {
             return;
         }
-        updateAll((SolverPD) inSolver);
+        updateAll((SmartSolverPD) inSolver);
     }
 
     // scan the full collection, if the reference board is not verified, verify it now.
-    private void updateAll(SolverPD solverPD) {
-        assert solverPD instanceof SolverPD : "updateAll did not recevie SolverPD object";
+    private void updateAll(SmartSolverPD solverPD) {
+        assert solverPD instanceof SmartSolverPD : "updateAll did not recevie SolverPD object";
+    	// TODO
+    	/*
         final boolean backupAdvPriority = solverPD.getPriorityFlag();
         final boolean backupMessageFlag = solverPD.getMessageFlag();
         final boolean backupTimeoutFlag = solverPD.getTimeoutFlag();
-        solverPD.timeoutSwitch(SolverInterface.SWITCH_OFF);
-        solverPD.messageSwitch(SolverInterface.SWITCH_OFF);
-        solverPD.advPrioritySwitch(SolverInterface.SWITCH_ON);
-
-        for (Entry<AdvancedBoard, AdvancedMoves> entry : activeMap.entrySet()) {
-            AdvancedMoves advMoves = entry.getValue();
+        solverPD.timeoutSwitch(SWITCH_OFF);
+        solverPD.messageSwitch(SWITCH_OFF);
+        solverPD.advPrioritySwitch(SWITCH_ON);
+		*/
+        for (Entry<ReferenceBoard, ReferenceMoves> entry : referenceMap.entrySet()) {
+            ReferenceMoves advMoves = entry.getValue();
             if (advMoves.isCompleted()) {
                 continue;
             }
-            AdvancedBoard advBoard = entry.getKey();
+            ReferenceBoard advBoard = entry.getKey();
             advMoves.updateSolutions(advBoard, solverPD);
             add2file(advBoard, advMoves);
         }
+        /*
         solverPD.advPrioritySwitch(backupAdvPriority);
         solverPD.messageSwitch(backupMessageFlag);
         solverPD.timeoutSwitch(backupTimeoutFlag);
+        */
     }
 
     /**
@@ -365,14 +349,14 @@ public class AdvancedAccumulator {
      *
      * @param inSolver the SolverInterface object in use
      */
-    public boolean addBoard(SolverInterface inSolver) {
+    public boolean addBoard(Solver inSolver) {
         return addBoard(inSolver, false);
     }
 
     // add a reference board in collection, allow bypass mininum
     // cutoff limit requirement
-    boolean addBoard(SolverInterface inSolver, boolean bypass) {
-        if (activeMap == null) {
+    boolean addBoard(Solver inSolver, boolean bypass) {
+        if (referenceMap == null) {
             return false;
         }
         if (inSolver == null || !validateSolver(inSolver)) {
@@ -381,10 +365,11 @@ public class AdvancedAccumulator {
         if (!bypass && inSolver.searchTime() < getCutoffLimit()) {
             return false;
         }
-        SolverPD solverPD = (SolverPD) inSolver;
+        SmartSolverPD solverPD = (SmartSolverPD) inSolver;
         Board board = solverPD.lastSearchBoard();
         Direction[] solution = solverPD.solution().clone();
-
+        //TODO
+        /*
         if (!bypass && !solverPD.getPriorityFlag()) {
             int heuristicOrg = solverPD.heuristicOrg(board);
             int heuristicAdv = solverPD.heuristicAdv(board);
@@ -396,58 +381,64 @@ public class AdvancedAccumulator {
         final boolean backupAdvPriority = solverPD.getPriorityFlag();
         final boolean backupMessageFlag = solverPD.getMessageFlag();
         final boolean backupTimeoutFlag = solverPD.getTimeoutFlag();
-        solverPD.timeoutSwitch(SolverInterface.SWITCH_OFF);
-        solverPD.messageSwitch(SolverInterface.SWITCH_OFF);
-        solverPD.advPrioritySwitch(SolverInterface.SWITCH_ON);
+        solverPD.timeoutSwitch(SWITCH_OFF);
+        solverPD.messageSwitch(SWITCH_OFF);
+        solverPD.advPrioritySwitch(SWITCH_ON);
+		*/
+        ReferenceBoard advBoard = new ReferenceBoard(board);
+        byte lookup = ReferenceProperties.getReferenceLookup(board.getZero1d());
+        int group = ReferenceProperties.getReferenceGroup(board.getZero1d());
 
-        AdvancedBoard advBoard = new AdvancedBoard(board);
-        byte lookup = AdvancedBoard.getLookupKey(board.getZero1d());
-        int group = AdvancedBoard.getGroup(board.getZero1d());
-
-        if (activeMap.containsKey(advBoard)) {
-            AdvancedMoves advMoves = activeMap.get(advBoard);
+        if (referenceMap.containsKey(advBoard)) {
+            ReferenceMoves advMoves = referenceMap.get(advBoard);
             if (group == 3) {
-                advMoves.updateSolution(lookup, solverPD.moves(), solution, isSymmetry);
+                advMoves.updateSolution(lookup, solverPD.moves(), solution, symmetry);
             } else {
-                advMoves.updateSolution(lookup, solverPD.moves(), solution, !isSymmetry);
+                advMoves.updateSolution(lookup, solverPD.moves(), solution, !symmetry);
             }
             add2file(advBoard, advMoves);
+            /*
             inSolver.advPrioritySwitch(backupAdvPriority);
             inSolver.messageSwitch(backupMessageFlag);
             inSolver.timeoutSwitch(backupTimeoutFlag);
+            */
             return true;
         }
 
-        AdvancedBoard advBoardSym = null;
+        ReferenceBoard advBoardSym = null;
         if (group == 0 || group == 2) {
-            advBoardSym = new AdvancedBoard(new Board(board.getTilesSym()));
+            advBoardSym = new ReferenceBoard(new Board(board.getTilesSym()));
         }
-        if (activeMap.containsKey(advBoardSym)) {
-            AdvancedMoves advMoves = activeMap.get(advBoardSym);
+        if (referenceMap.containsKey(advBoardSym)) {
+            ReferenceMoves advMoves = referenceMap.get(advBoardSym);
             if (lookup == 1) {
                 lookup = 3;
             } else if (lookup == 3) {
                 lookup = 1;
             }
-            advMoves.updateSolution(lookup, solverPD.moves(), solution, isSymmetry);
+            advMoves.updateSolution(lookup, solverPD.moves(), solution, symmetry);
             add2file(advBoardSym, advMoves);
+            /*
             inSolver.advPrioritySwitch(backupAdvPriority);
             inSolver.messageSwitch(backupMessageFlag);
             inSolver.timeoutSwitch(backupTimeoutFlag);
+            */
             return true;
         }
 
-        AdvancedMoves advMoves = new AdvancedMoves(board.getZero1d(), solverPD.moves());
+        ReferenceMoves advMoves = new ReferenceMoves(board.getZero1d(), solverPD.moves());
         if (group == 3) {
-            advMoves.updateSolution(lookup, solverPD.moves(), solution, isSymmetry);
+            advMoves.updateSolution(lookup, solverPD.moves(), solution, symmetry);
         } else {
-            advMoves.updateSolution(lookup, solverPD.moves(), solution, !isSymmetry);
+            advMoves.updateSolution(lookup, solverPD.moves(), solution, !symmetry);
         }
-        activeMap.put(advBoard, advMoves);
+        referenceMap.put(advBoard, advMoves);
         add2file(advBoard, advMoves);
+        /*
         inSolver.advPrioritySwitch(backupAdvPriority);
         inSolver.messageSwitch(backupMessageFlag);
         inSolver.timeoutSwitch(backupTimeoutFlag);
+        */
         return true;
     }
 
@@ -458,8 +449,8 @@ public class AdvancedAccumulator {
      * @param inSolver the given SolverIntegerface
      * @return boolean if last search board in activeMap has been verified.
      */
-    public boolean updateLastSearch(SolverInterface inSolver) {
-        if (activeMap == null) {
+    public boolean updateLastSearch(Solver inSolver) {
+        if (referenceMap == null) {
             return false;
         }
         if (inSolver == null || !validateSolver(inSolver)) {
@@ -469,62 +460,71 @@ public class AdvancedAccumulator {
             return false;
         }
 
-        SolverPD solverPD = (SolverPD) inSolver;
+        SmartSolverPD solverPD = (SmartSolverPD) inSolver;
+        /*
         final boolean backupAdvPriority = solverPD.getPriorityFlag();
         final boolean backupMessageFlag = solverPD.getMessageFlag();
         final boolean backupTimeoutFlag = solverPD.getTimeoutFlag();
-        solverPD.timeoutSwitch(SolverInterface.SWITCH_OFF);
-        solverPD.messageSwitch(SolverInterface.SWITCH_OFF);
-        solverPD.advPrioritySwitch(SolverInterface.SWITCH_ON);
-
+        solverPD.timeoutSwitch(SWITCH_OFF);
+        solverPD.messageSwitch(SWITCH_OFF);
+        solverPD.advPrioritySwitch(SWITCH_ON);
+		*/
         Board board = solverPD.lastSearchBoard();
-        AdvancedBoard advBoard = new AdvancedBoard(board);
-        int group = AdvancedBoard.getGroup(board.getZero1d());
+        ReferenceBoard advBoard = new ReferenceBoard(board);
+        int group = ReferenceProperties.getReferenceGroup(board.getZero1d());
 
-        if (activeMap.containsKey(advBoard)) {
-            AdvancedMoves advMoves = activeMap.get(advBoard);
+        if (referenceMap.containsKey(advBoard)) {
+            ReferenceMoves advMoves = referenceMap.get(advBoard);
             if (!advMoves.isCompleted()) {
                 advMoves.updateSolutions(advBoard, solverPD);
                 add2file(advBoard, advMoves);
             }
+            /*
             inSolver.advPrioritySwitch(backupAdvPriority);
             inSolver.messageSwitch(backupMessageFlag);
             inSolver.timeoutSwitch(backupTimeoutFlag);
+            */
             return true;
         }
 
-        AdvancedBoard advBoardSym = null;
+        ReferenceBoard advBoardSym = null;
         if (group == 0 || group == 2) {
-            advBoardSym = new AdvancedBoard(new Board(board.getTilesSym()));
+            advBoardSym = new ReferenceBoard(new Board(board.getTilesSym()));
         }
-        if (activeMap.containsKey(advBoardSym)) {
-            AdvancedMoves advMoves = activeMap.get(advBoardSym);
+        if (referenceMap.containsKey(advBoardSym)) {
+            ReferenceMoves advMoves = referenceMap.get(advBoardSym);
             if (!advMoves.isCompleted()) {
                 advMoves.updateSolutions(advBoardSym, solverPD);
                 add2file(advBoardSym, advMoves);
             }
+            /*
             inSolver.advPrioritySwitch(backupAdvPriority);
             inSolver.messageSwitch(backupMessageFlag);
             inSolver.timeoutSwitch(backupTimeoutFlag);
+            */
             return true;
         }
-
+        /*
         inSolver.advPrioritySwitch(backupAdvPriority);
         inSolver.messageSwitch(backupMessageFlag);
         inSolver.timeoutSwitch(backupTimeoutFlag);
+        */
         return false;
     }
 
     // remove the given board from reference boards collection if exists, except
     // default reference boards.
     void removeBoard(Board board) {
-        AdvancedBoard advBoard = new AdvancedBoard(board);
+        ReferenceBoard advBoard = new ReferenceBoard(board);
+        // TODO need fix without defaultMap
+        /*
         if (defaultMap.containsKey(advBoard)) {
             System.out.println("It's not allow to remove a default board.");
             return;
         }
-        if (activeMap.containsKey(advBoard)) {
-            activeMap.remove(advBoard);
+        */
+        if (referenceMap.containsKey(advBoard)) {
+            referenceMap.remove(advBoard);
         }
     }
 
@@ -533,13 +533,14 @@ public class AdvancedAccumulator {
         System.out.println("Data file size: " + (new File(filePath).length())
                 + " saved at " + new Date((new File(filePath)).lastModified()));
         System.out.println("Boards takes over " + cutoffSetting + "s will store in file.");
-        System.out.println(activeMap.size() + " of boards stored in data file.\n");
+        System.out.println(referenceMap.size() + " of boards stored in data file.\n");
     }
 
     // print all reference boards and it's components.
     void printAllBoards() {
-        for (Entry<AdvancedBoard, AdvancedMoves> entry : activeMap.entrySet()) {
-            AdvancedBoard advBoard = entry.getKey();
+    	int puzzleSize = ReferenceProperties.getPuzzleSize();
+        for (Entry<ReferenceBoard, ReferenceMoves> entry : referenceMap.entrySet()) {
+            ReferenceBoard advBoard = entry.getKey();
             for (int i = 0; i < puzzleSize; i++) {
                 System.out.print(advBoard.getTiles()[i] + " ");
             }
@@ -547,11 +548,11 @@ public class AdvancedAccumulator {
             for (int i = 0; i < puzzleSize; i++) {
                 System.out.print(advBoard.tilesTransform[i] + " ");
             }
-            AdvancedMoves advMoves = entry.getValue();
+            ReferenceMoves advMoves = entry.getValue();
             System.out.println("\t" + Integer.toBinaryString(advMoves.status));
             for (int i = 0; i < 4; i++) {
                 System.out.println(advMoves.moves[i] + "\t" + advMoves.initMoves[i]
-                        + "\t" + Arrays.toString(advMoves.getInitialMoves(i, !isSymmetry)));
+                        + "\t" + Arrays.toString(advMoves.getInitialMoves(i, !symmetry)));
             }
         }
         System.out.println();
@@ -571,7 +572,7 @@ public class AdvancedAccumulator {
             return;
         }
         cutoffSetting = cutoff;
-        cutoffLimit = cutoffSetting * defaultCutoffBuffer;
+        cutoffLimit = cutoffSetting * ReferenceProperties.getDefaultCutoffBuffer();
 
         System.out.println("Cutoff archive limit changed to " + cutoffSetting
                 + " seconds, existing archive boards will remain as is.");
@@ -585,7 +586,7 @@ public class AdvancedAccumulator {
         System.out.println("Enter 'Y' to continue, other to quit.");
 
         createFile();
-        for (Entry<AdvancedBoard, AdvancedMoves> entry : activeMap.entrySet()) {
+        for (Entry<ReferenceBoard, ReferenceMoves> entry : referenceMap.entrySet()) {
             add2file(entry.getKey(), entry.getValue());
         }
     }
@@ -594,16 +595,7 @@ public class AdvancedAccumulator {
     // if stand alone or off network
     void reset() {
         System.out.println("Reset to initial setup, all stored boards will removed.");
-        System.out.println("Cutoff archive limit reset to " + defaultCutoffLimit + "s");
-        cutoffSetting = defaultCutoffLimit;
-        cutoffLimit = cutoffSetting * defaultCutoffBuffer;
-
-        HashMap<AdvancedBoard, AdvancedMoves> oldMap = activeMap;
-        activeMap = new HashMap<AdvancedBoard, AdvancedMoves>();
-        for (AdvancedBoard advBoard : defaultMap.keySet()) {
-            activeMap.put(advBoard, oldMap.get(advBoard));
-        }
-
+        loadDefault();
         System.out.println("Reset completed");
         refreshFile();
     }

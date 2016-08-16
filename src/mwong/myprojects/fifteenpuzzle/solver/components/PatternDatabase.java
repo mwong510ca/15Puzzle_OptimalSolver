@@ -28,16 +28,17 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class PDCombo {
-    private static final PDPresetPatterns defaultPattern = PDPresetPatterns.Pattern_663;
-    private static final String directory = "database";
-    private static final String seperator = System.getProperty("file.separator");
-    private static final int[] bitPos16 = PDElement.getBitPos16();
-    private static final byte[] bitOrder8
-        = {(byte) (1 << 7), 1 << 6, 1 << 5, 1 << 4, 1 << 3, 1 << 2, 1 << 1, 1};
-    private static final int puzzleSize = Board.getSize();
-    private static final int rowSize = Board.getRowSize();
-    private static final int maxGroupSize = PDElement.getMaxGroupSize();
+public class PatternDatabase {
+    private static final PatternOptions defaultPattern = PatternOptions.Pattern_663;
+
+    private final String directory;
+    private final String seperator;
+    private final int[] formatBit16;
+    private final byte[] formatZero8Order;
+    private final int puzzleSize;
+    private final int rowSize;
+    private final int maxGroupSize;
+
     private byte[] patternGroups;
     // for each pattern group : key size x format size
     private byte[][] patterns;
@@ -48,7 +49,7 @@ public class PDCombo {
     /**
      * Initializes the PDCombo object using default pattern.
      */
-    public PDCombo() {
+    public PatternDatabase() {
         this(defaultPattern);
     }
 
@@ -57,7 +58,7 @@ public class PDCombo {
      *
      * @param type the given PresetPatterns type
      */
-    public PDCombo(PDPresetPatterns type) {
+    public PatternDatabase(PatternOptions type) {
         // default option is 0
         this(type, 0);
     }
@@ -68,7 +69,16 @@ public class PDCombo {
      * @param type the given PresetPatterns type
      * @param choice the integer of pattern option in PresetPatterns
      */
-    public PDCombo(PDPresetPatterns type, int choice) {
+    public PatternDatabase(PatternOptions type, int choice) {
+        directory = "database";
+        seperator = System.getProperty("file.separator");
+        formatBit16 = PatternProperties.getFormatBit16();
+        formatZero8Order
+                = new byte[] {(byte) (1 << 7), 1 << 6, 1 << 5, 1 << 4, 1 << 3, 1 << 2, 1 << 1, 1};
+        puzzleSize = PuzzleProperties.getSize();
+        rowSize = PuzzleProperties.getRowSize();
+        maxGroupSize = PatternProperties.getMaxGroupSize();
+
         if (!type.isValidPattern(choice)) {
             System.out.println("Invalid pattern option : " + choice);
             System.out.println("It will use the default pattern ("
@@ -85,23 +95,29 @@ public class PDCombo {
      *
      * @param pattern the byte array of user defined pattern
      */
-    public PDCombo(byte [] pattern) {
+    public PatternDatabase(byte[] pattern) {
+        directory = null;
+        seperator = null;
+        formatBit16 = PatternProperties.getFormatBit16();
+        formatZero8Order = null;
+        puzzleSize = PuzzleProperties.getSize();
+        rowSize = PuzzleProperties.getRowSize();
+        maxGroupSize = PatternProperties.getMaxGroupSize();
         createPattern(pattern, null);
     }
 
     // load the pattern database from file if exists
     // otherwise, create a new set and save in file
-    private void loadData(PDPresetPatterns type, int choice) {
+    private void loadData(PatternOptions type, int choice) {
         String filepath = directory + seperator + type.getFilename(choice);
         try (FileInputStream fin = new FileInputStream(filepath);
                 FileChannel inChannel = fin.getChannel();
                 ) {
             ByteBuffer buf = inChannel.map(FileChannel.MapMode.READ_ONLY, 0, inChannel.size());
-            int szPuzzle = Board.getSize();
             int numPatterns = buf.get();
             patternGroups = new byte[numPatterns];
-            val2ptnKey = new byte[szPuzzle];
-            val2ptnOrder = new byte[szPuzzle];
+            val2ptnKey = new byte[puzzleSize];
+            val2ptnOrder = new byte[puzzleSize];
 
             buf.get(patternGroups);
             buf.get(val2ptnKey);
@@ -109,14 +125,14 @@ public class PDCombo {
 
             patterns = new byte [numPatterns][];
             for (int i = 0; i < numPatterns; i++) {
-                int sizeKeys = PDElement.getKeySize(patternGroups[i]);
-                int sizeFmts = PDElement.getFormatSize(patternGroups[i]);
+                int sizeKeys = PatternProperties.getKeySize(patternGroups[i]);
+                int sizeFmts = PatternProperties.getFormatSize(patternGroups[i]);
 
                 patterns[i] = new byte[sizeKeys * sizeFmts];
                 buf.get(patterns[i]);
             }
         } catch (BufferUnderflowException | IOException ex) {
-            if (type == PDPresetPatterns.Pattern_78) {
+            if (type == PatternOptions.Pattern_78) {
                 System.out.println("Warning: Please make sure increase minimum memory to -Xms2g");
                 System.out.println("         and it takes ~ 2.5-3 hours to generate 78 pattern.");
             }
@@ -147,8 +163,8 @@ public class PDCombo {
             outChannel.write(buffer);
 
             for (int i = 0; i < numPatterns; i++) {
-                int sizeKeys = PDElement.getKeySize(patternGroups[i]);
-                int sizeFmts = PDElement.getFormatSize(patternGroups[i]);
+                int sizeKeys = PatternProperties.getKeySize(patternGroups[i]);
+                int sizeFmts = PatternProperties.getFormatSize(patternGroups[i]);
 
                 buffer = ByteBuffer.allocateDirect(sizeKeys * sizeFmts);
                 buffer.put(patterns[i]);
@@ -165,7 +181,7 @@ public class PDCombo {
     }
 
     // validate the pattern format, and generate the additive pattern database
-    private void createPattern(byte [] pattern, boolean [] elementGroups) {
+    private void createPattern(byte[] pattern, boolean[] elementGroups) {
         // validate the pattern format
         if (elementGroups == null) {
             if (pattern.length != 16) {
@@ -228,6 +244,9 @@ public class PDCombo {
                             + " and try again!");
                     System.exit(0);
                 }
+                if (formatZero8Order == null) {
+                    throw new UnsupportedOperationException("Pattern group of 8 is not supported.");
+                }
             }
         }
 
@@ -248,16 +267,16 @@ public class PDCombo {
                 elementGroups[group] = true;
             }
         }
-        PDElement pd15e = new PDElement(elementGroups, PDElement.Mode.Generator);
+        PatternElement element = new PatternElement(elementGroups, PatternElementMode.GENERATOR);
 
         // create each additive pattern
         for (int i = 0; i < patternGroups.length; i++) {
             // shift 1 bit to left for zero at position 15, lower right corner
             ptnFormat[i] <<= 1;
             if (patternGroups[i] == maxGroupSize) {
-                genPatternByte(i, ptnFormat[i], pd15e);
+                genPatternByte(i, ptnFormat[i], element);
             } else {
-                genPatternShort(i, patternGroups[i], ptnFormat[i], pd15e);
+                genPatternShort(i, patternGroups[i], ptnFormat[i], element);
             }
         }
         System.out.println("PD15Combo - generate additive pattern database completed");
@@ -271,11 +290,11 @@ public class PDCombo {
         boolean [] next = new boolean[puzzleSize];
         int order = 0;
         for (int zeroPos = 0; zeroPos < puzzleSize; zeroPos++) {
-            if ((fmt & bitPos16[zeroPos]) > 0) {
+            if ((fmt & formatBit16[zeroPos]) > 0) {
                 continue;
             }
-            if ((zeroOrder & bitOrder8[order]) != 0) {
-                initMoves |= (short) bitPos16[zeroPos];
+            if ((zeroOrder & formatZero8Order[order]) != 0) {
+                initMoves |= (short) formatBit16[zeroPos];
                 next[zeroPos] = true;
             }
             order++;
@@ -287,15 +306,15 @@ public class PDCombo {
     // actual zeroes and pass in as integer value, move all zero spaces freely until
     // it reach the tile return 16 bits short represents a set of final moves that
     // stop by a tile only
-    private short freeMoveShort(int zeroPos, int fmt) {
+    private short freeMoveShort(short zeroPos, int fmt) {
         short initMoves = 0;
         boolean [] next = new boolean[puzzleSize];
         for (int i = 0; i < puzzleSize; i++) {
-            if ((fmt & bitPos16[i]) > 0) {
+            if ((fmt & formatBit16[i]) > 0) {
                 continue;
             }
-            if ((zeroPos & bitPos16[i]) != 0) {
-                initMoves |= (short) bitPos16[i];
+            if ((zeroPos & formatBit16[i]) != 0) {
+                initMoves |= (short) formatBit16[i];
                 next[i] = true;
             }
         }
@@ -310,27 +329,27 @@ public class PDCombo {
             flag = false;
             for (int i = 0; i < puzzleSize; i++) {
                 if (next[i]) {
-                    if (i % 4 < 3 && (fmt & bitPos16[i + 1]) == 0
-                            && (validMoves & bitPos16[i + 1]) == 0) {
-                        validMoves |= (short) bitPos16[i + 1];
+                    if (i % 4 < 3 && (fmt & formatBit16[i + 1]) == 0
+                            && (validMoves & formatBit16[i + 1]) == 0) {
+                        validMoves |= (short) formatBit16[i + 1];
                         next[i + 1] = true;
                         flag = true;
                     }
-                    if (i + rowSize < 16 && (fmt & bitPos16[i + rowSize]) == 0
-                            && (validMoves & bitPos16[i + rowSize]) == 0) {
-                        validMoves |= (short) bitPos16[i + rowSize];
+                    if (i + rowSize < 16 && (fmt & formatBit16[i + rowSize]) == 0
+                            && (validMoves & formatBit16[i + rowSize]) == 0) {
+                        validMoves |= (short) formatBit16[i + rowSize];
                         next[i + rowSize] = true;
                         flag = true;
                     }
-                    if (i % 4 > 0 && (fmt & bitPos16[i - 1]) == 0
-                            && (validMoves & bitPos16[i - 1]) == 0) {
-                        validMoves |= (short) bitPos16[i - 1];
+                    if (i % 4 > 0 && (fmt & formatBit16[i - 1]) == 0
+                            && (validMoves & formatBit16[i - 1]) == 0) {
+                        validMoves |= (short) formatBit16[i - 1];
                         next[i - 1] = true;
                         flag = true;
                     }
-                    if (i - 4 > -1 && (fmt & bitPos16[i - rowSize]) == 0
-                            && (validMoves & bitPos16[i - rowSize]) == 0) {
-                        validMoves |= (short) bitPos16[i - rowSize];
+                    if (i - 4 > -1 && (fmt & formatBit16[i - rowSize]) == 0
+                            && (validMoves & formatBit16[i - rowSize]) == 0) {
+                        validMoves |= (short) formatBit16[i - rowSize];
                         next[i - rowSize] = true;
                         flag = true;
                     }
@@ -349,39 +368,38 @@ public class PDCombo {
     private int zeroIdx2Pos(int zeroIdx, int fmt) {
         int pos = 0;
         for (int i = 0; i < zeroIdx; i++) {
-            if ((fmt & bitPos16[i]) == 0) {
+            if ((fmt & formatBit16[i]) == 0) {
                 pos++;
             }
         }
         return pos;
     }
 
-    
     private String num2string(int num) {
-    	String str = Integer.toString(num);
-    	while (str.length() < 15) {
-    		str += " ";
-    	}
-    	return str;
+        String str = Integer.toString(num);
+        while (str.length() < 15) {
+            str += " ";
+        }
+        return str;
     }
 
     // generate the additive pattern of 8 tiles, use 8 bits byte (1 zero space
     // plus 7 tile locations) to record each move during the expansion
-    private void genPatternByte(int order, int orgFmt, PDElement pd15e) {
+    private void genPatternByte(int order, int orgFmt, PatternElement element) {
         int group = 8;
-        int sizeKey = PDElement.getKeySize(group);
-        int sizeFmt = PDElement.getFormatSize(group);
-        int sizeShift = PDElement.getShiftMaxX2(group);
+        int sizeKey = PatternProperties.getKeySize(group);
+        int sizeFmt = PatternProperties.getFormatSize(group);
+        int sizeShift = PatternProperties.getMaxShiftX2(group);
 
         patterns[order] = new byte[sizeKey * sizeFmt];
-        HashMap<Integer, Integer> formats = pd15e.getFormats();
-        int [] formats2combo = pd15e.getFormatCombo(group);
-        int [][] moveSet = pd15e.getLinkFormatComboSet(group);
-        int [] shiftSet = pd15e.getKeyShiftSet(group);
+        HashMap<Integer, Integer> formats = element.getFormats();
+        int [] formats2combo = element.getFormatCombo(group);
+        int [][] moveSet = element.getLinkFormatComboSet(group);
+        int [] shiftSet = element.getKeyShiftSet(group);
 
         System.out.print("Screen additive pattern " + (order + 1) + " : (");
         for (int i = 0; i < puzzleSize - 1; i++) {
-            if ((orgFmt & bitPos16[i]) == 0) {
+            if ((orgFmt & formatBit16[i]) == 0) {
                 System.out.print("x ");
             } else {
                 System.out.print((i + 1) + " ");
@@ -395,7 +413,7 @@ public class PDCombo {
         // additive pattern of 8 tiles
         byte [] currMove = new byte[sizeKey * sizeFmt];
         currMove[orgKeyIdx * sizeFmt + orgFmtIdx]
-                |= bitOrder8[zeroIdx2Pos(puzzleSize - 1, orgFmt)];
+                |= formatZero8Order[zeroIdx2Pos(puzzleSize - 1, orgFmt)];
         patterns[order][orgKeyIdx * sizeFmt + orgFmtIdx] = 1;
         int pending = sizeKey * sizeFmt - 1;
         int remaining = pending;
@@ -416,26 +434,26 @@ public class PDCombo {
                     short freeMove = freeMoveByte(currMove[k * sizeFmt + f], fmt);
 
                     for (int zeorPos = 0; zeorPos < puzzleSize; zeorPos++) {
-                        if ((fmt & bitPos16[zeorPos]) > 0) {
+                        if ((fmt & formatBit16[zeorPos]) > 0) {
                             continue;
                         }
 
-                        if ((freeMove & bitPos16[zeorPos]) > 0) {
+                        if ((freeMove & formatBit16[zeorPos]) > 0) {
                             ArrayList<Integer> neighbors = new ArrayList<Integer>();
-                            if (zeorPos - 4 >= 0 && (fmt & bitPos16[zeorPos - 4]) > 0) {
+                            if (zeorPos - 4 >= 0 && (fmt & formatBit16[zeorPos - 4]) > 0) {
                                 neighbors.add(zeorPos - 4);
                                 neighbors.add(Direction.UP.getValue());
                             }
-                            if (zeorPos % rowSize > 0 && (fmt & bitPos16[zeorPos - 1]) > 0) {
+                            if (zeorPos % rowSize > 0 && (fmt & formatBit16[zeorPos - 1]) > 0) {
                                 neighbors.add(zeorPos - 1);
                                 neighbors.add(Direction.LEFT.getValue());
                             }
                             if (zeorPos % rowSize < rowSize - 1
-                                    && (fmt & bitPos16[zeorPos + 1]) > 0) {
+                                    && (fmt & formatBit16[zeorPos + 1]) > 0) {
                                 neighbors.add(zeorPos + 1);
                                 neighbors.add(Direction.RIGHT.getValue());
                             }
-                            if (zeorPos + 4 < puzzleSize && (fmt & bitPos16[zeorPos + 4]) > 0) {
+                            if (zeorPos + 4 < puzzleSize && (fmt & formatBit16[zeorPos + 4]) > 0) {
                                 neighbors.add(zeorPos + 4);
                                 neighbors.add(Direction.DOWN.getValue());
                             }
@@ -450,7 +468,7 @@ public class PDCombo {
                                 int tile = neighbors.get(i);
                                 int dirValue = neighbors.get(i + 1);
                                 while (pos < tile) {
-                                    if ((fmt & bitPos16[pos]) > 0) {
+                                    if ((fmt & formatBit16[pos]) > 0) {
                                         tileOrder++;
                                     }
                                     pos++;
@@ -473,7 +491,7 @@ public class PDCombo {
                                             pending--;
                                         }
                                         nextMove[k * sizeFmt + nextFmtIdx]
-                                                |= bitOrder8[zeroIdx2Pos(tile, nextFmt)];
+                                                |= formatZero8Order[zeroIdx2Pos(tile, nextFmt)];
                                     } else {
                                         int nextKey = shiftSet[k * group * sizeShift
                                                                + tileOrder * sizeShift
@@ -484,7 +502,7 @@ public class PDCombo {
                                             pending--;
                                         }
                                         nextMove[nextKey * sizeFmt + nextFmtIdx]
-                                                |= bitOrder8[zeroIdx2Pos(tile, nextFmt)];
+                                                |= formatZero8Order[zeroIdx2Pos(tile, nextFmt)];
                                     }
                                 }
                             }
@@ -492,9 +510,10 @@ public class PDCombo {
                     }
                 }
             }
-            
+
             System.out.println("moves : " + step + "\t count : " + num2string(remaining - pending)
-    		+ " scanned : " + num2string(counter) + " ended at " + stopwatch.currentTime() + "s");
+                    + " scanned : " + num2string(counter)
+                    + " ended at " + stopwatch.currentTime() + "s");
             step++;
             currMove = nextMove;
             remaining = pending;
@@ -506,20 +525,20 @@ public class PDCombo {
 
     // generate the additive pattern of 2 to 7 tiles, use 16 bits short (1 zero space
     // plus 8 to 13 tile spaces) to record each move during the expansion
-    private void genPatternShort(int order, int group, int orgFmt, PDElement pd15e) {
-        int sizeKey = PDElement.getKeySize(group);
-        int sizeFmt = PDElement.getFormatSize(group);
-        int sizeShift = PDElement.getShiftMaxX2(group);
+    private void genPatternShort(int order, int group, int orgFmt, PatternElement element) {
+        int sizeKey = PatternProperties.getKeySize(group);
+        int sizeFmt = PatternProperties.getFormatSize(group);
+        int sizeShift = PatternProperties.getMaxShiftX2(group);
 
         patterns[order] = new byte[sizeKey * sizeFmt];
-        HashMap<Integer, Integer> formats = pd15e.getFormats();
-        int [] formats2combo = pd15e.getFormatCombo(group);
-        int [][] moveSet = pd15e.getLinkFormatComboSet(group);
-        int [] shiftSet = pd15e.getKeyShiftSet(group);
+        HashMap<Integer, Integer> formats = element.getFormats();
+        int [] formats2combo = element.getFormatCombo(group);
+        int [][] moveSet = element.getLinkFormatComboSet(group);
+        int [] shiftSet = element.getKeyShiftSet(group);
 
         System.out.print("Screen additive pattern " + (order + 1) + " : (");
         for (int i = 0; i < puzzleSize - 1; i++) {
-            if ((orgFmt & bitPos16[i]) == 0) {
+            if ((orgFmt & formatBit16[i]) == 0) {
                 System.out.print("x ");
             } else {
                 System.out.print((i + 1) + " ");
@@ -532,7 +551,8 @@ public class PDCombo {
 
         // a 16 bits short represent 16 position of the board for zero space
         short [] currMove = new short[sizeKey * sizeFmt];
-        currMove[orgKeyIdx * sizeFmt + orgFmtIdx] = freeMoveShort(puzzleSize - 1, orgFmt);
+        currMove[orgKeyIdx * sizeFmt + orgFmtIdx]
+                = freeMoveShort((short) (puzzleSize - 1), orgFmt);
         patterns[order][orgKeyIdx * sizeFmt + orgFmtIdx] = 1;
         int pending = sizeKey * sizeFmt - 1;
         int remaining = pending;
@@ -552,26 +572,26 @@ public class PDCombo {
                     short freeMove = freeMoveShort(currMove[k * sizeFmt + f], fmt);
 
                     for (int zeorPos = 0; zeorPos < puzzleSize; zeorPos++) {
-                        if ((fmt & bitPos16[zeorPos]) > 0) {
+                        if ((fmt & formatBit16[zeorPos]) > 0) {
                             continue;
                         }
 
-                        if ((freeMove & bitPos16[zeorPos]) > 0) {
+                        if ((freeMove & formatBit16[zeorPos]) > 0) {
                             ArrayList<Integer> neighbors = new ArrayList<Integer>();
-                            if (zeorPos - 4 >= 0 && (fmt & bitPos16[zeorPos - 4]) > 0) {
+                            if (zeorPos - 4 >= 0 && (fmt & formatBit16[zeorPos - 4]) > 0) {
                                 neighbors.add(zeorPos - 4);
                                 neighbors.add(Direction.UP.getValue());
                             }
-                            if (zeorPos % rowSize > 0 && (fmt & bitPos16[zeorPos - 1]) > 0) {
+                            if (zeorPos % rowSize > 0 && (fmt & formatBit16[zeorPos - 1]) > 0) {
                                 neighbors.add(zeorPos - 1);
                                 neighbors.add(Direction.LEFT.getValue());
                             }
                             if (zeorPos % rowSize < rowSize - 1
-                                    && (fmt & bitPos16[zeorPos + 1]) > 0) {
+                                    && (fmt & formatBit16[zeorPos + 1]) > 0) {
                                 neighbors.add(zeorPos + 1);
                                 neighbors.add(Direction.RIGHT.getValue());
                             }
-                            if (zeorPos + 4 < puzzleSize && (fmt & bitPos16[zeorPos + 4]) > 0) {
+                            if (zeorPos + 4 < puzzleSize && (fmt & formatBit16[zeorPos + 4]) > 0) {
                                 neighbors.add(zeorPos + 4);
                                 neighbors.add(Direction.DOWN.getValue());
                             }
@@ -586,7 +606,7 @@ public class PDCombo {
                                 int tile = neighbors.get(i);
                                 int dirValue = neighbors.get(i + 1);
                                 while (pos < tile) {
-                                    if ((fmt & bitPos16[pos]) > 0) {
+                                    if ((fmt & formatBit16[pos]) > 0) {
                                         tileOrder++;
                                     }
                                     pos++;
@@ -608,7 +628,7 @@ public class PDCombo {
                                             patterns[order][k * sizeFmt + nextFmtIdx] = (byte) step;
                                             pending--;
                                         }
-                                        nextMove[k * sizeFmt + nextFmtIdx] |= bitPos16[tile];
+                                        nextMove[k * sizeFmt + nextFmtIdx] |= formatBit16[tile];
                                     } else {
                                         int nextKey = shiftSet[k * group * sizeShift
                                                                + tileOrder * sizeShift
@@ -618,7 +638,8 @@ public class PDCombo {
                                                     = (byte) step;
                                             pending--;
                                         }
-                                        nextMove[nextKey * sizeFmt + nextFmtIdx] |= bitPos16[tile];
+                                        nextMove[nextKey * sizeFmt + nextFmtIdx]
+                                                |= formatBit16[tile];
                                     }
                                 }
                             }
@@ -626,9 +647,10 @@ public class PDCombo {
                     }
                 }
             }
-            
+
             System.out.println("moves : " + step + "\t count : " + num2string(remaining - pending)
-    		+ " scanned : " + num2string(counter) + " ended at " + stopwatch.currentTime() + "s");
+                    + " scanned : " + num2string(counter)
+                    + " ended at " + stopwatch.currentTime() + "s");
             step++;
             currMove = nextMove;
             remaining = pending;
@@ -680,10 +702,10 @@ public class PDCombo {
      * @param args Standard argument main function
      */
     public static void main(String [] args) {
-        PDCombo pd = new PDCombo(PDPresetPatterns.Pattern_555);
-        pd = new PDCombo(PDPresetPatterns.Pattern_663);
+        PatternDatabase pd = new PatternDatabase(PatternOptions.Pattern_555);
+        pd = new PatternDatabase(PatternOptions.Pattern_663);
         System.out.println(pd.patternGroups.length);
-        pd = new PDCombo(PDPresetPatterns.Pattern_78);
+        pd = new PatternDatabase(PatternOptions.Pattern_78);
         System.out.println(pd.patternGroups.length);
     }
 }

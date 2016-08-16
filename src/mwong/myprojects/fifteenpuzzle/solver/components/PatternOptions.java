@@ -2,7 +2,7 @@
  *  @author   Meisze Wong
  *            www.linkedin.com/pub/macy-wong/46/550/37b/
  *
- *  Compilation: javac PDPresetPatterns.java
+ *  Compilation: javac PatternOptions.java
  *  Dependencies: Board.java
  *
  *  Enum PDPresetPatterns is an reference type for 15 puzzle per-defined
@@ -12,7 +12,7 @@
 
 package mwong.myprojects.fifteenpuzzle.solver.components;
 
-public enum PDPresetPatterns {
+public enum PatternOptions {
     /**
      *  Static pattern 555.
      */
@@ -55,8 +55,8 @@ public enum PDPresetPatterns {
      */
     Custom("Custom", null, null);
 
-    private static final int size = Board.getSize();
-    private static final int rowSize = Board.getRowSize();
+    private final int puzzleSize = PuzzleProperties.getSize();
+    private final int rowSize = PuzzleProperties.getRowSize();
 
     private String type;
     private byte[][] patterns;
@@ -65,7 +65,7 @@ public enum PDPresetPatterns {
     /**
      * Initializes a PDPresetPatterns reference type.
      */
-    PDPresetPatterns(String type, byte [][] patterns, boolean [] elements) {
+    PatternOptions(String type, byte [][] patterns, boolean [] elements) {
         this.type = type;
         this.patterns = patterns;
         this.elements = elements;
@@ -74,14 +74,14 @@ public enum PDPresetPatterns {
     /**
      *  Print the string of the default pattern of the preset pattern.
      */
-    public static void printDefaults() {
+    public void printDefaults() {
         System.out.println("15 puzzle preset patterns :");
-        PDPresetPatterns[] patterns = values();
+        PatternOptions[] patterns = values();
         for (int i = 0; i < patterns.length - 1; i++) {
             System.out.print(patterns[i].getType() + "\t\t");
         }
         System.out.println();
-        for (int row = 0; row < size; row += rowSize) {
+        for (int row = 0; row < puzzleSize; row += rowSize) {
             for (int i = 0; i < patterns.length; i++) {
                 for (int col = row; col < row + rowSize; col++) {
                     System.out.print(patterns[i].patterns[0][col] + " ");
@@ -171,7 +171,7 @@ public enum PDPresetPatterns {
             str += "option " + i + "\t";
         }
         str += "\n";
-        for (int row = 0; row < size; row += rowSize) {
+        for (int row = 0; row < puzzleSize; row += rowSize) {
             for (int i = 0; i < patterns.length; i++) {
                 for (int col = row; col < row + rowSize; col++) {
                     str += patterns[i][col] + " ";
