@@ -17,7 +17,7 @@ package mwong.myprojects.fifteenpuzzle.solver;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleProperties;
-import mwong.myprojects.utilities.Stopwatch;
+import mwong.myprojects.fifteenpuzzle.utilities.Stopwatch;
 
 import java.util.Arrays;
 

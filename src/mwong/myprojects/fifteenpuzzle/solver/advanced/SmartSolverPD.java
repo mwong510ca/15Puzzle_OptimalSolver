@@ -15,19 +15,14 @@
 
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
-import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceBoard;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceMoves;
-import mwong.myprojects.fifteenpuzzle.solver.HeuristicType;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPD;
-import mwong.myprojects.utilities.Stopwatch;
+import mwong.myprojects.fifteenpuzzle.utilities.Stopwatch;
 
 import java.util.Arrays;
-import java.util.Map;
-import java.util.Map.Entry;
 
 public class SmartSolverPD extends SolverPD {
 	private final byte numPartialMoves;
@@ -39,27 +34,11 @@ public class SmartSolverPD extends SolverPD {
     /**
      *  Initializes SolverPD object using default preset pattern.
      */
-    public SmartSolverPD() {
-        this(defaultPattern, new ReferenceAccumulator());
-    }
-
-    /**
-     *  Initializes SolverPD object using default preset pattern.
-     */
     public SmartSolverPD(ReferenceAccumulator refAccumulator) {
         this(defaultPattern, refAccumulator);
     }
 
-    /**
-     *  Initializes SolverPD object using given preset pattern.
-     *
-     *  @param presetPattern the given preset pattern type
-     */
-    public SmartSolverPD(PatternOptions presetPattern) {
-        this(presetPattern, 0, new ReferenceAccumulator());
-    }
-
-    /**
+     /**
      *  Initializes SolverPD object using given preset pattern.
      *
      *  @param presetPattern the given preset pattern type
@@ -80,16 +59,6 @@ public class SmartSolverPD extends SolverPD {
         this.refAccumulator = refAccumulator;
         refCutoff = SmartSolverProperties.getReferenceCutoff();
         numPartialMoves = SmartSolverProperties.getNumPartialMoves();
-    }
-
-    /**
-     *  Initializes SolverPD object with user defined custom pattern.
-     *
-     *  @param customPattern byte array of user defined custom pattern
-     *  @param elementGroups boolean array of groups reference to given pattern
-     */
-    public SmartSolverPD(byte[] customPattern, boolean[] elementGroups) {
-        this(customPattern, elementGroups, new ReferenceAccumulator());
     }
 
     /**
@@ -167,7 +136,7 @@ public class SmartSolverPD extends SolverPD {
             return priorityGoal;
         }
 
-        SmartRecord record = extra.advancedContains(board, isSearch, refAccumulator);
+        AdvancedRecord record = extra.advancedContains(board, isSearch, refAccumulator);
         if (record != null) {
         	priorityAdvanced = record.getMoves();
         	if (record.hasInitialMoves()) {

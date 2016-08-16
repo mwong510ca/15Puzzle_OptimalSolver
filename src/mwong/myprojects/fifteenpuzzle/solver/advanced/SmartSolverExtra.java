@@ -49,7 +49,7 @@ class SmartSolverExtra {
     // quick check if the given board is one of the reference board.  If so,
     // use the reference estimate.  If search in progress, also update partial
     // solutions if exists.
-    final SmartRecord advancedContains(Board board, boolean inSearch, ReferenceAccumulator refAccumulator) {
+    final AdvancedRecord advancedContains(Board board, boolean inSearch, ReferenceAccumulator refAccumulator) {
     	Map<ReferenceBoard, ReferenceMoves> refMap = refAccumulator.getActiveMap();
     	if (refMap == null || refMap.size() == 0) {
     		return null;
@@ -82,9 +82,9 @@ class SmartSolverExtra {
                             solutionMove, 1, numPartialMoves);
                     assert checkVaildMoves(board, solutionMove, numPartialMoves) : "Incorrect initial moves";
                 }
-                return new SmartRecord(steps, solutionMove);
+                return new AdvancedRecord(steps, solutionMove);
             }
-            return new SmartRecord(steps);
+            return new AdvancedRecord(steps);
         } else if (refMap.containsKey(checkBoardSym)) {
         	boolean symmetry = SmartSolverProperties.isSymmetry();
         	int numPartialMoves = SmartSolverProperties.getNumPartialMoves();
@@ -102,9 +102,9 @@ class SmartSolverExtra {
                 System.arraycopy(advMoves.getInitialMoves(lookupKey, symmetry), 0,
                         solutionMove, 1, numPartialMoves);
                 assert checkVaildMoves(board, solutionMove, numPartialMoves) : "Incorrect initial moves (group 0 or 2 symmetry)";
-                return new SmartRecord(steps, solutionMove);
+                return new AdvancedRecord(steps, solutionMove);
             }
-            return new SmartRecord(steps);
+            return new AdvancedRecord(steps);
         }
         return null;
     }

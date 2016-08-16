@@ -14,16 +14,11 @@
 
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
-import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceBoard;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceMoves;
+import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverMD;
-import mwong.myprojects.utilities.Stopwatch;
-
-import java.util.Map;
-import java.util.Map.Entry;
 
 public class SmartSolverMD extends SolverMD {
 	private final byte numPartialMoves;
@@ -34,26 +29,8 @@ public class SmartSolverMD extends SolverMD {
     /**
      * Initializes Solver object.
      */
-    public SmartSolverMD() {
-        this(!TAG_LINEAR_CONFLICT);
-    }
-
-    /**
-     * Initializes Solver object.
-     *
-     * @param lcFlag boolean flag for message feature
-     */
-    public SmartSolverMD(boolean lcFlag) {
-        this(lcFlag, new ReferenceAccumulator());
-    }
-
-    /**
-     * Initializes Solver object.
-     *
-     * @param lcFlag boolean flag for message feature
-     */
     public SmartSolverMD(ReferenceAccumulator refAccumulator) {
-    	this(!TAG_LINEAR_CONFLICT, refAccumulator);
+        this(!SolverProperties.isTagLinearConflict(), refAccumulator);
     }
 
     /**
@@ -149,7 +126,7 @@ public class SmartSolverMD extends SolverMD {
             return priorityGoal;
         }
 
-        SmartRecord record = extra.advancedContains(board, isSearch, refAccumulator);
+        AdvancedRecord record = extra.advancedContains(board, isSearch, refAccumulator);
         if (record != null) {
         	priorityAdvanced = record.getMoves();
         	if (record.hasInitialMoves()) {

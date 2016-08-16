@@ -16,13 +16,12 @@ package mwong.myprojects.fifteenpuzzle.solver.standard;
 
 import mwong.myprojects.fifteenpuzzle.solver.AbstractSolver;
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicType;
+import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleProperties;
 
 public class SolverMD extends AbstractSolver {
-    protected static final boolean TAG_LINEAR_CONFLICT = true;
-
     protected byte [] tilesSym;
     protected boolean flagLinearConflict;
     protected int idaCount;
@@ -31,7 +30,7 @@ public class SolverMD extends AbstractSolver {
      * Initializes Solver object.
      */
     public SolverMD() {
-    	this(!TAG_LINEAR_CONFLICT);
+    	this(!SolverProperties.isTagLinearConflict());
     }
 
     /**
@@ -58,15 +57,6 @@ public class SolverMD extends AbstractSolver {
         } else {
             inUseHeuristic = HeuristicType.MD;
         }
-    }
-
-    /**
-     * Returns the tagLinearConflict.
-     *
-     * @return the tagLinearConflict
-     */
-    public static final boolean isTagLinearConflict() {
-        return TAG_LINEAR_CONFLICT;
     }
 
     /**

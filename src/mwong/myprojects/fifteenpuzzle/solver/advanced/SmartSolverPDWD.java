@@ -15,17 +15,10 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceBoard;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceMoves;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPDWD;
-import mwong.myprojects.fifteenpuzzle.solver.standard.SolverWD;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 public class SmartSolverPDWD extends SolverPDWD {
 	private final byte numPartialMoves;
@@ -33,14 +26,7 @@ public class SmartSolverPDWD extends SolverPDWD {
 	private final ReferenceAccumulator refAccumulator;
     private SmartSolverExtra extra;
     
-    /**
-     *  Initializes SolverPDWD object using default preset pattern.
-     */
-    public SmartSolverPDWD() {
-        this(defaultPattern, new ReferenceAccumulator());
-    }
-
-    /**
+     /**
      *  Initializes SolverPDWD object using default preset pattern.
      */
     public SmartSolverPDWD(ReferenceAccumulator refAccumulator) {
@@ -52,27 +38,8 @@ public class SmartSolverPDWD extends SolverPDWD {
      *
      *  @param presetPattern the given preset pattern type
      */
-    public SmartSolverPDWD(PatternOptions presetPattern) {
-        this(presetPattern, 0, new ReferenceAccumulator());
-    }
-
-    /**
-     *  Initializes SolverPDWD object with given preset pattern.
-     *
-     *  @param presetPattern the given preset pattern type
-     */
     public SmartSolverPDWD(PatternOptions presetPattern, ReferenceAccumulator refAccumulator) {
         this(presetPattern, 0, refAccumulator);
-    }
-
-    /**
-     *  Initializes SolverPDWD object with choice of given preset pattern.
-     *
-     *  @param presetPattern the given preset pattern type
-     *  @param choice the number of preset pattern option
-     */
-    public SmartSolverPDWD(PatternOptions presetPattern, int choice) {
-        this(presetPattern, choice, new ReferenceAccumulator());
     }
 
     public SmartSolverPDWD(PatternOptions presetPattern, int choice, ReferenceAccumulator refAccumulator) {
@@ -109,7 +76,7 @@ public class SmartSolverPDWD extends SolverPDWD {
             return priorityGoal;
         }
 
-        SmartRecord record = extra.advancedContains(board, isSearch, refAccumulator);
+        AdvancedRecord record = extra.advancedContains(board, isSearch, refAccumulator);
         if (record != null) {
         	priorityAdvanced = record.getMoves();
         	if (record.hasInitialMoves()) {

@@ -2,18 +2,18 @@ package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 
-class SmartRecord {
+class AdvancedRecord {
 	private byte moves;
 	private Direction[] partialMoves;
 	private boolean initialMoves;
 	
-	SmartRecord (byte moves) {
+	AdvancedRecord (byte moves) {
 		this.moves = moves;
 		initialMoves = false;
 		partialMoves = null;
 	}
 	
-	SmartRecord (byte moves, Direction[] partialMoves) {
+	AdvancedRecord (byte moves, Direction[] partialMoves) {
 		this.moves = moves;
 		initialMoves = true;
 		this.partialMoves = partialMoves;

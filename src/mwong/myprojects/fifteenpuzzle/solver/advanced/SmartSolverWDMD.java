@@ -13,16 +13,9 @@
 
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceBoard;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceMoves;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
-import mwong.myprojects.fifteenpuzzle.solver.standard.SolverMD;
-import mwong.myprojects.fifteenpuzzle.solver.standard.SolverWD;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverWDMD;
 
 public class SmartSolverWDMD extends SolverWDMD {
@@ -31,10 +24,6 @@ public class SmartSolverWDMD extends SolverWDMD {
 	private final ReferenceAccumulator refAccumulator;
     private SmartSolverExtra extra;
     
-    public SmartSolverWDMD() {
-        this(new ReferenceAccumulator());
-    }
-
     public SmartSolverWDMD(ReferenceAccumulator refAccumulator) {
         super();
         extra = new SmartSolverExtra();
@@ -68,7 +57,7 @@ public class SmartSolverWDMD extends SolverWDMD {
         	return priorityGoal;
         }
         
-        SmartRecord record = extra.advancedContains(board, isSearch, refAccumulator);
+        AdvancedRecord record = extra.advancedContains(board, isSearch, refAccumulator);
         if (record != null) {
         	priorityAdvanced = record.getMoves();
         	if (record.hasInitialMoves()) {

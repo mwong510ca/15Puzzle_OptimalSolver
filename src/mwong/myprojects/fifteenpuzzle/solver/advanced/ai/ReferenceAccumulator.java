@@ -43,38 +43,6 @@ public class ReferenceAccumulator {
     private boolean fileReady = false;
     private final boolean symmetry;
 
-    //private static boolean SWITCH_ON = true;
-    //private static boolean SWITCH_OFF = false;
-    
-    /*
-    static {
-        if (defaultMap.size() == 0) {
-            for (byte[][] preset : PRESET_BOARDS) {
-                ReferenceBoard advBoard = new ReferenceBoard(new Board(preset[0]));
-                ReferenceMoves advMoves = new ReferenceMoves(preset[1][0], preset[1][1]);
-                defaultMap.put(advBoard, advMoves);
-
-                if (preset[1][0] == 5) {
-                    byte[] tiles = preset[0].clone();
-                    tiles[5] = tiles[6];
-                    tiles[6] = 0;
-                    advBoard = new ReferenceBoard(new Board(tiles));
-                    advMoves = new ReferenceMoves((byte) 6, (byte) (preset[1][1] - 1));
-                    defaultMap.put(advBoard, advMoves);
-                }
-
-                if (preset[1][0] == 10) {
-                    byte[] tiles = preset[0].clone();
-                    tiles[10] = tiles[6];
-                    tiles[6] = 0;
-                    advBoard = new ReferenceBoard(new Board(tiles));
-                    advMoves = new ReferenceMoves((byte) 6, (byte) (preset[1][1] - 1));
-                    defaultMap.put(advBoard, advMoves);
-                }
-            }
-        }
-    }
-
     /**
      * Initializes A object.  Load the stored boards from file or use default set.
      */

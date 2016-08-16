@@ -8,7 +8,7 @@
  *
  *****************************************************************************/
 
-package mwong.myprojects.utilities;
+package mwong.myprojects.fifteenpuzzle.utilities;
 
 import java.util.Scanner;
 
@@ -103,7 +103,7 @@ public class Stopwatch {
         Stopwatch stopwatch = new Stopwatch();
         scanner = new Scanner(System.in, "UTF-8");
         do {
-        	System.out.println("Enter s-start, t-stop, c-current time or r-reset: ");
+            System.out.println("Enter s-start, t-stop, c-current time or r-reset: ");
             char value = scanner.next().charAt(0);
             if (value == 's') {
                 stopwatch.start();

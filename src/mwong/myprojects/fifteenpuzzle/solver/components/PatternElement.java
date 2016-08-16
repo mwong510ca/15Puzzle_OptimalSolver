@@ -13,7 +13,7 @@
 
 package mwong.myprojects.fifteenpuzzle.solver.components;
 
-import mwong.myprojects.utilities.Stopwatch;
+import mwong.myprojects.fifteenpuzzle.utilities.Stopwatch;
 
 import java.io.File;
 import java.io.FileInputStream;

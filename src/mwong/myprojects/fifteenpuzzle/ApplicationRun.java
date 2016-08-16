@@ -1,6 +1,7 @@
 package mwong.myprojects.fifteenpuzzle;
 
 import mwong.myprojects.fifteenpuzzle.console.ApplicationCompareHeuristic;
+import mwong.myprojects.fifteenpuzzle.console.ApplicationSolver;
 
 class ApplicationRun {
     /**
@@ -11,7 +12,8 @@ class ApplicationRun {
      *  @param args standard argument main function
      */
     public static void main(String[] args) {
-        ApplicationCompareHeuristic app = new ApplicationCompareHeuristic();
+    	//ApplicationCompareHeuristic app = new ApplicationCompareHeuristic();
+    	ApplicationSolver app = new ApplicationSolver();
         app.run();
     }
 }
