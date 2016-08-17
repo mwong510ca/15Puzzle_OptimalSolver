@@ -1,6 +1,6 @@
 ###How it works:  
 Generate the components will be use by the pattern database generator 
-and puzzle solver.
+and puzzle solver.  [View Source Code]
 
 1.  Determine the size of each pattern group:
     <pre>
@@ -89,7 +89,8 @@ Similar to keys changes, format changes involve 4 direction move:
                             no shift         no shift        shift 2 left    shift 2 right</pre>
 
 5. Save a local copy for re-useable (optional):  
-    Notes: Once Steps 1 - 4 has completed, It's ready to move on to next process, generate the pattern database [PDCombo.java]   
+    Notes: Once Steps 1 - 4 has completed, It's ready to move on to next process, generate the pattern database [PatternDatabase.java]   
 The common groups are size 3, 5, 6, 7, are 8.  Save these groups for re-useable.  If groups or file is not exists, it will generate a new set.  Since the generation time is less than 2 seconds, this step is optional.
 
-[PDCombo.java]: https://github.com/mwong510ca/java_code/blob/master/Heuristic%20Search%20-%20Additive%20Pattern%20Database%20-%2015Puzzle/PDCombo.java%20-%20details.md
+[View Source Code]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/src/mwong/myprojects/fifteenpuzzle/solver/components/PatternElement.java
+[PatternDatabase.java]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/PatternDatabase.java%20-%20details.md

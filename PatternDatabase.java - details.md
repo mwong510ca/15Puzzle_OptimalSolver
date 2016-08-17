@@ -1,7 +1,7 @@
 ###How it works:  
-Start from the goal state until it filled all slots of the static pattern.
+Start from the goal state until it filled all slots of the static pattern.  [View Source Code]
 
-Recall [PDElement.java] - Here are the size for each group:  
+Recall [PatternElement.java] - Here are the size for each group:  
     <pre>
         size     # of keys        # of formats        total size
         2        2! = 2           16C2 = 120          240
@@ -32,7 +32,7 @@ Validate the pattern in appropriate format.  Save a 2 ways conversions of tiles 
 
 2.  Determine the memory usage to generate the each pattern.  
 The maximum move is 80, so the pattern value can store in byte value. For group 8, it take about 518918400 * 1 byte = .52 gigabytes.  
-For pattern expansions, I need 2 set values.  One for current patterns, and one for next patterns after zero space shift with a tile.  To record these moves, all I need to store are the zeroes positions.  Group 2 - 7 use short value, and group 8 use byte value.  They will store in 2D [key size][format size] array.
+For pattern expansions, I need 2 set values.  One for current patterns, and one for next patterns after zero space shift with a tile.  To record these moves, all I need to store are the zeroes positions.  Group 2 - 7 use short value, and group 8 use byte value.  They will store in 2D \[key size\]\[format size\] array.
 
     <pre>
 Group 2 - 7: pattern size x (1 byte pattern value + 2 byte x 2 current and next moves)
@@ -116,5 +116,6 @@ See [sample output] of each default pattern.
 5.  Save a re-useable copy.  
 Use FileChannel to save a copy and reuse by the solver.  
 
-[PDElement.java]: https://github.com/mwong510ca/java_code/blob/master/Heuristic%20Search%20-%20Additive%20Pattern%20Database%20-%2015Puzzle/PDElement.java%20-%20details.md
-[sample output]: https://github.com/mwong510ca/java/blob/master/Heuristic%20Search%20-%20Additive%20Pattern%20Database%20-%2015Puzzle/output/log_generate_data_files_osx_-Xmx4g.txt
+[View Source Code]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/src/mwong/myprojects/fifteenpuzzle/solver/components/PatternDatabase.java
+[PatternElement.java]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/PatternElement.java%20-%20details.md
+[Sample Output]: https://github.com/mwong510ca/java/blob/master/Heuristic%20Search%20-%20Additive%20Pattern%20Database%20-%2015Puzzle/output/log_generate_data_files_osx_-Xmx4g.txt
