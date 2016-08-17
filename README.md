@@ -44,5 +44,5 @@ Notes:  If you want to try my solver application using static 7-8 pattern, highl
 [Walking Distance by Ken'ichiro Takahashi]: http://www.ic-net.or.jp/home/takaken/e/15pz/index.html
 [PatternElement.java]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/PatternElement.java%20-%20details.md
 [PatternDatabase.java]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/PatternDatabase.java%20-%20details.md
-[Solver Enhancement]: https://github.com/mwong510ca/java_code/blob/master/Heuristic%20Search%20-%20Additive%20Pattern%20Database%20-%2015Puzzle/Solver%20Enhancement%20-%20details.md
+[Solver Enhancement]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/Solver%20Enhancement%20-%20details.md
 [download]: https://my.pcloud.com/publink/show?code=kZSoaLZgNeLhO2eu0RQcu9D2aXeOFgtioUV
