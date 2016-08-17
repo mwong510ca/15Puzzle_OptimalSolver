@@ -118,4 +118,4 @@ Use FileChannel to save a copy and reuse by the solver.
 
 [View Source Code]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/src/mwong/myprojects/fifteenpuzzle/solver/components/PatternDatabase.java
 [PatternElement.java]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/PatternElement.java%20-%20details.md
-[Sample Output]: https://github.com/mwong510ca/java/blob/master/Heuristic%20Search%20-%20Additive%20Pattern%20Database%20-%2015Puzzle/output/log_generate_data_files_osx_-Xmx4g.txt
+[Sample Output]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/tree/master/output/log_generate_data_files_osx_-Xmx4g.txt
