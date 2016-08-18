@@ -1,27 +1,26 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation  : javac SolverInterface.java
- *  Dependencies : Board.java, Direction.java, AdvancedAccumulator.java,
- *                 AdvancedMoves.java
- *
- *  SolverInterface class of 15 puzzle that has the following constants and methods.
- *
- ****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.solver;
 
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 
+/**
+ * Solver extends SolverStandard Interface as the main interface.  It is the interface class
+ * that extend the standard methods for the advanced version of 15 puzzle solvers.
+ *
+ * <p>Dependencies : Board.java, SolverStandard.java,
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public interface Solver extends SolverStandard {
+    // ----- solver setting -----
     /**
      *  Set the advanced priority with the given flag.
      *
      *  @param flag the boolean represent the active status of advanced priority
      */
-    void advPrioritySwitch(boolean flag);
+    boolean advPrioritySwitch(boolean flag);
 
+    // ----- heuristic -----
     /**
      * Returns the original heuristic value of the given board.
      *
@@ -35,5 +34,4 @@ public interface Solver extends SolverStandard {
      * @return byte value of the advanced heuristic value of the given board
      */
     byte heuristicAdvanced(Board board);
-
 }

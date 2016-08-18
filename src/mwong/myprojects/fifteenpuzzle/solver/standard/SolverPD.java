@@ -1,34 +1,32 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation  : javac SolverPD.java
- *  Dependencies : Board.java, Direction.java, Stopwatch.java,
- *                 PDElement.java, PDCombo.java, PDPresetPatterns.java,
- *                 SolverAbstract, AdvancedAccumulator.java
- *                 AdvancedBoard.java, AdvancedMoves.java
- *
- *  SolverPD implements SolverInterface.  It take a Board object and solve the
- *  puzzle with IDA* using additive pattern database.
- *
- ****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.solver.standard;
 
 import mwong.myprojects.fifteenpuzzle.solver.AbstractSolver;
-import mwong.myprojects.fifteenpuzzle.solver.HeuristicType;
+import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
+import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
+import mwong.myprojects.fifteenpuzzle.solver.components.PatternConstants;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternDatabase;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternElement;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternElementMode;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
-import mwong.myprojects.fifteenpuzzle.solver.components.PatternProperties;
 
 import java.util.HashMap;
 
+/**
+ * SolverPD extends AbstractSolver.  It is the 15 puzzle optimal solver.
+ * It takes a Board object of the puzzle and solve it with IDA* using Additive
+ * Pattern Database.  It may use predefined pattern from PatternOptions or
+ * a set of user defined custom pattern.
+ *
+ * <p>Dependencies : AbstractSolver.java, Board.java, Direction.java, HeuristicOptions.java,
+ *                   PatternDatabase.java, PatternElement.java, PatternElementMode.java,
+ *                   PatternOptions.java, PatternPreoperties.java
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public class SolverPD extends AbstractSolver {
-    protected static final PatternOptions defaultPattern = PatternOptions.Pattern_663;
     private final int offsetDir = 2;
     private final PatternElementMode mode = PatternElementMode.PUZZLE_SOLVER;
 
@@ -62,7 +60,7 @@ public class SolverPD extends AbstractSolver {
      *  Initializes SolverPD object using default preset pattern.
      */
     public SolverPD() {
-        this(defaultPattern);
+        this(SolverProperties.getDefaultPattern());
     }
 
     /**
@@ -81,17 +79,17 @@ public class SolverPD extends AbstractSolver {
      *  @param choice the number of preset pattern option
      */
     public SolverPD(PatternOptions presetPattern, int choice) {
-    	super();
-    	loadPDComponents(presetPattern, choice);
+        super();
+        loadPDComponents(presetPattern, choice);
         loadPDElements(presetPattern.getElements());
         inUsePattern = presetPattern;
         inUsePtnArray = presetPattern.getPattern(choice);
         if (presetPattern == PatternOptions.Pattern_555) {
-            inUseHeuristic = HeuristicType.PD555;
+            inUseHeuristic = HeuristicOptions.PD555;
         } else if (presetPattern == PatternOptions.Pattern_663) {
-            inUseHeuristic = HeuristicType.PD663;
+            inUseHeuristic = HeuristicOptions.PD663;
         } else if (presetPattern == PatternOptions.Pattern_78) {
-            inUseHeuristic = HeuristicType.PD78;
+            inUseHeuristic = HeuristicOptions.PD78;
         } else {
             System.err.println("SolverPD init error");
         }
@@ -104,11 +102,11 @@ public class SolverPD extends AbstractSolver {
      *  @param elementGroups boolean array of groups reference to given pattern
      */
     public SolverPD(byte[] customPattern, boolean[] elementGroups) {
-    	customPDComponents(customPattern);
+        customPDComponents(customPattern);
         loadPDElements(elementGroups);
-        inUsePattern = PatternOptions.Custom;
+        inUsePattern = PatternOptions.Pattern_Custom;
         inUsePtnArray = customPattern;
-        inUseHeuristic = HeuristicType.PDCustom;
+        inUseHeuristic = HeuristicOptions.PDCustom;
     }
 
     // load preset additive pattern database from a data file, if file not exists
@@ -119,7 +117,7 @@ public class SolverPD extends AbstractSolver {
         patternGroups = pd15.getPatternGroups();
         patternFormatSize = new int[patternGroups.length];
         for (int i = 0; i < patternGroups.length; i++) {
-            patternFormatSize[i] = PatternProperties.getFormatSize()[patternGroups[i]];
+            patternFormatSize[i] = PatternConstants.getFormatSize()[patternGroups[i]];
         }
         patternSet = pd15.getPatternSet();
         val2ptnKey = pd15.getVal2ptnKey();
@@ -132,11 +130,11 @@ public class SolverPD extends AbstractSolver {
     // generate the additive pattern database components with give user defined
     // custom pattern
     private void customPDComponents(byte[] customPattern) {
-    	PatternDatabase pd15 = new PatternDatabase(customPattern);
+        PatternDatabase pd15 = new PatternDatabase(customPattern);
         patternGroups = pd15.getPatternGroups();
         patternFormatSize = new int[patternGroups.length];
         for (int i = 0; i < patternGroups.length; i++) {
-            patternFormatSize[i] = PatternProperties.getFormatSize()[patternGroups[i]];
+            patternFormatSize[i] = PatternConstants.getFormatSize()[patternGroups[i]];
         }
         patternSet = pd15.getPatternSet();
         val2ptnKey = pd15.getVal2ptnKey();
@@ -159,7 +157,7 @@ public class SolverPD extends AbstractSolver {
             int group = patternGroups[i];
             linkFormatMove[i] = pd15e.getLinkFormatMoveSet(group);
             rotateKeysByPos[i] = pd15e.getKeyShiftSet(group);
-            maxShiftX2[i] = PatternProperties.getMaxShiftX2()[group];
+            maxShiftX2[i] = PatternConstants.getMaxShiftX2()[group];
         }
     }
 
@@ -191,37 +189,22 @@ public class SolverPD extends AbstractSolver {
     }
 
     /**
-     *  Find the optimal path to goal state if the given board is solvable.
-     *  Overload findOptimalPath with given heuristic value (for AdvancedAccumulator)
+     * Returns the heuristic value of the given board.
      *
-     *  @param board the initial puzzle Board object to solve
-     *  @param estimate the given initial limit to solve the puzzle
-     *
-    public void findOptimalPath(Board board, byte estimate) {
-        if (board.isSolvable()) {
-            clearHistory();
-            stopwatch = new Stopwatch();
-            priority1stMove = new int[rowSize * 2];
-            System.arraycopy(board.getValidMoves(), 0, priority1stMove, rowSize, rowSize);
-            // initializes the board by calling heuristic function using original priority
-            // then solve the puzzle with given estimate instead
-            heuristic(board, tagSearch);
-            idaStar(estimate);
-            stopwatch = null;
+     * @param board the initial puzzle Board object to solve
+     * @return byte value of the heuristic value of the given board
+     */
+    @Override
+    public byte heuristic(Board board) {
+        if (board == null) {
+            throw new IllegalArgumentException("Board is null");
         }
-    }
-*/
-    // calculate the heuristic value of the given board and save the properties
-	protected byte heuristic(Board board, boolean isAdvanced, boolean isSearch) {
         if (!board.isSolvable()) {
             return -1;
         }
 
-        if (!board.equals(lastBoard) || isSearch) {
-            lastBoard = board;
-            tiles = board.getTiles();
-            zeroX = board.getZeroX();
-            zeroY = board.getZeroY();
+        if (!board.equals(lastBoard)) {
+            initialize(board);
             byte[] tilesSym = board.getTilesSym();
 
             // additive pattern database components
@@ -233,7 +216,6 @@ public class SolverPD extends AbstractSolver {
                 pdValSym += pdKeys[i +  offsetPdSym];
             }
             priorityGoal = (byte) Math.max(pdValReg, pdValSym);
-            priorityAdvanced = priorityGoal;
         }
         return priorityGoal;
     }
@@ -275,11 +257,6 @@ public class SolverPD extends AbstractSolver {
         return pdFactor;
     }
 
-    // TODO dummy
-    public void findOptimalPath(Board board, byte estimate) {
-        // dummy
-    }
-
     // solve the puzzle using interactive deepening A* algorithm
     protected void idaStar(int limit) {
         // start searching for solution
@@ -294,25 +271,27 @@ public class SolverPD extends AbstractSolver {
 
             if (timeout) {
                 if (flagMessage) {
-                	System.out.println("\tNodes : " + num2string(idaCount) + "timeout");
+                    System.out.printf("\tNodes : %-15s timeout\n", Integer.toString(idaCount));
                 }
                 return;
             } else {
-            	if (flagMessage) {
-                    System.out.println("\tNodes : " + num2string(idaCount) + stopwatch.currentTime() + "s");
-                } 
-            	
-            	if (solved) {
+                if (flagMessage) {
+                    System.out.printf("\tNodes : %-15s " + stopwatch.currentTime() + "s\n",
+                            Integer.toString(idaCount));
+                }
+
+                if (solved) {
                     return;
-            	}
+                }
             }
             limit += 2;
         }
     }
 
-    // recursive depth first search until it reach the goal state or timeout, the least estimate and
-    // node counts will be use to determine the starting order of next search
-    protected void dfs1stPrio(int orgX, int orgY, int cost, int limit, int orgValReg, int orgValSym) {
+    // recursive depth first search until it reach the goal state or timeout, the least
+    // estimate and node counts will be use to determine the starting order of next search
+    protected void dfs1stPrio(int orgX, int orgY, int cost, int limit, int orgValReg,
+            int orgValSym) {
         int zeroPos = orgY * rowSize + orgX;
         int zeroSym = symmetryPos[zeroPos];
         int costPlus1 = cost + 1;
@@ -323,7 +302,7 @@ public class SolverPD extends AbstractSolver {
 
         int estimate = limit;
         do {
-            int firstMoveIdx = -1;  // 0 - Right, 1 - Down, 2 - Left, 3 - Up
+            int firstMoveIdx = -1;
             int nodeCount = 0;
 
             estimate = endOfSearch;

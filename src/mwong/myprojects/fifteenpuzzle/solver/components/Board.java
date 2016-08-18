@@ -1,34 +1,29 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation: javac Board.java
- *  Dependencies : Direction.java
- *
- *  A data type for 15 Puzzle board
- *
- ****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.solver.components;
 
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * Board is the data type of 15 puzzle.  It take 16 numbers of the puzzle or
+ * generate the random board at difficulty level.  It verify the solvable statue.
+ * It also generate a new board after the shift.
+ *
+ * <p>Dependencies : PuzzleConstants.java
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public class Board {
-    private final int goalHash1 = 0x12345678;
-    private final int goalHash2 = 0x9ABCDEF0;
-    private final byte size = PuzzleProperties.getSize();
-    private final byte rowSize = PuzzleProperties.getRowSize();
-    private final byte[] symmetryPos = PuzzleProperties.getSymmetryPos();
-    private final byte[] symmetryVal = PuzzleProperties.getSymmetryVal();
+    private final byte size;
+    private final byte rowSize;
 
     private boolean isSolvable;
     private boolean isIdenticalSymmetry;
     private int zeroX;
     private int zeroY;
     private int hashcode;
-    private int hash1;
-    private int hash2;
+    private int hashKey1;
+    private int hashKey2;
     private byte[] tiles;
     private byte[] tilesSym;
     private int[] validMoves;
@@ -47,6 +42,8 @@ public class Board {
      * @param level the given difficulty level
      */
     public Board(PuzzleDifficultyLevel level) {
+        size = PuzzleConstants.getSize();
+        rowSize = PuzzleConstants.getRowSize();
         if (level == PuzzleDifficultyLevel.RANDOM) {
             generateRandomBoard();
         } else {
@@ -61,13 +58,17 @@ public class Board {
      * @param blocks the byte array of 16 tiles
      */
     public Board(byte [] blocks) {
+        size = PuzzleConstants.getSize();
+        rowSize = PuzzleConstants.getRowSize();
         setBasicPriorities(blocks);
         setAdvancedProperties();
     }
 
-    // use by shift() from a solvable object
+    // use by shift() from a solvable Board object
     // initializes a Board object for internal use
     private Board(int zeroX, int zeroY, byte[] tiles) {
+        size = PuzzleConstants.getSize();
+        rowSize = PuzzleConstants.getRowSize();
         isSolvable = true;
         this.zeroX = zeroX;
         this.zeroY = zeroY;
@@ -105,38 +106,31 @@ public class Board {
         }
     }
 
-    // initializes the hashcode and valid moves with symmetry reduction
+    // initializes the hashcode, symmetry conversion tiles and verify valid moves
+    // with symmetry reduction
     private void setAdvancedProperties() {
         for (int i = 0; i < size / 2; i++) {
-            hash1 <<= 4;
-            hash1 |= tiles[i];
+            hashKey1 <<= 4;
+            hashKey1 |= tiles[i];
         }
         for (int i = size / 2; i < size; i++) {
-            hash2 <<= 4;
-            hash2 |= tiles[i];
+            hashKey2 <<= 4;
+            hashKey2 |= tiles[i];
         }
-        hashcode = hash1 * (hash2 + 0x1111);
+        hashcode = hashKey1 * (hashKey2 + 0x1111);
 
-        tilesSym = new byte[size];
-        // symmetry tiles of the original tiles
-        for (int i = 0; i < size; i++) {
-            tilesSym[symmetryPos[i]] = symmetryVal[tiles[i]];
-        }
+        tilesSym = PuzzleProperties.tiles2sym(tiles);
 
         validMoves = new int[4];
-        // RIGHT
         if (zeroX < rowSize - 1) {
             validMoves[Direction.RIGHT.getValue()] = 1;
         }
-        // DOWN
         if (zeroY < rowSize - 1) {
             validMoves[Direction.DOWN.getValue()] = 1;
         }
-        // LEFT
         if (zeroX > 0) {
             validMoves[Direction.LEFT.getValue()] = 1;
         }
-        // UP
         if (zeroY > 0) {
             validMoves[Direction.UP.getValue()] = 1;
         }
@@ -167,21 +161,23 @@ public class Board {
             int zero = 15;
 
             while (true) {
-                System.arraycopy(PuzzleProperties.getGoalTiles(), 0, blocks, 0, size);
+                System.arraycopy(PuzzleConstants.getGoalTiles(), 0, blocks, 0, size);
                 zero = 15;
                 if (level == PuzzleDifficultyLevel.HARD) {
                     int rand = new Random().nextInt(5);
                     if (rand == 0) {
-                    	if (PuzzleProperties.getHardZero15Size() > 0) {
-                    		rand = new Random().nextInt(PuzzleProperties.getHardZero15Size());
-                    		System.arraycopy(PuzzleProperties.getHardZero15(rand), 0, blocks, 0, size);
-                    	}
+                        if (PuzzleProperties.getHardZero15Size() > 0) {
+                            rand = new Random().nextInt(PuzzleProperties.getHardZero15Size());
+                            System.arraycopy(PuzzleProperties.getHardZero15(rand),
+                                    0, blocks, 0, size);
+                        }
                     } else {
-                    	if (PuzzleProperties.getHardZero0Size() > 0) {
-                        	rand = new Random().nextInt(PuzzleProperties.getHardZero0Size());
-                        	System.arraycopy(PuzzleProperties.getHardZero0(rand), 0, blocks, 0, size);
-                        	zero = 0;
-                    	}
+                        if (PuzzleProperties.getHardZero0Size() > 0) {
+                            rand = new Random().nextInt(PuzzleProperties.getHardZero0Size());
+                            System.arraycopy(PuzzleProperties.getHardZero0(rand),
+                                    0, blocks, 0, size);
+                            zero = 0;
+                        }
                     }
                 }
 
@@ -343,7 +339,7 @@ public class Board {
         return list;
     }
 
-    // returns the heuristic using manhattan distance
+    // returns the heuristic using Manhattan Distance
     private int heuristic() {
         int manhattan = 0;
         int value;
@@ -368,7 +364,8 @@ public class Board {
      * @return boolean represent this board is the goal board
      */
     public boolean isGoal() {
-        if (hash1 == goalHash1 && hash2 == goalHash2) {
+    	if (hashKey1 == PuzzleConstants.getGoalKey1() 
+        		&& hashKey2 == PuzzleConstants.getGoalKey2()) {
             return true;
         }
         return false;
@@ -503,7 +500,7 @@ public class Board {
         if (this.hashcode != that.hashcode) {
             return false;
         }
-        if (this.hash1 == that.hash1 && this.hash2 == that.hash2) {
+        if (this.hashKey1 == that.hashKey1 && this.hashKey2 == that.hashKey2) {
             return true;
         }
         return false;
@@ -513,7 +510,7 @@ public class Board {
      * Unit test.
      *
      * @param args Standard argument main function
-     */
+     *
     public static void main(String[] args) {
         byte[] arr1 = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0};
         byte[] arr2 = {1,2,3,4,9,10,11,12,5,6,7,8,13,14,15,0};
@@ -531,4 +528,5 @@ public class Board {
         System.out.println(b3.isGoal());
         System.out.println(b3.isIdenticalSymmetry());
     }
+    */
 }

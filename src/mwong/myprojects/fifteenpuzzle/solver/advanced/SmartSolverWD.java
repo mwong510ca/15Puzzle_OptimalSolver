@@ -14,6 +14,7 @@
 
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
+import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceBoard;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceMoves;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
@@ -25,21 +26,30 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class SmartSolverWD extends SolverWD {
-	private final byte numPartialMoves;
-	private final byte refCutoff;    
-	private final ReferenceAccumulator refAccumulator;
-    private SmartSolverExtra extra;
-    
+    private final byte numPartialMoves;
+    private final byte refCutoff;
+    private final ReferenceAccumulator refAccumulator;
+    private final SmartSolverExtra extra;
+
     /**
      * Initializes SolverWD object.
      */
     public SmartSolverWD(ReferenceAccumulator refAccumulator) {
     	super();
-        extra = new SmartSolverExtra();
-        this.refAccumulator = refAccumulator;
-        refCutoff = SmartSolverProperties.getReferenceCutoff();
-        numPartialMoves = SmartSolverProperties.getNumPartialMoves();
-        //TODO is refAccumulator unavailable
+        if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
+            System.out.println("Referece board collection unavailable."
+                    + " Resume to the 15 puzzle solver standard version.");
+            extra = null;
+            this.refAccumulator = null;
+            refCutoff = 0;
+            numPartialMoves = 0;
+        } else {
+            activeSmartSolver = true;
+            extra = new SmartSolverExtra();
+            this.refAccumulator = refAccumulator;
+            refCutoff = SmartSolverProperties.getReferenceCutoff();
+            numPartialMoves = SmartSolverConstants.getNumPartialMoves();
+        }
     }
 
     /**
@@ -49,9 +59,40 @@ public class SmartSolverWD extends SolverWD {
     public void printDescription() {
     	extra.printDescription(flagAdvancedPriority, inUseHeuristic);
     }
-  
+
+    @Override
+    public byte heuristic(Board board) {
+    	return heuristic(board, flagAdvancedPriority, tagSearch);
+    }
+    
+    @Override 
+    public byte heuristicStandard(Board board) {
+    	if (board == null) {
+            throw new IllegalArgumentException("Board is null");
+        }
+        if (!board.isSolvable()) {
+            return -1;
+        }
+        return heuristic(board, tagStandard, tagReview);    	
+    }
+    
+    @Override 
+    public byte heuristicAdvanced(Board board) {
+    	if (!activeSmartSolver) {
+            throw new UnsupportedOperationException("Advanced version currently inactive."
+                    + " Reference collection unavailable. Check the system.");
+    	}
+    	if (board == null) {
+            throw new IllegalArgumentException("Board is null");
+        }
+        if (!board.isSolvable()) {
+            return -1;
+        }
+        return heuristic(board, tagAdvanced, tagReview);    	
+    }
+    
     // calculate the heuristic value of the given board and save the properties
-    protected byte heuristic(Board board, boolean isAdvanced, boolean isSearch) {
+    private byte heuristic(Board board, boolean isAdvanced, boolean isSearch) {
         if (!board.isSolvable()) {
             return -1;
         }
@@ -97,8 +138,8 @@ public class SmartSolverWD extends SolverWD {
 
         AdvancedRecord record = extra.advancedContains(board, isSearch, refAccumulator);
         if (record != null) {
-        	priorityAdvanced = record.getMoves();
-        	if (record.hasInitialMoves()) {
+        	priorityAdvanced = record.getEstimate();
+        	if (record.hasPartialMoves()) {
         		solutionMove = record.getPartialMoves();
         	}
         } 
@@ -240,27 +281,17 @@ public class SmartSolverWD extends SolverWD {
 
             if (timeout) {
                 if (flagMessage) {
-                	System.out.println("\tNodes : " + num2string(idaCount) + "timeout");
+                    System.out.printf("\tNodes : %-15s timeout\n", Integer.toString(idaCount));
                 }
                 return;
             } else {
-            	if (flagMessage) {
-            		System.out.println("\tNodes : " + num2string(idaCount) + stopwatch.currentTime() + "s");
-            	}
-            	if (solved) {
+                if (flagMessage) {
+                    System.out.printf("\tNodes : %-15s  " + stopwatch.currentTime() + "s\n",
+                            Integer.toString(idaCount));
+                }
+                if (solved) {
             		return;
             	}
-            }
-            limit += 2;
-        }
-    }
-
-    // overload idaStar to solve the puzzle with the given max limit for advancedEstimate
-    protected void idaStar(int limit, int maxLimit) {
-        while (limit <= maxLimit) {
-            dfs1stPrio(zeroX, zeroY, 0, limit, wdIdxH, wdIdxV, wdValueH, wdValueV);
-            if (solved) {
-                return;
             }
             limit += 2;
         }
@@ -304,9 +335,10 @@ public class SmartSolverWD extends SolverWD {
 
         if (flagMessage) {
             if (timeout) {
-            	System.out.println("\tNodes : " + num2string(idaCount) + "timeout");
+                System.out.printf("\tNodes : %-15s timeout\n", Integer.toString(idaCount));
             } else {
-            	System.out.println("\tNodes : " + num2string(idaCount) + stopwatch.currentTime() + "s");
+                System.out.printf("\tNodes : %-15s  " + stopwatch.currentTime() + "s\n",
+                        Integer.toString(idaCount));
             }
         }
     }

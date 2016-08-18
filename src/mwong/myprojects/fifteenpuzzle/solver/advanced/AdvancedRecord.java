@@ -2,42 +2,55 @@ package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 
+/**
+ * AdvancedRecord is the data type store the number of moves and partial solution.
+ *
+ * <p>Dependencies : Direction.java
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 class AdvancedRecord {
-	private byte moves;
-	private Direction[] partialMoves;
-	private boolean initialMoves;
-	
-	AdvancedRecord (byte moves) {
-		this.moves = moves;
-		initialMoves = false;
-		partialMoves = null;
-	}
-	
-	AdvancedRecord (byte moves, Direction[] partialMoves) {
-		this.moves = moves;
-		initialMoves = true;
-		this.partialMoves = partialMoves;
-	}
+    private byte estimate;
+    private Direction[] partialMoves;
+    private boolean hasPartialMoves;
 
-	/**
-	 * @return the moves
-	 */
-	final byte getMoves() {
-		return moves;
-	}
+    AdvancedRecord(byte estimate) {
+        this.estimate = estimate;
+        hasPartialMoves = false;
+        partialMoves = null;
+    }
 
-	/**
-	 * @return the partialMoves
-	 */
-	final Direction[] getPartialMoves() {
-		return partialMoves;
-	}
+    AdvancedRecord(byte estimate, Direction[] partialMoves) {
+        this.estimate = estimate;
+        hasPartialMoves = true;
+        this.partialMoves = partialMoves;
+    }
 
-	/**
-	 * @return the hasInitialMoves
-	 */
-	final boolean hasInitialMoves() {
-		return initialMoves;
-	}
-	
+    /**
+     * Returns the byte values of number of moves.
+     *
+     * @return byte values of number of moves
+     */
+    final byte getEstimate() {
+        return estimate;
+    }
+
+    /**
+     * Returns the Directions array of partial solution from record.
+     *
+     * @return Directions array of partial solution
+     */
+    final Direction[] getPartialMoves() {
+        return partialMoves;
+    }
+
+    /**
+     * Returns the boolean represent record has partial solution.
+     *
+     * @return boolean represent record has partial solution
+     */
+    final boolean hasPartialMoves() {
+        return hasPartialMoves;
+    }
 }

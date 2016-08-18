@@ -1,15 +1,13 @@
 package mwong.myprojects.fifteenpuzzle.solver.components;
 
+/**
+ * PuzzlePrepertiess contains the preset hard boards of 15 puzzle.
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public class PuzzleProperties {
-    private static final byte SIZE = 16;
-    private static final byte ROW_SIZE = 4;
-    private static final byte MAX_MOVES = 80;
-    private static final byte [] GOAL_TILES =
-        {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0};
-    private static final byte [] SYMMETRY_VAL =
-        {0, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15, 4, 8, 12};
-    private static final byte [] SYMMETRY_POS =
-        {0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15};
+    private static final int PUZZLE_SIZE = PuzzleConstants.getSize();
     // initializes hard boards to be use to generate random board
     private static final byte[][] HARD_ZERO_0 = {
         {0, 11,  9, 13, 12, 15, 10, 14,  3,  7,  6,  2,  4,  8,  5,  1},
@@ -64,84 +62,57 @@ public class PuzzleProperties {
     };
 
     /**
-     * Return the puzzleSize.
+     * Returns the integer of the number of preset hard puzzles with zero position 0.
      *
-     * @return the puzzleSize
+     * @return integer of the number of preset hard puzzles with zero position 0
      */
-    public static final byte getSize() {
-        return SIZE;
+    static final int getHardZero0Size() {
+        return HARD_ZERO_0.length;
     }
 
     /**
-     * Return the rowSize.
+     * Returns the byte array of preset hard puzzle with zero position 0 of the given index.
      *
-     * @return the rowSize
+     * @param index the index preset hard puzzle
+     * @return the byte array of preset hard puzzle of the given index
      */
-    public static final byte getRowSize() {
-        return ROW_SIZE;
+    static final byte[] getHardZero0(int index) {
+        return HARD_ZERO_0[index];
     }
 
     /**
-     * Return the maxMoves.
+     * Returns the integer of the number of preset hard puzzles with zero position 15.
      *
-     * @return the maxMoves
+     * @return integer of the number of preset hard puzzles with zero at position 15
      */
-    public static final byte getMaxMoves() {
-        return MAX_MOVES;
+    static final int getHardZero15Size() {
+        return HARD_ZERO_15.length;
     }
 
     /**
-     * Return the goalTiles.
+     * Returns the byte array of preset hard puzzle with zero position 15 of the given index.
      *
-     * @return the goalTiles
+     * @param index the index preset hard puzzle
+     * @return the byte array of preset hard puzzle of the given index.
      */
-    public static final byte[] getGoalTiles() {
-        return GOAL_TILES;
+    static final byte[] getHardZero15(int index) {
+        return HARD_ZERO_15[index];
     }
 
     /**
-     * Return the symmetryVal.
+     * Returns the byte array of tiles after symmetry conversion.
      *
-     * @return the symmetryVal
+     * @param original the byte array of given tiles
+     * @return byte array of tiles after symmetry conversion
      */
-    public static final byte[] getSymmetryVal() {
-        return SYMMETRY_VAL;
+    public static final byte[] tiles2sym(byte[] original) {
+        byte[] symmetryPos = PuzzleConstants.getSymmetryPos();
+        byte[] symmetryVal = PuzzleConstants.getSymmetryVal();
+        byte[] tiles2sym = new byte[PUZZLE_SIZE];
+
+        for (int i = 0; i < PUZZLE_SIZE; i++) {
+            tiles2sym[symmetryPos[i]] = symmetryVal[original[i]];
+        }
+        return tiles2sym;
     }
-
-    /**
-     * Return the symmetryPos.
-     *
-     * @return the symmetryPos
-     */
-    public static final byte[] getSymmetryPos() {
-        return SYMMETRY_POS;
-    }
-
-	/**
-	 * @return the hardZero0
-	 */
-	static final int getHardZero0Size() {
-		return HARD_ZERO_0.length;
-	}
-
-	/**
-	 * @return the hardZero0
-	 */
-	static final byte[] getHardZero0(int index) {
-		return HARD_ZERO_0[index];
-	}
-
-	/**
-	 * @return the hardZero15
-	 */
-	static final int getHardZero15Size() {
-		return HARD_ZERO_15.length;
-	}
-
-	/**
-	 * @return the hardZero15
-	 */
-	static final byte[] getHardZero15(int index) {
-		return HARD_ZERO_15[index];
-	}
 }

@@ -1,17 +1,17 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation: javac PatternOptions.java
- *  Dependencies: Board.java
- *
- *  Enum PDPresetPatterns is an reference type for 15 puzzle per-defined
- *  additive patterns
- *
- ****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.solver.components;
 
+/**
+ * PatternOptions the preset additive pattern database can be use
+ * <li>{@link #Pattern_555}</li>
+ * <li>{@link #Pattern_663}</li>
+ * <li>{@link #Pattern_78}</li>
+ * <li>{@link #Pattern_Custom}</li>
+ *
+ * <p>Dependencies : PatternConstants.java
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public enum PatternOptions {
     /**
      *  Static pattern 555.
@@ -45,7 +45,7 @@ public enum PatternOptions {
     Pattern_78("78",
             new byte [][] {{ 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 0 },
                 { 1, 1, 1, 1, 2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 0 },
-                { 1, 1, 1, 1, 1, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 0 },  // disjoint pattern
+                { 1, 1, 1, 1, 1, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 0 },
                 { 1, 1, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 2, 2, 2, 0 },
                 { 2, 1, 1, 1, 2, 1, 1, 1, 2, 2, 1, 1, 2, 2, 2, 0 },
                 { 1, 1, 1, 1, 2, 1, 1, 1, 2, 2, 2, 1, 2, 2, 2, 0 }},
@@ -53,17 +53,14 @@ public enum PatternOptions {
     /**
      *  User defined custom pattern.
      */
-    Custom("Custom", null, null);
-
-    private final int puzzleSize = PuzzleProperties.getSize();
-    private final int rowSize = PuzzleProperties.getRowSize();
+    Pattern_Custom("Custom", null, null);
 
     private String type;
     private byte[][] patterns;
     private boolean[] elements;
 
     /**
-     * Initializes a PDPresetPatterns reference type.
+     * Initializes a PatternOptions reference type.
      */
     PatternOptions(String type, byte [][] patterns, boolean [] elements) {
         this.type = type;
@@ -75,6 +72,9 @@ public enum PatternOptions {
      *  Print the string of the default pattern of the preset pattern.
      */
     public void printDefaults() {
+        final  int puzzleSize = PuzzleConstants.getSize();
+        final int rowSize = PuzzleConstants.getRowSize();
+
         System.out.println("15 puzzle preset patterns :");
         PatternOptions[] patterns = values();
         for (int i = 0; i < patterns.length - 1; i++) {
@@ -108,8 +108,8 @@ public enum PatternOptions {
      *  @return the byte array of pattern
      */
     public final byte[] getPattern(int choice) {
-        if (this.equals(Custom)) {
-            return null;
+        if (this.equals(Pattern_Custom)) {
+            throw new UnsupportedOperationException("Custom pattern will not store a local copy.");
         }
         return patterns[choice];
     }
@@ -121,7 +121,7 @@ public enum PatternOptions {
      *  @return the string of filename
      */
     public String getFilename(int choice) {
-        if (this.equals(Custom)) {
+        if (this.equals(Pattern_Custom)) {
             throw new UnsupportedOperationException("Custom pattern will not store a local copy.");
         }
         if (choice == 0) {
@@ -137,7 +137,7 @@ public enum PatternOptions {
      *  @return boolean represent the given pattern order is valid
      */
     public boolean isValidPattern(int choice) {
-        if (this.equals(Custom)) {
+        if (this.equals(Pattern_Custom)) {
             throw new UnsupportedOperationException("Custom pattern in use.");
         }
         if (choice < 0 || choice >= patterns.length) {
@@ -152,7 +152,7 @@ public enum PatternOptions {
      *  @return boolean array of element groups of the preset pattern
      */
     public final boolean[] getElements() {
-        if (this.equals(Custom)) {
+        if (this.equals(Pattern_Custom)) {
             throw new UnsupportedOperationException("Custom pattern in use.");
         }
         return elements;
@@ -165,6 +165,9 @@ public enum PatternOptions {
      */
     @Override
     public String toString() {
+        final int puzzleSize = PuzzleConstants.getSize();
+        final int rowSize = PuzzleConstants.getRowSize();
+
         String str = "15 puzzle preset patterns " + type + " :\n";
         str += "default\t\t";
         for (int i = 1; i < patterns.length - 1; i++) {

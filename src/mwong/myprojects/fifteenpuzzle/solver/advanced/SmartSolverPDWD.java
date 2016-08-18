@@ -21,10 +21,10 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPDWD;
 
 public class SmartSolverPDWD extends SolverPDWD {
-	private final byte numPartialMoves;
-	private final byte refCutoff;    
-	private final ReferenceAccumulator refAccumulator;
-    private SmartSolverExtra extra;
+    private final byte numPartialMoves;
+    private final byte refCutoff;
+    private final ReferenceAccumulator refAccumulator;
+    private final SmartSolverExtra extra;
     
      /**
      *  Initializes SolverPDWD object using default preset pattern.
@@ -44,10 +44,20 @@ public class SmartSolverPDWD extends SolverPDWD {
 
     public SmartSolverPDWD(PatternOptions presetPattern, int choice, ReferenceAccumulator refAccumulator) {
         super(presetPattern, choice);
-        extra = new SmartSolverExtra();
-        this.refAccumulator = refAccumulator;
-        refCutoff = SmartSolverProperties.getReferenceCutoff();
-        numPartialMoves = SmartSolverProperties.getNumPartialMoves();
+        if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
+            System.out.println("Referece board collection unavailable."
+                    + " Resume to the 15 puzzle solver standard version.");
+            extra = null;
+            this.refAccumulator = null;
+            refCutoff = 0;
+            numPartialMoves = 0;
+        } else {
+            activeSmartSolver = true;
+            extra = new SmartSolverExtra();
+            this.refAccumulator = refAccumulator;
+            refCutoff = SmartSolverProperties.getReferenceCutoff();
+            numPartialMoves = SmartSolverConstants.getNumPartialMoves();
+        }
     }
 
     /**
@@ -59,8 +69,39 @@ public class SmartSolverPDWD extends SolverPDWD {
     	printInUsePattern();
     }
 
+    @Override
+    public byte heuristic(Board board) {
+    	return heuristic(board, flagAdvancedPriority, tagSearch);
+    }
+    
+    @Override 
+    public byte heuristicStandard(Board board) {
+    	if (board == null) {
+            throw new IllegalArgumentException("Board is null");
+        }
+        if (!board.isSolvable()) {
+            return -1;
+        }
+        return heuristic(board, tagStandard, tagReview);    	
+    }
+    
+    @Override 
+    public byte heuristicAdvanced(Board board) {
+    	if (!activeSmartSolver) {
+            throw new UnsupportedOperationException("Advanced version currently inactive."
+                    + " Reference collection unavailable. Check the system.");
+    	}
+    	if (board == null) {
+            throw new IllegalArgumentException("Board is null");
+        }
+        if (!board.isSolvable()) {
+            return -1;
+        }
+        return heuristic(board, tagAdvanced, tagReview);    	
+    }
+    
     // calculate the heuristic value of the given board and save the properties
-    protected byte heuristic(Board board, boolean isAdvanced, boolean isSearch) {
+    private byte heuristic(Board board, boolean isAdvanced, boolean isSearch) {
         if (!board.isSolvable()) {
             return -1;
         }
@@ -68,7 +109,7 @@ public class SmartSolverPDWD extends SolverPDWD {
         priorityAdvanced = -1;
         if (!board.equals(lastBoard) || isSearch) {
             // walking distance from parent/superclass
-            priorityGoal = super.heuristic(board, tagStandard, tagReview);
+            priorityGoal = super.heuristic(board);
             priorityAdvanced = -1;            
         }
 
@@ -78,8 +119,8 @@ public class SmartSolverPDWD extends SolverPDWD {
 
         AdvancedRecord record = extra.advancedContains(board, isSearch, refAccumulator);
         if (record != null) {
-        	priorityAdvanced = record.getMoves();
-        	if (record.hasInitialMoves()) {
+        	priorityAdvanced = record.getEstimate();
+        	if (record.hasPartialMoves()) {
         		solutionMove = record.getPartialMoves();
         	}
         } 
@@ -147,13 +188,14 @@ public class SmartSolverPDWD extends SolverPDWD {
 
             if (timeout) {
                 if (flagMessage) {
-                	System.out.println("\tNodes : " + num2string(idaCount) + "timeout");
+                    System.out.printf("\tNodes : %-15s timeout\n", Integer.toString(idaCount));
                 }
                 return;
             } else {
-            	if (flagMessage) {
-                    System.out.println("\tNodes : " + num2string(idaCount) + stopwatch.currentTime() + "s");
-                } 
+                if (flagMessage) {
+                    System.out.printf("\tNodes : %-15s  " + stopwatch.currentTime() + "s\n",
+                            Integer.toString(idaCount));
+                }
             	if (solved) {
             		return;
             	}
@@ -200,9 +242,10 @@ public class SmartSolverPDWD extends SolverPDWD {
 
         if (flagMessage) {
             if (timeout) {
-            	System.out.println("\tNodes : " + num2string(idaCount) + "timeout");
+                System.out.printf("\tNodes : %-15s timeout\n", Integer.toString(idaCount));
             } else {
-            	System.out.println("\tNodes : " + num2string(idaCount) + stopwatch.currentTime() + "s");
+                System.out.printf("\tNodes : %-15s  " + stopwatch.currentTime() + "s\n",
+                        Integer.toString(idaCount));
             }
         }
     }

@@ -1,22 +1,15 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation: javac Direction.java
- *
- *  Enum Direction is an reference type for slide puzzle
- *
- ****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.solver.components;
 
 /**
- *  Directions that can be used.
- *  <li>{@link #RIGHT}</li>
- *  <li>{@link #DOWN}</li>
- *  <li>{@link #LEFT}</li>
- *  <li>{@link #UP}</li>
- *  <li>{@link #NONE}</li>
+ * Directions that can be used.
+ * <li>{@link #RIGHT}</li>
+ * <li>{@link #DOWN}</li>
+ * <li>{@link #LEFT}</li>
+ * <li>{@link #UP}</li>
+ * <li>{@link #NONE}</li>
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public enum Direction {
     /**

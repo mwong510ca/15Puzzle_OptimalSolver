@@ -15,6 +15,8 @@
 
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
+import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
+import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
@@ -25,17 +27,17 @@ import mwong.myprojects.fifteenpuzzle.utilities.Stopwatch;
 import java.util.Arrays;
 
 public class SmartSolverPD extends SolverPD {
-	private final byte numPartialMoves;
-	private final byte refCutoff;    
-	private final ReferenceAccumulator refAccumulator;
-    private SmartSolverExtra extra;
+    private final byte numPartialMoves;
+    private final byte refCutoff;
+    private final ReferenceAccumulator refAccumulator;
+    private final SmartSolverExtra extra;
     private Board lastSearchBoard;
-    
+
     /**
      *  Initializes SolverPD object using default preset pattern.
      */
     public SmartSolverPD(ReferenceAccumulator refAccumulator) {
-        this(defaultPattern, refAccumulator);
+        this(SolverProperties.getDefaultPattern(), refAccumulator);
     }
 
      /**
@@ -55,10 +57,20 @@ public class SmartSolverPD extends SolverPD {
      */
     public SmartSolverPD(PatternOptions presetPattern, int choice, ReferenceAccumulator refAccumulator) {
         super(presetPattern, choice);
-    	extra = new SmartSolverExtra();
-        this.refAccumulator = refAccumulator;
-        refCutoff = SmartSolverProperties.getReferenceCutoff();
-        numPartialMoves = SmartSolverProperties.getNumPartialMoves();
+        if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
+            System.out.println("Referece board collection unavailable."
+                    + " Resume to the 15 puzzle solver standard version.");
+            extra = null;
+            this.refAccumulator = null;
+            refCutoff = 0;
+            numPartialMoves = 0;
+        } else {
+            activeSmartSolver = true;
+            extra = new SmartSolverExtra();
+            this.refAccumulator = refAccumulator;
+            refCutoff = SmartSolverProperties.getReferenceCutoff();
+            numPartialMoves = SmartSolverConstants.getNumPartialMoves();
+        }
     }
 
     /**
@@ -70,10 +82,20 @@ public class SmartSolverPD extends SolverPD {
     public SmartSolverPD(byte[] customPattern, boolean[] elementGroups,
     		ReferenceAccumulator refAccumulator) {
     	super(customPattern, elementGroups);
-    	extra = new SmartSolverExtra();
-        this.refAccumulator = refAccumulator;
-        refCutoff = SmartSolverProperties.getReferenceCutoff();
-        numPartialMoves = SmartSolverProperties.getNumPartialMoves();
+        if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
+            System.out.println("Referece board collection unavailable."
+                    + " Resume to the 15 puzzle solver standard version.");
+            extra = null;
+            this.refAccumulator = null;
+            refCutoff = 0;
+            numPartialMoves = 0;
+        } else {
+            activeSmartSolver = true;
+            extra = new SmartSolverExtra();
+            this.refAccumulator = refAccumulator;
+            refCutoff = SmartSolverProperties.getReferenceCutoff();
+            numPartialMoves = SmartSolverConstants.getNumPartialMoves();
+        }
     }
 
     /**
@@ -106,8 +128,39 @@ public class SmartSolverPD extends SolverPD {
         }
     }
 
+    @Override
+    public byte heuristic(Board board) {
+    	return heuristic(board, flagAdvancedPriority, tagSearch);
+    }
+    
+    @Override 
+    public byte heuristicStandard(Board board) {
+    	if (board == null) {
+            throw new IllegalArgumentException("Board is null");
+        }
+        if (!board.isSolvable()) {
+            return -1;
+        }
+        return heuristic(board, tagStandard, tagReview);    	
+    }
+    
+    @Override 
+    public byte heuristicAdvanced(Board board) {
+    	if (!activeSmartSolver) {
+            throw new UnsupportedOperationException("Advanced version currently inactive."
+                    + " Reference collection unavailable. Check the system.");
+    	}
+    	if (board == null) {
+            throw new IllegalArgumentException("Board is null");
+        }
+        if (!board.isSolvable()) {
+            return -1;
+        }
+        return heuristic(board, tagAdvanced, tagReview);    	
+    }
+    
     // calculate the heuristic value of the given board and save the properties
-    protected byte heuristic(Board board, boolean isAdvanced, boolean isSearch) {
+    private byte heuristic(Board board, boolean isAdvanced, boolean isSearch) {
         if (!board.isSolvable()) {
             return -1;
         }
@@ -138,8 +191,8 @@ public class SmartSolverPD extends SolverPD {
 
         AdvancedRecord record = extra.advancedContains(board, isSearch, refAccumulator);
         if (record != null) {
-        	priorityAdvanced = record.getMoves();
-        	if (record.hasInitialMoves()) {
+        	priorityAdvanced = record.getEstimate();
+        	if (record.hasPartialMoves()) {
         		solutionMove = record.getPartialMoves();
         	}
         } 
@@ -211,19 +264,19 @@ public class SmartSolverPD extends SolverPD {
 
             if (timeout) {
                 if (flagMessage) {
-                	System.out.println("\tNodes : " + num2string(idaCount) + "timeout");
+                    System.out.printf("\tNodes : %-15s timeout\n", Integer.toString(idaCount));
                 }
                 return;
             } else {
-            	if (flagMessage) {
-                    System.out.println("\tNodes : " + num2string(idaCount) + stopwatch.currentTime() + "s");
-                } 
-            	
+                if (flagMessage) {
+                    System.out.printf("\tNodes : %-15s  " + stopwatch.currentTime() + "s\n",
+                            Integer.toString(idaCount));
+                }
             	if (solved) {
-            		/*
+            		
             		// if currently using pattern database 7-8 and it takes long than cutoff limit
                     // to solve, add the board and solutions to reference boards collection.
-                    if (inUseHeuristic == HeuristicType.PD78
+                    if (activeSmartSolver && inUseHeuristic == HeuristicOptions.PD78
                             && stopwatch.currentTime() >  refAccumulator.getCutoffLimit()) {
                         // backup original solutions
                         final Stopwatch backupTime = stopwatch;
@@ -245,20 +298,8 @@ public class SmartSolverPD extends SolverPD {
                         searchNodeCount = backupIdaCount;
                         solutionMove = backupSolution;
                     }
-                    */
                     return;
             	}
-            }
-            limit += 2;
-        }
-    }
-
-    // overload idaStar to solve the puzzle with the given max limit for advancedEstimate
-    void idaStar(int limit, int maxLimit) {
-        while (limit <= maxLimit) {
-            dfs1stPrio(zeroX, zeroY, 0, limit, pdValReg, pdValSym);
-            if (solved) {
-                return;
             }
             limit += 2;
         }
@@ -307,9 +348,10 @@ public class SmartSolverPD extends SolverPD {
 
         if (flagMessage) {
             if (timeout) {
-            	System.out.println("\tNodes : " + num2string(idaCount) + "\ttimeout");
+                System.out.printf("\tNodes : %-15s timeout\n", Integer.toString(idaCount));
             } else {
-            	System.out.println("\tNodes : " + num2string(idaCount) + stopwatch.currentTime() + "s");
+                System.out.printf("\tNodes : %-15s  " + stopwatch.currentTime() + "s\n",
+                        Integer.toString(idaCount));
             }
         }
     }

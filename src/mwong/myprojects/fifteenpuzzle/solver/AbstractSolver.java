@@ -16,12 +16,12 @@ package mwong.myprojects.fifteenpuzzle.solver;
 
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
-import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleProperties;
 import mwong.myprojects.fifteenpuzzle.utilities.Stopwatch;
 
 import java.util.Arrays;
 
 public abstract class AbstractSolver implements Solver {
+    // constants
     protected final int puzzleSize;
     protected final int rowSize;
     protected final int maxMoves;
@@ -35,20 +35,26 @@ public abstract class AbstractSolver implements Solver {
     protected final boolean tagReview;
     protected final byte[] symmetryPos;
     protected final byte[] symmetryVal;
-
+    protected final Board goalBoard;
+    // solver setting
     protected boolean flagTimeout;
     protected boolean flagMessage;
     protected boolean flagAdvancedPriority;
+    protected boolean activeSmartSolver;
     protected int searchTimeoutLimit;
-    protected HeuristicType inUseHeuristic;
-
+    protected HeuristicOptions inUseHeuristic;
+    // board related
     protected byte[] tiles;
+    protected int zeroX;
+    protected int zeroY;
+    protected boolean isSolvable;
+    // search related
     protected Board lastBoard;
     protected byte priorityGoal;
     protected byte priorityAdvanced;
-    protected int zeroX;
-    protected int zeroY;
-
+    protected int[] priority1stMove;
+    protected Stopwatch stopwatch;
+    // search results
     protected byte steps;
     protected int searchDepth;
     protected int searchNodeCount;
@@ -56,44 +62,48 @@ public abstract class AbstractSolver implements Solver {
     protected boolean solved;
     protected boolean timeout;
     protected boolean terminated;
-    protected boolean isSolvable;
     protected Direction[] solutionMove;
-    protected int[] priority1stMove;
-    protected Stopwatch stopwatch;
 
     protected AbstractSolver() {
-        puzzleSize = SolverProperties.getPuzzleSize();
-        rowSize = SolverProperties.getRowSize();
-        maxMoves = SolverProperties.getMaxMoves();
-        endOfSearch = SolverProperties.getEndOfSearch();
+        // load the constants
+        puzzleSize = SolverConstants.getPuzzleSize();
+        rowSize = SolverConstants.getRowSize();
+        maxMoves = SolverConstants.getMaxMoves();
+        endOfSearch = SolverConstants.getEndOfSearch();
         defaultTimeoutLimit = SolverProperties.getDefaultTimeoutLimit();
-        onSwitch = SolverProperties.isOnSwitch();
+        onSwitch = SolverConstants.isOnSwitch();
         offSwitch = !onSwitch;
-        tagAdvanced = SolverProperties.isTagAdvanced();
+        tagAdvanced = SolverConstants.isTagAdvanced();
         tagStandard = !tagAdvanced;
-        tagSearch = SolverProperties.isTagSearch();
+        tagSearch = SolverConstants.isTagSearch();
         tagReview = !tagSearch;
-        symmetryPos = SolverProperties.getSymmetryPos();
-        symmetryVal = SolverProperties.getSymmetryVal();
+        symmetryPos = SolverConstants.getSymmetryPos();
+        symmetryVal = SolverConstants.getSymmetryVal();
+        goalBoard = SolverConstants.getGoalBoard();
 
-        lastBoard = new Board(PuzzleProperties.getGoalTiles());
+        // initialize default setting
+        lastBoard = goalBoard;
         flagMessage = onSwitch;
         flagTimeout = onSwitch;
+        flagAdvancedPriority = tagStandard;
         searchTimeoutLimit = defaultTimeoutLimit;
+        activeSmartSolver = false;
     }
 
+    // ----- solver settings -----
+
     /**
-     *  Return HeuristicType of object instance that implements SolverInterface.
+     *  Return HeuristicOptions of object instance that implements Solver interface.
      *
-     *  @return HeuristicType of solver
+     *  @return HeuristicOptions of solver
      */
     @Override
-    public final HeuristicType getHeuristicType() {
+    public final HeuristicOptions getHeuristicOptions() {
         return inUseHeuristic;
     }
 
     /**
-     *  Print solver description.
+     *  Print the solver description.
      */
     @Override
     public void printDescription() {
@@ -120,19 +130,21 @@ public abstract class AbstractSolver implements Solver {
         flagTimeout = flag;
     }
 
-	@Override
-	public void advPrioritySwitch(boolean flag) {
-		flagAdvancedPriority = flag;	
-	}
-
     /**
-     * Returns the flagTimeout.
+     *  Set the advance search feature with the given flag.
      *
-     * @return the flagTimeout
+     *  @param flag the boolean represent the ON/OFF advanced feature
      */
     @Override
-    public final boolean isFlagTimeout() {
-        return flagTimeout;
+    public boolean advPrioritySwitch(boolean flag) {
+        if (activeSmartSolver) {
+            flagAdvancedPriority = flag;
+            return true;
+        } else {
+            //System.out.println("Referece board collection unavailable."
+            //    + " Advanced search feature has disabled.");
+            return false;
+        }
     }
 
     /**
@@ -146,14 +158,26 @@ public abstract class AbstractSolver implements Solver {
     }
 
     /**
-     * Rreturn the searchTimeoutLimit.
+     * Returns the boolean value represent timeout feature in use.
      *
-     * @return the searchTimeoutLimit
+     * @return boolean value represent timeout feature
+     */
+    @Override
+    public final boolean isFlagTimeout() {
+        return flagTimeout;
+    }
+
+    /**
+     * Returns the integer of timeout limit in use.
+     *
+     * @return integer of timeout limit
      */
     @Override
     public final int getSearchTimeoutLimit() {
         return searchTimeoutLimit;
     }
+
+    // ----- heuristic and solve the puzzle -----
 
     // reset and clear variables from previous search results
     protected final void clearHistory() {
@@ -169,23 +193,14 @@ public abstract class AbstractSolver implements Solver {
         steps = 0;
     }
 
-    // reset and clear variables from previous search results
+    // board initial
     protected final void initialize(Board board) {
         lastBoard = board;
         zeroX = board.getZeroX();
         zeroY = board.getZeroY();
         tiles = board.getTiles();
         priorityGoal = 0;
-    }
-
-    /**
-     * Returns the original heuristic value of the board.
-     *
-     * @return byte value of the original heuristic value of the board
-     */
-    @Override
-    public final byte heuristic(Board board) {
-        return heuristicStandard(board);
+        priorityAdvanced = -1;
     }
 
     /**
@@ -198,10 +213,10 @@ public abstract class AbstractSolver implements Solver {
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
-        if (board.equals(lastBoard)) {
-            return priorityGoal;
+        if (!board.isSolvable()) {
+            return -1;
         }
-        return heuristic(board, tagStandard, tagReview);
+        return heuristic(board);
     }
 
     /**
@@ -210,24 +225,10 @@ public abstract class AbstractSolver implements Solver {
      * @return byte value of the original heuristic value of the board
      */
     @Override
-    public final byte heuristicAdvanced(Board board) {
-        if (board == null) {
-            throw new IllegalArgumentException("Board is null");
-        }
-        if (board.equals(lastBoard) && priorityAdvanced != -1) {
-        	return priorityAdvanced;
-        }
-        if (stopwatch == null) {
-            stopwatch = new Stopwatch();
-        }
-        byte estimate = heuristic(board, tagAdvanced, tagReview);
-        
-        stopwatch = null;
-        return estimate;
+    public byte heuristicAdvanced(Board board) {
+        throw new UnsupportedOperationException("Advanced version currently inactive."
+                + "  Check the system.");
     }
-    
-    // calculate the heuristic value of the given board and save the properties
-    protected abstract byte heuristic(Board board, boolean isAdvanced, boolean isSearch);
 
     /**
      *  Find the optimal path to goal state if the given board is solvable,
@@ -255,7 +256,8 @@ public abstract class AbstractSolver implements Solver {
                 stopwatch.start();
                 priority1stMove = new int[rowSize * 2];
                 System.arraycopy(board.getValidMoves(), 0, priority1stMove, rowSize, rowSize);
-                limit = heuristic(board, flagAdvancedPriority, tagSearch);
+                limit = heuristic(board);
+                assert limit > 0 : "Board must be solvable and is not the goal state.";
                 idaStar(limit);
                 assert checkGoal(board) : "Not end at goal state.";
             }
@@ -266,7 +268,10 @@ public abstract class AbstractSolver implements Solver {
         stopwatch = null;
     }
 
-    // check the initial board reach the goal state after the solution moves.
+    // solve the puzzle using interactive deepening A* algorithm
+    protected abstract void idaStar(int limit);
+
+    // assertion tool : check the initial board reach the goal state after the solution moves.
     private boolean checkGoal(Board initial) {
         if (initial == null) {
             throw new IllegalArgumentException("Board is null");
@@ -294,6 +299,8 @@ public abstract class AbstractSolver implements Solver {
         }
         return true;
     }
+
+    // ----- search results -----
 
     /**
      * Returns the boolean value represent the search has timeout.
@@ -334,6 +341,15 @@ public abstract class AbstractSolver implements Solver {
         return searchNodeCount;
     }
 
+    /**
+     * Returns the double value of total time of search in seconds.
+     *
+     * @return double value of total time of search in seconds
+     */
+    @Override
+    public final double searchTime() {
+        return searchTime;
+    }
 
     /**
      * Returns the integer value of minimum moves to the goal state.
@@ -365,35 +381,5 @@ public abstract class AbstractSolver implements Solver {
             return null;
         }
         return solutionMove;
-    }
-
-    // solve the puzzle using interactive deepening A* algorithm
-    protected abstract void idaStar(int limit);
-
-    /**
-     * Returns the double value of total time of search in seconds.
-     *
-     * @return double value of total time of search in seconds
-     */
-    @Override
-    public final double searchTime() {
-        return searchTime;
-    }
-
-    // convert the given tiles to symmetry tiles
-    protected final byte[] tiles2sym(byte[] original) {
-        byte[] tiles2sym = new byte[puzzleSize];
-        for (int i = 0; i < puzzleSize; i++) {
-            tiles2sym[symmetryPos[i]] = symmetryVal[original[i]];
-        }
-        return tiles2sym;
-    }
-
-    protected final String num2string(int num) {
-        String str = Integer.toString(num);
-        while (str.length() < 15) {
-            str += " ";
-        }
-        return str;
     }
 }

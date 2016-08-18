@@ -1,14 +1,3 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation: javac WalkingDistance.java
- *  Dependencies: Board.java
- *
- *  A immutable data type of generate walking distance for the 15 puzzle
- *
- ****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.solver.components;
 
 import java.io.File;
@@ -22,6 +11,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
+/**
+ * WalkingDistane provides a set of link and a set of heuristic values of Walking Distance.
+ * It either load from storage or generate a new set if local file not exists.
+ *
+ * <p>Dependencies : PuzzleConstants.java
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public class WalkingDistance {
     private final String directory;
     private final String filepath;
@@ -38,13 +36,13 @@ public class WalkingDistance {
     private int [] ptnLink;
 
     /**
-     * Initializes the WalkingDistance object using default pattern.
+     * Initializes the WalkingDistance object.
      */
     public WalkingDistance() {
         directory = "database";
         String seperator = System.getProperty("file.separator");
         filepath = directory + seperator + "WalkingDistance.db";
-        rowSize = PuzzleProperties.getRowSize();
+        rowSize = PuzzleConstants.getRowSize();
         keySize = 55;
         patternSize = 24964;
         priorKey = new int[] {0, 0x0E00, 0x0FC0, 0x0FF8};

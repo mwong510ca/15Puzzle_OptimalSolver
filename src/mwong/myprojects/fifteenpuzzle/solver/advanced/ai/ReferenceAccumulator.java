@@ -16,7 +16,7 @@ package mwong.myprojects.fifteenpuzzle.solver.advanced.ai;
 
 import mwong.myprojects.fifteenpuzzle.solver.Solver;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPD;
-import mwong.myprojects.fifteenpuzzle.solver.HeuristicType;
+import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
@@ -47,7 +47,7 @@ public class ReferenceAccumulator {
      * Initializes A object.  Load the stored boards from file or use default set.
      */
     public ReferenceAccumulator() {
-    	symmetry = ReferenceProperties.isSymmetry();
+    	symmetry = ReferenceConstants.isSymmetry();
         try {
         	referenceMap = new HashMap<ReferenceBoard, ReferenceMoves>();
             System.out.println("Load data and system update - archived hard board. "
@@ -249,7 +249,7 @@ public class ReferenceAccumulator {
 
     // verify the given solver is SolverPD object using pattern database 7-8
     private boolean validateSolver(Solver inSolver) {
-        if (inSolver != null && inSolver.getHeuristicType() == HeuristicType.PD78) {
+        if (inSolver != null && inSolver.getHeuristicOptions() == HeuristicOptions.PD78) {
             return true;
         }
         return false;
@@ -354,8 +354,8 @@ public class ReferenceAccumulator {
         solverPD.advPrioritySwitch(SWITCH_ON);
 		*/
         ReferenceBoard advBoard = new ReferenceBoard(board);
-        byte lookup = ReferenceProperties.getReferenceLookup(board.getZero1d());
-        int group = ReferenceProperties.getReferenceGroup(board.getZero1d());
+        byte lookup = ReferenceConstants.getReferenceLookup(board.getZero1d());
+        int group = ReferenceConstants.getReferenceGroup(board.getZero1d());
 
         if (referenceMap.containsKey(advBoard)) {
             ReferenceMoves advMoves = referenceMap.get(advBoard);
@@ -439,7 +439,7 @@ public class ReferenceAccumulator {
 		*/
         Board board = solverPD.lastSearchBoard();
         ReferenceBoard advBoard = new ReferenceBoard(board);
-        int group = ReferenceProperties.getReferenceGroup(board.getZero1d());
+        int group = ReferenceConstants.getReferenceGroup(board.getZero1d());
 
         if (referenceMap.containsKey(advBoard)) {
             ReferenceMoves advMoves = referenceMap.get(advBoard);
@@ -506,7 +506,7 @@ public class ReferenceAccumulator {
 
     // print all reference boards and it's components.
     void printAllBoards() {
-    	int puzzleSize = ReferenceProperties.getPuzzleSize();
+    	int puzzleSize = ReferenceConstants.getPuzzleSize();
         for (Entry<ReferenceBoard, ReferenceMoves> entry : referenceMap.entrySet()) {
             ReferenceBoard advBoard = entry.getKey();
             for (int i = 0; i < puzzleSize; i++) {

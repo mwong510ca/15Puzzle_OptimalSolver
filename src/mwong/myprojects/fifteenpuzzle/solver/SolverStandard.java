@@ -1,67 +1,81 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation  : javac SolverInterface.java
- *  Dependencies : Board.java, Direction.java, AdvancedAccumulator.java,
- *                 AdvancedMoves.java
- *
- *  SolverInterface class of 15 puzzle that has the following constants and methods.
- *
- ****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.solver;
 
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 
+/**
+ * SolverStandard is the interface class that has the basic methods of any
+ * 15 puzzle solver.
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public interface SolverStandard {
+    // ----- solver setting -----
     /**
-     *  Return HeuristicType of object instance that implements SolverInterface.
+     * Return HeuristicOptions of object instance that currently using.
      *
-     *  @return HeuristicType of solver
+     * @return HeuristicOptions of solver
      */
-    HeuristicType getHeuristicType();
+    HeuristicOptions getHeuristicOptions();
 
     /**
-     *  Print solver description.
+     * Print solver description.
      */
     void printDescription();
 
     /**
-     *  Set the message feature with the given flag.
+     * Set the message feature with the given flag.
      *
-     *  @param flag the boolean represent the ON/OFF message feature
+     * @param flag the boolean represent the ON/OFF message feature
      */
     void messageSwitch(boolean flag);
 
     /**
-     *  Set the timeout feature with the given flag.
+     * Set the timeout feature with the given flag.
      *
-     *  @param flag the boolean represent the ON/OFF timeout feature
+     * @param flag the boolean represent the ON/OFF timeout feature
      */
     void timeoutSwitch(boolean flag);
 
     /**
-     *  Set the timeout limit with the given value in seconds.
+     * Set the timeout limit with the given value in seconds.
      *
-     *  @param seconds the integer represent the timeout limit in seconds
+     * @param seconds the integer represent the timeout limit in seconds
      */
     void setTimeoutLimit(int seconds);
 
     /**
-     *  Find the optimal path to goal state if the given board is solvable.
+     * Returns the boolean represents the timeout feature is in use.
      *
-     *  @param board the initial puzzle Board object to solve
+     * @return the boolean represents the timeout feature is in use
+     */
+    boolean isFlagTimeout();
+
+    /**
+     * Returns integer of timeout setting.
+     *
+     * @return integer of timeout setting
+     */
+    int getSearchTimeoutLimit();
+
+    // ----- heuristic and solve the puzzle -----
+    /**
+     * Returns the heuristic value of the given board.
+     *
+     * @param board the initial puzzle Board object to solve
+     * @return byte value of the heuristic value of the given board
+     */
+    byte heuristic(Board board);
+
+    /**
+     * Find the optimal path to goal state if the given board is solvable.
+     *
+     * @param board the initial puzzle Board object to solve
      */
     void findOptimalPath(Board board);
 
-    /**
-     * Returns the original heuristic value of the given board.
-     *
-     * @return byte value of the original heuristic value of the given board
-     */
-    byte heuristic(Board board);
+    // ----- search results -----
 
     /**
      * Returns the boolean value represents the search has timeout.
@@ -104,18 +118,4 @@ public interface SolverStandard {
      * @return array of Directions of each move to the goal state
      */
     Direction[] solution();
-
-    /**
-     * Returns integer of timeout setting.
-     *
-     * @return integer of timeout setting
-     */
-    int getSearchTimeoutLimit();
-
-	/**
-     * Returns the flagTimeout.
-     *
-	 * @return the flagTimeout
-	 */
-    boolean isFlagTimeout();
 }

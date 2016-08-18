@@ -30,11 +30,11 @@ public class ReferenceBoard {
     byte group;
 
     private ReferenceBoard() {
-    	puzzleSize = ReferenceProperties.getPuzzleSize();
-    	referenceLookup = ReferenceProperties.getReferenceGroup();
-    	referenceGroup = ReferenceProperties.getReferenceGroup();
-    	rotate90pos = ReferenceProperties.getRotate90Pos();
-    	rotate180pos = ReferenceProperties.getRotate180Pos();
+    	puzzleSize = ReferenceConstants.getPuzzleSize();
+    	referenceLookup = ReferenceConstants.getReferenceGroup();
+    	referenceGroup = ReferenceConstants.getReferenceGroup();
+    	rotate90pos = ReferenceConstants.getRotate90Pos();
+    	rotate180pos = ReferenceConstants.getRotate180Pos();
     }
     
     /**

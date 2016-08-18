@@ -21,25 +21,26 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
 import mwong.myprojects.fifteenpuzzle.solver.Solver;
+import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
 import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
 import mwong.myprojects.fifteenpuzzle.console.ApplicationType;
-import mwong.myprojects.fifteenpuzzle.solver.HeuristicType;
+import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
+import mwong.myprojects.fifteenpuzzle.solver.components.PatternConstants;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternElement;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
-import mwong.myprojects.fifteenpuzzle.solver.components.PatternProperties;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPD;
 
 import java.util.Scanner;
 
 public class ApplicationCustomPattern extends AbstractApplication {
-    private final int puzzleSize = SolverProperties.getPuzzleSize();
+    private final int puzzleSize = SolverConstants.getPuzzleSize();
     private final ApplicationType applicationType = ApplicationType.CustomPattern;
 
     private final ReferenceAccumulator refAccumulator = new ReferenceAccumulator();
     private Solver solver = new SmartSolverPD(PatternOptions.Pattern_663, refAccumulator);
-    private HeuristicType inUsePattern = solver.getHeuristicType();
+    private HeuristicOptions inUsePattern = solver.getHeuristicOptions();
     private int inUsePatternOption = 0;
     private final Scanner scanner  = new Scanner(System.in, "UTF-8");
     private int timeoutLimit = 10;
@@ -77,9 +78,9 @@ public class ApplicationCustomPattern extends AbstractApplication {
                         choice = scanner.nextInt();
                     } while (!PatternOptions.Pattern_555.isValidPattern(choice));
 
-                    if (inUsePattern != HeuristicType.PD555 || inUsePatternOption != choice) {
+                    if (inUsePattern != HeuristicOptions.PD555 || inUsePatternOption != choice) {
                         solver = new SmartSolverPD(PatternOptions.Pattern_555, choice, refAccumulator);
-                        inUsePattern = HeuristicType.PD555;
+                        inUsePattern = HeuristicOptions.PD555;
                         inUsePatternOption = choice;
                     } else {
                         System.out.println("No Change, currently in use.");
@@ -95,9 +96,9 @@ public class ApplicationCustomPattern extends AbstractApplication {
                         choice = scanner.nextInt();
                     } while (!PatternOptions.Pattern_663.isValidPattern(choice));
 
-                    if (inUsePattern != HeuristicType.PD663 || inUsePatternOption != choice) {
+                    if (inUsePattern != HeuristicOptions.PD663 || inUsePatternOption != choice) {
                         solver = new SmartSolverPD(PatternOptions.Pattern_663, choice, refAccumulator);
-                        inUsePattern = HeuristicType.PD663;
+                        inUsePattern = HeuristicOptions.PD663;
                         inUsePatternOption = choice;
                     } else {
                         System.out.println("No Change, currently in use.");
@@ -116,9 +117,9 @@ public class ApplicationCustomPattern extends AbstractApplication {
                         choice = scanner.nextInt();
                     } while (!PatternOptions.Pattern_78.isValidPattern(choice));
 
-                    if (inUsePattern != HeuristicType.PD78 || inUsePatternOption != choice) {
+                    if (inUsePattern != HeuristicOptions.PD78 || inUsePatternOption != choice) {
                         solver = new SmartSolverPD(PatternOptions.Pattern_78, choice, refAccumulator);
-                        inUsePattern = HeuristicType.PD78;
+                        inUsePattern = HeuristicOptions.PD78;
                         inUsePatternOption = choice;
                     } else {
                         System.out.println("No Change, currently in use.");
@@ -162,7 +163,7 @@ public class ApplicationCustomPattern extends AbstractApplication {
                     if (elementGroups != null) {
                         solver = null;
                         solver = new SmartSolverPD(pattern, elementGroups, refAccumulator);
-                        inUsePattern = HeuristicType.PDCustom;
+                        inUsePattern = HeuristicOptions.PDCustom;
                         inUsePatternOption = -1;
                         pending = false;
                         break;
@@ -179,7 +180,7 @@ public class ApplicationCustomPattern extends AbstractApplication {
         solver.setTimeoutLimit(timeoutLimit);
         solver.printDescription();
         flagAdvancedUpdate = false;
-        if (solver.getHeuristicType() == HeuristicType.PD78
+        if (solver.getHeuristicOptions() == HeuristicOptions.PD78
                 && timeoutLimit > refAccumulator.getCutoffLimit()) {
             flagAdvancedUpdate = true;
         }
@@ -208,7 +209,7 @@ public class ApplicationCustomPattern extends AbstractApplication {
             patternGroups[group]++;
         }
 
-        boolean [] elementGroups = new boolean [PatternProperties.getMaxGroupSize() + 1];
+        boolean [] elementGroups = new boolean [PatternConstants.getMaxGroupSize() + 1];
         for (byte group : patternGroups) {
             elementGroups[group] = true;
         }
@@ -238,7 +239,7 @@ public class ApplicationCustomPattern extends AbstractApplication {
                 break;
             }
             if (value == 'Q' || value == 'q') {
-                if (solver.getHeuristicType() != HeuristicType.PD78) {
+                if (solver.getHeuristicOptions() != HeuristicOptions.PD78) {
                     solver = null;
                 }
                 System.out.println("Goodbye!\n");
@@ -248,7 +249,7 @@ public class ApplicationCustomPattern extends AbstractApplication {
             if (value == 'H' || value == 'h') {
                 flagAdvPriority = !flagAdvPriority;
                 solver.advPrioritySwitch(flagAdvPriority);
-                if (inUsePattern != HeuristicType.PD78) {
+                if (inUsePattern != HeuristicOptions.PD78) {
                     menuSub(false, true);
                 } else {
                     menuSub(false, false);
@@ -268,7 +269,7 @@ public class ApplicationCustomPattern extends AbstractApplication {
                 } while (limit < 3 || limit > 300);
                 timeoutLimit = limit;
                 solver.setTimeoutLimit(timeoutLimit);
-                if (solver.getHeuristicType() == HeuristicType.PD78) {
+                if (solver.getHeuristicOptions() == HeuristicOptions.PD78) {
                     if (timeoutLimit > refAccumulator.getCutoffLimit()) {
                         flagAdvancedUpdate = true;
                     } else {
@@ -328,7 +329,7 @@ public class ApplicationCustomPattern extends AbstractApplication {
                 } while (limit < 3 || limit > 300);
                 timeoutLimit = limit;
                 solver.setTimeoutLimit(timeoutLimit);
-                if (solver.getHeuristicType() == HeuristicType.PD78) {
+                if (solver.getHeuristicOptions() == HeuristicOptions.PD78) {
                     if (timeoutLimit > refAccumulator.getCutoffLimit()) {
                         flagAdvancedUpdate = true;
                     } else {

@@ -1,27 +1,23 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation  : javac SolverWD.java
- *  Dependencies : Board.java, Direction.java, Stopwatch.java,
- *                 SolverAbstract, WDCombo.java, AdvancedAccumulator.java
- *                 AdvancedBoard.java, AdvancedMoves.java
- *
- *  SolverWD implements SolverInterface.  It take a Board object and solve
- *  the puzzle with IDA* using walking distance.
- *
- ****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.solver.standard;
 
 import mwong.myprojects.fifteenpuzzle.solver.AbstractSolver;
-import mwong.myprojects.fifteenpuzzle.solver.HeuristicType;
+import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.WalkingDistance;
 
 import java.util.HashMap;
 
+/**
+ * SolverWD extends AbstractSolver.  It is the 15 puzzle optimal solver.
+ * It takes a Board object of the puzzle and solve it with IDA* using Walking Distance.
+ *
+ * <p>Dependencies : AbstractSolver.java, Board.java, Direction.java, HeuristicOptions.java,
+ *                   WalkingDistance.java
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public class SolverWD extends AbstractSolver {
     protected final boolean forward = true;
     protected final boolean backward = !forward;
@@ -38,13 +34,13 @@ public class SolverWD extends AbstractSolver {
     protected int wdIdxH;
     protected int wdIdxV;
     protected int idaCount;
-    
+
     /**
      * Initializes SolverWD object.
      */
     public SolverWD() {
-    	super();
-        inUseHeuristic = HeuristicType.WD;
+        super();
+        inUseHeuristic = HeuristicOptions.WD;
         loadWDComponents();
     }
 
@@ -58,14 +54,23 @@ public class SolverWD extends AbstractSolver {
         wdPtnLink = wd15.getPtnLink();
     }
 
-    // calculate the heuristic value of the given board and save the properties
-    protected byte heuristic(Board board, boolean isAdvanced, boolean isSearch) {
+    /**
+     * Returns the heuristic value of the given board.
+     *
+     * @param board the initial puzzle Board object to solve
+     * @return byte value of the heuristic value of the given board
+     */
+    @Override
+    public byte heuristic(Board board) {
+        if (board == null) {
+            throw new IllegalArgumentException("Board is null");
+        }
         if (!board.isSolvable()) {
             return -1;
         }
 
-        if (!board.equals(lastBoard) || isSearch) {
-        	initialize(board);
+        if (!board.equals(lastBoard)) {
+            initialize(board);
             tilesSym = board.getTilesSym();
 
             byte [] ctwdh = new byte[puzzleSize];
@@ -91,7 +96,6 @@ public class SolverWD extends AbstractSolver {
             wdValueV = getWDValue(wdIdxV);
 
             priorityGoal = (byte) (wdValueH + wdValueV);
-            priorityAdvanced = priorityGoal;
         }
         return priorityGoal;
     }
@@ -109,16 +113,17 @@ public class SolverWD extends AbstractSolver {
 
             if (timeout) {
                 if (flagMessage) {
-                	System.out.println("\tNodes : " + num2string(idaCount) + "timeout");
+                    System.out.printf("\tNodes : %-15s timeout\n", Integer.toString(idaCount));
                 }
                 return;
             } else {
-            	if (flagMessage) {
-            		System.out.println("\tNodes : " + num2string(idaCount) + stopwatch.currentTime() + "s");
-            	}
-            	if (solved) {
-            		return;
-            	}
+                if (flagMessage) {
+                    System.out.printf("\tNodes : %-15s " + stopwatch.currentTime() + "s\n",
+                            Integer.toString(idaCount));
+                }
+                if (solved) {
+                    return;
+                }
             }
             limit += 2;
         }
@@ -147,7 +152,7 @@ public class SolverWD extends AbstractSolver {
 
         int estimate = limit;
         do {
-            int firstMoveIdx = -1;  // 0 - Right, 1 - Down, 2 - Left, 3 - Up
+            int firstMoveIdx = -1;
             int nodeCount = 0;
 
             estimate = endOfSearch;
@@ -165,16 +170,16 @@ public class SolverWD extends AbstractSolver {
 
             if (estimate < endOfSearch) {
                 int startCounter = idaCount++;
-                if (firstMoveIdx == 0) {
+                if (firstMoveIdx == Direction.RIGHT.getValue()) {
                     priority1stMove[firstMoveIdx] = shiftRight(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, idxH, idxV, valH, valV);
-                } else if (firstMoveIdx == 1) {
+                } else if (firstMoveIdx == Direction.DOWN.getValue()) {
                     priority1stMove[firstMoveIdx] = shiftDown(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, idxH, idxV, valH, valV);
-                } else if (firstMoveIdx == 2) {
+                } else if (firstMoveIdx == Direction.LEFT.getValue()) {
                     priority1stMove[firstMoveIdx] = shiftLeft(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, idxH, idxV, valH, valV);
-                } else if (firstMoveIdx == 3) {
+                } else if (firstMoveIdx == Direction.UP.getValue()) {
                     priority1stMove[firstMoveIdx] = shiftUp(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, idxH, idxV, valH, valV);
                 }

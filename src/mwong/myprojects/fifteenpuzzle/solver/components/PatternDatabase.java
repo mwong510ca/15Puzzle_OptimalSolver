@@ -1,19 +1,3 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation: javac PDCombo.java
- *  Execution:   java -d64 -Xms2g -Xmx4g PDCombo
- *  Dependencies: Stopwatch.java, Direction.java, Board.java,
- *                PDElement.java, PDPresetPatterns.java
- *
- *  A immutable data type of generate additive pattern database for any group
- *  size between 2 to 8.
- *  Remarks: group size of 8 takes 2.5-3 hours and require at least 2 gigabytes
- *           -Xms2g
- *
- ****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.solver.components;
 
 import mwong.myprojects.fifteenpuzzle.utilities.Stopwatch;
@@ -28,6 +12,20 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * PatternDatabase provides a set of pattern database values and conversion keys.
+ * It takes preset pattern of PatternOptions or a byte array of custom pattern.
+ * It either load from storage if preset pattern exists.  Otherwise, it will generate
+ * a new set.  Custom pattern is not allow to generate the group of 8 pattern.
+ *
+ * <p>Dependencies : PuzzleConstants.java, PuzzleConstants.java, Stopwatch.java
+ *
+ * <p>Remarks: group size of 8 takes 2.5-3 hours and require at least 2 gigabytes
+ *            -Xms2g
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public class PatternDatabase {
     private static final PatternOptions defaultPattern = PatternOptions.Pattern_663;
 
@@ -47,16 +45,16 @@ public class PatternDatabase {
     private byte[][] ptnKey2val;
 
     /**
-     * Initializes the PDCombo object using default pattern.
+     * Initializes the PatternDatabase object using default pattern.
      */
     public PatternDatabase() {
         this(defaultPattern);
     }
 
     /**
-     * Initializes the PDCombo object using default pattern.
+     * Initializes the PatternDatabase object using default pattern.
      *
-     * @param type the given PresetPatterns type
+     * @param type the given PatternOptions type
      */
     public PatternDatabase(PatternOptions type) {
         // default option is 0
@@ -64,20 +62,20 @@ public class PatternDatabase {
     }
 
     /**
-     * Initializes the PDCombo object using the given preset pattern.
+     * Initializes the PatternDatabase object using the given preset pattern.
      *
-     * @param type the given PresetPatterns type
-     * @param choice the integer of pattern option in PresetPatterns
+     * @param type the given PatternOptions type
+     * @param choice the integer of pattern option in PatternOptions
      */
     public PatternDatabase(PatternOptions type, int choice) {
         directory = "database";
         seperator = System.getProperty("file.separator");
-        formatBit16 = PatternProperties.getFormatBit16();
+        formatBit16 = PatternConstants.getFormatBit16();
         formatZero8Order
                 = new byte[] {(byte) (1 << 7), 1 << 6, 1 << 5, 1 << 4, 1 << 3, 1 << 2, 1 << 1, 1};
-        puzzleSize = PuzzleProperties.getSize();
-        rowSize = PuzzleProperties.getRowSize();
-        maxGroupSize = PatternProperties.getMaxGroupSize();
+        puzzleSize = PuzzleConstants.getSize();
+        rowSize = PuzzleConstants.getRowSize();
+        maxGroupSize = PatternConstants.getMaxGroupSize();
 
         if (!type.isValidPattern(choice)) {
             System.out.println("Invalid pattern option : " + choice);
@@ -90,19 +88,19 @@ public class PatternDatabase {
     }
 
     /**
-     * Initializes the PDCombo object using the given custom pattern.
-     * will not save in data file
+     * Initializes the PatternDatabase object using the given custom pattern.
+     * It allow group 2 to 7 only and it will not save in data file.
      *
      * @param pattern the byte array of user defined pattern
      */
     public PatternDatabase(byte[] pattern) {
         directory = null;
         seperator = null;
-        formatBit16 = PatternProperties.getFormatBit16();
+        formatBit16 = PatternConstants.getFormatBit16();
         formatZero8Order = null;
-        puzzleSize = PuzzleProperties.getSize();
-        rowSize = PuzzleProperties.getRowSize();
-        maxGroupSize = PatternProperties.getMaxGroupSize();
+        puzzleSize = PuzzleConstants.getSize();
+        rowSize = PuzzleConstants.getRowSize();
+        maxGroupSize = PatternConstants.getMaxGroupSize();
         createPattern(pattern, null);
     }
 
@@ -125,8 +123,8 @@ public class PatternDatabase {
 
             patterns = new byte [numPatterns][];
             for (int i = 0; i < numPatterns; i++) {
-                int sizeKeys = PatternProperties.getKeySize(patternGroups[i]);
-                int sizeFmts = PatternProperties.getFormatSize(patternGroups[i]);
+                int sizeKeys = PatternConstants.getKeySize(patternGroups[i]);
+                int sizeFmts = PatternConstants.getFormatSize(patternGroups[i]);
 
                 patterns[i] = new byte[sizeKeys * sizeFmts];
                 buf.get(patterns[i]);
@@ -163,8 +161,8 @@ public class PatternDatabase {
             outChannel.write(buffer);
 
             for (int i = 0; i < numPatterns; i++) {
-                int sizeKeys = PatternProperties.getKeySize(patternGroups[i]);
-                int sizeFmts = PatternProperties.getFormatSize(patternGroups[i]);
+                int sizeKeys = PatternConstants.getKeySize(patternGroups[i]);
+                int sizeFmts = PatternConstants.getFormatSize(patternGroups[i]);
 
                 buffer = ByteBuffer.allocateDirect(sizeKeys * sizeFmts);
                 buffer.put(patterns[i]);
@@ -202,7 +200,7 @@ public class PatternDatabase {
         // element components and pattern order in local storage
         int numOfPatterns = pattern[14];
         patternGroups = new byte[numOfPatterns];
-        int [] ptnFormat = new int[numOfPatterns];
+        int[] ptnFormat = new int[numOfPatterns];
 
         for (int i = 0; i < puzzleSize - 1; i++) {
             if (pattern[i] < 1 || pattern[i] > numOfPatterns) {
@@ -225,7 +223,7 @@ public class PatternDatabase {
         ptnKey2val = new byte[pattern[14]][];
         val2ptnKey[0] = -1;
         val2ptnOrder[0] = -1;
-        int [] ctGroup = new int[numOfPatterns];
+        int[] ctGroup = new int[numOfPatterns];
         for (int i = 0; i < puzzleSize - 1; i++) {
             val2ptnOrder[i + 1] = (byte) (pattern[i] - 1);
             ctGroup[pattern[i] - 1]++;
@@ -260,7 +258,7 @@ public class PatternDatabase {
             }
         }
 
-        // create PD15Element object if using in additive pattern
+        // create PatternElement object if using in additive pattern
         if (elementGroups == null) {
             elementGroups = new boolean [maxGroupSize + 1];
             for (byte group : patternGroups) {
@@ -375,27 +373,19 @@ public class PatternDatabase {
         return pos;
     }
 
-    private String num2string(int num) {
-        String str = Integer.toString(num);
-        while (str.length() < 15) {
-            str += " ";
-        }
-        return str;
-    }
-
     // generate the additive pattern of 8 tiles, use 8 bits byte (1 zero space
     // plus 7 tile locations) to record each move during the expansion
     private void genPatternByte(int order, int orgFmt, PatternElement element) {
         int group = 8;
-        int sizeKey = PatternProperties.getKeySize(group);
-        int sizeFmt = PatternProperties.getFormatSize(group);
-        int sizeShift = PatternProperties.getMaxShiftX2(group);
+        int sizeKey = PatternConstants.getKeySize(group);
+        int sizeFmt = PatternConstants.getFormatSize(group);
+        int sizeShift = PatternConstants.getMaxShiftX2(group);
 
         patterns[order] = new byte[sizeKey * sizeFmt];
         HashMap<Integer, Integer> formats = element.getFormats();
-        int [] formats2combo = element.getFormatCombo(group);
-        int [][] moveSet = element.getLinkFormatComboSet(group);
-        int [] shiftSet = element.getKeyShiftSet(group);
+        int[] formats2combo = element.getFormatCombo(group);
+        int[][] moveSet = element.getLinkFormatComboSet(group);
+        int[] shiftSet = element.getKeyShiftSet(group);
 
         System.out.print("Screen additive pattern " + (order + 1) + " : (");
         for (int i = 0; i < puzzleSize - 1; i++) {
@@ -411,7 +401,7 @@ public class PatternDatabase {
         System.out.println("0) at " + stopwatch.currentTime() + "s");
 
         // additive pattern of 8 tiles
-        byte [] currMove = new byte[sizeKey * sizeFmt];
+        byte[] currMove = new byte[sizeKey * sizeFmt];
         currMove[orgKeyIdx * sizeFmt + orgFmtIdx]
                 |= formatZero8Order[zeroIdx2Pos(puzzleSize - 1, orgFmt)];
         patterns[order][orgKeyIdx * sizeFmt + orgFmtIdx] = 1;
@@ -422,7 +412,7 @@ public class PatternDatabase {
 
         while (pending > 0) {
             // a 8 bits byte represent 8 order of zero spaces of format combo
-            byte [] nextMove = new byte[sizeKey * sizeFmt];
+            byte[] nextMove = new byte[sizeKey * sizeFmt];
             for (int k = 0; k < sizeKey; k++) {
                 for (int f = 0; f < sizeFmt; f++) {
                     int fmt = formats2combo[f];
@@ -511,9 +501,9 @@ public class PatternDatabase {
                 }
             }
 
-            System.out.println("moves : " + step + "\t count : " + num2string(remaining - pending)
-                    + " scanned : " + num2string(counter)
-                    + " ended at " + stopwatch.currentTime() + "s");
+            System.out.printf("moves : " + step + "\t count : %-15s  scanned : %-15s  ended at "
+                    + stopwatch.currentTime() + "s\n", Integer.toString(remaining - pending),
+                    Integer.toString(counter));
             step++;
             currMove = nextMove;
             remaining = pending;
@@ -526,15 +516,15 @@ public class PatternDatabase {
     // generate the additive pattern of 2 to 7 tiles, use 16 bits short (1 zero space
     // plus 8 to 13 tile spaces) to record each move during the expansion
     private void genPatternShort(int order, int group, int orgFmt, PatternElement element) {
-        int sizeKey = PatternProperties.getKeySize(group);
-        int sizeFmt = PatternProperties.getFormatSize(group);
-        int sizeShift = PatternProperties.getMaxShiftX2(group);
+        int sizeKey = PatternConstants.getKeySize(group);
+        int sizeFmt = PatternConstants.getFormatSize(group);
+        int sizeShift = PatternConstants.getMaxShiftX2(group);
 
         patterns[order] = new byte[sizeKey * sizeFmt];
         HashMap<Integer, Integer> formats = element.getFormats();
-        int [] formats2combo = element.getFormatCombo(group);
-        int [][] moveSet = element.getLinkFormatComboSet(group);
-        int [] shiftSet = element.getKeyShiftSet(group);
+        int[] formats2combo = element.getFormatCombo(group);
+        int[][] moveSet = element.getLinkFormatComboSet(group);
+        int[] shiftSet = element.getKeyShiftSet(group);
 
         System.out.print("Screen additive pattern " + (order + 1) + " : (");
         for (int i = 0; i < puzzleSize - 1; i++) {
@@ -550,7 +540,7 @@ public class PatternDatabase {
         System.out.println("0) at " + stopwatch.currentTime() + "s");
 
         // a 16 bits short represent 16 position of the board for zero space
-        short [] currMove = new short[sizeKey * sizeFmt];
+        short[] currMove = new short[sizeKey * sizeFmt];
         currMove[orgKeyIdx * sizeFmt + orgFmtIdx]
                 = freeMoveShort((short) (puzzleSize - 1), orgFmt);
         patterns[order][orgKeyIdx * sizeFmt + orgFmtIdx] = 1;
@@ -648,9 +638,9 @@ public class PatternDatabase {
                 }
             }
 
-            System.out.println("moves : " + step + "\t count : " + num2string(remaining - pending)
-                    + " scanned : " + num2string(counter)
-                    + " ended at " + stopwatch.currentTime() + "s");
+            System.out.printf("moves : " + step + "\t count : %-15s  scanned : %-15s ended at "
+                    + stopwatch.currentTime() + "s\n", Integer.toString(remaining - pending),
+                    Integer.toBinaryString(counter));
             step++;
             currMove = nextMove;
             remaining = pending;

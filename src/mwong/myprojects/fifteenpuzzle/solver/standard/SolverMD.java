@@ -1,45 +1,41 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation  : javac SolverMD.java
- *  Dependencies : Board.java, Direction.java, Stopwatch.java,
- *                 SolverAbstract.java, AdvancedAccumulator.java
- *                 AdvancedBoard.java, AdvancedMoves.java
- *
- *  SolverMD implements SolverInterface.  It take a Board object and solve
- *  the puzzle with IDA* using manhattan distance with linear conflict option.
- *
- ****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.solver.standard;
 
 import mwong.myprojects.fifteenpuzzle.solver.AbstractSolver;
-import mwong.myprojects.fifteenpuzzle.solver.HeuristicType;
-import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
+import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
+import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
-import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleProperties;
 
+/**
+ * SolverMD extends AbstractSolver.  It is the 15 puzzle optimal solver.
+ * It takes a Board object of the puzzle and solve it with IDA* using Manhattan
+ * distance with linear conflict option.
+ *
+ * <p>Dependencies : AbstractSolver.java, Board.java, Direction.java,
+ *                   HeuristicOptions.java, PuzzleProperties.java SolverConstants.java
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public class SolverMD extends AbstractSolver {
-    protected byte [] tilesSym;
+    protected byte[] tilesSym;
     protected boolean flagLinearConflict;
     protected int idaCount;
 
     /**
-     * Initializes Solver object.
+     * Initializes SolverMD object.
      */
     public SolverMD() {
-    	this(!SolverProperties.isTagLinearConflict());
+        this(!SolverConstants.isTagLinearConflict());
     }
 
     /**
-     * Initializes Solver object.
+     * Initializes SolverMD object.
      *
      * @param lcFlag boolean flag for message feature
      */
     public SolverMD(boolean lcFlag) {
-    	super();
+        super();
         linearConflictSwitch(lcFlag);
     }
 
@@ -50,26 +46,31 @@ public class SolverMD extends AbstractSolver {
      */
     public void linearConflictSwitch(boolean lcFlag) {
         clearHistory();
-        lastBoard = new Board(PuzzleProperties.getGoalTiles());
+        lastBoard = SolverConstants.getGoalBoard();
         flagLinearConflict = lcFlag;
         if (lcFlag) {
-            inUseHeuristic = HeuristicType.MDLC;
+            inUseHeuristic = HeuristicOptions.MDLC;
         } else {
-            inUseHeuristic = HeuristicType.MD;
+            inUseHeuristic = HeuristicOptions.MD;
         }
     }
 
     /**
-     * Returns the heuristic value of the given board and save the properties.
+     * Returns the heuristic value of the given board.
      *
-     * @return the heuristic value of the given board and save the properties
+     * @param board the initial puzzle Board object to solve
+     * @return byte value of the heuristic value of the given board
      */
-    protected byte heuristic(Board board, boolean isAdvanced, boolean isSearch) {
+    @Override
+    public byte heuristic(Board board) {
+        if (board == null) {
+            throw new IllegalArgumentException("Board is null");
+        }
         if (!board.isSolvable()) {
             return -1;
         }
 
-        if (!board.equals(lastBoard) || isSearch) {
+        if (!board.equals(lastBoard)) {
             initialize(board);
             tilesSym = board.getTilesSym();
             int base = 0;
@@ -79,8 +80,8 @@ public class SolverMD extends AbstractSolver {
                 for (int col = 0; col < rowSize; col++) {
                     int value = tiles[base + col];
                     if (value > 0) {
-                    	priorityGoal += Math.abs((value - 1) % rowSize - col);
-                    	priorityGoal += Math.abs((((value - 1)
+                        priorityGoal += Math.abs((value - 1) % rowSize - col);
+                        priorityGoal += Math.abs((((value - 1)
                                 - (value - 1) % rowSize) / rowSize) - row);
 
                         // linear conflict horizontal
@@ -89,7 +90,7 @@ public class SolverMD extends AbstractSolver {
                                 for (int col2 = col + 1; col2 < rowSize; col2++) {
                                     int value2 = tiles[base + col2];
                                     if ((value2 > base) && (value2 < value)) {
-                                    	priorityGoal += 2;
+                                        priorityGoal += 2;
                                         break;
                                     }
                                 }
@@ -104,7 +105,7 @@ public class SolverMD extends AbstractSolver {
                             for (int col2 = col + 1; col2 < rowSize; col2++) {
                                 int value2 = tilesSym[base + col2];
                                 if ((value2 > base) && (value2 < value)) {
-                                	priorityGoal += 2;
+                                    priorityGoal += 2;
                                     break;
                                 }
                             }
@@ -113,7 +114,6 @@ public class SolverMD extends AbstractSolver {
                 }
                 base += rowSize;
             }
-            priorityAdvanced = priorityGoal;
         }
         return priorityGoal;
     }
@@ -131,13 +131,13 @@ public class SolverMD extends AbstractSolver {
 
             if (timeout) {
                 if (flagMessage) {
-                    System.out.println("\tNodes : " + num2string(idaCount) + "timeout");
+                    System.out.printf("\tNodes : %-15s timeout\n", Integer.toString(idaCount));
                 }
                 return;
             } else {
                 if (flagMessage) {
-                    System.out.println("\tNodes : " + num2string(idaCount)
-                        + stopwatch.currentTime() + "s");
+                    System.out.printf("\tNodes : %-15s " + stopwatch.currentTime() + "s\n",
+                            Integer.toString(idaCount));
                 }
                 if (solved) {
                     return;
@@ -145,6 +145,28 @@ public class SolverMD extends AbstractSolver {
             }
             limit += 2;
         }
+    }
+
+    /**
+     * Returns the boolean value represent the given board is solve in the given range boundary.
+     * Special function use by SmartSolverExtra.java.
+     *
+     * @param board the initial puzzle Board object to solve
+     * @param lowerLimit the starting limit
+     * @param upperLimit the maximum limit
+     * @return boolean represent the given board is solve in the given range
+     */
+    public boolean advancedEstimate(Board board, int lowerLimit, int upperLimit) {
+        heuristic(board);
+        int initLimit = lowerLimit;
+        while (lowerLimit <= upperLimit) {
+            dfs1stPrio(zeroX, zeroY, 0, lowerLimit, initLimit);
+            if (solved) {
+                return true;
+            }
+            lowerLimit += 2;
+        }
+        return false;
     }
 
     // recursive depth first search until it reach the goal state or timeout, the least estimate and
@@ -158,7 +180,7 @@ public class SolverMD extends AbstractSolver {
 
         int estimate = limit;
         do {
-            int firstMoveIdx = -1;  // 0 - Right, 1 - Down, 2 - Left, 3 - Up
+            int firstMoveIdx = -1;
             int nodeCount = 0;
 
             estimate = endOfSearch;
@@ -176,16 +198,16 @@ public class SolverMD extends AbstractSolver {
 
             if (estimate < endOfSearch) {
                 int startCounter = idaCount++;
-                if (firstMoveIdx == 0) {
+                if (firstMoveIdx == Direction.RIGHT.getValue()) {
                     priority1stMove[firstMoveIdx]
                             = shiftRight(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio);
-                } else if (firstMoveIdx == 1) {
+                } else if (firstMoveIdx == Direction.DOWN.getValue()) {
                     priority1stMove[firstMoveIdx]
                             = shiftDown(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio);
-                } else if (firstMoveIdx == 2) {
+                } else if (firstMoveIdx == Direction.LEFT.getValue()) {
                     priority1stMove[firstMoveIdx]
                             = shiftLeft(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio);
-                } else if (firstMoveIdx == 3) {
+                } else if (firstMoveIdx == Direction.UP.getValue()) {
                     priority1stMove[firstMoveIdx]
                             = shiftUp(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio);
                 }

@@ -14,17 +14,29 @@
 
 package mwong.myprojects.fifteenpuzzle.solver.standard;
 
-import mwong.myprojects.fifteenpuzzle.solver.HeuristicType;
+import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
+import mwong.myprojects.fifteenpuzzle.solver.components.PatternConstants;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternDatabase;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternElement;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternElementMode;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
-import mwong.myprojects.fifteenpuzzle.solver.components.PatternProperties;
 
 import java.util.HashMap;
 
+/**
+ * SolverPDWD extends SolverWD.  It is the 15 puzzle optimal solver.
+ * It takes a Board object of the puzzle and solve it with IDA* using combination of
+ * Walking Distance and Additive Pattern Database of predefined pattern from PatternOptions.
+ *
+ * <p>Dependencies : Board.java, Direction.java, HeuristicOptions.java,
+ *                   PatternDatabase.java, PatternElement.java, PatternElementMode.java,
+ *                   PatternOptions.java, PatternPreoperties.java, SolverWD.java
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public class SolverPDWD extends SolverWD {
     protected static final PatternOptions defaultPattern = PatternOptions.Pattern_663;
     private static final int offsetDir = 2;
@@ -82,11 +94,11 @@ public class SolverPDWD extends SolverWD {
         loadPDElements(presetPattern.getElements());
         inUsePtnArray = presetPattern.getPattern(choice);
         if (presetPattern == PatternOptions.Pattern_555) {
-            inUseHeuristic = HeuristicType.PD555;
+            inUseHeuristic = HeuristicOptions.PD555;
         } else if (presetPattern == PatternOptions.Pattern_663) {
-            inUseHeuristic = HeuristicType.PD663;
+            inUseHeuristic = HeuristicOptions.PD663;
         } else if (presetPattern == PatternOptions.Pattern_78) {
-            inUseHeuristic = HeuristicType.PD78;
+            inUseHeuristic = HeuristicOptions.PD78;
         } else {
             System.err.println("Invalid argument: preset pattern");
         }
@@ -100,7 +112,7 @@ public class SolverPDWD extends SolverWD {
         patternGroups = pd15.getPatternGroups();
         patternFormatSize = new int[patternGroups.length];
         for (int i = 0; i < patternGroups.length; i++) {
-            patternFormatSize[i] = PatternProperties.getFormatSize(patternGroups[i]);
+            patternFormatSize[i] = PatternConstants.getFormatSize(patternGroups[i]);
         }
         patternSet = pd15.getPatternSet();
         val2ptnKey = pd15.getVal2ptnKey();
@@ -124,7 +136,7 @@ public class SolverPDWD extends SolverWD {
             int group = patternGroups[i];
             linkFormatMove[i] = pd15e.getLinkFormatMoveSet(group);
             rotateKeysByPos[i] = pd15e.getKeyShiftSet(group);
-            maxShiftX2[i] = PatternProperties.getMaxShiftX2(group);
+            maxShiftX2[i] = PatternConstants.getMaxShiftX2(group);
         }
     }
 
@@ -155,15 +167,24 @@ public class SolverPDWD extends SolverWD {
         System.out.println();
     }
 
-    // calculate the heuristic value of the given board and save the properties
-    protected byte heuristic(Board board, boolean isAdvaned, boolean isSearch) {
+    /**
+     * Returns the heuristic value of the given board.
+     *
+     * @param board the initial puzzle Board object to solve
+     * @return byte value of the heuristic value of the given board
+     */
+    @Override
+    public byte heuristic(Board board) {
+        if (board == null) {
+            throw new IllegalArgumentException("Board is null");
+        }
         if (!board.isSolvable()) {
             return -1;
         }
 
-        if (!board.equals(lastBoard) || isSearch) {
+        if (!board.equals(lastBoard)) {
             // walking distance from parent/superclass
-        	priorityGoal = super.heuristic(board, tagStandard, tagReview);
+            priorityGoal = super.heuristic(board);
 
             // additive pattern database components
             pdwdKeys = convert2pd(tiles, tilesSym, szGroup);
@@ -179,7 +200,6 @@ public class SolverPDWD extends SolverWD {
             pdwdKeys[wdKeyIdx + 3] = getWdValueV();
 
             priorityGoal = (byte) Math.max(Math.max(regVal, symVal), priorityGoal);
-            priorityAdvanced = priorityGoal;
         }
         return priorityGoal;
     }
@@ -223,7 +243,7 @@ public class SolverPDWD extends SolverWD {
 
     // solve the puzzle using interactive deepening A* algorithm
     protected void idaStar(int limit) {
-    	while (limit <= maxMoves) {
+        while (limit <= maxMoves) {
             idaCount = 0;
             if (flagMessage) {
                 System.out.print("ida limit " + limit);
@@ -235,16 +255,17 @@ public class SolverPDWD extends SolverWD {
 
             if (timeout) {
                 if (flagMessage) {
-                	System.out.println("\tNodes : " + num2string(idaCount) + "timeout");
+                    System.out.printf("\tNodes : %-15s timeout\n", Integer.toString(idaCount));
                 }
                 return;
             } else {
-            	if (flagMessage) {
-                    System.out.println("\tNodes : " + num2string(idaCount) + stopwatch.currentTime() + "s");
-                } 
-            	if (solved) {
-            		return;
-            	}
+                if (flagMessage) {
+                    System.out.printf("\tNodes : %-15s " + stopwatch.currentTime() + "s\n",
+                            Integer.toString(idaCount));
+                }
+                if (solved) {
+                    return;
+                }
             }
             limit += 2;
         }
@@ -252,7 +273,8 @@ public class SolverPDWD extends SolverWD {
 
     // recursive depth first search until it reach the goal state or timeout, the least estimate and
     // node counts will be use to determine the starting order of next search
-    protected void dfs1stPrio(int orgX, int orgY, int cost, int limit, int orgValReg, int orgValSym) {
+    protected void dfs1stPrio(int orgX, int orgY, int cost, int limit, int orgValReg,
+            int orgValSym) {
         int zeroPos = orgY * rowSize + orgX;
         int zeroSym = symmetryPos[zeroPos];
         int costPlus1 = cost + 1;
@@ -263,7 +285,7 @@ public class SolverPDWD extends SolverWD {
 
         int estimate = limit;
         do {
-            int firstMoveIdx = -1;  // 0 - Right, 1 - Down, 2 - Left, 3 - Up
+            int firstMoveIdx = -1;
             int nodeCount = 0;
 
             estimate = endOfSearch;
@@ -281,16 +303,16 @@ public class SolverPDWD extends SolverWD {
 
             if (estimate < endOfSearch) {
                 int startCounter = idaCount++;
-                if (firstMoveIdx == 0) {
+                if (firstMoveIdx == Direction.RIGHT.getValue()) {
                     priority1stMove[firstMoveIdx] = shiftRight(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy);
-                } else if (firstMoveIdx == 1) {
+                } else if (firstMoveIdx == Direction.DOWN.getValue()) {
                     priority1stMove[firstMoveIdx] = shiftDown(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy);
-                } else if (firstMoveIdx == 2) {
+                } else if (firstMoveIdx == Direction.LEFT.getValue()) {
                     priority1stMove[firstMoveIdx] = shiftLeft(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy);
-                } else if (firstMoveIdx == 3) {
+                } else if (firstMoveIdx == Direction.UP.getValue()) {
                     priority1stMove[firstMoveIdx] = shiftUp(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy);
                 }

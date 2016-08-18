@@ -23,7 +23,7 @@ class AbstractApplication implements Application {
             if (type != ApplicationType.Stats) {
                 System.out.println();
             }
-            System.out.print(solver.getHeuristicType().getDescription());
+            System.out.print(solver.getHeuristicOptions().getDescription());
         }
 
         if (solver.isFlagTimeout() || type == ApplicationType.CustomPattern) {

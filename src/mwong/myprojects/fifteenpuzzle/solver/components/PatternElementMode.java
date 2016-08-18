@@ -1,9 +1,21 @@
 package mwong.myprojects.fifteenpuzzle.solver.components;
 
-// Additive pattern element mode can be use
+/**
+ * PatternElementMode the additive pattern element mode can be use
+ * <li>{@link #GENERATOR}</li>
+ * <li>{@link #PUZZLE_SOLVER}</li>
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public enum PatternElementMode {
-    // For pattern database generator
+    /**
+     * Pattern element mode for generator.
+     */
     GENERATOR,
-    // For puzzle solver
+
+    /**
+     * Pattern element mode for puzzle solver.
+     */
     PUZZLE_SOLVER;
 }

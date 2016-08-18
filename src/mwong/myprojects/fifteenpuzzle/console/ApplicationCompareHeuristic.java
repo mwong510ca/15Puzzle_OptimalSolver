@@ -31,18 +31,33 @@ import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverWD;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverWDMD;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
 
+import mwong.myprojects.fifteenpuzzle.solver.standard.SolverMD;
+import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPD;
+import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPDWD;
+import mwong.myprojects.fifteenpuzzle.solver.standard.SolverWD;
+import mwong.myprojects.fifteenpuzzle.solver.standard.SolverWDMD;
+
+
 import java.util.Scanner;
 
 public class ApplicationCompareHeuristic extends AbstractApplication {
     private final ApplicationType applicationType;
     private final boolean tagLinearConflict;
     private final boolean tagAdvanced;
+//    private SolverMD solverMd;
+//    private SolverWD solverWd;
+//    private SolverWDMD solverWdMd;
+//    private SolverPDWD solverPdWd555;
+//    private SolverPDWD solverPdWd663;
+//    private SolverPD solverPd78;
+    
     private SmartSolverMD solverMd;
     private SmartSolverWD solverWd;
     private SmartSolverWDMD solverWdMd;
     private SmartSolverPDWD solverPdWd555;
     private SmartSolverPDWD solverPdWd663;
     private SmartSolverPD solverPd78;
+
 
     public ApplicationCompareHeuristic() {
     	super();
@@ -53,8 +68,9 @@ public class ApplicationCompareHeuristic extends AbstractApplication {
         tagLinearConflict = ApplicationProperties.isTagLinearConflict();
         tagAdvanced = ApplicationProperties.isTagAdvanced();
         ReferenceAccumulator refAccumulator = new ReferenceAccumulator();
+//        refAccumulator = null;
         
-        //solverMd = new SolverMD();
+//        solverMd = new SolverMD();
         solverMd = new SmartSolverMD(refAccumulator);
         solverMd.messageSwitch(messageOff);
 
@@ -79,7 +95,7 @@ public class ApplicationCompareHeuristic extends AbstractApplication {
         solverPd78.timeoutSwitch(timeoutOff);
         solverPd78.messageSwitch(messageOff);
     }
-    
+
     //  It take a solver and a 15 puzzle board, display the the process time and number of
     //  nodes generated during the search, time out after 10 seconds.
     private void solvePuzzle(Solver solver, Board board) {
@@ -95,22 +111,22 @@ public class ApplicationCompareHeuristic extends AbstractApplication {
             System.out.println(solver.searchTime() + "s \t\t" + solver.moves() + "\t\t"
                     + solver.searchNodeCount());
         }
-        
-        solver.advPrioritySwitch(tagAdvanced);
-        if (solver.heuristicStandard(board) == solver.heuristicAdvanced(board)) {
-            System.out.println("Advanced\t" + "Same value");
-        } else {
-            solver.findOptimalPath(board);
-            System.out.print("Advanced\t" + solver.heuristicAdvanced(board) + "\t\t");
-            if (solver.isSearchTimeout()) {
-                System.out.println("Timeout: " + solver.searchTime() + "s at depth "
-                        + solver.searchTerminateAtDepth() + "\t" + solver.searchNodeCount());
+
+        if (solver.advPrioritySwitch(tagAdvanced)) {
+            if (solver.heuristicStandard(board) == solver.heuristicAdvanced(board)) {
+                System.out.println("Advanced\t" + "Same value");
             } else {
-                System.out.println(solver.searchTime() + "\t\t" + solver.moves() + "\t\t"
-                        + solver.searchNodeCount());
+                solver.findOptimalPath(board);
+                System.out.print("Advanced\t" + solver.heuristicAdvanced(board) + "\t\t");
+                if (solver.isSearchTimeout()) {
+                    System.out.println("Timeout: " + solver.searchTime() + "s at depth "
+                            + solver.searchTerminateAtDepth() + "\t" + solver.searchNodeCount());
+                } else {
+                    System.out.println(solver.searchTime() + "\t\t" + solver.moves() + "\t\t"
+                            + solver.searchNodeCount());
+                }
             }
         }
-
     }
 
     public void run() {
@@ -156,16 +172,19 @@ public class ApplicationCompareHeuristic extends AbstractApplication {
             System.out.print("\n" + board);
             if (board.isSolvable()) {
                 System.out.print("\t\tEstimate\tTime\t\tMinimum Moves\tNodes generated");
+                
                 solvePuzzle(solverPd78, board);
+                
                 solvePuzzle(solverPdWd663, board);
                 solvePuzzle(solverPdWd555, board);
                 solvePuzzle(solverWdMd, board);
                 solvePuzzle(solverWd, board);
+                
                 solverMd.linearConflictSwitch(tagLinearConflict);
                 solvePuzzle(solverMd, board);
                 solverMd.linearConflictSwitch(!tagLinearConflict);
                 solvePuzzle(solverMd, board);
-                
+
                 // Notes: updateLastSearch is optional.
                 // advAccumulator.updateLastSearch(solverPD78);
             } else {

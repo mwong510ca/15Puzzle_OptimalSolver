@@ -1,41 +1,35 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation  : javac SolverAbstract.java
- *  Dependencies : Board.java, Direction.java, Stopwatch.java,
- *                 SolverInterface.java, AdvancedAccumulator.java,
- *                 ReferenceBoard.java, ReferenceMoves.java
- *
- *  SolverAbstract class implements SolverInterface of 15 puzzle that has the
- *  following variables and methods.
- *
- ****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
+import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
+import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
+import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceBoard;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceMoves;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
+import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleProperties;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverMD;
-import mwong.myprojects.fifteenpuzzle.solver.HeuristicType;
-import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
 
 import java.util.Map;
 import java.util.Map.Entry;
 
+/**
+ * SmartSolverExtra has the add on functions for advanced version.  It return the
+ * reference moves and solutions if the puzzle has been stored as a reference board.
+ * It calculate the advanced estimate from the collection of reference boards.
+ *
+ * <p>Dependencies : Board.java, Direction.java, HeuristicOptions.java, PuzzleProperties.java,
+ *                   ReferenceAccumulator.java ReferenceBoard.java, ReferenceMoves.java,
+ *                   SolverConstants.java, SolverMD.java, SolverProperties.java
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 class SmartSolverExtra {
-	private final int puzzleSize = SolverProperties.getPuzzleSize();
-	private final int rowSize = SolverProperties.getRowSize();
-	private final byte[] symmetryPos = SolverProperties.getSymmetryPos();
-	private final byte[] symmetryVal = SolverProperties.getSymmetryVal();
-	
-	/**
+    /**
      *  Print solver description.
      */
-    public void printDescription(boolean flagAdvancedPriority, HeuristicType inUseHeuristic) {
+    public void printDescription(boolean flagAdvancedPriority, HeuristicOptions inUseHeuristic) {
         System.out.println("15 puzzle solver using " + inUseHeuristic.getDescription());
         if (flagAdvancedPriority) {
             System.out.println("Advance option - initial estimate use the goal state and "
@@ -45,18 +39,18 @@ class SmartSolverExtra {
         }
     }
 
-
     // quick check if the given board is one of the reference board.  If so,
     // use the reference estimate.  If search in progress, also update partial
     // solutions if exists.
-    final AdvancedRecord advancedContains(Board board, boolean inSearch, ReferenceAccumulator refAccumulator) {
-    	Map<ReferenceBoard, ReferenceMoves> refMap = refAccumulator.getActiveMap();
-    	if (refMap == null || refMap.size() == 0) {
-    		return null;
-    	}
+    final AdvancedRecord advancedContains(Board board, boolean inSearch,
+            ReferenceAccumulator refAccumulator) {
+        Map<ReferenceBoard, ReferenceMoves> refMap = refAccumulator.getActiveMap();
+        if (refMap == null || refMap.size() == 0) {
+            return null;
+        }
 
-        byte lookupKey = SmartSolverProperties.getReferenceLookup(board.getZero1d());
-        int group = SmartSolverProperties.getReferenceGroup(board.getZero1d());
+        byte lookupKey = SmartSolverConstants.getReferenceLookup(board.getZero1d());
+        int group = SmartSolverConstants.getReferenceGroup(board.getZero1d());
 
         ReferenceBoard checkBoard = new ReferenceBoard(board);
         ReferenceBoard checkBoardSym = null;
@@ -65,31 +59,33 @@ class SmartSolverExtra {
         }
 
         if (refMap.containsKey(checkBoard)) {
-        	boolean symmetry = SmartSolverProperties.isSymmetry();
-        	int numPartialMoves = SmartSolverProperties.getNumPartialMoves();
-        	
-        	ReferenceMoves advMoves = refMap.get(checkBoard);
+            boolean symmetry = SmartSolverConstants.isSymmetry();
+            int numPartialMoves = SmartSolverConstants.getNumPartialMoves();
+
+            ReferenceMoves advMoves = refMap.get(checkBoard);
             final byte steps = advMoves.getEstimate(lookupKey);
-            
+
             if (inSearch && advMoves.hasInitialMoves(lookupKey)) {
-            	Direction[] solutionMove = new Direction[steps + 1];
+                Direction[] solutionMove = new Direction[steps + 1];
                 if (group == 3) {
                     System.arraycopy(advMoves.getInitialMoves(lookupKey, symmetry), 0,
                             solutionMove, 1, numPartialMoves);
-                    assert checkVaildMoves(board, solutionMove, numPartialMoves) : "Incorrect initial moves (group 3 symmetry)";
+                    assert checkVaildMoves(board, solutionMove, numPartialMoves) :
+                        "Incorrect initial moves (group 3 symmetry)";
                 } else {
                     System.arraycopy(advMoves.getInitialMoves(lookupKey, !symmetry), 0,
                             solutionMove, 1, numPartialMoves);
-                    assert checkVaildMoves(board, solutionMove, numPartialMoves) : "Incorrect initial moves";
+                    assert checkVaildMoves(board, solutionMove, numPartialMoves) :
+                        "Incorrect initial moves";
                 }
                 return new AdvancedRecord(steps, solutionMove);
             }
             return new AdvancedRecord(steps);
         } else if (refMap.containsKey(checkBoardSym)) {
-        	boolean symmetry = SmartSolverProperties.isSymmetry();
-        	int numPartialMoves = SmartSolverProperties.getNumPartialMoves();
-        	
-        	ReferenceMoves advMoves = refMap.get(checkBoardSym);
+            boolean symmetry = SmartSolverConstants.isSymmetry();
+            int numPartialMoves = SmartSolverConstants.getNumPartialMoves();
+
+            ReferenceMoves advMoves = refMap.get(checkBoardSym);
             if (lookupKey == 1) {
                 lookupKey = 3;
             } else if (lookupKey == 3) {
@@ -98,10 +94,11 @@ class SmartSolverExtra {
             final byte steps = advMoves.getEstimate(lookupKey);
 
             if (inSearch && advMoves.hasInitialMoves(lookupKey)) {
-            	Direction[] solutionMove = new Direction[steps + 1];
+                Direction[] solutionMove = new Direction[steps + 1];
                 System.arraycopy(advMoves.getInitialMoves(lookupKey, symmetry), 0,
                         solutionMove, 1, numPartialMoves);
-                assert checkVaildMoves(board, solutionMove, numPartialMoves) : "Incorrect initial moves (group 0 or 2 symmetry)";
+                assert checkVaildMoves(board, solutionMove, numPartialMoves) :
+                    "Incorrect initial moves (group 0 or 2 symmetry)";
                 return new AdvancedRecord(steps, solutionMove);
             }
             return new AdvancedRecord(steps);
@@ -109,7 +106,7 @@ class SmartSolverExtra {
         return null;
     }
 
-    // check all partial solution are the valid of the given baord
+    // assertion tool : check all partial solution are the valid of the given board
     private boolean checkVaildMoves(Board initial, Direction[] partialMoves, int numPartialMoves) {
         if (initial == null) {
             throw new IllegalArgumentException("Board is null");
@@ -123,17 +120,19 @@ class SmartSolverExtra {
         }
         return true;
     }
-    
-    // calculate the advanced estimate from the stored boards, use manhattan distance only
-    byte advancedEstimate(Board board, byte estimate, int refCutoff, Map<ReferenceBoard, ReferenceMoves> advMap) {
-        SolverMD solverMD = new SolverMD(SolverProperties.isTagSearch());
-        solverMD.messageSwitch(!SolverProperties.isOnSwitch());
-        solverMD.timeoutSwitch(!SolverProperties.isOnSwitch());
-               
+
+    // calculate the advanced estimate from the stored boards, use Manhattan distance only
+    byte advancedEstimate(Board board, byte estimate, int refCutoff,
+            Map<ReferenceBoard, ReferenceMoves> advMap) {
+        SolverMD solverMD = new SolverMD(SolverConstants.isTagSearch());
+        solverMD.messageSwitch(!SolverConstants.isOnSwitch());
+        solverMD.timeoutSwitch(!SolverConstants.isOnSwitch());
+        final int rowSize = SolverConstants.getRowSize();
+
         for (Entry<ReferenceBoard, ReferenceMoves> entry
                 : advMap.entrySet()) {
             byte[] transTiles = entry.getKey().transformer(board.getTiles());
-            byte[] transTilesSym = tiles2sym(transTiles);
+            byte[] transTilesSym = PuzzleProperties.tiles2sym(transTiles);
 
             int transPriority = 0;
             int transPrioritySym = 0;
@@ -167,19 +166,11 @@ class SmartSolverExtra {
             }
 
             Board temp = new Board(transTiles);
-            solverMD.findOptimalPath(temp);
-            estimate = (byte) (entry.getValue().getEstimate() - solverMD.moves());
+            if (solverMD.advancedEstimate(temp, transPriority,
+            		entry.getValue().getEstimate() - estimate)) {
+                estimate = (byte) (entry.getValue().getEstimate() - solverMD.moves());
+            }
         }
         return estimate;
     }
-    
-    // convert the given tiles to symmetry tiles
-    private final byte[] tiles2sym(byte[] original) {
-        byte[] tiles2sym = new byte[puzzleSize];
-        for (int i = 0; i < puzzleSize; i++) {
-            tiles2sym[symmetryPos[i]] = symmetryVal[original[i]];
-        }
-        return tiles2sym;
-    }
-
 }

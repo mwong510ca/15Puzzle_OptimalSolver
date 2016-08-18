@@ -42,7 +42,7 @@ public class ReferenceAdministrator {
     public static void main(String[] args) {
     	ReferenceAccumulator advAccumulator = new ReferenceAccumulator();
         advAccumulator.printStatus();
-        int sizePuzzle = ReferenceProperties.getPuzzleSize();
+        int sizePuzzle = ReferenceConstants.getPuzzleSize();
         Action action = Action.Add;
         boolean bypass = true;
 

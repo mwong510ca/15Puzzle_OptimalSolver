@@ -13,7 +13,7 @@ package mwong.myprojects.fifteenpuzzle.solver.advanced.ai;
 
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
-import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPD;
+import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPD;
 
 public class ReferenceMoves {
 	private final byte[] statusBit;
@@ -26,17 +26,17 @@ public class ReferenceMoves {
     byte status = 0;
 
     private ReferenceMoves() {
-    	statusBit = ReferenceProperties.getStatusBit();
-    	statusCompleted = ReferenceProperties.getStatusCompleted();
-    	numPartialMoves = ReferenceProperties.getNumPartialMoves();
-    	symmetry = ReferenceProperties.isSymmetry();
+    	statusBit = ReferenceConstants.getStatusBit();
+    	statusCompleted = ReferenceConstants.getStatusCompleted();
+    	numPartialMoves = ReferenceConstants.getNumPartialMoves();
+    	symmetry = ReferenceConstants.isSymmetry();
     }
     
     // initializes AdvancedMoves object with given zero position with given
     // unverified estimate and no partial solution
     ReferenceMoves(byte zeroPos, byte steps) {
     	this();
-        int refLookup = ReferenceProperties.getReferenceLookup(zeroPos);
+        int refLookup = ReferenceConstants.getReferenceLookup(zeroPos);
         moves[refLookup] = steps;
         int count = 1;
         while (refLookup - count > -1) {
@@ -81,7 +81,7 @@ public class ReferenceMoves {
 
     // update a full set of moves and partial solutions with a given reference board
     // and a solverPD object
-    void updateSolutions(ReferenceBoard advBoard, SolverPD solver) {
+    void updateSolutions(ReferenceBoard advBoard, SmartSolverPD solver) {
     	assert solver != null : "SolverPD is null";
         byte group = advBoard.group;
         byte[] blocks = advBoard.getTiles().clone();

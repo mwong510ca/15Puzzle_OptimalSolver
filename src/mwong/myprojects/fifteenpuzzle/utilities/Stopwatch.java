@@ -1,17 +1,13 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation: javac Stopwatch.java
- *
- *  An immutable data type Stopwatch with start, stop and reset features
- *
- *****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.utilities;
 
 import java.util.Scanner;
 
+/**
+ * An immutable data type Stopwatch with start, stop and reset features
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public class Stopwatch {
     private long startTime;
     private double stopTime;

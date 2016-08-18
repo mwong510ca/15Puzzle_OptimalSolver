@@ -12,8 +12,8 @@ class ApplicationRun {
      *  @param args standard argument main function
      */
     public static void main(String[] args) {
-    	//ApplicationCompareHeuristic app = new ApplicationCompareHeuristic();
-    	ApplicationSolver app = new ApplicationSolver();
+    	ApplicationCompareHeuristic app = new ApplicationCompareHeuristic();
+    	//ApplicationSolver app = new ApplicationSolver();
         app.run();
     }
 }

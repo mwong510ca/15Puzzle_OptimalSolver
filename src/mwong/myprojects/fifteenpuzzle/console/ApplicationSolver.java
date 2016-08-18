@@ -23,9 +23,10 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
 import mwong.myprojects.fifteenpuzzle.solver.Solver;
+import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
 import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
 import mwong.myprojects.fifteenpuzzle.console.ApplicationType;
-import mwong.myprojects.fifteenpuzzle.solver.HeuristicType;
+import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
@@ -48,7 +49,7 @@ public class ApplicationSolver extends AbstractApplication {
 	private final int puzzleSize;
 	
 	private int timeoutLimit;
-	private HeuristicType inUseHeuristic;
+	private HeuristicOptions inUseHeuristic;
 	private boolean flagAdvPriority;
 	private boolean flagAdvancedUpdate;
 	
@@ -57,13 +58,13 @@ public class ApplicationSolver extends AbstractApplication {
 		scanner = new Scanner(System.in, "UTF-8");
 		refAccumulator = new ReferenceAccumulator(); 
 		solver = new SmartSolverPDWD(PatternOptions.Pattern_663, refAccumulator);
-		inUseHeuristic = solver.getHeuristicType();
+		inUseHeuristic = solver.getHeuristicOptions();
 		applicationType = ApplicationType.Solver;
-		onSwitch = SolverProperties.isOnSwitch();
+		onSwitch = SolverConstants.isOnSwitch();
 		offSwitch = !onSwitch;
-		puzzleSize = SolverProperties.getPuzzleSize();
+		puzzleSize = SolverConstants.getPuzzleSize();
 		timeoutLimit = SolverProperties.getDefaultTimeoutLimit();
-		flagAdvPriority = !SolverProperties.isTagAdvanced();
+		flagAdvPriority = !SolverConstants.isTagAdvanced();
 		solver.advPrioritySwitch(flagAdvPriority);
 		flagAdvancedUpdate = false;
 	}
@@ -102,7 +103,7 @@ public class ApplicationSolver extends AbstractApplication {
                     pending = false;
                     break;
                 case 1:
-                    if (inUseHeuristic != HeuristicType.MD) {
+                    if (inUseHeuristic != HeuristicOptions.MD) {
                         solver = new SmartSolverMD(refAccumulator);
                     } else {
                         System.out.println("No Change, currently in use.");
@@ -110,7 +111,7 @@ public class ApplicationSolver extends AbstractApplication {
                     pending = false;
                     break;
                 case 2:
-                    if (inUseHeuristic != HeuristicType.MDLC) {
+                    if (inUseHeuristic != HeuristicOptions.MDLC) {
                         solver = new SmartSolverMD(ApplicationProperties.isTagLinearConflict(), refAccumulator);
                     } else {
                         System.out.println("No Change, currently in use.");
@@ -118,7 +119,7 @@ public class ApplicationSolver extends AbstractApplication {
                     pending = false;
                     break;
                 case 3:
-                    if (inUseHeuristic != HeuristicType.WD) {
+                    if (inUseHeuristic != HeuristicOptions.WD) {
                         solver = new SmartSolverWD(refAccumulator);
                     } else {
                         System.out.println("No Change, currently in use.");
@@ -126,7 +127,7 @@ public class ApplicationSolver extends AbstractApplication {
                     pending = false;
                     break;
                 case 4:
-                    if (inUseHeuristic != HeuristicType.WDMD) {
+                    if (inUseHeuristic != HeuristicOptions.WDMD) {
                         solver = new SmartSolverWDMD(refAccumulator);
                     } else {
                         System.out.println("No Change, currently in use.");
@@ -134,7 +135,7 @@ public class ApplicationSolver extends AbstractApplication {
                     pending = false;
                     break;
                 case 5:
-                    if (inUseHeuristic != HeuristicType.PD555) {
+                    if (inUseHeuristic != HeuristicOptions.PD555) {
                         solver = new SmartSolverPDWD(PatternOptions.Pattern_555, refAccumulator);
                     } else {
                         System.out.println("No Change, currently in use.");
@@ -142,7 +143,7 @@ public class ApplicationSolver extends AbstractApplication {
                     pending = false;
                     break;
                 case 6:
-                    if (inUseHeuristic != HeuristicType.PD663) {
+                    if (inUseHeuristic != HeuristicOptions.PD663) {
                         solver = new SmartSolverPDWD(PatternOptions.Pattern_663, refAccumulator);
                     } else {
                         System.out.println("No Change, currently in use.");
@@ -150,7 +151,7 @@ public class ApplicationSolver extends AbstractApplication {
                     pending = false;
                     break;
                 case 7:
-                    if (inUseHeuristic != HeuristicType.PD78) {
+                    if (inUseHeuristic != HeuristicOptions.PD78) {
                         solver = new SmartSolverPD(PatternOptions.Pattern_78, refAccumulator);
                      } else {
                         System.out.println("No Change, currently in use.");
@@ -162,11 +163,11 @@ public class ApplicationSolver extends AbstractApplication {
             }
         } while (pending);
 
-        inUseHeuristic = solver.getHeuristicType();
+        inUseHeuristic = solver.getHeuristicOptions();
         solver.advPrioritySwitch(flagAdvPriority);
         solver.printDescription();
         flagAdvancedUpdate = false;
-        if (inUseHeuristic == HeuristicType.PD78) {
+        if (inUseHeuristic == HeuristicOptions.PD78) {
             solver.timeoutSwitch(offSwitch);
             flagAdvancedUpdate = true;
         }

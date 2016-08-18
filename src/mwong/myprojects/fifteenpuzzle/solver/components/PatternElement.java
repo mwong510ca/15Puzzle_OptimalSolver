@@ -1,16 +1,3 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation: javac PDElement.java
- *  Dependencies: Stopwatch.java, Board.java, Direction.java
- *
- *  A immutable data type PDElement of detected universal key set and format set
- *  with change after each move for 15puzzle pattern database generator
- *  and puzzle solver
- *
- ****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.solver.components;
 
 import mwong.myprojects.fifteenpuzzle.utilities.Stopwatch;
@@ -26,11 +13,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.TreeSet;
 
+/**
+ * PatternElement provides universal pattern keys and formats with links.  It takes
+ * a boolean array represent the pattern groups and a PatternElementMode for usage.
+ * It either load from storage or generate a new set if local file not exists.
+ *
+ * <p>Dependencies : PuzzleConstants.java, PuzzleConstants.java, Stopwatch.java
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public class PatternElement {
-    // Standard group are 3, 5, 6, 7, 8 for patterns (663, 555 oar 78)
-    private static final boolean[] STANDATD_GROUPS
-            = {false, false, false, true, false, true, true, true, true};
-
     private final String directory;
     private final String filePathPrefix;
     private final String fileSuffix;
@@ -44,53 +37,53 @@ public class PatternElement {
 
     private HashMap<Integer, Integer> keys;
     private HashMap<Integer, Integer> formats;
-    private int [][] keys2combo;
-    private int [][] formats2combo;
+    private int[][] keys2combo;
+    private int[][] formats2combo;
     // next key after rotate
     // for each group : key size x number of keys x 6 shift max (3 left, 3 right)
-    private int [][] rotateKeyByPos;
+    private int[][] rotateKeyByPos;
     // store 2 values ( rotate | next format index)
     //  for each group : format size x number of keys x 4 direction of moves
-    private int [][][] linkFormatCombo;
-    private int [][] linkFormatMove;
+    private int[][][] linkFormatCombo;
+    private int[][] linkFormatMove;
 
     /**
-     * Initializes the PDElement with standard groups and generator mode.
+     * Initializes the PatternElement with standard groups in generator mode.
      */
     public PatternElement() {
-        this(STANDATD_GROUPS, PatternElementMode.GENERATOR);
+        this(PatternConstants.getStandatdGroups(), PatternElementMode.GENERATOR);
     }
 
     /**
-     * Initializes the PDElement with given pattern groups and generator mode.
+     * Initializes the PatternElement with given pattern groups and generator mode.
      *
      * @param patternGroups boolean array of pattern groups in use
-     * @param mode Enum Mode of Generator or PuzzleSolver
+     * @param mode PatternElementMode of Generator or PuzzleSolver
      */
-    public PatternElement(boolean [] patternGroups, PatternElementMode mode) {
+    public PatternElement(boolean[] patternGroups, PatternElementMode mode) {
         directory = "database";
         String seperator = System.getProperty("file.separator");
         filePathPrefix = directory + seperator + "pattern_element_";
         fileSuffix = ".db";
-        puzzleSize = PuzzleProperties.getSize();
+        puzzleSize = PuzzleConstants.getSize();
         // partial key - last # of keys (4 bits each)
         partialBits = new int[] {0, 0x000F, 0x00FF, 0x0FFF, 0x0000FFFF, 0x000FFFFF,
                                  0x00FFFFFF, 0x0FFFFFFF};
-        keySize = PatternProperties.getKeySize();
-        formatSize = PatternProperties.getFormatSize();
-        maxGroupSize = PatternProperties.getMaxGroupSize();
-        maxShiftX2 = PatternProperties.getMaxShiftX2();
-        formatBit16 = PatternProperties.getFormatBit16();
+        keySize = PatternConstants.getKeySize();
+        formatSize = PatternConstants.getFormatSize();
+        maxGroupSize = PatternConstants.getMaxGroupSize();
+        maxShiftX2 = PatternConstants.getMaxShiftX2();
+        formatBit16 = PatternConstants.getFormatBit16();
 
-        if (patternGroups.length != PatternProperties.getMaxGroupSize() + 1) {
-            System.err.println("Invalid input - require boolean array of size 9");
+        if (patternGroups.length != PatternConstants.getMaxGroupSize() + 1) {
+            System.err.println("Invalid input - require boolean array of size 9 (0 to 8 group)");
             throw new IllegalArgumentException();
         }
         loadData(patternGroups, mode);
     }
 
     // load the database pattern components from file
-    private void loadData(boolean [] patternGroups, PatternElementMode mode) {
+    private void loadData(boolean[] patternGroups, PatternElementMode mode) {
         keys = new HashMap<Integer, Integer>();
         formats = new HashMap<Integer, Integer>();
         linkFormatCombo = new int[maxGroupSize + 1][0][0];
@@ -163,7 +156,7 @@ public class PatternElement {
     }
 
     // save the database pattern components in file
-    private void saveData(boolean [] patternGroups, boolean printMsg)  {
+    private void saveData(boolean[] patternGroups, boolean printMsg)  {
         if (!(new File(directory)).exists()) {
             (new File(directory)).mkdir();
         }
@@ -235,7 +228,7 @@ public class PatternElement {
     }
 
     // clear all unused components
-    private void wrapup(boolean [] groups, PatternElementMode mode) {
+    private void wrapup(boolean[] groups, PatternElementMode mode) {
         for (int group = 1; group < groups.length; group++) {
             if (!groups[group]) {
                 if (group > 1) {
@@ -267,8 +260,8 @@ public class PatternElement {
     private void build() {
         keys = new HashMap<Integer, Integer>();
         formats = new HashMap<Integer, Integer>();
-        keys2combo = new int [maxGroupSize + 1][];
-        formats2combo = new int [maxGroupSize + 1][];
+        keys2combo = new int[maxGroupSize + 1][];
+        formats2combo = new int[maxGroupSize + 1][];
         linkFormatCombo = new int[maxGroupSize + 1][][];
         linkFormatMove = new int[maxGroupSize + 1][];
         rotateKeyByPos = new int[maxGroupSize + 1][];
@@ -281,11 +274,11 @@ public class PatternElement {
 
     // generate the key components from group 2 to 8
     private void genKeys() {
-        int [] initKeys = new int[maxGroupSize + 1];
+        int[] initKeys = new int[maxGroupSize + 1];
         int basedGroup = 1;
         int counter = 0;
         HashSet<int[]> set = new HashSet<int[]>();
-        int [] basedKey = {0};
+        int[] basedKey = {0};
         set.add(basedKey);
 
         // expand the based group (1 - 7) for key set of size 2 - 8
@@ -313,7 +306,7 @@ public class PatternElement {
 
             // keep in sorted order, easy for track. (unnecessary)
             TreeSet<Integer> sorted = new TreeSet<Integer>();
-            for (int [] combo : expend) {
+            for (int[] combo : expend) {
                 int compressKey = 0;
                 for (int key : combo) {
                     compressKey = compressKey << 4 | key;
@@ -342,7 +335,7 @@ public class PatternElement {
         }
         int shiftCount = maxShiftX2[group] / 2;
 
-        int [][][] temp = new int[keySize[group]][][];
+        int[][][] temp = new int[keySize[group]][][];
         HashSet<Integer> set = new HashSet<Integer>();
         HashSet<Integer> visited;
         set.add(initKeys[group]);
@@ -352,7 +345,7 @@ public class PatternElement {
             set = new HashSet<Integer>();
             for (int val : visited) {
                 int keyIdx = keys.get(val);
-                temp [keyIdx] = new int [group][shiftCount * 2];
+                temp[keyIdx] = new int[group][shiftCount * 2];
 
                 for (int pos = 0; pos < group; pos++) {
 
@@ -411,14 +404,14 @@ public class PatternElement {
 
     // generate the format components from group 1 to 8
     private void genFormats() {
-        int [] initFormat = new int[maxGroupSize + 1];
+        int[] initFormat = new int[maxGroupSize + 1];
         int basedGroup = 0;
         int counter = 0;
         HashSet<int[]> set = new HashSet<int[]>();
-        int [] basedFormat = { 0, 0, 0, 0,
-                               0, 0, 0, 0,
-                               0, 0, 0, 0,
-                               0, 0, 0, 0};
+        int[] basedFormat = { 0, 0, 0, 0,
+                              0, 0, 0, 0,
+                              0, 0, 0, 0,
+                              0, 0, 0, 0};
         set.add(basedFormat);
 
         // expand the based group (1 - 7) for format set with key size 2 - 8
@@ -481,8 +474,8 @@ public class PatternElement {
 
                 for (int pos = 0; pos < puzzleSize; pos++) {
                     if ((fmt & formatBit16[pos]) > 0) {
-                        int [] next = {-1, -1, -1, -1};
-                        int [] shift = {0, 0, 0, 0};
+                        int[] next = {-1, -1, -1, -1};
+                        int[] shift = {0, 0, 0, 0};
                         int base = fmt ^ formatBit16[pos];
                         // space right, tile left
                         if (pos % 4 > 0) {
@@ -589,7 +582,7 @@ public class PatternElement {
      * @param group the given group size
      * @return integer array of 16 bits format pattern with the given group
      */
-    final int [] getFormatCombo(int group) {
+    final int[] getFormatCombo(int group) {
         return formats2combo[group];
     }
 
@@ -599,7 +592,7 @@ public class PatternElement {
      * @param group the given group size
      * @return integer array of 16 bits format pattern with the given group
      */
-    public final int [] getKeyCombo(int group) {
+    public final int[] getKeyCombo(int group) {
         return keys2combo[group];
     }
 
@@ -609,7 +602,7 @@ public class PatternElement {
      * @param group the given group size
      * @return integer array of key shifting set with the given group
      */
-    public final int [] getKeyShiftSet(int group) {
+    public final int[] getKeyShiftSet(int group) {
         return rotateKeyByPos[group];
     }
 

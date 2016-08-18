@@ -21,9 +21,10 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
 import mwong.myprojects.fifteenpuzzle.solver.Solver;
+import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
 import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
 import mwong.myprojects.fifteenpuzzle.console.ApplicationType;
-import mwong.myprojects.fifteenpuzzle.solver.HeuristicType;
+import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
@@ -46,7 +47,7 @@ public class ApplicationSolverStats extends AbstractApplication {
 
     private Scanner scanner;
     private Solver solver = new SmartSolverPDWD(PatternOptions.Pattern_663, refAccumulator);
-    private HeuristicType inUseHeuristic = solver.getHeuristicType();
+    private HeuristicOptions inUseHeuristic = solver.getHeuristicOptions();
     private int timeoutLimit = 10;
     private boolean flagAdvPriority = SWITCH_OFF;
     private boolean flagAdvancedUpdate = false;
@@ -74,7 +75,7 @@ public class ApplicationSolverStats extends AbstractApplication {
                     pending = false;
                     break;
                 case 1:
-                    if (inUseHeuristic != HeuristicType.MD) {
+                    if (inUseHeuristic != HeuristicOptions.MD) {
                         solver = new SmartSolverMD(refAccumulator);
                     } else {
                         System.out.println("No Change, currently in use.");
@@ -82,15 +83,15 @@ public class ApplicationSolverStats extends AbstractApplication {
                     pending = false;
                     break;
                 case 2:
-                    if (inUseHeuristic != HeuristicType.MDLC) {
-                        solver = new SmartSolverMD(SolverProperties.isTagLinearConflict(), refAccumulator);
+                    if (inUseHeuristic != HeuristicOptions.MDLC) {
+                        solver = new SmartSolverMD(SolverConstants.isTagLinearConflict(), refAccumulator);
                     } else {
                         System.out.println("No Change, currently in use.");
                     }
                     pending = false;
                     break;
                 case 3:
-                    if (inUseHeuristic != HeuristicType.WD) {
+                    if (inUseHeuristic != HeuristicOptions.WD) {
                         solver = new SmartSolverWD(refAccumulator);
                      } else {
                         System.out.println("No Change, currently in use.");
@@ -98,7 +99,7 @@ public class ApplicationSolverStats extends AbstractApplication {
                     pending = false;
                     break;
                 case 4:
-                    if (inUseHeuristic != HeuristicType.WDMD) {
+                    if (inUseHeuristic != HeuristicOptions.WDMD) {
                         solver = new SmartSolverWDMD(refAccumulator);
                     } else {
                         System.out.println("No Change, currently in use.");
@@ -106,7 +107,7 @@ public class ApplicationSolverStats extends AbstractApplication {
                     pending = false;
                     break;
                 case 5:
-                    if (inUseHeuristic != HeuristicType.PD555) {
+                    if (inUseHeuristic != HeuristicOptions.PD555) {
                         solver = new SmartSolverPDWD(PatternOptions.Pattern_555, refAccumulator);
                     } else {
                         System.out.println("No Change, currently in use.");
@@ -114,7 +115,7 @@ public class ApplicationSolverStats extends AbstractApplication {
                     pending = false;
                     break;
                 case 6:
-                    if (inUseHeuristic != HeuristicType.PD663) {
+                    if (inUseHeuristic != HeuristicOptions.PD663) {
                         solver = new SmartSolverPDWD(PatternOptions.Pattern_663, refAccumulator);
                     } else {
                         System.out.println("No Change, currently in use.");
@@ -122,7 +123,7 @@ public class ApplicationSolverStats extends AbstractApplication {
                     pending = false;
                     break;
                 case 7:
-                    if (inUseHeuristic != HeuristicType.PD78) {
+                    if (inUseHeuristic != HeuristicOptions.PD78) {
                         solver = new SmartSolverPD(PatternOptions.Pattern_78, refAccumulator);
                     } else {
                         System.out.println("No Change, currently in use.");
@@ -134,13 +135,13 @@ public class ApplicationSolverStats extends AbstractApplication {
             }
         } while (pending);
 
-        inUseHeuristic = solver.getHeuristicType();
+        inUseHeuristic = solver.getHeuristicOptions();
         solver.messageSwitch(messageOff);
         solver.advPrioritySwitch(flagAdvPriority);
         solver.setTimeoutLimit(timeoutLimit);
         solver.printDescription();
         flagAdvancedUpdate = false;
-        if (inUseHeuristic == HeuristicType.PD78) {
+        if (inUseHeuristic == HeuristicOptions.PD78) {
             solver.timeoutSwitch(SWITCH_OFF);
             flagAdvancedUpdate = true;
         }
@@ -158,7 +159,7 @@ public class ApplicationSolverStats extends AbstractApplication {
             System.out.println("      'H' - change initial heuristic estimate from Original "
                     + "to Advanced");
         }
-        if (inUseHeuristic != HeuristicType.PD78) {
+        if (inUseHeuristic != HeuristicOptions.PD78) {
             System.out.println("      'T' - change timeout limit");
         }
         System.out.println("      a positive integer of number of trials");
@@ -182,7 +183,7 @@ public class ApplicationSolverStats extends AbstractApplication {
                 menuSub(false, true);
                 break;
             }
-            if (inUseHeuristic != HeuristicType.PD78 && (value == 'T' || value == 't')) {
+            if (inUseHeuristic != HeuristicOptions.PD78 && (value == 'T' || value == 't')) {
                 int limit = 0;
                 do {
                     System.out.println("Enter timeout limit in seconds, maximum limit 60s:");
@@ -197,7 +198,7 @@ public class ApplicationSolverStats extends AbstractApplication {
                 menuSub(true, false);
                 break;
             }
-            if (inUseHeuristic != HeuristicType.PD78) {
+            if (inUseHeuristic != HeuristicOptions.PD78) {
                 System.out.println("Please enter 'Q', 'C', 'H', 'T' or a positive integer:");
             } else {
                 System.out.println("Please enter 'Q', 'C', 'H' or a positive integer:");
@@ -207,7 +208,7 @@ public class ApplicationSolverStats extends AbstractApplication {
 
     // display a list of options after user change the solver
     private void menuSub(boolean optionH, boolean optionT) {
-        if (inUseHeuristic == HeuristicType.PD78) {
+        if (inUseHeuristic == HeuristicOptions.PD78) {
             optionT = false;
         }
         System.out.print("Enter ");
@@ -304,13 +305,13 @@ public class ApplicationSolverStats extends AbstractApplication {
                 }
             } while (trails <= 0);
 
-            if (inUseHeuristic == HeuristicType.MD
-                    || inUseHeuristic == HeuristicType.MDLC
-                    || inUseHeuristic == HeuristicType.WD
-                    || inUseHeuristic == HeuristicType.WDMD) {
+            if (inUseHeuristic == HeuristicOptions.MD
+                    || inUseHeuristic == HeuristicOptions.MDLC
+                    || inUseHeuristic == HeuristicOptions.WD
+                    || inUseHeuristic == HeuristicOptions.WDMD) {
                 System.out.println("Choose type of board: 'R'andom, 'E'asy, 'M'oderate");
-            } else if (inUseHeuristic == HeuristicType.PD555
-                    || inUseHeuristic == HeuristicType.PD663) {
+            } else if (inUseHeuristic == HeuristicOptions.PD555
+                    || inUseHeuristic == HeuristicOptions.PD663) {
                 if (timeoutLimit <= 10) {
                     System.out.println("Choose type of board: 'R'andom, 'E'asy, 'M'oderate, "
                             + "'H'ard");
@@ -337,9 +338,9 @@ public class ApplicationSolverStats extends AbstractApplication {
             if (choice == 'E' || choice == 'e') {
                 boardLevel = PuzzleDifficultyLevel.EASY;
                 System.out.print(trails + " trials of easy random board with ");
-                if (inUseHeuristic == HeuristicType.MD
-                        || inUseHeuristic == HeuristicType.MDLC
-                        || inUseHeuristic == HeuristicType.WD) {
+                if (inUseHeuristic == HeuristicOptions.MD
+                        || inUseHeuristic == HeuristicOptions.MDLC
+                        || inUseHeuristic == HeuristicOptions.WD) {
                 	lineCount = 50000;
                     divisor = 5000;
                     remainders = new HashSet<Integer>();
@@ -358,19 +359,19 @@ public class ApplicationSolverStats extends AbstractApplication {
                 boardLevel = PuzzleDifficultyLevel.MODERATE;
                 System.out.print(trails + " trials of moderate random board with ");
             } else if (choice == 'H' || choice == 'h') {
-                if (inUseHeuristic == HeuristicType.MD
-                        || inUseHeuristic == HeuristicType.MDLC
-                        || inUseHeuristic == HeuristicType.WD
-                        || inUseHeuristic == HeuristicType.WDMD) {
+                if (inUseHeuristic == HeuristicOptions.MD
+                        || inUseHeuristic == HeuristicOptions.MDLC
+                        || inUseHeuristic == HeuristicOptions.WD
+                        || inUseHeuristic == HeuristicOptions.WDMD) {
                     System.out.print(trails + " trials of any random board with ");
                 } else if (timeoutLimit > 10
-                        && (inUseHeuristic == HeuristicType.PD555
-                        || inUseHeuristic == HeuristicType.PD663)) {
+                        && (inUseHeuristic == HeuristicOptions.PD555
+                        || inUseHeuristic == HeuristicOptions.PD663)) {
                     System.out.print(trails + " trials of any random board with ");
                 } else {
                     boardLevel = PuzzleDifficultyLevel.HARD;
                     System.out.print(trails + " trials of hard random board with ");
-                    if (inUseHeuristic == HeuristicType.PD78) {
+                    if (inUseHeuristic == HeuristicOptions.PD78) {
                         lineCount = 50;
                         divisor = 5;
                         remainders = new HashSet<Integer>();
