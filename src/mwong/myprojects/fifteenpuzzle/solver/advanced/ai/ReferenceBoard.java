@@ -31,7 +31,7 @@ public class ReferenceBoard {
 
     private ReferenceBoard() {
     	puzzleSize = ReferenceConstants.getPuzzleSize();
-    	referenceLookup = ReferenceConstants.getReferenceGroup();
+    	referenceLookup = ReferenceConstants.getReferenceLookup();
     	referenceGroup = ReferenceConstants.getReferenceGroup();
     	rotate90pos = ReferenceConstants.getRotate90Pos();
     	rotate180pos = ReferenceConstants.getRotate180Pos();
@@ -46,7 +46,8 @@ public class ReferenceBoard {
      */
     public ReferenceBoard(Board initial) {
     	this();
-        byte[] tiles = initial.getTiles().clone();
+        byte[] tiles = new byte[puzzleSize];
+        System.arraycopy(initial.getTiles(), 0, tiles, 0, puzzleSize);
         group = referenceGroup[initial.getZero1d()];
         byte lookup = referenceLookup[initial.getZero1d()];
         if (group == 3) {
@@ -86,7 +87,7 @@ public class ReferenceBoard {
                 tilesRotate[i] = tiles[rotate90pos[i]];
             }
         } else if (group == 2) {
-            if (lookup > 2) {
+        	if (lookup > 2) {
                 tiles[4] = tiles[5];
                 tiles[5] = 0;
             }
