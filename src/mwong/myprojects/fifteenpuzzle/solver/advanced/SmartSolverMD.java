@@ -78,38 +78,18 @@ public class SmartSolverMD extends SolverMD {
         extra.printDescription(flagAdvancedPriority, inUseHeuristic);
     }
 
+    /**
+     * Returns the heuristic value of the given board based on the solver setting.
+     *
+     * @param board the initial puzzle Board object to solve
+     * @return byte value of the heuristic value of the given board
+     */
     @Override
     public byte heuristic(Board board) {
-    	return heuristic(board, flagAdvancedPriority, tagSearch);
+        return heuristic(board, flagAdvancedPriority, tagSearch);
     }
-    
-    @Override 
-    public byte heuristicStandard(Board board) {
-    	if (board == null) {
-            throw new IllegalArgumentException("Board is null");
-        }
-        if (!board.isSolvable()) {
-            return -1;
-        }
-        return heuristic(board, tagStandard, tagReview);    	
-    }
-    
-    @Override 
-    public byte heuristicAdvanced(Board board) {
-    	if (!activeSmartSolver) {
-            throw new UnsupportedOperationException("Advanced version currently inactive."
-                    + " Reference collection unavailable. Check the system.");
-    	}
-    	if (board == null) {
-            throw new IllegalArgumentException("Board is null");
-        }
-        if (!board.isSolvable()) {
-            return -1;
-        }
-        return heuristic(board, tagAdvanced, tagReview);    	
-    }
-    
-    // calculate the heuristic value of the given board and save the properties
+
+    // overload method to calculate the heuristic value of the given board and conditions
     private byte heuristic(Board board, boolean isAdvanced, boolean isSearch) {
         if (!board.isSolvable()) {
             return -1;
@@ -122,8 +102,8 @@ public class SmartSolverMD extends SolverMD {
             zeroY = board.getZeroY();
             tiles = board.getTiles();
             tilesSym = board.getTilesSym();
-            priority1stMove = new int [rowSize * 2];
-            System.arraycopy(board.getValidMoves(), 0, priority1stMove, rowSize, rowSize);
+            lastDepthSummary = new int [rowSize * 2];
+            System.arraycopy(board.getValidMoves(), 0, lastDepthSummary, rowSize, rowSize);
 
             priorityGoal = 0;
             int base = 0;
@@ -172,8 +152,8 @@ public class SmartSolverMD extends SolverMD {
             zeroY = board.getZeroY();
             tiles = board.getTiles();
             tilesSym = board.getTilesSym();
-            priority1stMove = new int [rowSize * 2];
-            System.arraycopy(board.getValidMoves(), 0, priority1stMove, rowSize, rowSize);
+            lastDepthSummary = new int [rowSize * 2];
+            System.arraycopy(board.getValidMoves(), 0, lastDepthSummary, rowSize, rowSize);
         }
 
         if (!isAdvanced) {
@@ -205,6 +185,41 @@ public class SmartSolverMD extends SolverMD {
         return priorityAdvanced;
     }
 
+    /**
+     * Returns the original heuristic value of the given board.
+     *
+     * @return byte value of the original heuristic value of the given board
+     */
+    @Override
+    public byte heuristicStandard(Board board) {
+        if (board == null) {
+            throw new IllegalArgumentException("Board is null");
+        }
+        if (!board.isSolvable()) {
+            return -1;
+        }
+        return heuristic(board, tagStandard, tagReview);
+    }
+
+    /**
+     * Returns the advanced heuristic value of the given board.
+     *
+     * @return byte value of the advanced heuristic value of the given board
+     */
+    @Override
+    public byte heuristicAdvanced(Board board) {
+        if (!activeSmartSolver) {
+            throw new UnsupportedOperationException("Advanced version currently inactive."
+                    + " Reference collection unavailable. Check the system.");
+        }
+        if (board == null) {
+            throw new IllegalArgumentException("Board is null");
+        }
+        if (!board.isSolvable()) {
+            return -1;
+        }
+        return heuristic(board, tagAdvanced, tagReview);
+    }
 
     // solve the puzzle using interactive deepening A* algorithm
     @Override
@@ -216,7 +231,7 @@ public class SmartSolverMD extends SolverMD {
 
         int countDir = 0;
         for (int i = 0; i < rowSize; i++) {
-            if (priority1stMove[i + rowSize] > 0) {
+            if (lastDepthSummary[i + rowSize] > 0) {
                 countDir++;
             }
         }
@@ -226,12 +241,12 @@ public class SmartSolverMD extends SolverMD {
             int initLimit = priorityGoal;
             while (initLimit < limit) {
                 idaCount = 0;
-                dfs1stPrio(zeroX, zeroY, 0, initLimit, priorityGoal);
+                dfsStartingOrder(zeroX, zeroY, 0, initLimit, priorityGoal);
                 initLimit += 2;
 
                 boolean overload = false;
                 for (int i = rowSize; i < rowSize * 2; i++) {
-                    if (priority1stMove[i] > 10000) {
+                    if (lastDepthSummary[i] > 10000) {
                         overload = true;
                         break;
                     }
@@ -247,7 +262,7 @@ public class SmartSolverMD extends SolverMD {
             if (flagMessage) {
                 System.out.print("ida limit " + limit);
             }
-            dfs1stPrio(zeroX, zeroY, 0, limit, priorityGoal);
+            dfsStartingOrder(zeroX, zeroY, 0, limit, priorityGoal);
             searchDepth = limit;
             searchNodeCount += idaCount;
 
@@ -284,9 +299,9 @@ public class SmartSolverMD extends SolverMD {
         int firstDirValue = dupSolution[numPartialMoves].getValue();
         for (int i = 0; i < 4; i++) {
             if (i != firstDirValue) {
-                priority1stMove[i + 4] = 0;
+                lastDepthSummary[i + 4] = 0;
             } else {
-                priority1stMove[i + 4] = 1;
+                lastDepthSummary[i + 4] = 1;
             }
         }
 
@@ -294,7 +309,7 @@ public class SmartSolverMD extends SolverMD {
         if (flagMessage) {
             System.out.print("ida limit " + limit);
         }
-        dfs1stPrio(zeroX, zeroY, 0, limit - numPartialMoves + 1, priorityGoal);
+        dfsStartingOrder(zeroX, zeroY, 0, limit - numPartialMoves + 1, priorityGoal);
         if (solved) {
             System.arraycopy(solutionMove, 2, dupSolution, numPartialMoves + 1,
                     limit - numPartialMoves);

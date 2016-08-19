@@ -1,14 +1,12 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced.ai;
 
-import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleProperties;
-
 public class ReferenceProperties {
     //ReferenceAccumulator
     private static final int DEFAULT_CUTOFF_LIMIT = 10;
     private static final double DEFAULT_CUTOFF_BUFFER = 0.95;
     // selected reference boards for default setting, total 40 after generation.
     private static final byte[][][] DEFAULT_BOARDS = { 
-            {{ 0, 15,  8,  3, 12, 11,  7,  4, 14, 10,  6,  5,  9, 13,  2,  1}, {0,  70}},
+            {{ 0, 15,  8,  3, 12, 11,  7,  4, 14, 10,  6,  5,  9, 13,  2,  1}, {0,  70}}/*,
             {{ 6,  5,  9, 13,  2,  1, 10, 14,  3,  7,  0, 15,  4,  8, 12, 11}, {10, 72}},
             {{ 0, 12,  8,  4, 15, 11,  7,  3, 14, 10,  6,  2, 13,  9,  5,  1}, {0,  72}},
             {{ 6,  5, 14, 13,  2,  1, 10,  9,  8,  7,  0, 15,  4,  3, 12, 11}, {10, 70}},
@@ -43,6 +41,7 @@ public class ReferenceProperties {
             {{ 0, 12,  5, 13, 15,  6, 10,  9,  2,  7, 11, 14,  4,  3,  8,  1}, { 0, 78}},
             {{ 0, 12,  8, 13, 15, 11,  7,  9, 14, 10,  6,  2,  4,  3,  5,  1}, { 0, 78}},
             {{ 0, 14, 15, 13,  8, 11, 10,  5, 12,  7,  6,  9,  4,  2,  3,  1}, { 0, 78}}
+            */
     };
 	/**
 	 * @return the defaultCutoffLimit

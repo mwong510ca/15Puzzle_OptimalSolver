@@ -25,8 +25,8 @@ public class SmartSolverPDWD extends SolverPDWD {
     private final byte refCutoff;
     private final ReferenceAccumulator refAccumulator;
     private final SmartSolverExtra extra;
-    
-     /**
+
+    /**
      *  Initializes SolverPDWD object using default preset pattern.
      */
     public SmartSolverPDWD(ReferenceAccumulator refAccumulator) {
@@ -42,7 +42,13 @@ public class SmartSolverPDWD extends SolverPDWD {
         this(presetPattern, 0, refAccumulator);
     }
 
-    public SmartSolverPDWD(PatternOptions presetPattern, int choice, ReferenceAccumulator refAccumulator) {
+    /**
+     *  Initializes SolverPDWD object with given preset pattern.
+     *
+     *  @param presetPattern the given preset pattern type
+     */
+    public SmartSolverPDWD(PatternOptions presetPattern, int choice,
+            ReferenceAccumulator refAccumulator) {
         super(presetPattern, choice);
         if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
             System.out.println("Referece board collection unavailable."
@@ -65,42 +71,22 @@ public class SmartSolverPDWD extends SolverPDWD {
      */
     @Override
     public void printDescription() {
-    	extra.printDescription(flagAdvancedPriority, inUseHeuristic);
-    	printInUsePattern();
+        extra.printDescription(flagAdvancedPriority, inUseHeuristic);
+        printInUsePattern();
     }
 
+    /**
+     * Returns the heuristic value of the given board based on the solver setting.
+     *
+     * @param board the initial puzzle Board object to solve
+     * @return byte value of the heuristic value of the given board
+     */
     @Override
     public byte heuristic(Board board) {
-    	return heuristic(board, flagAdvancedPriority, tagSearch);
+        return heuristic(board, flagAdvancedPriority, tagSearch);
     }
-    
-    @Override 
-    public byte heuristicStandard(Board board) {
-    	if (board == null) {
-            throw new IllegalArgumentException("Board is null");
-        }
-        if (!board.isSolvable()) {
-            return -1;
-        }
-        return heuristic(board, tagStandard, tagReview);    	
-    }
-    
-    @Override 
-    public byte heuristicAdvanced(Board board) {
-    	if (!activeSmartSolver) {
-            throw new UnsupportedOperationException("Advanced version currently inactive."
-                    + " Reference collection unavailable. Check the system.");
-    	}
-    	if (board == null) {
-            throw new IllegalArgumentException("Board is null");
-        }
-        if (!board.isSolvable()) {
-            return -1;
-        }
-        return heuristic(board, tagAdvanced, tagReview);    	
-    }
-    
-    // calculate the heuristic value of the given board and save the properties
+
+    // overload method to calculate the heuristic value of the given board and conditions
     private byte heuristic(Board board, boolean isAdvanced, boolean isSearch) {
         if (!board.isSolvable()) {
             return -1;
@@ -110,7 +96,7 @@ public class SmartSolverPDWD extends SolverPDWD {
         if (!board.equals(lastBoard) || isSearch) {
             // walking distance from parent/superclass
             priorityGoal = super.heuristic(board);
-            priorityAdvanced = -1;            
+            priorityAdvanced = -1;
         }
 
         if (!isAdvanced) {
@@ -119,11 +105,11 @@ public class SmartSolverPDWD extends SolverPDWD {
 
         AdvancedRecord record = extra.advancedContains(board, isSearch, refAccumulator);
         if (record != null) {
-        	priorityAdvanced = record.getEstimate();
-        	if (record.hasPartialMoves()) {
-        		solutionMove = record.getPartialMoves();
-        	}
-        } 
+            priorityAdvanced = record.getEstimate();
+            if (record.hasPartialMoves()) {
+                solutionMove = record.getPartialMoves();
+            }
+        }
         if (priorityAdvanced != -1) {
             return priorityAdvanced;
         }
@@ -133,12 +119,49 @@ public class SmartSolverPDWD extends SolverPDWD {
             return priorityAdvanced;
         }
 
-        priorityAdvanced = extra.advancedEstimate(board, priorityAdvanced, refCutoff, refAccumulator.getActiveMap());
+        priorityAdvanced = extra.advancedEstimate(board, priorityAdvanced, refCutoff,
+                refAccumulator.getActiveMap());
 
         if ((priorityAdvanced - priorityGoal) % 2 == 1) {
             priorityAdvanced++;
         }
         return priorityAdvanced;
+    }
+
+    /**
+     * Returns the original heuristic value of the given board.
+     *
+     * @return byte value of the original heuristic value of the given board
+     */
+    @Override
+    public byte heuristicStandard(Board board) {
+        if (board == null) {
+            throw new IllegalArgumentException("Board is null");
+        }
+        if (!board.isSolvable()) {
+            return -1;
+        }
+        return heuristic(board, tagStandard, tagReview);
+    }
+
+    /**
+     * Returns the advanced heuristic value of the given board.
+     *
+     * @return byte value of the advanced heuristic value of the given board
+     */
+    @Override
+    public byte heuristicAdvanced(Board board) {
+        if (!activeSmartSolver) {
+            throw new UnsupportedOperationException("Advanced version currently inactive."
+                    + " Reference collection unavailable. Check the system.");
+        }
+        if (board == null) {
+            throw new IllegalArgumentException("Board is null");
+        }
+        if (!board.isSolvable()) {
+            return -1;
+        }
+        return heuristic(board, tagAdvanced, tagReview);
     }
 
     // solve the puzzle using interactive deepening A* algorithm
@@ -150,7 +173,7 @@ public class SmartSolverPDWD extends SolverPDWD {
 
         int countDir = 0;
         for (int i = 0; i < rowSize; i++) {
-            if (priority1stMove[i + rowSize] > 0) {
+            if (lastDepthSummary[i + rowSize] > 0) {
                 countDir++;
             }
         }
@@ -160,12 +183,12 @@ public class SmartSolverPDWD extends SolverPDWD {
             int initLimit = priorityGoal;
             while (initLimit < limit) {
                 idaCount = 0;
-                dfs1stPrio(zeroX, zeroY, 0, initLimit, regVal, symVal);
+                dfsStartingOrder(zeroX, zeroY, 0, initLimit, regVal, symVal);
                 initLimit += 2;
 
                 boolean overload = false;
                 for (int i = rowSize; i < rowSize * 2; i++) {
-                    if (priority1stMove[i] > 10000) {
+                    if (lastDepthSummary[i] > 10000) {
                         overload = true;
                         break;
                     }
@@ -182,7 +205,7 @@ public class SmartSolverPDWD extends SolverPDWD {
                 System.out.print("ida limit " + limit);
             }
 
-            dfs1stPrio(zeroX, zeroY, 0, limit, regVal, symVal);
+            dfsStartingOrder(zeroX, zeroY, 0, limit, regVal, symVal);
             searchDepth = limit;
             searchNodeCount += idaCount;
 
@@ -196,9 +219,9 @@ public class SmartSolverPDWD extends SolverPDWD {
                     System.out.printf("\tNodes : %-15s  " + stopwatch.currentTime() + "s\n",
                             Integer.toString(idaCount));
                 }
-            	if (solved) {
-            		return;
-            	}
+                if (solved) {
+                    return;
+                }
             }
             limit += 2;
         }
@@ -219,9 +242,9 @@ public class SmartSolverPDWD extends SolverPDWD {
         int firstDirValue = dupSolution[numPartialMoves].getValue();
         for (int i = 0; i < 4; i++) {
             if (i != firstDirValue) {
-                priority1stMove[i + 4] = 0;
+                lastDepthSummary[i + 4] = 0;
             } else {
-                priority1stMove[i + 4] = 1;
+                lastDepthSummary[i + 4] = 1;
             }
         }
 
@@ -230,7 +253,7 @@ public class SmartSolverPDWD extends SolverPDWD {
             System.out.print("ida limit " + limit);
         }
 
-        dfs1stPrio(zeroX, zeroY, 0, limit - numPartialMoves + 1, regVal, symVal);
+        dfsStartingOrder(zeroX, zeroY, 0, limit - numPartialMoves + 1, regVal, symVal);
         if (solved) {
             System.arraycopy(solutionMove, 2, dupSolution, numPartialMoves + 1,
                     limit - numPartialMoves);

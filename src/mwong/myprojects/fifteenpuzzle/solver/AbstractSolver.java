@@ -52,7 +52,7 @@ public abstract class AbstractSolver implements Solver {
     protected Board lastBoard;
     protected byte priorityGoal;
     protected byte priorityAdvanced;
-    protected int[] priority1stMove;
+    protected int[] lastDepthSummary;
     protected Stopwatch stopwatch;
     // search results
     protected byte steps;
@@ -187,7 +187,7 @@ public abstract class AbstractSolver implements Solver {
         terminated = false;
         searchDepth = 0;
         searchNodeCount = 0;
-        priority1stMove = new int [rowSize * 2];
+        lastDepthSummary = new int [rowSize * 2];
         solutionMove = new Direction[maxMoves + 1];
         solutionMove[0] = Direction.NONE;
         steps = 0;
@@ -254,8 +254,8 @@ public abstract class AbstractSolver implements Solver {
                 terminated = true;
             } else {
                 stopwatch.start();
-                priority1stMove = new int[rowSize * 2];
-                System.arraycopy(board.getValidMoves(), 0, priority1stMove, rowSize, rowSize);
+                lastDepthSummary = new int[rowSize * 2];
+                System.arraycopy(board.getValidMoves(), 0, lastDepthSummary, rowSize, rowSize);
                 limit = heuristic(board);
                 assert limit > 0 : "Board must be solvable and is not the goal state.";
                 idaStar(limit);

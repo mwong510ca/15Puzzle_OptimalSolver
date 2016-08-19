@@ -57,8 +57,8 @@ public class ReferenceAccumulator {
         } catch (IOException ex) {
             loadDefault();
         }
-        updateData(createSolver());
-        refreshFile();
+        //updateData(createSolver());
+        //refreshFile();
     }
 
     private void loadDefault() {
@@ -91,7 +91,7 @@ public class ReferenceAccumulator {
             }
         }
     }
-    
+
     /**
      * Returns a HashMap of collection of reference boards.
      *
@@ -318,7 +318,8 @@ public class ReferenceAccumulator {
      * @param inSolver the SolverInterface object in use
      */
     public boolean addBoard(Solver inSolver) {
-        return addBoard(inSolver, false);
+        //return addBoard(inSolver, false);
+    	return false;
     }
 
     // add a reference board in collection, allow bypass mininum

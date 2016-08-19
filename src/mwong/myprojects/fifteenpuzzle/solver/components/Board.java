@@ -364,8 +364,8 @@ public class Board {
      * @return boolean represent this board is the goal board
      */
     public boolean isGoal() {
-    	if (hashKey1 == PuzzleConstants.getGoalKey1() 
-        		&& hashKey2 == PuzzleConstants.getGoalKey2()) {
+        if (hashKey1 == PuzzleConstants.getGoalKey1()
+                && hashKey2 == PuzzleConstants.getGoalKey2()) {
             return true;
         }
         return false;

@@ -125,7 +125,7 @@ public class SolverMD extends AbstractSolver {
             if (flagMessage) {
                 System.out.print("ida limit " + limit);
             }
-            dfs1stPrio(zeroX, zeroY, 0, limit, priorityGoal);
+            dfsStartingOrder(zeroX, zeroY, 0, limit, priorityGoal);
             searchDepth = limit;
             searchNodeCount += idaCount;
 
@@ -147,36 +147,14 @@ public class SolverMD extends AbstractSolver {
         }
     }
 
-    /**
-     * Returns the boolean value represent the given board is solve in the given range boundary.
-     * Special function use by SmartSolverExtra.java.
-     *
-     * @param board the initial puzzle Board object to solve
-     * @param lowerLimit the starting limit
-     * @param upperLimit the maximum limit
-     * @return boolean represent the given board is solve in the given range
-     */
-    public boolean advancedEstimate(Board board, int lowerLimit, int upperLimit) {
-        heuristic(board);
-        int initLimit = lowerLimit;
-        while (lowerLimit <= upperLimit) {
-            dfs1stPrio(zeroX, zeroY, 0, lowerLimit, initLimit);
-            if (solved) {
-                return true;
-            }
-            lowerLimit += 2;
-        }
-        return false;
-    }
-
     // recursive depth first search until it reach the goal state or timeout, the least estimate and
     // node counts will be use to determine the starting order of next search
-    protected void dfs1stPrio(int orgX, int orgY, int cost, int limit, int orgPrio) {
+    protected void dfsStartingOrder(int orgX, int orgY, int cost, int limit, int orgPrio) {
         int zeroPos = orgY * rowSize + orgX;
         int zeroSym = symmetryPos[zeroPos];
         int costPlus1 = cost + 1;
         int [] estimate1stMove = new int[rowSize * 2];
-        System.arraycopy(priority1stMove, 0, estimate1stMove, 0, rowSize * 2);
+        System.arraycopy(lastDepthSummary, 0, estimate1stMove, 0, rowSize * 2);
 
         int estimate = limit;
         do {
@@ -187,34 +165,34 @@ public class SolverMD extends AbstractSolver {
             for (int i = 0; i < 4; i++) {
                 if (estimate1stMove[i] == endOfSearch) {
                     continue;
-                } else if (priority1stMove[i + rowSize] > nodeCount) {
+                } else if (lastDepthSummary[i + rowSize] > nodeCount) {
                     estimate = estimate1stMove[i];
-                    nodeCount = priority1stMove[i + rowSize];
+                    nodeCount = lastDepthSummary[i + rowSize];
                     firstMoveIdx = i;
                 } else {
-                    priority1stMove[i] = endOfSearch;
+                    lastDepthSummary[i] = endOfSearch;
                 }
             }
 
             if (estimate < endOfSearch) {
                 int startCounter = idaCount++;
                 if (firstMoveIdx == Direction.RIGHT.getValue()) {
-                    priority1stMove[firstMoveIdx]
+                    lastDepthSummary[firstMoveIdx]
                             = shiftRight(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio);
                 } else if (firstMoveIdx == Direction.DOWN.getValue()) {
-                    priority1stMove[firstMoveIdx]
+                    lastDepthSummary[firstMoveIdx]
                             = shiftDown(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio);
                 } else if (firstMoveIdx == Direction.LEFT.getValue()) {
-                    priority1stMove[firstMoveIdx]
+                    lastDepthSummary[firstMoveIdx]
                             = shiftLeft(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio);
                 } else if (firstMoveIdx == Direction.UP.getValue()) {
-                    priority1stMove[firstMoveIdx]
+                    lastDepthSummary[firstMoveIdx]
                             = shiftUp(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio);
                 }
                 if (terminated) {
                     return;
                 }
-                priority1stMove[firstMoveIdx + rowSize] = idaCount - startCounter;
+                lastDepthSummary[firstMoveIdx + rowSize] = idaCount - startCounter;
                 estimate1stMove[firstMoveIdx] = endOfSearch;
             }
         } while (!terminated && estimate != endOfSearch);

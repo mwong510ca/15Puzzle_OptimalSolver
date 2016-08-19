@@ -18,7 +18,7 @@ public class PuzzleConstants {
         {0, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15, 4, 8, 12};
     private static final byte[] SYMMETRY_POS =
         {0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15};
-    
+
     /**
      * Returns the byte value of puzzle size.
      *

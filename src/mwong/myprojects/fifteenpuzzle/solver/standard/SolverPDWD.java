@@ -249,7 +249,7 @@ public class SolverPDWD extends SolverWD {
                 System.out.print("ida limit " + limit);
             }
 
-            dfs1stPrio(zeroX, zeroY, 0, limit, regVal, symVal);
+            dfsStartingOrder(zeroX, zeroY, 0, limit, regVal, symVal);
             searchDepth = limit;
             searchNodeCount += idaCount;
 
@@ -273,7 +273,7 @@ public class SolverPDWD extends SolverWD {
 
     // recursive depth first search until it reach the goal state or timeout, the least estimate and
     // node counts will be use to determine the starting order of next search
-    protected void dfs1stPrio(int orgX, int orgY, int cost, int limit, int orgValReg,
+    protected void dfsStartingOrder(int orgX, int orgY, int cost, int limit, int orgValReg,
             int orgValSym) {
         int zeroPos = orgY * rowSize + orgX;
         int zeroSym = symmetryPos[zeroPos];
@@ -281,7 +281,7 @@ public class SolverPDWD extends SolverWD {
         int[] orgCopy = new int[szPdWdKeys];
         System.arraycopy(pdwdKeys, 0, orgCopy, 0, szPdWdKeys);
         int[] estimate1stMove = new int[rowSize * 2];
-        System.arraycopy(priority1stMove, 0, estimate1stMove, 0, rowSize * 2);
+        System.arraycopy(lastDepthSummary, 0, estimate1stMove, 0, rowSize * 2);
 
         int estimate = limit;
         do {
@@ -292,31 +292,31 @@ public class SolverPDWD extends SolverWD {
             for (int i = 0; i < 4; i++) {
                 if (estimate1stMove[i] == endOfSearch) {
                     continue;
-                } else if (priority1stMove[i + rowSize] > nodeCount) {
+                } else if (lastDepthSummary[i + rowSize] > nodeCount) {
                     estimate = estimate1stMove[i];
-                    nodeCount = priority1stMove[i + rowSize];
+                    nodeCount = lastDepthSummary[i + rowSize];
                     firstMoveIdx = i;
                 } else {
-                    priority1stMove[i] = endOfSearch;
+                    lastDepthSummary[i] = endOfSearch;
                 }
             }
 
             if (estimate < endOfSearch) {
                 int startCounter = idaCount++;
                 if (firstMoveIdx == Direction.RIGHT.getValue()) {
-                    priority1stMove[firstMoveIdx] = shiftRight(orgX, orgY, zeroPos, zeroSym,
+                    lastDepthSummary[firstMoveIdx] = shiftRight(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy);
                 } else if (firstMoveIdx == Direction.DOWN.getValue()) {
-                    priority1stMove[firstMoveIdx] = shiftDown(orgX, orgY, zeroPos, zeroSym,
+                    lastDepthSummary[firstMoveIdx] = shiftDown(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy);
                 } else if (firstMoveIdx == Direction.LEFT.getValue()) {
-                    priority1stMove[firstMoveIdx] = shiftLeft(orgX, orgY, zeroPos, zeroSym,
+                    lastDepthSummary[firstMoveIdx] = shiftLeft(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy);
                 } else if (firstMoveIdx == Direction.UP.getValue()) {
-                    priority1stMove[firstMoveIdx] = shiftUp(orgX, orgY, zeroPos, zeroSym,
+                    lastDepthSummary[firstMoveIdx] = shiftUp(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy);
                 }
-                priority1stMove[firstMoveIdx + rowSize] = idaCount - startCounter;
+                lastDepthSummary[firstMoveIdx + rowSize] = idaCount - startCounter;
                 estimate1stMove[firstMoveIdx] = endOfSearch;
             }
         } while (!terminated && estimate != endOfSearch);
