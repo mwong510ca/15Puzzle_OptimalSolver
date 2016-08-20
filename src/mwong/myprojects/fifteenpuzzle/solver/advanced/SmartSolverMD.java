@@ -1,17 +1,3 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation  : javac SolverMD.java
- *  Dependencies : Board.java, Direction.java, Stopwatch.java,
- *                 SolverAbstract.java, AdvancedAccumulator.java
- *                 ReferenceBoard.java, ReferenceMoves.java
- *
- *  SolverMD implements SolverInterface.  It take a Board object and solve
- *  the puzzle with IDA* using manhattan distance with linear conflict option.
- *
- ****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
 import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
@@ -24,8 +10,9 @@ import mwong.myprojects.fifteenpuzzle.solver.standard.SolverMD;
  * SmartSolverMD extends SolverMD.  The advanced version extend the standard solver
  * using the reference boards collection to boost the initial estimate.
  *
- * <p>Dependencies : AbstractSolver.java, Board.java, Direction.java,
- *                   HeuristicOptions.java, PuzzleProperties.java SolverConstants.java
+ * <p>Dependencies : AdvancedRecord.java, Board.java, Direction.java, ReferenceAccumulator.java,
+ *                   SmartSolverConstants.java, SmartSolverExtra.java, SolverConstants.java,
+ *                   SolverMD.java
  *
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
@@ -46,17 +33,17 @@ public class SmartSolverMD extends SolverMD {
     }
 
     /**
-     * Initializes Solver object.  If refAccumlator is null or empty,
+     * Initializes SmartSolverMD object.  If refAccumlator is null or empty,
      * it will act as standard version.
      *
-     * @param lcFlag boolean flag for message feature
+     * @param lcFlag boolean flag for linear conflict feature
      * @param refAccumulator the given ReferenceAccumulator object
      */
     public SmartSolverMD(boolean lcFlag, ReferenceAccumulator refAccumulator) {
         super(lcFlag);
         if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
-            System.out.println("Referece board collection unavailable."
-                    + " Resume to the 15 puzzle solver standard version.");
+            System.out.println("Attention: Referece board collection unavailable."
+                    + " Advanced estimate will use standard estimate.");
             extra = null;
             this.refAccumulator = null;
             refCutoff = 0;
@@ -65,7 +52,7 @@ public class SmartSolverMD extends SolverMD {
             activeSmartSolver = true;
             extra = new SmartSolverExtra();
             this.refAccumulator = refAccumulator;
-            refCutoff = SmartSolverProperties.getReferenceCutoff();
+            refCutoff = SmartSolverConstants.getReferenceCutoff();
             numPartialMoves = SmartSolverConstants.getNumPartialMoves();
         }
     }
@@ -208,15 +195,14 @@ public class SmartSolverMD extends SolverMD {
      */
     @Override
     public byte heuristicAdvanced(Board board) {
-        if (!activeSmartSolver) {
-            throw new UnsupportedOperationException("Advanced version currently inactive."
-                    + " Reference collection unavailable. Check the system.");
-        }
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
         if (!board.isSolvable()) {
             return -1;
+        }
+        if (!activeSmartSolver) {
+            heuristic(board, tagStandard, tagReview);
         }
         return heuristic(board, tagAdvanced, tagReview);
     }

@@ -141,8 +141,9 @@ public abstract class AbstractSolver implements Solver {
             flagAdvancedPriority = flag;
             return true;
         } else {
-            //System.out.println("Referece board collection unavailable."
-            //    + " Advanced search feature has disabled.");
+            System.out.println("Referece board collection unavailable."
+                + " Advanced search feature will act as standard search.");
+            flagAdvancedPriority = tagStandard;
             return false;
         }
     }

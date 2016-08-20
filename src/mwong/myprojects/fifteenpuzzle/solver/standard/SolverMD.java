@@ -32,7 +32,7 @@ public class SolverMD extends AbstractSolver {
     /**
      * Initializes SolverMD object.
      *
-     * @param lcFlag boolean flag for message feature
+     * @param lcFlag boolean flag for linear conflict feature
      */
     public SolverMD(boolean lcFlag) {
         super();

@@ -15,6 +15,7 @@ public class SmartSolverConstants {
     private static final byte[] REFERENCE_GROUP = ReferenceConstants.getReferenceGroup();
     private static final boolean SYMMETRY = ReferenceConstants.isSymmetry();
     private static final byte NUM_PARTIAL_MOVES = ReferenceConstants.getNumPartialMoves();
+    private static final byte REFERENCE_CUTOFF = 30;
 
     /**
      * Returns the byte array of the reference lookup key.
@@ -70,5 +71,14 @@ public class SmartSolverConstants {
      */
     static final byte getNumPartialMoves() {
         return NUM_PARTIAL_MOVES;
+    }
+
+    /**
+     * Returns the byte value of the cutoff estimate for advanced search.
+     *
+     * @return byte value of the cutoff estimate for advanced search
+     */
+    static final byte getReferenceCutoff() {
+        return REFERENCE_CUTOFF;
     }
 }

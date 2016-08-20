@@ -16,6 +16,8 @@ import java.util.Random;
 public class Board {
     private final byte size;
     private final byte rowSize;
+    private final int goalKey1;
+    private final int goalKey2;
 
     private boolean isSolvable;
     private boolean isIdenticalSymmetry;
@@ -44,6 +46,8 @@ public class Board {
     public Board(PuzzleDifficultyLevel level) {
         size = PuzzleConstants.getSize();
         rowSize = PuzzleConstants.getRowSize();
+        goalKey1 = PuzzleConstants.getGoalKey1();
+        goalKey2 = PuzzleConstants.getGoalKey1();
         if (level == PuzzleDifficultyLevel.RANDOM) {
             generateRandomBoard();
         } else {
@@ -60,6 +64,8 @@ public class Board {
     public Board(byte [] blocks) {
         size = PuzzleConstants.getSize();
         rowSize = PuzzleConstants.getRowSize();
+        goalKey1 = PuzzleConstants.getGoalKey1();
+        goalKey2 = PuzzleConstants.getGoalKey1();
         setBasicPriorities(blocks);
         setAdvancedProperties();
     }
@@ -69,6 +75,8 @@ public class Board {
     private Board(int zeroX, int zeroY, byte[] tiles) {
         size = PuzzleConstants.getSize();
         rowSize = PuzzleConstants.getRowSize();
+        goalKey1 = PuzzleConstants.getGoalKey1();
+        goalKey2 = PuzzleConstants.getGoalKey1();
         isSolvable = true;
         this.zeroX = zeroX;
         this.zeroY = zeroY;
@@ -364,8 +372,7 @@ public class Board {
      * @return boolean represent this board is the goal board
      */
     public boolean isGoal() {
-        if (hashKey1 == PuzzleConstants.getGoalKey1()
-                && hashKey2 == PuzzleConstants.getGoalKey2()) {
+        if (hashKey1 == goalKey1 && hashKey2 == goalKey2) {
             return true;
         }
         return false;

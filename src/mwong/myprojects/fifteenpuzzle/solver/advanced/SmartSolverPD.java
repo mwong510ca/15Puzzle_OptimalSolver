@@ -15,7 +15,6 @@
 
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
-import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
@@ -26,6 +25,17 @@ import mwong.myprojects.fifteenpuzzle.utilities.Stopwatch;
 
 import java.util.Arrays;
 
+/**
+ * SmartSolverPDWD extends SolverPDWD.  The advanced version extend the standard solver
+ * using the reference boards collection to boost the initial estimate.
+ *
+ * <p>Dependencies : AdvancedRecord.java, Board.java, Direction.java, ReferenceAccumulator.java,
+ *                   SmartSolverConstants.java, SmartSolverExtra.java, SolverProperties.java, 
+ *                   SolverPD.java
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public class SmartSolverPD extends SolverPD {
     private final byte numPartialMoves;
     private final byte refCutoff;
@@ -69,7 +79,7 @@ public class SmartSolverPD extends SolverPD {
             activeSmartSolver = true;
             extra = new SmartSolverExtra();
             this.refAccumulator = refAccumulator;
-            refCutoff = SmartSolverProperties.getReferenceCutoff();
+            refCutoff = SmartSolverConstants.getReferenceCutoff();
             numPartialMoves = SmartSolverConstants.getNumPartialMoves();
         }
     }
@@ -94,7 +104,7 @@ public class SmartSolverPD extends SolverPD {
             activeSmartSolver = true;
             extra = new SmartSolverExtra();
             this.refAccumulator = refAccumulator;
-            refCutoff = SmartSolverProperties.getReferenceCutoff();
+            refCutoff = SmartSolverConstants.getReferenceCutoff();
             numPartialMoves = SmartSolverConstants.getNumPartialMoves();
         }
     }

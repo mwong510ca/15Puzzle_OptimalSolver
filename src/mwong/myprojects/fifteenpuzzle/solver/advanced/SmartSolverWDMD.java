@@ -1,16 +1,3 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation  : javac SolverWDMD.java
- *  Dependencies : Board.java, Direction.java, SolverWD
- *
- *  SolverMD implements SolverInterface.  It take a Board object
- *  and solve the puzzle with IDA* using combination of manhattan distance
- *  with linear conflict and walking distance.
- *
- ****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
@@ -18,6 +5,16 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverWDMD;
 
+/**
+ * SmartSolverWDMD extends SolverWDMD.  The advanced version extend the standard solver
+ * using the reference boards collection to boost the initial estimate.
+ *
+ * <p>Dependencies : AdvancedRecord.java, Board.java, Direction.java, ReferenceAccumulator.java,
+ *                   SmartSolverConstants.java, SmartSolverExtra.java, SolverWDMD.java
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public class SmartSolverWDMD extends SolverWDMD {
     private final byte numPartialMoves;
     private final byte refCutoff;
@@ -25,7 +22,10 @@ public class SmartSolverWDMD extends SolverWDMD {
     private final SmartSolverExtra extra;
 
     /**
-     * Initializes SolverWDMD object.
+     * Initializes SolverWDMD object.  If refAccumlator is null or empty,
+     * it will act as standard version.
+     *
+     * @param refAccumulator the given ReferenceAccumulator object
      */
     public SmartSolverWDMD(ReferenceAccumulator refAccumulator) {
         super();
@@ -40,7 +40,7 @@ public class SmartSolverWDMD extends SolverWDMD {
             activeSmartSolver = true;
             extra = new SmartSolverExtra();
             this.refAccumulator = refAccumulator;
-            refCutoff = SmartSolverProperties.getReferenceCutoff();
+            refCutoff = SmartSolverConstants.getReferenceCutoff();
             numPartialMoves = SmartSolverConstants.getNumPartialMoves();
         }
     }
@@ -131,15 +131,14 @@ public class SmartSolverWDMD extends SolverWDMD {
      */
     @Override
     public byte heuristicAdvanced(Board board) {
-        if (!activeSmartSolver) {
-            throw new UnsupportedOperationException("Advanced version currently inactive."
-                    + " Reference collection unavailable. Check the system.");
-        }
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
         if (!board.isSolvable()) {
             return -1;
+        }
+        if (!activeSmartSolver) {
+            heuristic(board, tagStandard, tagReview);
         }
         return heuristic(board, tagAdvanced, tagReview);
     }

@@ -1,17 +1,3 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation  : javac SolverPDWD.java
- *  Dependencies : Board.java, Direction.java, PDElement.java, PDCombo.java,
- *                 PDPresetPatterns.java, SolverWD.java
- *
- *  SolverPDWD extends SolverWD implements SolverInterface.  It take a Board
- *  object and solve the puzzle with IDA* using combination of walking distance
- *  and additive pattern database
- *
- ****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
@@ -20,6 +6,17 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPDWD;
 
+/**
+ * SmartSolverPDWD extends SolverPDWD.  The advanced version extend the standard solver
+ * using the reference boards collection to boost the initial estimate.
+ *
+ * <p>Dependencies : AdvancedRecord.java, Board.java, Direction.java, PatternOptions.java,
+ *                   ReferenceAccumulator.java, SmartSolverConstants.java, SmartSolverExtra.java,
+ *                   SolverPDWD.java
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public class SmartSolverPDWD extends SolverPDWD {
     private final byte numPartialMoves;
     private final byte refCutoff;
@@ -27,25 +24,31 @@ public class SmartSolverPDWD extends SolverPDWD {
     private final SmartSolverExtra extra;
 
     /**
-     *  Initializes SolverPDWD object using default preset pattern.
+     * Initializes SolverPDWD object using default preset pattern.
+     *
+     * @param refAccumulator the given ReferenceAccumulator object
      */
     public SmartSolverPDWD(ReferenceAccumulator refAccumulator) {
         this(defaultPattern, refAccumulator);
     }
 
     /**
-     *  Initializes SolverPDWD object with given preset pattern.
+     * Initializes SolverPDWD object with given preset pattern.
      *
-     *  @param presetPattern the given preset pattern type
+     * @param presetPattern the given preset pattern type
+     * @param refAccumulator the given ReferenceAccumulator object
      */
     public SmartSolverPDWD(PatternOptions presetPattern, ReferenceAccumulator refAccumulator) {
         this(presetPattern, 0, refAccumulator);
     }
 
     /**
-     *  Initializes SolverPDWD object with given preset pattern.
+     * Initializes SolverPDWD object with given preset pattern and option. If refAccumlator
+     * is null or empty, it will act as standard version.
      *
-     *  @param presetPattern the given preset pattern type
+     * @param presetPattern the given preset pattern type
+     * @param choice the given preset pattern option
+     * @param refAccumulator the given ReferenceAccumulator object
      */
     public SmartSolverPDWD(PatternOptions presetPattern, int choice,
             ReferenceAccumulator refAccumulator) {
@@ -61,7 +64,7 @@ public class SmartSolverPDWD extends SolverPDWD {
             activeSmartSolver = true;
             extra = new SmartSolverExtra();
             this.refAccumulator = refAccumulator;
-            refCutoff = SmartSolverProperties.getReferenceCutoff();
+            refCutoff = SmartSolverConstants.getReferenceCutoff();
             numPartialMoves = SmartSolverConstants.getNumPartialMoves();
         }
     }
@@ -151,15 +154,14 @@ public class SmartSolverPDWD extends SolverPDWD {
      */
     @Override
     public byte heuristicAdvanced(Board board) {
-        if (!activeSmartSolver) {
-            throw new UnsupportedOperationException("Advanced version currently inactive."
-                    + " Reference collection unavailable. Check the system.");
-        }
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
         if (!board.isSolvable()) {
             return -1;
+        }
+        if (!activeSmartSolver) {
+            heuristic(board, tagStandard, tagReview);
         }
         return heuristic(board, tagAdvanced, tagReview);
     }

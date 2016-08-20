@@ -1,29 +1,20 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation  : javac SolverWD.java
- *  Dependencies : Board.java, Direction.java, Stopwatch.java,
- *                 SolverAbstract, WDCombo.java, AdvancedAccumulator.java
- *                 AdvancedBoard.java, AdvancedMoves.java
- *
- *  SolverWD implements SolverInterface.  It take a Board object and solve
- *  the puzzle with IDA* using walking distance.
- *
- ****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceBoard;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceMoves;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverWD;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
+/**
+ * SmartSolverWD extends SolverWD.  The advanced version extend the standard solver
+ * using the reference boards collection to boost the initial estimate.
+ *
+ * <p>Dependencies : AdvancedRecord.java, Board.java, Direction.java, ReferenceAccumulator.java,
+ *                   SmartSolverConstants.java, SmartSolverExtra.java, SolverWD.java
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public class SmartSolverWD extends SolverWD {
     private final byte numPartialMoves;
     private final byte refCutoff;
@@ -31,7 +22,10 @@ public class SmartSolverWD extends SolverWD {
     private final SmartSolverExtra extra;
 
     /**
-     * Initializes SolverWD object.
+     * Initializes SolverWD object.  If refAccumlator is null or empty,
+     * it will act as standard version.
+     *
+     * @param refAccumulator the given ReferenceAccumulator object
      */
     public SmartSolverWD(ReferenceAccumulator refAccumulator) {
         super();
@@ -46,7 +40,7 @@ public class SmartSolverWD extends SolverWD {
             activeSmartSolver = true;
             extra = new SmartSolverExtra();
             this.refAccumulator = refAccumulator;
-            refCutoff = SmartSolverProperties.getReferenceCutoff();
+            refCutoff = SmartSolverConstants.getReferenceCutoff();
             numPartialMoves = SmartSolverConstants.getNumPartialMoves();
         }
     }
@@ -163,92 +157,16 @@ public class SmartSolverWD extends SolverWD {
      */
     @Override
     public byte heuristicAdvanced(Board board) {
-        if (!activeSmartSolver) {
-            throw new UnsupportedOperationException("Advanced version currently inactive."
-                    + " Reference collection unavailable. Check the system.");
-        }
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
         if (!board.isSolvable()) {
             return -1;
         }
-        return heuristic(board, tagAdvanced, tagReview);
-    }
-
-    // calculate the advanced estimate from the stored boards
-    boolean advancedEstimate(Board board) {
-        Map<ReferenceBoard, ReferenceMoves> advMap = refAccumulator.getActiveMap();
-
-        byte maxEstimate = priorityGoal;
-        byte[] orgTiles = tiles.clone();
-        boolean reset = false;
-        for (Entry<ReferenceBoard, ReferenceMoves> entry
-                : advMap.entrySet()) {
-            byte[] transTiles = entry.getKey().transformer(orgTiles);
-
-            int orgX = 0;
-            int orgY = 0;
-            for (int j = 0; j < 16; j++) {
-                int pos = 15 - j;
-                if (transTiles[pos] == 0) {
-                    orgX = pos % rowSize;
-                    orgY = pos / rowSize;
-                    break;
-                }
-            }
-
-            byte [] ctwdh = new byte[puzzleSize];
-            byte [] ctwdv = new byte[puzzleSize];
-            for (int j = 0; j < 16; j++) {
-                int value = transTiles[j];
-                if (value != 0) {
-                    int col = (value - 1) / rowSize;
-                    ctwdh[(j / rowSize) * rowSize + col]++;
-
-                    col = value % rowSize - 1;
-                    if (col < 0) {
-                        col = rowSize - 1;
-                    }
-                    ctwdv[(j % rowSize) * rowSize + col]++;
-                }
-            }
-
-            int wdIdxHtrans = getWDPtnIdx(ctwdh, orgY);
-            int wdIdxVtrans = getWDPtnIdx(ctwdv, orgX);
-            int wdValueHtrans = getWDValue(wdIdxHtrans);
-            int wdValueVtrans = getWDValue(wdIdxVtrans);
-
-            int transPriority = wdValueHtrans + wdValueVtrans;
-            if (transPriority > refCutoff) {
-                continue;
-            }
-            if (entry.getValue().getEstimate() - transPriority <= maxEstimate) {
-                continue;
-            }
-
-            reset = true;
-            clearHistory();
-            Board temp = new Board(transTiles);
-            zeroX = temp.getZeroX();
-            zeroY = temp.getZeroY();
-            tiles = temp.getTiles();
-            tilesSym = temp.getTilesSym();
-            wdValueH = (byte) wdValueHtrans;
-            wdValueV = (byte) wdValueVtrans;
-            wdIdxH = wdIdxHtrans;
-            wdIdxV = wdIdxVtrans;
-            System.arraycopy(temp.getValidMoves(), 0, lastDepthSummary, rowSize, rowSize);
-            idaStar(transPriority, entry.getValue().getEstimate() - maxEstimate);
-            if (!stopwatch.isActive()) {
-                stopwatch.start();
-            }
-            if (solved) {
-                maxEstimate = (byte) (entry.getValue().getEstimate() - steps);
-            }
+        if (!activeSmartSolver) {
+            heuristic(board, tagStandard, tagReview);
         }
-        priorityAdvanced = maxEstimate;
-        return reset;
+        return heuristic(board, tagAdvanced, tagReview);
     }
 
     // solve the puzzle using interactive deepening A* algorithm

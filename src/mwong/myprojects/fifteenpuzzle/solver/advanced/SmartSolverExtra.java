@@ -21,7 +21,7 @@ import java.util.Map.Entry;
  *
  * <p>Dependencies : Board.java, Direction.java, HeuristicOptions.java, PuzzleProperties.java,
  *                   ReferenceAccumulator.java ReferenceBoard.java, ReferenceMoves.java,
- *                   SolverConstants.java, SolverMD.java, SolverProperties.java
+ *                   SolverConstants.java, SolverMD.java, Stopwatch.java
  *
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
@@ -33,10 +33,10 @@ class SmartSolverExtra extends SolverMD {
     public void printDescription(boolean flagAdvancedPriority, HeuristicOptions inUseHeuristic) {
         System.out.println("15 puzzle solver using " + inUseHeuristic.getDescription());
         if (flagAdvancedPriority) {
-            System.out.println("Advance option - initial estimate use the goal state and "
-                    + "archived boards.");
+            System.out.println("Advanced version - initial estimate use the goal state and "
+                    + "stored reference boards.");
         } else {
-            System.out.println("Original option - initial estimate use the goal state only.");
+            System.out.println("Standard version - initial estimate use the goal state only.");
         }
     }
 
@@ -49,13 +49,13 @@ class SmartSolverExtra extends SolverMD {
         if (refMap == null || refMap.size() == 0) {
             return null;
         }
-        
+
         byte lookupKey = SmartSolverConstants.getReferenceLookup(board.getZero1d());
         int group = SmartSolverConstants.getReferenceGroup(board.getZero1d());
 
         ReferenceBoard checkBoard = new ReferenceBoard(board);
         ReferenceBoard checkBoardSym = null;
-        
+
         if (group == 0 || group == 2) {
             checkBoardSym = new ReferenceBoard(new Board(board.getTilesSym()));
         }
@@ -157,54 +157,36 @@ class SmartSolverExtra extends SolverMD {
             }
 
             transPriority = Math.max(transPriority, transPrioritySym);
-            //System.out.println(transPriority + " " + estimate);
             if (transPriority > refCutoff) {
                 continue;
             }
-            //System.out.println(transPriority + " " + estimate);
             if (entry.getValue().getEstimate() - transPriority <= estimate) {
                 continue;
             }
-            //System.out.println(transPriority + " " + estimate + "\n");
-            
+
             Board temp = new Board(transTiles);
             stopwatch = new Stopwatch();
             if (advancedDistance(temp, transPriority,
                     entry.getValue().getEstimate() - estimate)) {
-                //System.out.println("results : " + entry.getValue().getEstimate()  + " - " + steps);
                 estimate = (byte) (entry.getValue().getEstimate() - steps);
             }
         }
         return estimate;
     }
 
-    /**
-     * Returns the boolean value represent the given board is solve in the given range.
-     *
-     * @param board the initial puzzle Board object to solve
-     * @param lowerLimit the starting limit
-     * @param upperLimit the maximum limit
-     * @return boolean represent the given board is solve in the given range
-     */
+    // returns the boolean value represent the given board is solve in the given range.
     private boolean advancedDistance(Board board, int lowerLimit, int upperLimit) {
-//        System.out.print(lowerLimit + " " + upperLimit + "\n" + board);
         clearHistory();
-//        initialize(board);
         heuristic(board);
         System.arraycopy(board.getValidMoves(), 0, lastDepthSummary, rowSize, rowSize);
-//        System.out.println(Arrays.toString(tiles) + " " + Arrays.toString(tilesSym));
-        
         int initLimit = lowerLimit;
         while (lowerLimit <= upperLimit) {
-//            System.out.println(lowerLimit);
             dfsStartingOrder(zeroX, zeroY, 0, lowerLimit, initLimit);
             if (solved) {
-                //System.out.println("true" + "\n" + "\n");
                 return true;
             }
             lowerLimit += 2;
         }
-        //System.out.println("false" + "\n" + "\n");
         return false;
     }
 }
