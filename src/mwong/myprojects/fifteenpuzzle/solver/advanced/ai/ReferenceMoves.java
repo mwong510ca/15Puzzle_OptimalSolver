@@ -1,41 +1,44 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation  : javac AdvancedMoves.java
- *  Dependencies : Board.java, SolverPD.java
- *
- *  A data type of preset moves and partial solution of reference board.
- *
- ****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.solver.advanced.ai;
 
+import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPD;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPD;
 
+/**
+ * ReferenceMoves is the data type that stored number of moves or temporary estimate
+ * and partial solution associated with ReferenceBoard object for reference collection.
+ *
+ * <p>Dependencies : Board.java, ReferenceConstants.java
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public class ReferenceMoves {
-	private final byte[] statusBit;
-	private final byte statusCompleted;
-	private final int numPartialMoves;
-	private final boolean symmetry;
-	
-    byte[] moves = new byte[4];
-    short[] initMoves = new short[4];
-    byte status = 0;
+    private final byte[] statusBit;
+    private final byte statusCompleted;
+    private final int numPartialMoves;
+    private final boolean symmetry;
 
+    byte[] moves;
+    short[] initMoves;
+    byte status;
+
+    // load all constants.
     private ReferenceMoves() {
-    	statusBit = ReferenceConstants.getStatusBit();
-    	statusCompleted = ReferenceConstants.getStatusCompleted();
-    	numPartialMoves = ReferenceConstants.getNumPartialMoves();
-    	symmetry = ReferenceConstants.isSymmetry();
+        statusBit = ReferenceConstants.getStatusBit();
+        statusCompleted = ReferenceConstants.getStatusCompleted();
+        numPartialMoves = ReferenceConstants.getNumPartialMoves();
+        symmetry = ReferenceConstants.isSymmetry();
     }
-    
-    // initializes AdvancedMoves object with given zero position with given
+
+    // initializes ReferenceMoves object with given zero position with given
     // unverified estimate and no partial solution
     ReferenceMoves(byte zeroPos, byte steps) {
-    	this();
+        this();
+        moves = new byte[4];
+        initMoves = new short[4];
+        status = 0;
+
         int refLookup = ReferenceConstants.getReferenceLookup(zeroPos);
         moves[refLookup] = steps;
         int count = 1;
@@ -50,15 +53,17 @@ public class ReferenceMoves {
         }
     }
 
-    // initializes AdvancedMoves object with stored variables
+    // initializes ReferenceMoves object with stored variables
     ReferenceMoves(byte[] moves, short[] initMoves, byte status) {
-    	this();
-        this.moves = moves.clone();
-        this.initMoves = initMoves.clone();
+        this();
+        this.moves = new byte[4];
+        System.arraycopy(moves, 0, this.moves, 0, 4);
+        this.initMoves = new short[4];
+        System.arraycopy(initMoves, 0, this.initMoves, 0, 4);
         this.status = status;
     }
 
-    // while AdvancedMoves object already exists, update unverified moves and
+    // while ReferenceMoves object already exists, update unverified moves and
     // partial solutions only with given values.
     void updateMoves(byte[] steps, short[] initMoves, byte status2) {
         status |= status2;
@@ -80,11 +85,11 @@ public class ReferenceMoves {
     }
 
     // update a full set of moves and partial solutions with a given reference board
-    // and a solverPD object
+    // and a SmartSolverPD object
     void updateSolutions(ReferenceBoard advBoard, SmartSolverPD solver) {
-    	assert solver != null : "SolverPD is null";
+        assert solver != null : "SmartSolverPD is null";
         byte group = advBoard.group;
-        byte[] blocks = advBoard.getTiles().clone();
+        byte[] blocks = advBoard.getTiles();
         for (int lookup = 0; lookup < 4; lookup++) {
             if ((status & statusBit[lookup]) == 0) {
                 Board board = new Board(blocks);

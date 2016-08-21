@@ -24,9 +24,6 @@ import java.util.TreeSet;
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class PatternElement {
-    private final String directory;
-    private final String filePathPrefix;
-    private final String fileSuffix;
     private final int puzzleSize;
     private final int[] partialBits;
     private final int[] keySize;
@@ -61,10 +58,6 @@ public class PatternElement {
      * @param mode PatternElementMode of Generator or PuzzleSolver
      */
     public PatternElement(boolean[] patternGroups, PatternElementMode mode) {
-        directory = "database";
-        String seperator = System.getProperty("file.separator");
-        filePathPrefix = directory + seperator + "pattern_element_";
-        fileSuffix = ".db";
         puzzleSize = PuzzleConstants.getSize();
         // partial key - last # of keys (4 bits each)
         partialBits = new int[] {0, 0x000F, 0x00FF, 0x0FFF, 0x0000FFFF, 0x000FFFFF,
@@ -100,7 +93,8 @@ public class PatternElement {
 
         for (int group = 2; group <= maxGroupSize; group++) {
             if (patternGroups[group]) {
-                try (FileInputStream fin = new FileInputStream(getFilePath(group));
+                String filepath = FileProperties.getFilepathPDElement(group);
+                try (FileInputStream fin = new FileInputStream(filepath);
                         FileChannel inChannel = fin.getChannel();) {
                     ByteBuffer buffer =
                             inChannel.map(FileChannel.MapMode.READ_ONLY, 0, inChannel.size());
@@ -150,13 +144,14 @@ public class PatternElement {
             }
         }
         if (printMsg) {
-            System.out.println("PD15Element - load data from file succeeded : "
+            System.out.println("PatternElement - load data from file succeeded : "
                     + stopwatch.currentTime() + "s");
         }
     }
 
     // save the database pattern components in file
     private void saveData(boolean[] patternGroups, boolean printMsg)  {
+        String directory = FileProperties.getDirectory();
         if (!(new File(directory)).exists()) {
             (new File(directory)).mkdir();
         }
@@ -165,7 +160,7 @@ public class PatternElement {
         // store key components from group 2 to 8 in data file
         for (int group = 2; group <= maxGroupSize; group++) {
             if (patternGroups[group]) {
-                final String filepath = getFilePath(group);
+                final String filepath = FileProperties.getFilepathPDElement(group);
                 if (new File(filepath).exists()) {
                     (new File(filepath)).delete();
                 }
@@ -210,19 +205,17 @@ public class PatternElement {
                     outChannel.write(buffer);
                 } catch (BufferUnderflowException | IOException ex) {
                     if (printMsg) {
-                        System.out.println("PD15Element - save data in file failed.");
+                        System.out.println("PatternElement - save data in file failed.");
                     }
-                    for (int group2 = 2; group2 <= maxGroupSize; group2++) {
-                        if ((new File(filePathPrefix + group2 + ".db")).exists()) {
-                            (new File(filePathPrefix + group2 + ".db")).delete();
-                        }
+                    if ((new File(filepath)).exists()) {
+                        (new File(filepath)).delete();
                     }
                     return;
                 }
             }
         }
         if (printMsg) {
-            System.out.println("PD15Element - save data in file succeeded : "
+            System.out.println("PatternElement - save data in file succeeded : "
                     + stopwatch.currentTime() + "s");
         }
     }
@@ -268,7 +261,7 @@ public class PatternElement {
         Stopwatch stopwatch = new Stopwatch();
         genKeys();
         genFormats();
-        System.out.println("PD15Element - generate data set completed : "
+        System.out.println("PatternElement - generate data set completed : "
                 + stopwatch.currentTime() + "s");
     }
 
@@ -546,16 +539,6 @@ public class PatternElement {
                 }
             }
         }
-    }
-
-    /**
-     * Returns the string of the file path of the given group.
-     *
-     * @param group the given group size
-     * @return string of the file path of the given group
-     */
-    private String getFilePath(int group) {
-        return filePathPrefix + group + fileSuffix;
     }
 
     /**

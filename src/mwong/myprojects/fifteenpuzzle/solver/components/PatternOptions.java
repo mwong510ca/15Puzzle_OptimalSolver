@@ -114,21 +114,6 @@ public enum PatternOptions {
         return patterns[choice];
     }
 
-    /**
-     *  Returns the string of filename of given pattern order.
-     *
-     *  @param choice the integer of preset pattern order
-     *  @return the string of filename
-     */
-    public String getFilename(int choice) {
-        if (this.equals(Pattern_Custom)) {
-            throw new UnsupportedOperationException("Custom pattern will not store a local copy.");
-        }
-        if (choice == 0) {
-            return "pattern_" + type + "_default.db";
-        }
-        return "pattern_" + type + "_option" + choice + ".db";
-    }
 
     /**
      *  Returns the boolean represent the given pattern order is valid.

@@ -5,7 +5,7 @@ import java.util.Random;
 
 /**
  * Board is the data type of 15 puzzle.  It take 16 numbers of the puzzle or
- * generate the random board at difficulty level.  It verify the solvable statue.
+ * generate the random board at difficulty level.  It verify the solvable state.
  * It also generate a new board after the shift.
  *
  * <p>Dependencies : PuzzleConstants.java
@@ -14,10 +14,10 @@ import java.util.Random;
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class Board {
-    private final byte size;
-    private final byte rowSize;
-    private final int goalKey1;
-    private final int goalKey2;
+    private static final byte SIZE = PuzzleConstants.getSize();
+    private static final byte ROW_SIZE = PuzzleConstants.getRowSize();
+    private static final int GOAL_KEY1 = PuzzleConstants.getGoalKey1();
+    private static final int GOAL_KEY2 = PuzzleConstants.getGoalKey2();
 
     private boolean isSolvable;
     private boolean isIdenticalSymmetry;
@@ -44,10 +44,6 @@ public class Board {
      * @param level the given difficulty level
      */
     public Board(PuzzleDifficultyLevel level) {
-        size = PuzzleConstants.getSize();
-        rowSize = PuzzleConstants.getRowSize();
-        goalKey1 = PuzzleConstants.getGoalKey1();
-        goalKey2 = PuzzleConstants.getGoalKey1();
         if (level == PuzzleDifficultyLevel.RANDOM) {
             generateRandomBoard();
         } else {
@@ -62,10 +58,6 @@ public class Board {
      * @param blocks the byte array of 16 tiles
      */
     public Board(byte [] blocks) {
-        size = PuzzleConstants.getSize();
-        rowSize = PuzzleConstants.getRowSize();
-        goalKey1 = PuzzleConstants.getGoalKey1();
-        goalKey2 = PuzzleConstants.getGoalKey1();
         setBasicPriorities(blocks);
         setAdvancedProperties();
     }
@@ -73,10 +65,6 @@ public class Board {
     // use by shift() from a solvable Board object
     // initializes a Board object for internal use
     private Board(int zeroX, int zeroY, byte[] tiles) {
-        size = PuzzleConstants.getSize();
-        rowSize = PuzzleConstants.getRowSize();
-        goalKey1 = PuzzleConstants.getGoalKey1();
-        goalKey2 = PuzzleConstants.getGoalKey1();
         isSolvable = true;
         this.zeroX = zeroX;
         this.zeroY = zeroY;
@@ -88,18 +76,18 @@ public class Board {
     // and initializes zero position
     private void setBasicPriorities(byte [] blocks) {
         isSolvable = true;
-        tiles = new byte[size];
-        System.arraycopy(blocks, 0, tiles, 0, size);
+        tiles = new byte[SIZE];
+        System.arraycopy(blocks, 0, tiles, 0, SIZE);
 
         // invert distance
         int invertH = 0;
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < SIZE; i++) {
             int value = tiles[i];
             if (value == 0) {
-                zeroX = (byte) (i % rowSize);
-                zeroY = (byte) (i / rowSize);
+                zeroX = (byte) (i % ROW_SIZE);
+                zeroY = (byte) (i / ROW_SIZE);
             } else {
-                for (int j = i + 1; j < size; j++) {
+                for (int j = i + 1; j < SIZE; j++) {
                     if (blocks[j] > 0 && value > blocks[j])  {
                         invertH++;
                     }
@@ -117,11 +105,11 @@ public class Board {
     // initializes the hashcode, symmetry conversion tiles and verify valid moves
     // with symmetry reduction
     private void setAdvancedProperties() {
-        for (int i = 0; i < size / 2; i++) {
+        for (int i = 0; i < SIZE / 2; i++) {
             hashKey1 <<= 4;
             hashKey1 |= tiles[i];
         }
-        for (int i = size / 2; i < size; i++) {
+        for (int i = SIZE / 2; i < SIZE; i++) {
             hashKey2 <<= 4;
             hashKey2 |= tiles[i];
         }
@@ -130,10 +118,10 @@ public class Board {
         tilesSym = PuzzleProperties.tiles2sym(tiles);
 
         validMoves = new int[4];
-        if (zeroX < rowSize - 1) {
+        if (zeroX < ROW_SIZE - 1) {
             validMoves[Direction.RIGHT.getValue()] = 1;
         }
-        if (zeroY < rowSize - 1) {
+        if (zeroY < ROW_SIZE - 1) {
             validMoves[Direction.DOWN.getValue()] = 1;
         }
         if (zeroX > 0) {
@@ -144,7 +132,7 @@ public class Board {
         }
 
         isIdenticalSymmetry = true;
-        for (int i = size - 1; i > -1; i--) {
+        for (int i = SIZE - 1; i > -1; i--) {
             if (tiles[i] != tilesSym[i]) {
                 isIdenticalSymmetry = false;
                 break;
@@ -165,11 +153,11 @@ public class Board {
                 estimate = heuristic();
             } while (estimate < 20 || estimate > 45);
         } else {
-            byte [] blocks = new byte[size];
+            byte [] blocks = new byte[SIZE];
             int zero = 15;
 
             while (true) {
-                System.arraycopy(PuzzleConstants.getGoalTiles(), 0, blocks, 0, size);
+                System.arraycopy(PuzzleConstants.getGoalTiles(), 0, blocks, 0, SIZE);
                 zero = 15;
                 if (level == PuzzleDifficultyLevel.HARD) {
                     int rand = new Random().nextInt(5);
@@ -177,13 +165,13 @@ public class Board {
                         if (PuzzleProperties.getHardZero15Size() > 0) {
                             rand = new Random().nextInt(PuzzleProperties.getHardZero15Size());
                             System.arraycopy(PuzzleProperties.getHardZero15(rand),
-                                    0, blocks, 0, size);
+                                    0, blocks, 0, SIZE);
                         }
                     } else {
                         if (PuzzleProperties.getHardZero0Size() > 0) {
                             rand = new Random().nextInt(PuzzleProperties.getHardZero0Size());
                             System.arraycopy(PuzzleProperties.getHardZero0(rand),
-                                    0, blocks, 0, size);
+                                    0, blocks, 0, SIZE);
                             zero = 0;
                         }
                     }
@@ -217,8 +205,8 @@ public class Board {
                     continue;
                 }
 
-                tiles = new byte[size];
-                System.arraycopy(blocks, 0, tiles, 0, size);
+                tiles = new byte[SIZE];
+                System.arraycopy(blocks, 0, tiles, 0, SIZE);
                 if (level == PuzzleDifficultyLevel.HARD && heuristic() > 40) {
                     break;
                 } else if (level == PuzzleDifficultyLevel.EASY && heuristic() < 25) {
@@ -227,17 +215,17 @@ public class Board {
             }
 
             isSolvable = true;
-            zeroX = (byte) (zero % rowSize);
-            zeroY = (byte) (zero / rowSize);
+            zeroX = (byte) (zero % ROW_SIZE);
+            zeroY = (byte) (zero / ROW_SIZE);
         }
     }
 
     // generate a solvable random board using Knuth Shuffle
     private void generateRandomBoard() {
         Random random = new Random();
-        byte [] blocks = new byte[size];
+        byte [] blocks = new byte[SIZE];
         int count = 1;
-        while (count < size) {
+        while (count < SIZE) {
             int rand = random.nextInt(count + 1);
             blocks[count] = blocks[rand];
             blocks[rand] = (byte) (count++);
@@ -272,12 +260,13 @@ public class Board {
 
         int orgX = zeroX;
         int orgY = zeroY;
-        byte [] movedTiles = tiles.clone();
-        int zeroPos = orgY * rowSize + orgX;
+        byte[] movedTiles = new byte[SIZE];
+        System.arraycopy(tiles, 0, movedTiles, 0, SIZE);
+        int zeroPos = orgY * ROW_SIZE + orgX;
         switch (dir) {
             // space RIGHT, tile LEFT
             case RIGHT:
-                if (orgX == rowSize - 1) {
+                if (orgX == ROW_SIZE - 1) {
                     return null;
                 }
                 orgX++;
@@ -286,12 +275,12 @@ public class Board {
                 return new Board(orgX, orgY, movedTiles);
             // space DOWN, tile UP
             case DOWN:
-                if (orgY == rowSize - 1) {
+                if (orgY == ROW_SIZE - 1) {
                     return null;
                 }
                 orgY++;
-                movedTiles[zeroPos] = tiles[zeroPos + rowSize];
-                movedTiles[zeroPos + rowSize] = 0;
+                movedTiles[zeroPos] = tiles[zeroPos + ROW_SIZE];
+                movedTiles[zeroPos + ROW_SIZE] = 0;
                 return new Board(orgX, orgY, movedTiles);
             // space LEFT, tile RIGHT
             case LEFT:
@@ -308,8 +297,8 @@ public class Board {
                     return null;
                 }
                 orgY--;
-                movedTiles[zeroPos] = tiles[zeroPos - rowSize];
-                movedTiles[zeroPos - rowSize] = 0;
+                movedTiles[zeroPos] = tiles[zeroPos - ROW_SIZE];
+                movedTiles[zeroPos - ROW_SIZE] = 0;
                 return new Board(orgX, orgY, movedTiles);
             default:
                 return null;
@@ -352,16 +341,16 @@ public class Board {
         int manhattan = 0;
         int value;
         int base = 0;
-        for (int row = 0; row < rowSize; row++) {
-            for (int col = 0; col < rowSize; col++) {
+        for (int row = 0; row < ROW_SIZE; row++) {
+            for (int col = 0; col < ROW_SIZE; col++) {
                 value = tiles[base + col];
                 if (value != 0) {
-                    manhattan += Math.abs((value - 1) % rowSize - col);
+                    manhattan += Math.abs((value - 1) % ROW_SIZE - col);
                     manhattan += Math.abs((((value - 1)
-                            - (value - 1) % rowSize) / rowSize) - row);
+                            - (value - 1) % ROW_SIZE) / ROW_SIZE) - row);
                 }
             }
-            base += rowSize;
+            base += ROW_SIZE;
         }
         return manhattan;
     }
@@ -372,7 +361,7 @@ public class Board {
      * @return boolean represent this board is the goal board
      */
     public boolean isGoal() {
-        if (hashKey1 == goalKey1 && hashKey2 == goalKey2) {
+        if (hashKey1 == GOAL_KEY1 && hashKey2 == GOAL_KEY2) {
             return true;
         }
         return false;
@@ -380,11 +369,11 @@ public class Board {
 
     // check if given values is goal state
     private boolean isGoal(byte[] blocks, int zero) {
-        if (zero % rowSize != rowSize - 1 || zero / rowSize != rowSize - 1) {
+        if (zero % ROW_SIZE != ROW_SIZE - 1 || zero / ROW_SIZE != ROW_SIZE - 1) {
             return false;
         } else {
             int idx = 0;
-            while (idx < size - 1) {
+            while (idx < SIZE - 1) {
                 if (blocks[idx++] != idx) {
                     return false;
                 }
@@ -417,7 +406,7 @@ public class Board {
      * @return integer represent the index of zero space as 1d array
      */
     public byte getZero1d() {
-        return (byte) (zeroY * rowSize + zeroX);
+        return (byte) (zeroY * ROW_SIZE + zeroX);
     }
 
     /**
@@ -473,9 +462,9 @@ public class Board {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < SIZE; i++) {
             str.append(String.format("%2d ", tiles[i]));
-            if (i % rowSize == rowSize - 1) {
+            if (i % ROW_SIZE == ROW_SIZE - 1) {
                 str.append("\n");
             }
         }

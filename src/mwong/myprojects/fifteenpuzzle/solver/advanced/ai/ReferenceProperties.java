@@ -1,12 +1,19 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced.ai;
 
+/**
+ * ReferenceProperties contains the default values of the ReferenceAccumulator.
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public class ReferenceProperties {
     //ReferenceAccumulator
     private static final int DEFAULT_CUTOFF_LIMIT = 10;
     private static final double DEFAULT_CUTOFF_BUFFER = 0.95;
     // selected reference boards for default setting, total 40 after generation.
-    private static final byte[][][] DEFAULT_BOARDS = { 
-            {{ 0, 15,  8,  3, 12, 11,  7,  4, 14, 10,  6,  5,  9, 13,  2,  1}, {0,  70}}/*,
+    private static final byte[][][] DEFAULT_BOARDS = {
+    		/*
+            {{ 0, 15,  8,  3, 12, 11,  7,  4, 14, 10,  6,  5,  9, 13,  2,  1}, {0,  70}},
             {{ 6,  5,  9, 13,  2,  1, 10, 14,  3,  7,  0, 15,  4,  8, 12, 11}, {10, 72}},
             {{ 0, 12,  8,  4, 15, 11,  7,  3, 14, 10,  6,  2, 13,  9,  5,  1}, {0,  72}},
             {{ 6,  5, 14, 13,  2,  1, 10,  9,  8,  7,  0, 15,  4,  3, 12, 11}, {10, 70}},
@@ -43,22 +50,31 @@ public class ReferenceProperties {
             {{ 0, 14, 15, 13,  8, 11, 10,  5, 12,  7,  6,  9,  4,  2,  3,  1}, { 0, 78}}
             */
     };
-	/**
-	 * @return the defaultCutoffLimit
-	 */
-	public static final int getDefaultCutoffLimit() {
-		return DEFAULT_CUTOFF_LIMIT;
-	}
-	/**
-	 * @return the defaultCutoffBuffer
-	 */
-	public static final double getDefaultCutoffBuffer() {
-		return DEFAULT_CUTOFF_BUFFER;
-	}
-	/**
-	 * @return the defaultBoards
-	 */
-	public static final byte[][][] getDefaultBoards() {
-		return DEFAULT_BOARDS;
-	}
+
+    /**
+     * Returns the integer value of the default cutoff limit (10 seconds).
+     *
+     * @return integer value of the default cutoff limit
+     */
+    public static final int getDefaultCutoffLimit() {
+        return DEFAULT_CUTOFF_LIMIT;
+    }
+
+    /**
+     * Returns the double value of the default cutoff buffer (95%).
+     *
+     * @return double value of the default cutoff buffer
+     */
+    public static final double getDefaultCutoffBuffer() {
+        return DEFAULT_CUTOFF_BUFFER;
+    }
+
+    /**
+     * Returns the arrays of selected default reference boards.
+     *
+     * @return arrays of selected default reference boards
+     */
+    public static final byte[][][] getDefaultBoards() {
+        return DEFAULT_BOARDS;
+    }
 }

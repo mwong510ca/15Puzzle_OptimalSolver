@@ -21,8 +21,6 @@ import java.util.Map.Entry;
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class WalkingDistance {
-    private final String directory;
-    private final String filepath;
     private final int rowSize;
     private final int keySize;
     private final int patternSize;
@@ -39,9 +37,6 @@ public class WalkingDistance {
      * Initializes the WalkingDistance object.
      */
     public WalkingDistance() {
-        directory = "database";
-        String seperator = System.getProperty("file.separator");
-        filepath = directory + seperator + "WalkingDistance.db";
         rowSize = PuzzleConstants.getRowSize();
         keySize = 55;
         patternSize = 24964;
@@ -58,6 +53,7 @@ public class WalkingDistance {
         pattern = new byte[patternSize];
         ptnLink = new int[patternSize * rowSize * 2];
 
+        String filepath = FileProperties.getFilepathWD();
         try (FileInputStream fin = new FileInputStream(filepath);
                 FileChannel inChannel = fin.getChannel();) {
             ByteBuffer buf = inChannel.map(FileChannel.MapMode.READ_ONLY, 0, inChannel.size());
@@ -77,12 +73,13 @@ public class WalkingDistance {
         } catch (BufferUnderflowException | IOException ex) {
             int [] keyLink = genKeys();
             genPattern(keyLink);
-            saveData();
+            saveData(filepath);
         }
     }
 
     // save the walking distance in file
-    private void saveData() {
+    private void saveData(String filepath) {
+        String directory = FileProperties.getDirectory();
         if (!(new File(directory)).exists()) {
             (new File(directory)).mkdir();
         }
@@ -128,17 +125,17 @@ public class WalkingDistance {
     }
 
     // generate all keys for the walking distance
-    private int [] genKeys() {
+    private int[] genKeys() {
         HashSet<Integer> set = new HashSet<Integer>();
         HashSet<int[]> next = new HashSet<int[]>();
         rowKeys = new HashMap<Integer, Integer>();
-        int [] rowKeys2combo = new int[keySize];
+        int[] rowKeys2combo = new int[keySize];
 
         // 1st set starts with 0004, 0040, 0400, 4000
         int counter = 0;
         int key;
         for (int i = 0; i < rowSize; i++) {
-            int [] temp = new int[rowSize];
+            int[] temp = new int[rowSize];
             temp[i] = rowSize;
             key = rowCombo2Key(temp);
             rowKeys2combo[counter] = key;
@@ -155,7 +152,8 @@ public class WalkingDistance {
                     if (combo[i] > 0) {
                         for (int j = 0; j < rowSize; j++) {
                             if (i != j) {
-                                int [] shift = combo.clone();
+                                int[] shift = new int[rowSize];
+                                System.arraycopy(combo, 0, shift, 0, rowSize);
                                 shift[i] = combo[i] - 1;
                                 shift[j] = combo[j] + 1;
                                 key = rowCombo2Key(shift);
@@ -193,7 +191,8 @@ public class WalkingDistance {
                     if (combo[i] > 0) {
                         for (int j = 0; j < rowSize; j++) {
                             if (i != j) {
-                                int [] shift = combo.clone();
+                                int[] shift = new int[rowSize];
+                                System.arraycopy(combo, 0, shift, 0, rowSize);
                                 shift[i] = combo[i] - 1;
                                 shift[j] = combo[j] + 1;
                                 key = rowCombo2Key(shift);
@@ -302,9 +301,9 @@ public class WalkingDistance {
                             int newPtn = 0;
                             int pairKeys = (rowKeyLink[zeroIdx * rowSize + j] << rowBitsSize)
                                     | rowKeyLink[lowerIdx * rowSize + j];
-                            assert (rowKeyLink[lowerIdx * rowSize + j] == -1
-                                    | rowKeyLink[zeroIdx * rowSize + j] == -1)
-                                : "rowKeyLink negative value, space down";
+                            //assert (rowKeyLink[lowerIdx * rowSize + j] == -1
+                              //      | rowKeyLink[zeroIdx * rowSize + j] == -1)
+                                //: "rowKeyLink negative value, space down";
 
                             switch (zeroRow) {
                                 case 0:
@@ -353,9 +352,9 @@ public class WalkingDistance {
                             int newPtn = 0;
                             int pairKeys = (rowKeyLink[upperIdx * rowSize + j] << rowBitsSize)
                                     | rowKeyLink[zeroIdx * rowSize + j];
-                            assert (rowKeyLink[upperIdx * rowSize + j] == -1
-                                    | rowKeyLink[zeroIdx * rowSize + j] == -1)
-                                : "rowKeyLink negative value, space up";
+                            //assert (rowKeyLink[upperIdx * rowSize + j] == -1
+                              //      | rowKeyLink[zeroIdx * rowSize + j] == -1)
+                                //: "rowKeyLink negative value, space up";
 
                             switch (zeroRow) {
                                 case 1:

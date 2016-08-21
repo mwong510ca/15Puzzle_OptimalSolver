@@ -7,7 +7,6 @@ package mwong.myprojects.fifteenpuzzle.solver.components;
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class PuzzleProperties {
-    private static final int PUZZLE_SIZE = PuzzleConstants.getSize();
     // initializes hard boards to be use to generate random board
     private static final byte[][] HARD_ZERO_0 = {
         {0, 11,  9, 13, 12, 15, 10, 14,  3,  7,  6,  2,  4,  8,  5,  1},
@@ -106,11 +105,12 @@ public class PuzzleProperties {
      * @return byte array of tiles after symmetry conversion
      */
     public static final byte[] tiles2sym(byte[] original) {
-        byte[] symmetryPos = PuzzleConstants.getSymmetryPos();
-        byte[] symmetryVal = PuzzleConstants.getSymmetryVal();
-        byte[] tiles2sym = new byte[PUZZLE_SIZE];
+        final int puzzleSize = PuzzleConstants.getSize();
+        final byte[] symmetryPos = PuzzleConstants.getSymmetryPos();
+        final byte[] symmetryVal = PuzzleConstants.getSymmetryVal();
+        byte[] tiles2sym = new byte[puzzleSize];
 
-        for (int i = 0; i < PUZZLE_SIZE; i++) {
+        for (int i = 0; i < puzzleSize; i++) {
             tiles2sym[symmetryPos[i]] = symmetryVal[original[i]];
         }
         return tiles2sym;

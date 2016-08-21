@@ -57,7 +57,7 @@ public class ApplicationCompareHeuristic extends AbstractApplication {
     private SmartSolverPDWD solverPdWd555;
     private SmartSolverPDWD solverPdWd663;
     private SmartSolverPD solverPd78;
-
+    private final ReferenceAccumulator refAccumulator;
 
     public ApplicationCompareHeuristic() {
     	super();
@@ -67,7 +67,7 @@ public class ApplicationCompareHeuristic extends AbstractApplication {
         final boolean timeoutOff = !ApplicationProperties.isTimeoutOn();
         tagLinearConflict = ApplicationProperties.isTagLinearConflict();
         tagAdvanced = ApplicationProperties.isTagAdvanced();
-        ReferenceAccumulator refAccumulator = new ReferenceAccumulator();
+        refAccumulator = new ReferenceAccumulator();
 //        refAccumulator = null;
         
 //        solverMd = new SolverMD();
@@ -100,30 +100,32 @@ public class ApplicationCompareHeuristic extends AbstractApplication {
     //  nodes generated during the search, time out after 10 seconds.
     private void solvePuzzle(Solver solver, Board board) {
         printHeading(applicationType, solver);
+        
         solver.advPrioritySwitch(!tagAdvanced);
-
+        int heuristicStandard = solver.heuristicStandard(board);
+        System.out.print("Standard\t" + heuristicStandard + "\t\t");
         solver.findOptimalPath(board);
-        System.out.print("Original\t" + solver.heuristicStandard(board) + "\t\t");
         if (solver.isSearchTimeout()) {
             System.out.println("Timeout: " + solver.searchTime() + "s at depth "
                     + solver.searchTerminateAtDepth() + "\t" + solver.searchNodeCount());
         } else {
-            System.out.println(solver.searchTime() + "s \t\t" + solver.moves() + "\t\t"
-                    + solver.searchNodeCount());
+            System.out.printf("%-15s %-15s " + solver.searchNodeCount() + "\n",
+            		solver.searchTime() + "s", solver.moves());
         }
-
+        
         if (solver.advPrioritySwitch(tagAdvanced)) {
-            if (solver.heuristicStandard(board) == solver.heuristicAdvanced(board)) {
+        	int heuristicAdvanced = solver.heuristicAdvanced(board);
+            if (heuristicStandard == heuristicAdvanced) {
                 System.out.println("Advanced\t" + "Same value");
             } else {
+            	System.out.print("Advanced\t" + heuristicAdvanced + "\t\t");
                 solver.findOptimalPath(board);
-                System.out.print("Advanced\t" + solver.heuristicAdvanced(board) + "\t\t");
                 if (solver.isSearchTimeout()) {
                     System.out.println("Timeout: " + solver.searchTime() + "s at depth "
                             + solver.searchTerminateAtDepth() + "\t" + solver.searchNodeCount());
                 } else {
-                    System.out.println(solver.searchTime() + "\t\t" + solver.moves() + "\t\t"
-                            + solver.searchNodeCount());
+                    System.out.printf("%-15s %-15s " + solver.searchNodeCount() + "\n",
+                    		solver.searchTime() + "s", solver.moves());
                 }
             }
         }
@@ -174,7 +176,7 @@ public class ApplicationCompareHeuristic extends AbstractApplication {
                 System.out.print("\t\tEstimate\tTime\t\tMinimum Moves\tNodes generated");
                 
                 solvePuzzle(solverPd78, board);
-                
+                /*
                 solvePuzzle(solverPdWd663, board);
                 solvePuzzle(solverPdWd555, board);
                 solvePuzzle(solverWdMd, board);
@@ -184,9 +186,9 @@ public class ApplicationCompareHeuristic extends AbstractApplication {
                 solvePuzzle(solverMd, board);
                 solverMd.linearConflictSwitch(!tagLinearConflict);
                 solvePuzzle(solverMd, board);
-
+				*/
                 // Notes: updateLastSearch is optional.
-                // advAccumulator.updateLastSearch(solverPD78);
+                //refAccumulator.updateLastSearch(solverPd78);
             } else {
                 System.out.println("The board is unsolvable, try again!");
             }

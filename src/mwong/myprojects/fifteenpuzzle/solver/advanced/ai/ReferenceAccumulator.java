@@ -19,6 +19,7 @@ import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPD;
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
+import mwong.myprojects.fifteenpuzzle.solver.components.FileProperties;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 
 import java.io.File;
@@ -30,47 +31,56 @@ import java.nio.channels.FileChannel;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 public class ReferenceAccumulator {
-    private final String directory = "database";
-    private final String seperator = System.getProperty("file.separator");
-    private final String filePath = directory + seperator + "advanced_accumulator.db";
+    private final String directory;
+    private final String filepath;
+    private final String coreClassName;
+    private final HeuristicOptions coreHeuristic;
+    private final boolean symmetry;
+    private final boolean onSwitch;
+    private final boolean offSwitch;
 
     private HashMap<ReferenceBoard, ReferenceMoves> referenceMap;
+    private HashMap<ReferenceBoard, ReferenceMoves> defaultMap;
     private int cutoffSetting;
     private double cutoffLimit;
     private boolean fileReady = false;
-    private final boolean symmetry;
 
     /**
      * Initializes A object.  Load the stored boards from file or use default set.
      */
     public ReferenceAccumulator() {
-    	symmetry = ReferenceConstants.isSymmetry();
+        directory = FileProperties.getDirectory();
+        filepath = FileProperties.getFilepathReference();
+        coreClassName = ReferenceConstants.getCoreClassName();
+        coreHeuristic = ReferenceConstants.getCoreHeuristic();
+        symmetry = ReferenceConstants.isSymmetry();
+        onSwitch = ReferenceConstants.isOnSwitch();
+        offSwitch = !onSwitch;
+
+        loadDefault();       
         try {
-        	referenceMap = new HashMap<ReferenceBoard, ReferenceMoves>();
+            referenceMap = new HashMap<ReferenceBoard, ReferenceMoves>();
             System.out.println("Load data and system update - archived hard board. "
                     + "Please wait.");
             loadFile();
             System.out.println();
         } catch (IOException ex) {
-            loadDefault();
+            copyDefault();
         }
-        //updateData(createSolver());
-        //refreshFile();
+        updateData(createSolver());
+        refreshFile();
     }
 
     private void loadDefault() {
-    	cutoffSetting = ReferenceProperties.getDefaultCutoffLimit();
-        System.out.println("Default setting : cutoff archive limit - "
-                + cutoffSetting);
-        cutoffLimit = cutoffSetting * ReferenceProperties.getDefaultCutoffBuffer();
-        referenceMap = new HashMap<ReferenceBoard, ReferenceMoves>();
-    	for (byte[][] preset : ReferenceProperties.getDefaultBoards()) {
-        	ReferenceBoard advBoard = new ReferenceBoard(new Board(preset[0]));
-        	ReferenceMoves advMoves = new ReferenceMoves(preset[1][0], preset[1][1]);
-        	referenceMap.put(advBoard, advMoves);
+        defaultMap = new HashMap<ReferenceBoard, ReferenceMoves>();
+        for (byte[][] preset : ReferenceProperties.getDefaultBoards()) {
+            ReferenceBoard advBoard = new ReferenceBoard(new Board(preset[0]));
+            ReferenceMoves advMoves = new ReferenceMoves(preset[1][0], preset[1][1]);
+            defaultMap.put(advBoard, advMoves);
 
             if (preset[1][0] == 5) {
                 byte[] tiles = preset[0].clone();
@@ -78,7 +88,7 @@ public class ReferenceAccumulator {
                 tiles[6] = 0;
                 advBoard = new ReferenceBoard(new Board(tiles));
                 advMoves = new ReferenceMoves((byte) 6, (byte) (preset[1][1] - 1));
-                referenceMap.put(advBoard, advMoves);
+                defaultMap.put(advBoard, advMoves);
             }
 
             if (preset[1][0] == 10) {
@@ -87,11 +97,22 @@ public class ReferenceAccumulator {
                 tiles[6] = 0;
                 advBoard = new ReferenceBoard(new Board(tiles));
                 advMoves = new ReferenceMoves((byte) 6, (byte) (preset[1][1] - 1));
-                referenceMap.put(advBoard, advMoves);
+                defaultMap.put(advBoard, advMoves);
             }
         }
     }
 
+    private void copyDefault() {
+        cutoffSetting = ReferenceProperties.getDefaultCutoffLimit();
+        System.out.println("Default setting : cutoff archive limit - "
+                + cutoffSetting);
+        cutoffLimit = cutoffSetting * ReferenceProperties.getDefaultCutoffBuffer();
+        referenceMap = new HashMap<ReferenceBoard, ReferenceMoves>();
+        for (Entry<ReferenceBoard, ReferenceMoves> entry : defaultMap.entrySet()) {
+        	referenceMap.put(entry.getKey(), entry.getValue());
+        }
+    }
+    
     /**
      * Returns a HashMap of collection of reference boards.
      *
@@ -121,7 +142,7 @@ public class ReferenceAccumulator {
 
     // load the reference boards from file
     private void loadFile() throws IOException {
-        FileInputStream fin = new FileInputStream(filePath);
+        FileInputStream fin = new FileInputStream(filepath);
         FileChannel inChannel = fin.getChannel();
         ByteBuffer buffer = inChannel.map(FileChannel.MapMode.READ_ONLY, 0, inChannel.size());
 
@@ -169,8 +190,8 @@ public class ReferenceAccumulator {
             (new File(directory)).mkdir();
         }
 
-        if ((new File(filePath)).exists()) {
-            (new File(filePath)).delete();
+        if ((new File(filepath)).exists()) {
+            (new File(filepath)).delete();
         }
 
         FileOutputStream fout;
@@ -178,7 +199,7 @@ public class ReferenceAccumulator {
         ByteBuffer buffer;
 
         try {
-            fout = new FileOutputStream(filePath);
+            fout = new FileOutputStream(filepath);
             outChannel = fout.getChannel();
             buffer = ByteBuffer.allocateDirect(8);
             buffer.putInt(cutoffSetting);
@@ -201,7 +222,7 @@ public class ReferenceAccumulator {
         FileOutputStream fout;
         FileChannel outChannel;
         try {
-            fout = new FileOutputStream(filePath, true);
+            fout = new FileOutputStream(filepath, true);
             outChannel = fout.getChannel();
 
             ByteBuffer buffer = ByteBuffer.allocateDirect(34);
@@ -233,33 +254,35 @@ public class ReferenceAccumulator {
     // create and return a SolverPD object.
     SmartSolverPD createSolver() {
         try {
-        	SmartSolverPD solver = new SmartSolverPD(PatternOptions.Pattern_78, this);
-            //TODO 
-            /*
-            solver.setReferencedAccumulator(this);
-            solver.messageSwitch(false);
-            solver.timeoutSwitch(false);
-            solver.advPrioritySwitch(true);
-            */
+            SmartSolverPD solver = new SmartSolverPD(PatternOptions.Pattern_78, this);
+            solver.messageSwitch(offSwitch);
+            solver.timeoutSwitch(offSwitch);
+            solver.advPrioritySwitch(onSwitch);
             return solver;
         } catch (OutOfMemoryError ex) {
             return null;
         }
     }
-
+    
     // verify the given solver is SolverPD object using pattern database 7-8
     private boolean validateSolver(Solver inSolver) {
-        if (inSolver != null && inSolver.getHeuristicOptions() == HeuristicOptions.PD78) {
-            return true;
+        if (inSolver == null) {
+        	return false;
         }
-        return false;
+        if (!inSolver.getClass().getSimpleName().equals(coreClassName)) {
+        	return false;
+        }
+        if (inSolver.getHeuristicOptions() != coreHeuristic) {;
+            return false;
+        }
+        return true;
     }
-
+    
     // verify the given solver is using pattern database 7-8, scan the full
     // collection, if the reference board is not verified, verify it now.
-    void updateData(Solver inSolver) {
+    private void updateData(Solver inSolver) {
         Solver solver = inSolver;
-        if (inSolver == null || !validateSolver(inSolver)) {
+        if (!validateSolver(inSolver)) {
             solver = createSolver();
         }
         if (solver == null) {
@@ -276,7 +299,7 @@ public class ReferenceAccumulator {
      *  @param inSolver the SolverInterface object in use
      */
     public void updatePending(Solver inSolver) {
-        if (inSolver == null || !validateSolver(inSolver)) {
+        if (!validateSolver(inSolver)) {
             return;
         }
         updateAll((SmartSolverPD) inSolver);
@@ -284,16 +307,14 @@ public class ReferenceAccumulator {
 
     // scan the full collection, if the reference board is not verified, verify it now.
     private void updateAll(SmartSolverPD solverPD) {
-        assert solverPD instanceof SmartSolverPD : "updateAll did not recevie SolverPD object";
-    	// TODO
-    	/*
+        assert solverPD instanceof SmartSolverPD : "updateAll did not recevie SmartSolverPD object";
         final boolean backupAdvPriority = solverPD.getPriorityFlag();
         final boolean backupMessageFlag = solverPD.getMessageFlag();
         final boolean backupTimeoutFlag = solverPD.getTimeoutFlag();
-        solverPD.timeoutSwitch(SWITCH_OFF);
-        solverPD.messageSwitch(SWITCH_OFF);
-        solverPD.advPrioritySwitch(SWITCH_ON);
-		*/
+        solverPD.timeoutSwitch(offSwitch);
+        solverPD.messageSwitch(offSwitch);
+        solverPD.advPrioritySwitch(onSwitch);
+       
         for (Entry<ReferenceBoard, ReferenceMoves> entry : referenceMap.entrySet()) {
             ReferenceMoves advMoves = entry.getValue();
             if (advMoves.isCompleted()) {
@@ -303,13 +324,11 @@ public class ReferenceAccumulator {
             advMoves.updateSolutions(advBoard, solverPD);
             add2file(advBoard, advMoves);
         }
-        /*
         solverPD.advPrioritySwitch(backupAdvPriority);
         solverPD.messageSwitch(backupMessageFlag);
         solverPD.timeoutSwitch(backupTimeoutFlag);
-        */
     }
-
+    
     /**
      * If the given solver using pattern database 7-8, and it takes
      * over the cutoff limit solve the puzzle with advanced estimate;
@@ -318,8 +337,8 @@ public class ReferenceAccumulator {
      * @param inSolver the SolverInterface object in use
      */
     public boolean addBoard(Solver inSolver) {
-        //return addBoard(inSolver, false);
-    	return false;
+        return addBoard(inSolver, false);
+        //return false;
     }
 
     // add a reference board in collection, allow bypass mininum
@@ -328,7 +347,7 @@ public class ReferenceAccumulator {
         if (referenceMap == null) {
             return false;
         }
-        if (inSolver == null || !validateSolver(inSolver)) {
+        if (!validateSolver(inSolver)) {
             return false;
         }
         if (!bypass && inSolver.searchTime() < getCutoffLimit()) {
@@ -337,11 +356,10 @@ public class ReferenceAccumulator {
         SmartSolverPD solverPD = (SmartSolverPD) inSolver;
         Board board = solverPD.lastSearchBoard();
         Direction[] solution = solverPD.solution().clone();
-        //TODO
-        /*
+        
         if (!bypass && !solverPD.getPriorityFlag()) {
-            int heuristicOrg = solverPD.heuristicOrg(board);
-            int heuristicAdv = solverPD.heuristicAdv(board);
+            int heuristicOrg = solverPD.heuristicStandard(board);
+            int heuristicAdv = solverPD.heuristicAdvanced(board);
             if (heuristicOrg != heuristicAdv) {
                 return false;
             }
@@ -350,10 +368,10 @@ public class ReferenceAccumulator {
         final boolean backupAdvPriority = solverPD.getPriorityFlag();
         final boolean backupMessageFlag = solverPD.getMessageFlag();
         final boolean backupTimeoutFlag = solverPD.getTimeoutFlag();
-        solverPD.timeoutSwitch(SWITCH_OFF);
-        solverPD.messageSwitch(SWITCH_OFF);
-        solverPD.advPrioritySwitch(SWITCH_ON);
-		*/
+        solverPD.timeoutSwitch(offSwitch);
+        solverPD.messageSwitch(offSwitch);
+        solverPD.advPrioritySwitch(onSwitch);
+        
         ReferenceBoard advBoard = new ReferenceBoard(board);
         byte lookup = ReferenceConstants.getReferenceLookup(board.getZero1d());
         int group = ReferenceConstants.getReferenceGroup(board.getZero1d());
@@ -366,11 +384,9 @@ public class ReferenceAccumulator {
                 advMoves.updateSolution(lookup, solverPD.moves(), solution, !symmetry);
             }
             add2file(advBoard, advMoves);
-            /*
             inSolver.advPrioritySwitch(backupAdvPriority);
             inSolver.messageSwitch(backupMessageFlag);
             inSolver.timeoutSwitch(backupTimeoutFlag);
-            */
             return true;
         }
 
@@ -387,11 +403,9 @@ public class ReferenceAccumulator {
             }
             advMoves.updateSolution(lookup, solverPD.moves(), solution, symmetry);
             add2file(advBoardSym, advMoves);
-            /*
             inSolver.advPrioritySwitch(backupAdvPriority);
             inSolver.messageSwitch(backupMessageFlag);
             inSolver.timeoutSwitch(backupTimeoutFlag);
-            */
             return true;
         }
 
@@ -403,11 +417,9 @@ public class ReferenceAccumulator {
         }
         referenceMap.put(advBoard, advMoves);
         add2file(advBoard, advMoves);
-        /*
         inSolver.advPrioritySwitch(backupAdvPriority);
         inSolver.messageSwitch(backupMessageFlag);
         inSolver.timeoutSwitch(backupTimeoutFlag);
-        */
         return true;
     }
 
@@ -422,7 +434,7 @@ public class ReferenceAccumulator {
         if (referenceMap == null) {
             return false;
         }
-        if (inSolver == null || !validateSolver(inSolver)) {
+        if (!validateSolver(inSolver)) {
             return false;
         }
         if (inSolver.isSearchTimeout() || inSolver.searchTime() < cutoffLimit) {
@@ -430,14 +442,14 @@ public class ReferenceAccumulator {
         }
 
         SmartSolverPD solverPD = (SmartSolverPD) inSolver;
-        /*
+        
         final boolean backupAdvPriority = solverPD.getPriorityFlag();
         final boolean backupMessageFlag = solverPD.getMessageFlag();
         final boolean backupTimeoutFlag = solverPD.getTimeoutFlag();
-        solverPD.timeoutSwitch(SWITCH_OFF);
-        solverPD.messageSwitch(SWITCH_OFF);
-        solverPD.advPrioritySwitch(SWITCH_ON);
-		*/
+        solverPD.timeoutSwitch(offSwitch);
+        solverPD.messageSwitch(offSwitch);
+        solverPD.advPrioritySwitch(onSwitch);
+       
         Board board = solverPD.lastSearchBoard();
         ReferenceBoard advBoard = new ReferenceBoard(board);
         int group = ReferenceConstants.getReferenceGroup(board.getZero1d());
@@ -448,11 +460,10 @@ public class ReferenceAccumulator {
                 advMoves.updateSolutions(advBoard, solverPD);
                 add2file(advBoard, advMoves);
             }
-            /*
+            
             inSolver.advPrioritySwitch(backupAdvPriority);
             inSolver.messageSwitch(backupMessageFlag);
             inSolver.timeoutSwitch(backupTimeoutFlag);
-            */
             return true;
         }
 
@@ -466,48 +477,40 @@ public class ReferenceAccumulator {
                 advMoves.updateSolutions(advBoardSym, solverPD);
                 add2file(advBoardSym, advMoves);
             }
-            /*
             inSolver.advPrioritySwitch(backupAdvPriority);
             inSolver.messageSwitch(backupMessageFlag);
             inSolver.timeoutSwitch(backupTimeoutFlag);
-            */
             return true;
         }
-        /*
         inSolver.advPrioritySwitch(backupAdvPriority);
         inSolver.messageSwitch(backupMessageFlag);
         inSolver.timeoutSwitch(backupTimeoutFlag);
-        */
         return false;
     }
-
+    
     // remove the given board from reference boards collection if exists, except
     // default reference boards.
     void removeBoard(Board board) {
         ReferenceBoard advBoard = new ReferenceBoard(board);
-        // TODO need fix without defaultMap
-        /*
         if (defaultMap.containsKey(advBoard)) {
-            System.out.println("It's not allow to remove a default board.");
-            return;
+        	return;
         }
-        */
         if (referenceMap.containsKey(advBoard)) {
             referenceMap.remove(advBoard);
         }
     }
-
+    
     // print the current status of reference boards collection.
     void printStatus() {
-        System.out.println("Data file size: " + (new File(filePath).length())
-                + " saved at " + new Date((new File(filePath)).lastModified()));
+        System.out.println("Data file size: " + (new File(filepath).length())
+                + " saved at " + new Date((new File(filepath)).lastModified()));
         System.out.println("Boards takes over " + cutoffSetting + "s will store in file.");
         System.out.println(referenceMap.size() + " of boards stored in data file.\n");
     }
 
     // print all reference boards and it's components.
     void printAllBoards() {
-    	int puzzleSize = ReferenceConstants.getPuzzleSize();
+        int puzzleSize = ReferenceConstants.getPuzzleSize();
         for (Entry<ReferenceBoard, ReferenceMoves> entry : referenceMap.entrySet()) {
             ReferenceBoard advBoard = entry.getKey();
             for (int i = 0; i < puzzleSize; i++) {
@@ -526,7 +529,7 @@ public class ReferenceAccumulator {
         }
         System.out.println();
     }
-
+    
     // change the cutoff setting with the given integer in second, range from 1 to 10 and
     // save a new copy if stand alone or off network
     void setCutoffArchive(int cutoff) {
@@ -547,19 +550,19 @@ public class ReferenceAccumulator {
                 + " seconds, existing archive boards will remain as is.");
         refreshFile();
     }
-
+	
     // TODO - RMI : Connection off only
     // save all reference board in a new copy
     void refreshFile() {
-        System.out.println("Please make sure connection is off to prcessed:");
-        System.out.println("Enter 'Y' to continue, other to quit.");
+        //System.out.println("Please make sure connection is off to prcessed:");
+        //System.out.println("Enter 'Y' to continue, other to quit.");
 
         createFile();
         for (Entry<ReferenceBoard, ReferenceMoves> entry : referenceMap.entrySet()) {
             add2file(entry.getKey(), entry.getValue());
         }
     }
-
+	
     // reset the reference boards collection to default setting and save a new copy
     // if stand alone or off network
     void reset() {

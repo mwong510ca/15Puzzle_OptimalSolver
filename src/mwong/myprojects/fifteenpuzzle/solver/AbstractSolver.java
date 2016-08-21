@@ -227,8 +227,7 @@ public abstract class AbstractSolver implements Solver {
      */
     @Override
     public byte heuristicAdvanced(Board board) {
-        throw new UnsupportedOperationException("Advanced version currently inactive."
-                + "  Check the system.");
+        throw new UnsupportedOperationException("Advanced version currently unavailable.");
     }
 
     /**

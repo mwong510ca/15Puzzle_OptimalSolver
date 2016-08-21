@@ -589,22 +589,4 @@ public class SolverPD extends AbstractSolver {
         int group = patternGroups[ptnOrder];
         return rotateKeysByPos[ptnOrder][(key * group + keyOrder) * maxShiftX2[ptnOrder] + shift];
     }
-
-    /**
-     * Returns the boolean represents the advanced priority in use.
-     *
-     * @return boolean represents the advanced priority in use
-     */
-    public final boolean getTimeoutFlag() {
-        return flagTimeout;
-    }
-
-    /**
-     * Returns the boolean represents the advanced priority in use.
-     *
-     * @return boolean represents the advanced priority in use
-     */
-    public final boolean getMessageFlag() {
-        return flagMessage;
-    }
 }

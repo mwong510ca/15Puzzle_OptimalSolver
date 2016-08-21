@@ -1,58 +1,55 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation  : javac AdvancedBoard.java
- *  Dependencies : Board.java
- *
- *  A data type of reference board.  It shift the space of original board
- *  to corner position, generate a conversion keys as goal state.
- *
- ****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.solver.advanced.ai;
-
-import java.io.IOException;
 
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 
+import java.io.IOException;
+
+/**
+ * ReferenceBoard is the data type of stored board of reference collection.
+ *
+ * <p>Dependencies : Board.java, ReferenceConstants.java
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public class ReferenceBoard {
-	private final int puzzleSize;
-	private final byte[] referenceLookup;
-	private final byte[] referenceGroup;
-	private final byte[] rotate90pos;
-	private final byte[] rotate180pos;
-	
+    private final int puzzleSize;
+    private final byte[] referenceLookup;
+    private final byte[] referenceGroup;
+    private final byte[] rotate90pos;
+    private final byte[] rotate180pos;
+
     byte[] tilesTransform;
     int hashcode;
     int hash1;
     int hash2;
     byte group;
 
+    // load all constants.
     private ReferenceBoard() {
-    	puzzleSize = ReferenceConstants.getPuzzleSize();
-    	referenceLookup = ReferenceConstants.getReferenceLookup();
-    	referenceGroup = ReferenceConstants.getReferenceGroup();
-    	rotate90pos = ReferenceConstants.getRotate90Pos();
-    	rotate180pos = ReferenceConstants.getRotate180Pos();
+        puzzleSize = ReferenceConstants.getPuzzleSize();
+        referenceLookup = ReferenceConstants.getReferenceLookup();
+        referenceGroup = ReferenceConstants.getReferenceGroup();
+        rotate90pos = ReferenceConstants.getRotate90Pos();
+        rotate180pos = ReferenceConstants.getRotate180Pos();
     }
-    
+
     /**
-     * Initializes a BoardAdvanced object, take a board object,
+     * Initializes a ReferenceBoard object, take a board object,
      * shift the space to corner, and generate a conversion keys
      * in byte array to transform to goal state.
      *
      * @param initial the given board object
      */
     public ReferenceBoard(Board initial) {
-    	this();
+        this();
         byte[] tiles = new byte[puzzleSize];
         System.arraycopy(initial.getTiles(), 0, tiles, 0, puzzleSize);
         group = referenceGroup[initial.getZero1d()];
         byte lookup = referenceLookup[initial.getZero1d()];
         if (group == 3) {
             group = 1;
-            tiles = initial.getTilesSym().clone();
+            System.arraycopy(initial.getTilesSym(), 0, tiles, 0, puzzleSize);
         }
 
         byte[] tilesRotate = new byte[puzzleSize];
@@ -69,7 +66,7 @@ public class ReferenceBoard {
                 tiles[14] = tiles[15];
                 tiles[15] = 0;
             }
-            tilesRotate = tiles.clone();
+            System.arraycopy(tiles, 0, tilesRotate, 0, puzzleSize);
         } else if (group == 1) {
             if (lookup > 2) {
                 tiles[2] = tiles[6];
@@ -87,7 +84,7 @@ public class ReferenceBoard {
                 tilesRotate[i] = tiles[rotate90pos[i]];
             }
         } else if (group == 2) {
-        	if (lookup > 2) {
+            if (lookup > 2) {
                 tiles[4] = tiles[5];
                 tiles[5] = 0;
             }
@@ -118,7 +115,7 @@ public class ReferenceBoard {
     // conversion key into byte array
     ReferenceBoard(long transformKey, byte group, int hash1, int hash2, int hashcode)
             throws IOException {
-    	this();
+        this();
         tilesTransform = new byte[puzzleSize];
         int pos = puzzleSize;
         boolean[] visited = new boolean[puzzleSize];

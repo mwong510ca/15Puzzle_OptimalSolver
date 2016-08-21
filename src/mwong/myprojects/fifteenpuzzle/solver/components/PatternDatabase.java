@@ -28,9 +28,6 @@ import java.util.HashMap;
  */
 public class PatternDatabase {
     private static final PatternOptions defaultPattern = PatternOptions.Pattern_663;
-
-    private final String directory;
-    private final String seperator;
     private final int[] formatBit16;
     private final byte[] formatZero8Order;
     private final int puzzleSize;
@@ -68,8 +65,6 @@ public class PatternDatabase {
      * @param choice the integer of pattern option in PatternOptions
      */
     public PatternDatabase(PatternOptions type, int choice) {
-        directory = "database";
-        seperator = System.getProperty("file.separator");
         formatBit16 = PatternConstants.getFormatBit16();
         formatZero8Order
                 = new byte[] {(byte) (1 << 7), 1 << 6, 1 << 5, 1 << 4, 1 << 3, 1 << 2, 1 << 1, 1};
@@ -94,8 +89,6 @@ public class PatternDatabase {
      * @param pattern the byte array of user defined pattern
      */
     public PatternDatabase(byte[] pattern) {
-        directory = null;
-        seperator = null;
         formatBit16 = PatternConstants.getFormatBit16();
         formatZero8Order = null;
         puzzleSize = PuzzleConstants.getSize();
@@ -107,7 +100,7 @@ public class PatternDatabase {
     // load the pattern database from file if exists
     // otherwise, create a new set and save in file
     private void loadData(PatternOptions type, int choice) {
-        String filepath = directory + seperator + type.getFilename(choice);
+        String filepath = FileProperties.getFilepathPD(type, choice);
         try (FileInputStream fin = new FileInputStream(filepath);
                 FileChannel inChannel = fin.getChannel();
                 ) {
@@ -142,6 +135,7 @@ public class PatternDatabase {
     // save the pattern database in file
     private void saveData(String filepath) {
         System.out.println("Saving a local copy ...");
+        String directory = FileProperties.getDirectory();
         if (!(new File(directory)).exists()) {
             (new File(directory)).mkdir();
         }
@@ -169,9 +163,9 @@ public class PatternDatabase {
                 buffer.flip();
                 outChannel.write(buffer);
             }
-            System.out.println("PD15Combo - save data set in file succeeded.");
+            System.out.println("PatternDatabase - save data set in file succeeded.");
         } catch (BufferUnderflowException | IOException ex) {
-            System.out.println("PD15Combo - save data set in file failed");
+            System.out.println("PatternDatabase - save data set in file failed");
             if ((new File(filepath)).exists()) {
                 (new File(filepath)).delete();
             }
@@ -238,7 +232,7 @@ public class PatternDatabase {
                     System.out.println("Not enough estimate memory : "
                             + (Runtime.getRuntime().maxMemory() / mb / 1000.0)
                             + "GB < 1.6GB for pattern of 8");
-                    System.out.println("Please increase runtime memory (java -Xmx2g)"
+                    System.out.println("Please increase runtime memory (java -d64 -Xms2g)"
                             + " and try again!");
                     System.exit(0);
                 }
@@ -277,7 +271,7 @@ public class PatternDatabase {
                 genPatternShort(i, patternGroups[i], ptnFormat[i], element);
             }
         }
-        System.out.println("PD15Combo - generate additive pattern database completed");
+        System.out.println("PatternDatabase - generate additive pattern database completed");
     }
 
     // use by additive pattern with 8 tiles (8 spaces for zeroes), collect actual zeroes
@@ -640,7 +634,7 @@ public class PatternDatabase {
 
             System.out.printf("moves : " + step + "\t count : %-15s  scanned : %-15s ended at "
                     + stopwatch.currentTime() + "s\n", Integer.toString(remaining - pending),
-                    Integer.toBinaryString(counter));
+                    Integer.toString(counter));
             step++;
             currMove = nextMove;
             remaining = pending;
@@ -684,18 +678,5 @@ public class PatternDatabase {
      */
     public final byte[][] getPatternSet() {
         return patterns;
-    }
-
-    /**
-     * Unit Test.
-     *
-     * @param args Standard argument main function
-     */
-    public static void main(String [] args) {
-        PatternDatabase pd = new PatternDatabase(PatternOptions.Pattern_555);
-        pd = new PatternDatabase(PatternOptions.Pattern_663);
-        System.out.println(pd.patternGroups.length);
-        pd = new PatternDatabase(PatternOptions.Pattern_78);
-        System.out.println(pd.patternGroups.length);
     }
 }

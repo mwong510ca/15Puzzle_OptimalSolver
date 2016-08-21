@@ -15,6 +15,7 @@
 
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
+import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
@@ -26,12 +27,12 @@ import mwong.myprojects.fifteenpuzzle.utilities.Stopwatch;
 import java.util.Arrays;
 
 /**
- * SmartSolverPDWD extends SolverPDWD.  The advanced version extend the standard solver
+ * SmartSolverPD extends SolverPD.  The advanced version extend the standard solver
  * using the reference boards collection to boost the initial estimate.
  *
- * <p>Dependencies : AdvancedRecord.java, Board.java, Direction.java, ReferenceAccumulator.java,
- *                   SmartSolverConstants.java, SmartSolverExtra.java, SolverProperties.java, 
- *                   SolverPD.java
+ * <p>Dependencies : AdvancedRecord.java, Board.java, Direction.java, HeuristicOptions.java,
+ *                   PatternOptions.java, ReferenceAccumulator.java, SmartSolverConstants.java,
+ *                   SmartSolverExtra.java, SolverPD.java, SolverProperties.java, Stopwatch.java
  *
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
@@ -45,6 +46,8 @@ public class SmartSolverPD extends SolverPD {
 
     /**
      * Initializes SolverPD object using default preset pattern.
+     *
+     * @param refAccumulator the given ReferenceAccumulator object
      */
     public SmartSolverPD(ReferenceAccumulator refAccumulator) {
         this(SolverProperties.getDefaultPattern(), refAccumulator);
@@ -54,16 +57,19 @@ public class SmartSolverPD extends SolverPD {
      * Initializes SolverPD object using given preset pattern.
      *
      * @param presetPattern the given preset pattern type
+     * @param refAccumulator the given ReferenceAccumulator object
      */
     public SmartSolverPD(PatternOptions presetPattern, ReferenceAccumulator refAccumulator) {
         this(presetPattern, 0, refAccumulator);
     }
 
     /**
-     * Initializes SolverPD object with choice of given preset pattern.
+     * Initializes SolverPD object with choice of given preset pattern.  If refAccumlator is null
+     * or empty, it will act as standard version.
      *
      * @param presetPattern the given preset pattern type
      * @param choice the number of preset pattern option
+     * @param refAccumulator the given ReferenceAccumulator object
      */
     public SmartSolverPD(PatternOptions presetPattern, int choice,
             ReferenceAccumulator refAccumulator) {
@@ -85,10 +91,12 @@ public class SmartSolverPD extends SolverPD {
     }
 
     /**
-     *  Initializes SolverPD object with user defined custom pattern.
+     * Initializes SolverPD object with user defined custom pattern.  If refAccumlator is null
+     * or empty, it will act as standard version.
      *
-     *  @param customPattern byte array of user defined custom pattern
-     *  @param elementGroups boolean array of groups reference to given pattern
+     * @param customPattern byte array of user defined custom pattern
+     * @param elementGroups boolean array of groups reference to given pattern
+     * @param refAccumulator the given ReferenceAccumulator object
      */
     public SmartSolverPD(byte[] customPattern, boolean[] elementGroups,
             ReferenceAccumulator refAccumulator) {
@@ -110,7 +118,7 @@ public class SmartSolverPD extends SolverPD {
     }
 
     /**
-     *  Print solver description with in use pattern.
+     * Print solver description with in use pattern.
      */
     @Override
     public void printDescription() {
@@ -119,11 +127,11 @@ public class SmartSolverPD extends SolverPD {
     }
 
     /**
-     *  Find the optimal path to goal state if the given board is solvable.
-     *  Overload findOptimalPath with given heuristic value (for AdvancedAccumulator)
+     * Find the optimal path to goal state if the given board is solvable.
+     * Overload findOptimalPath with given heuristic value (for AdvancedAccumulator)
      *
-     *  @param board the initial puzzle Board object to solve
-     *  @param estimate the given initial limit to solve the puzzle
+     * @param board the initial puzzle Board object to solve
+     * @param estimate the given initial limit to solve the puzzle
      */
     public void findOptimalPath(Board board, byte estimate) {
         if (board.isSolvable()) {
@@ -228,15 +236,14 @@ public class SmartSolverPD extends SolverPD {
      */
     @Override
     public byte heuristicAdvanced(Board board) {
-        if (!activeSmartSolver) {
-            throw new UnsupportedOperationException("Advanced version currently inactive."
-                    + " Reference collection unavailable. Check the system.");
-        }
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
         if (!board.isSolvable()) {
             return -1;
+        }
+        if (!activeSmartSolver) {
+            heuristic(board, tagStandard, tagReview);
         }
         return heuristic(board, tagAdvanced, tagReview);
     }
@@ -302,20 +309,21 @@ public class SmartSolverPD extends SolverPD {
                 }
                 if (solved) {
                     // if currently using pattern database 7-8 and it takes long than cutoff limit
-                    /* to solve, add the board and solutions to reference boards collection.
+                    // to solve, add the board and solutions to reference boards collection.
                     if (activeSmartSolver && inUseHeuristic == HeuristicOptions.PD78
                             && stopwatch.currentTime() >  refAccumulator.getCutoffLimit()) {
                         // backup original solutions
                         final Stopwatch backupTime = stopwatch;
                         final byte backupSteps = steps;
                         final int backupIdaCount = searchNodeCount;
-                        final Direction[] backupSolution = solutionMove.clone();
+                        final Direction[] backupSolution = new Direction[steps + 1];
+                        System.arraycopy(solutionMove, 1, backupSolution, 1, steps);
 
                         searchTime = stopwatch.currentTime();
                         stopwatch = new Stopwatch();
                         // only update cached advanced priority if using original priority search
                         // and the initial board has added to the reference boards
-                        if (refAccumulator.addBoard(this) && !flagAdvancedPriority) {
+                        if (refAccumulator.addBoard(this)) {
                             priorityAdvanced = backupSteps;
                         }
 
@@ -325,7 +333,6 @@ public class SmartSolverPD extends SolverPD {
                         searchNodeCount = backupIdaCount;
                         solutionMove = backupSolution;
                     }
-                    */
                     return;
                 }
             }
@@ -381,6 +388,34 @@ public class SmartSolverPD extends SolverPD {
                         Integer.toString(idaCount));
             }
         }
+    }
+
+
+    /**
+     * Returns the boolean represents the advanced priority in use.
+     *
+     * @return boolean represents the advanced priority in use
+     */
+    public final boolean getTimeoutFlag() {
+        return flagTimeout;
+    }
+
+    /**
+     * Returns the boolean represents the advanced priority in use.
+     *
+     * @return boolean represents the advanced priority in use
+     */
+    public final boolean getMessageFlag() {
+        return flagMessage;
+    }
+
+    /**
+     * Returns the boolean represents the advanced priority in use.
+     *
+     * @return boolean represents the advanced priority in use
+     */
+    public final boolean getPriorityFlag() {
+        return flagAdvancedPriority;
     }
 
     /**
