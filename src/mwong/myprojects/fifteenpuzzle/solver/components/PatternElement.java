@@ -18,7 +18,7 @@ import java.util.TreeSet;
  * a boolean array represent the pattern groups and a PatternElementMode for usage.
  * It either load from storage or generate a new set if local file not exists.
  *
- * <p>Dependencies : PuzzleConstants.java, PuzzleConstants.java, Stopwatch.java
+ * <p>Dependencies : FileProperties.java, PuzzleConstants.java, PuzzleConstants.java, Stopwatch.java
  *
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/

@@ -2,7 +2,6 @@ package mwong.myprojects.fifteenpuzzle.solver.advanced.ai;
 
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
-import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleConstants;
 
 /**
@@ -12,10 +11,10 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleConstants;
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class ReferenceConstants {
-	private static final String CORE_CLASS_NAME = "SmartSolverPD";
-	private static final HeuristicOptions CORE_HEURISTIC = HeuristicOptions.PD78;
-	private static final boolean ON_SWITCH = SolverConstants.isOnSwitch();
-	
+    private static final String CORE_SOLVER_CLASS_NAME = "SmartSolverPD";
+    private static final HeuristicOptions CORE_HEURISTIC = HeuristicOptions.PD78;
+    private static final boolean ON_SWITCH = SolverConstants.isOnSwitch();
+
     // Constants for ReferenceBoard
     private static final int PUZZLE_SIZE = PuzzleConstants.getSize();
     private static final byte[] ROTATE_90_POS =
@@ -35,27 +34,33 @@ public class ReferenceConstants {
     private static final byte NUM_PARTIAL_MOVES = 8;
 
     /**
-	 * @return the coreClassName
-	 */
-	static final String getCoreClassName() {
-		return CORE_CLASS_NAME;
-	}
+     * Returns the String of class name of Solver for ReferenceAccumulator.
+     *
+     * @eturns the String of class name of Solver for ReferenceAccumulator
+     */
+    static final String getCoreSolverClassName() {
+        return CORE_SOLVER_CLASS_NAME;
+    }
 
-	/**
-	 * @return the corePattern
-	 */
-	static final HeuristicOptions getCoreHeuristic() {
-		return CORE_HEURISTIC;
-	}
+    /**
+     * Returns the HeuristicOption that ReferenceAccumulator being use.
+     *
+     * @return HeuristicOption that ReferenceAccumulator being use
+     */
+    static final HeuristicOptions getCoreHeuristic() {
+        return CORE_HEURISTIC;
+    }
 
-	/**
-	 * @return the onSwitch
-	 */
-	static final boolean isOnSwitch() {
-		return ON_SWITCH;
-	}
+    /**
+     * Returns the byte array of symmetry tiles conversion.
+     *
+     * @return byte array of symmetry value
+     */
+    static final boolean isOnSwitch() {
+        return ON_SWITCH;
+    }
 
-	/**
+    /**
      * Return the byte array of rotate 90 degree clockwise conversion.
      *
      * @return byte array of rotate 90 degree clockwise conversion

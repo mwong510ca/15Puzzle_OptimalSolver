@@ -1,22 +1,8 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation  : javac AdvancedAccumulator.java
- *  Dependencies : ReferenceBoard.java, ReferenceMoves.java, Board.java,
- *                 SolverInterface.java, SolverPD.java
- *
- *  A data type of collection of reference boards.  It analysis each
- *  board's actual number of moves, first 8 moves to goal state, and a
- *  conversion set for reverse estimate (use reference board as goal state).
- *
- ****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.solver.advanced.ai;
 
+import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.Solver;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPD;
-import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.FileProperties;
@@ -31,13 +17,24 @@ import java.nio.channels.FileChannel;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 
+/**
+ * ReferenceBoard is the data type of stored board of reference collection.
+ * It analysis each board's actual number of moves, first 8 moves to goal state, 
+ * and a conversion set for reverse estimate (use reference board as goal state).
+ *
+ * <p>Dependencies : Board.java, Direction.java, FileProperties.java, HeuristicOptions.java,
+ *                   PatternOptions.java, ReferenceBoard.java, ReferenceConstants.java,
+ *                   ReferenceMoves.java, ReferenceProperties.java, SmartSolverPD.java, Solver.java
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public class ReferenceAccumulator {
     private final String directory;
     private final String filepath;
-    private final String coreClassName;
+    private final String coreSolverClassName;
     private final HeuristicOptions coreHeuristic;
     private final boolean symmetry;
     private final boolean onSwitch;
@@ -50,18 +47,18 @@ public class ReferenceAccumulator {
     private boolean fileReady = false;
 
     /**
-     * Initializes A object.  Load the stored boards from file or use default set.
+     * Initializes ReferenceBoard object.  Load the stored boards from file or use default set.
      */
     public ReferenceAccumulator() {
         directory = FileProperties.getDirectory();
         filepath = FileProperties.getFilepathReference();
-        coreClassName = ReferenceConstants.getCoreClassName();
+        coreSolverClassName = ReferenceConstants.getCoreSolverClassName();
         coreHeuristic = ReferenceConstants.getCoreHeuristic();
         symmetry = ReferenceConstants.isSymmetry();
         onSwitch = ReferenceConstants.isOnSwitch();
         offSwitch = !onSwitch;
 
-        loadDefault();       
+        loadDefault();
         try {
             referenceMap = new HashMap<ReferenceBoard, ReferenceMoves>();
             System.out.println("Load data and system update - archived hard board. "
@@ -69,12 +66,13 @@ public class ReferenceAccumulator {
             loadFile();
             System.out.println();
         } catch (IOException ex) {
-            copyDefault();
+            reset();
         }
         updateData(createSolver());
         refreshFile();
     }
 
+    // load the default set
     private void loadDefault() {
         defaultMap = new HashMap<ReferenceBoard, ReferenceMoves>();
         for (byte[][] preset : ReferenceProperties.getDefaultBoards()) {
@@ -102,23 +100,27 @@ public class ReferenceAccumulator {
         }
     }
 
-    private void copyDefault() {
+    // reset to default set
+    void reset() {
         cutoffSetting = ReferenceProperties.getDefaultCutoffLimit();
         System.out.println("Default setting : cutoff archive limit - "
                 + cutoffSetting);
         cutoffLimit = cutoffSetting * ReferenceProperties.getDefaultCutoffBuffer();
         referenceMap = new HashMap<ReferenceBoard, ReferenceMoves>();
         for (Entry<ReferenceBoard, ReferenceMoves> entry : defaultMap.entrySet()) {
-        	referenceMap.put(entry.getKey(), entry.getValue());
+            referenceMap.put(entry.getKey(), entry.getValue());
         }
     }
-    
+
     /**
      * Returns a HashMap of collection of reference boards.
      *
      * @return HashMap of collection of reference boards
      */
     public final HashMap<ReferenceBoard, ReferenceMoves> getActiveMap() {
+    	if (referenceMap == null) {
+    		return defaultMap;
+    	}
         return referenceMap;
     }
 
@@ -251,7 +253,7 @@ public class ReferenceAccumulator {
         }
     }
 
-    // create and return a SolverPD object.
+    // create and return a SmartSolverPD object.
     SmartSolverPD createSolver() {
         try {
             SmartSolverPD solver = new SmartSolverPD(PatternOptions.Pattern_78, this);
@@ -263,24 +265,24 @@ public class ReferenceAccumulator {
             return null;
         }
     }
-    
-    // verify the given solver is SolverPD object using pattern database 7-8
+
+    // verify the given solver is SmartSolverPD object using pattern database 7-8
     private boolean validateSolver(Solver inSolver) {
         if (inSolver == null) {
-        	return false;
+            return false;
         }
-        if (!inSolver.getClass().getSimpleName().equals(coreClassName)) {
-        	return false;
+        if (!inSolver.getClass().getSimpleName().equals(coreSolverClassName)) {
+            return false;
         }
-        if (inSolver.getHeuristicOptions() != coreHeuristic) {;
+        if (inSolver.getHeuristicOptions() != coreHeuristic) {
             return false;
         }
         return true;
     }
-    
+
     // verify the given solver is using pattern database 7-8, scan the full
     // collection, if the reference board is not verified, verify it now.
-    private void updateData(Solver inSolver) {
+    void updateData(Solver inSolver) {
         Solver solver = inSolver;
         if (!validateSolver(inSolver)) {
             solver = createSolver();
@@ -314,7 +316,7 @@ public class ReferenceAccumulator {
         solverPD.timeoutSwitch(offSwitch);
         solverPD.messageSwitch(offSwitch);
         solverPD.advPrioritySwitch(onSwitch);
-       
+
         for (Entry<ReferenceBoard, ReferenceMoves> entry : referenceMap.entrySet()) {
             ReferenceMoves advMoves = entry.getValue();
             if (advMoves.isCompleted()) {
@@ -328,7 +330,7 @@ public class ReferenceAccumulator {
         solverPD.messageSwitch(backupMessageFlag);
         solverPD.timeoutSwitch(backupTimeoutFlag);
     }
-    
+
     /**
      * If the given solver using pattern database 7-8, and it takes
      * over the cutoff limit solve the puzzle with advanced estimate;
@@ -338,7 +340,6 @@ public class ReferenceAccumulator {
      */
     public boolean addBoard(Solver inSolver) {
         return addBoard(inSolver, false);
-        //return false;
     }
 
     // add a reference board in collection, allow bypass mininum
@@ -356,7 +357,7 @@ public class ReferenceAccumulator {
         SmartSolverPD solverPD = (SmartSolverPD) inSolver;
         Board board = solverPD.lastSearchBoard();
         Direction[] solution = solverPD.solution().clone();
-        
+
         if (!bypass && !solverPD.getPriorityFlag()) {
             int heuristicOrg = solverPD.heuristicStandard(board);
             int heuristicAdv = solverPD.heuristicAdvanced(board);
@@ -371,7 +372,7 @@ public class ReferenceAccumulator {
         solverPD.timeoutSwitch(offSwitch);
         solverPD.messageSwitch(offSwitch);
         solverPD.advPrioritySwitch(onSwitch);
-        
+
         ReferenceBoard advBoard = new ReferenceBoard(board);
         byte lookup = ReferenceConstants.getReferenceLookup(board.getZero1d());
         int group = ReferenceConstants.getReferenceGroup(board.getZero1d());
@@ -442,14 +443,14 @@ public class ReferenceAccumulator {
         }
 
         SmartSolverPD solverPD = (SmartSolverPD) inSolver;
-        
+
         final boolean backupAdvPriority = solverPD.getPriorityFlag();
         final boolean backupMessageFlag = solverPD.getMessageFlag();
         final boolean backupTimeoutFlag = solverPD.getTimeoutFlag();
         solverPD.timeoutSwitch(offSwitch);
         solverPD.messageSwitch(offSwitch);
         solverPD.advPrioritySwitch(onSwitch);
-       
+
         Board board = solverPD.lastSearchBoard();
         ReferenceBoard advBoard = new ReferenceBoard(board);
         int group = ReferenceConstants.getReferenceGroup(board.getZero1d());
@@ -460,7 +461,7 @@ public class ReferenceAccumulator {
                 advMoves.updateSolutions(advBoard, solverPD);
                 add2file(advBoard, advMoves);
             }
-            
+
             inSolver.advPrioritySwitch(backupAdvPriority);
             inSolver.messageSwitch(backupMessageFlag);
             inSolver.timeoutSwitch(backupTimeoutFlag);
@@ -487,19 +488,19 @@ public class ReferenceAccumulator {
         inSolver.timeoutSwitch(backupTimeoutFlag);
         return false;
     }
-    
+
     // remove the given board from reference boards collection if exists, except
     // default reference boards.
     void removeBoard(Board board) {
         ReferenceBoard advBoard = new ReferenceBoard(board);
         if (defaultMap.containsKey(advBoard)) {
-        	return;
+            return;
         }
         if (referenceMap.containsKey(advBoard)) {
             referenceMap.remove(advBoard);
         }
     }
-    
+
     // print the current status of reference boards collection.
     void printStatus() {
         System.out.println("Data file size: " + (new File(filepath).length())
@@ -529,7 +530,7 @@ public class ReferenceAccumulator {
         }
         System.out.println();
     }
-    
+
     // change the cutoff setting with the given integer in second, range from 1 to 10 and
     // save a new copy if stand alone or off network
     void setCutoffArchive(int cutoff) {
@@ -550,7 +551,7 @@ public class ReferenceAccumulator {
                 + " seconds, existing archive boards will remain as is.");
         refreshFile();
     }
-	
+
     // TODO - RMI : Connection off only
     // save all reference board in a new copy
     void refreshFile() {
@@ -561,14 +562,5 @@ public class ReferenceAccumulator {
         for (Entry<ReferenceBoard, ReferenceMoves> entry : referenceMap.entrySet()) {
             add2file(entry.getKey(), entry.getValue());
         }
-    }
-	
-    // reset the reference boards collection to default setting and save a new copy
-    // if stand alone or off network
-    void reset() {
-        System.out.println("Reset to initial setup, all stored boards will removed.");
-        loadDefault();
-        System.out.println("Reset completed");
-        refreshFile();
     }
 }

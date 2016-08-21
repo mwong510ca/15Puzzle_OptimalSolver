@@ -69,6 +69,7 @@ class SmartSolverExtra extends SolverMD {
 
             if (inSearch && advMoves.hasInitialMoves(lookupKey)) {
                 Direction[] solutionMove = new Direction[steps + 1];
+                solutionMove[0] = Direction.NONE;
                 if (group == 3) {
                     System.arraycopy(advMoves.getInitialMoves(lookupKey, symmetry), 0,
                             solutionMove, 1, numPartialMoves);
@@ -97,6 +98,7 @@ class SmartSolverExtra extends SolverMD {
 
             if (inSearch && advMoves.hasInitialMoves(lookupKey)) {
                 Direction[] solutionMove = new Direction[steps + 1];
+                solutionMove[0] = Direction.NONE;
                 System.arraycopy(advMoves.getInitialMoves(lookupKey, symmetry), 0,
                         solutionMove, 1, numPartialMoves);
                 assert checkVaildMoves(board, solutionMove, numPartialMoves) :

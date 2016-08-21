@@ -1,21 +1,7 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation  : javac
- *  Dependencies : Board.java, Direction.java, SolverInterface.java,
- *                 SolverPD.java, PDPresetPatterns.java, Stopwatch.java
- *
- *  A application tool provide the full features to maintain storage of
- *  reference boards, such change cutoff limit, reset to default setting,
- *  update the data file, etc.
- *
- ****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.solver.advanced.ai;
 
+import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPD;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
-import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPD;
 
 import java.util.Arrays;
 import java.util.Scanner;
@@ -40,13 +26,13 @@ public class ReferenceAdministrator {
      *  @param args standard argument main function
      */
     public static void main(String[] args) {
-    	ReferenceAccumulator advAccumulator = new ReferenceAccumulator();
+        ReferenceAccumulator advAccumulator = new ReferenceAccumulator();
         advAccumulator.printStatus();
         int sizePuzzle = ReferenceConstants.getPuzzleSize();
         Action action = Action.Add;
         boolean bypass = true;
 
-        SolverPD solver = advAccumulator.createSolver();
+        SmartSolverPD solver = advAccumulator.createSolver();
         if (solver == null) {
             return;
         }
@@ -165,6 +151,7 @@ public class ReferenceAdministrator {
                 }
 
                 Board initial = new Board(blocks);
+
                 if (initial.isSolvable()) {
                     if (action == Action.Remove) {
                         ++count;
@@ -177,7 +164,6 @@ public class ReferenceAdministrator {
                             advAccumulator.removeBoard(initial);
                         }
                     } else {
-                        // TODO
                         solver.findOptimalPath(initial);
                         System.out.print(++count + " " + solver.searchTime());
                         if (action == Action.AddAlways) {
@@ -186,8 +172,6 @@ public class ReferenceAdministrator {
                         if (advAccumulator.updateLastSearch(solver)) {
                             solver.findOptimalPath(initial);
                             System.out.println("\t\t" + solver.searchTime());
-                        } else {
-                            System.out.println("\t\t\t\t skip");
                         }
                     }
                 } else {

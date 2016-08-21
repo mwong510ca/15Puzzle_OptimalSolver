@@ -205,9 +205,9 @@ public abstract class AbstractSolver implements Solver {
     }
 
     /**
-     * Returns the original heuristic value of the board.
+     * Returns the byte value of the standard version of the heuristic value of the board.
      *
-     * @return byte value of the original heuristic value of the board
+     * @return byte value of the standard version of the heuristic value
      */
     @Override
     public byte heuristicStandard(Board board) {
@@ -221,13 +221,15 @@ public abstract class AbstractSolver implements Solver {
     }
 
     /**
-     * Returns the original heuristic value of the board.
+     * Returns the byte value of the advanced version of the heuristic value of the board,
+     * if advanced version is unavailable, return standard version instead.
      *
-     * @return byte value of the original heuristic value of the board
+     * @return byte value of the advanced version of the heuristic value
      */
     @Override
     public byte heuristicAdvanced(Board board) {
-        throw new UnsupportedOperationException("Advanced version currently unavailable.");
+    	return heuristicStandard(board);
+        //throw new UnsupportedOperationException("Advanced version currently unavailable.");
     }
 
     /**

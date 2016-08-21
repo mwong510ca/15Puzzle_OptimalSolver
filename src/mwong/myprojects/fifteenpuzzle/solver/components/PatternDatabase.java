@@ -18,7 +18,7 @@ import java.util.HashMap;
  * It either load from storage if preset pattern exists.  Otherwise, it will generate
  * a new set.  Custom pattern is not allow to generate the group of 8 pattern.
  *
- * <p>Dependencies : PuzzleConstants.java, PuzzleConstants.java, Stopwatch.java
+ * <p>Dependencies : FileProperties.java, PuzzleConstants.java, PuzzleConstants.java, Stopwatch.java
  *
  * <p>Remarks: group size of 8 takes 2.5-3 hours and require at least 2 gigabytes
  *            -Xms2g

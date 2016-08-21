@@ -15,7 +15,7 @@ import java.util.Map.Entry;
  * WalkingDistane provides a set of link and a set of heuristic values of Walking Distance.
  * It either load from storage or generate a new set if local file not exists.
  *
- * <p>Dependencies : PuzzleConstants.java
+ * <p>Dependencies : FileProperties.java, PuzzleConstants.java
  *
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
@@ -301,9 +301,6 @@ public class WalkingDistance {
                             int newPtn = 0;
                             int pairKeys = (rowKeyLink[zeroIdx * rowSize + j] << rowBitsSize)
                                     | rowKeyLink[lowerIdx * rowSize + j];
-                            //assert (rowKeyLink[lowerIdx * rowSize + j] == -1
-                              //      | rowKeyLink[zeroIdx * rowSize + j] == -1)
-                                //: "rowKeyLink negative value, space down";
 
                             switch (zeroRow) {
                                 case 0:
@@ -352,9 +349,6 @@ public class WalkingDistance {
                             int newPtn = 0;
                             int pairKeys = (rowKeyLink[upperIdx * rowSize + j] << rowBitsSize)
                                     | rowKeyLink[zeroIdx * rowSize + j];
-                            //assert (rowKeyLink[upperIdx * rowSize + j] == -1
-                              //      | rowKeyLink[zeroIdx * rowSize + j] == -1)
-                                //: "rowKeyLink negative value, space up";
 
                             switch (zeroRow) {
                                 case 1:
