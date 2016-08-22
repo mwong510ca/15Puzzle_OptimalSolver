@@ -1,7 +1,7 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
-import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.Solver;
+import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 
 public interface Application {
 

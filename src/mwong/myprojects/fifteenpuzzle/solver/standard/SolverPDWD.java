@@ -305,16 +305,16 @@ public class SolverPDWD extends SolverWD {
                 int startCounter = idaCount++;
                 if (firstMoveIdx == Direction.RIGHT.getValue()) {
                     lastDepthSummary[firstMoveIdx] = shiftRight(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy);
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy, 0);
                 } else if (firstMoveIdx == Direction.DOWN.getValue()) {
                     lastDepthSummary[firstMoveIdx] = shiftDown(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy);
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy, 0);
                 } else if (firstMoveIdx == Direction.LEFT.getValue()) {
                     lastDepthSummary[firstMoveIdx] = shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy);
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy, 0);
                 } else if (firstMoveIdx == Direction.UP.getValue()) {
                     lastDepthSummary[firstMoveIdx] = shiftUp(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy);
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy, 0);
                 }
                 lastDepthSummary[firstMoveIdx + rowSize] = idaCount - startCounter;
                 estimate1stMove[firstMoveIdx] = endOfSearch;
@@ -324,7 +324,7 @@ public class SolverPDWD extends SolverWD {
 
     // recursive depth first search until it reach the goal state or timeout
     private int recursiveDFS(int orgX, int orgY, int cost, int limit, int orgValReg, int orgValSym,
-            int orgPriority) {
+            int orgPriority, int swirlKey) {
         idaCount++;
         if (terminated) {
             return endOfSearch;
@@ -358,72 +358,84 @@ public class SolverPDWD extends SolverWD {
             // RIGHT
             if (orgX < rowSize - 1) {
                 newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgValReg, orgValSym, orgCopy));
+                        costPlus1, limit, orgValReg, orgValSym, orgCopy,
+                        swirlKey << 2 | strMove));
             }
             if (nonIdentical) {
                 // UP
-                if (orgY > 0) {
+                if (orgY > 0 && (swirlKey & lastShifts4) != ccwMax4) {
                     newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy));
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy,
+                            swirlKey << 2 | ccwMove));
                 }
                 // DOWN
-                if (orgY < rowSize - 1) {
+                if (orgY < rowSize - 1 && (swirlKey & lastShifts5) != cwMax5) {
                     newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy));
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy,
+                            swirlKey << 2 | cwMove));
                 }
             }
         } else if (prevMove == Direction.DOWN) {
             // DOWN
             if (orgY < rowSize - 1) {
                 newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgValReg, orgValSym, orgCopy));
+                        costPlus1, limit, orgValReg, orgValSym, orgCopy,
+                        swirlKey << 2 | strMove));
             }
             if (nonIdentical) {
                 // LEFT
-                if (orgX > 0) {
+                if (orgX > 0 && (swirlKey & lastShifts5) != cwMax5) {
                     newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy));
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy,
+                            swirlKey << 2 | cwMove));
                 }
                 // RIGHT
-                if (orgX < rowSize - 1) {
+                if (orgX < rowSize - 1 && (swirlKey & lastShifts4) != ccwMax4) {
                     newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy));
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy,
+                            swirlKey << 2 | ccwMove));
                 }
             }
         } else if (prevMove == Direction.LEFT) {
             // LEFT
             if (orgX > 0) {
                 newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgValReg, orgValSym, orgCopy));
+                        costPlus1, limit, orgValReg, orgValSym, orgCopy,
+                        swirlKey << 2 | strMove));
             }
             if (nonIdentical) {
                 // DOWN
-                if (orgY < rowSize - 1) {
+                if (orgY < rowSize - 1 && (swirlKey & lastShifts4) != ccwMax4) {
                     newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy));
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy,
+                            swirlKey << 2 | ccwMove));
                 }
                 // UP
-                if (orgY > 0) {
+                if (orgY > 0 && (swirlKey & lastShifts5) != cwMax5) {
                     newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy));
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy,
+                            swirlKey << 2 | cwMove));
                 }
             }
         } else if (prevMove == Direction.UP) {
             // UP
             if (orgY > 0) {
                 newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgValReg, orgValSym, orgCopy));
+                        costPlus1, limit, orgValReg, orgValSym, orgCopy,
+                        swirlKey << 2 | strMove));
             }
             if (nonIdentical) {
                 // RIGHT
-                if (orgX < rowSize - 1) {
+                if (orgX < rowSize - 1 && (swirlKey & lastShifts5) != cwMax5) {
                     newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy));
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy,
+                            swirlKey << 2 | cwMove));
                 }
                 // LEFT
-                if (orgX > 0) {
+                if (orgX > 0 && (swirlKey & lastShifts4) != ccwMax4) {
                     newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy));
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy,
+                            swirlKey << 2 | ccwMove));
                 }
             }
         }
@@ -432,7 +444,7 @@ public class SolverPDWD extends SolverWD {
 
     // shift the space to right
     private int shiftRight(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
-            int orgValReg, int orgValSym, int[] orgCopy) {
+            int orgValReg, int orgValSym, int[] orgCopy, int swirlKey) {
         if (terminated) {
             return endOfSearch;
         }
@@ -453,14 +465,14 @@ public class SolverPDWD extends SolverWD {
             shift(zeroPos, ptnReg, ptnReg, zeroSym, ptnSym, keySymPos, 0);
             solutionMove[costPlus1] = Direction.RIGHT;
             return nextMove(orgX + 1, orgY, zeroPos, nextPos, true, costPlus1, limit,
-                    wdPriority, orgValReg, orgValSym, ptnReg, ptnSym, keySymPos, orgCopy);
+                    wdPriority, orgValReg, orgValSym, ptnReg, ptnSym, keySymPos, orgCopy, swirlKey);
         }
         return wdPriority;
     }
 
     // shift the space to down
     private int shiftDown(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
-            int orgValReg, int orgValSym, int[] orgCopy) {
+            int orgValReg, int orgValSym, int[] orgCopy, int swirlKey) {
         if (terminated) {
             return endOfSearch;
         }
@@ -482,14 +494,14 @@ public class SolverPDWD extends SolverWD {
             shift(zeroSym, ptnSym, keySymPos, zeroPos, ptnReg, ptnReg, 0);
             solutionMove[costPlus1] = Direction.DOWN;
             return nextMove(orgX, orgY + 1, zeroPos, nextPos, false, costPlus1, limit,
-                    wdPriority, orgValReg, orgValSym, ptnReg, ptnSym, keySymPos, orgCopy);
+                    wdPriority, orgValReg, orgValSym, ptnReg, ptnSym, keySymPos, orgCopy, swirlKey);
         }
         return wdPriority;
     }
 
     // shift the space to left
     private int shiftLeft(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
-            int orgValReg, int orgValSym, int [] orgCopy) {
+            int orgValReg, int orgValSym, int [] orgCopy, int swirlKey) {
         if (terminated) {
             return endOfSearch;
         }
@@ -511,14 +523,14 @@ public class SolverPDWD extends SolverWD {
             shift(zeroPos, ptnReg, ptnReg, zeroSym, ptnSym, keySymPos, offsetDir);
             solutionMove[costPlus1] = Direction.LEFT;
             return nextMove(orgX - 1, orgY, zeroPos, nextPos, true, costPlus1, limit,
-                    wdPriority, orgValReg, orgValSym, ptnReg, ptnSym, keySymPos, orgCopy);
+                    wdPriority, orgValReg, orgValSym, ptnReg, ptnSym, keySymPos, orgCopy, swirlKey);
         }
         return wdPriority;
     }
 
     // shift the space to up
     private int shiftUp(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
-            int orgValReg, int orgValSym, int [] orgCopy) {
+            int orgValReg, int orgValSym, int [] orgCopy, int swirlKey) {
         if (terminated) {
             return endOfSearch;
         }
@@ -540,7 +552,7 @@ public class SolverPDWD extends SolverWD {
             shift(zeroSym, ptnSym, keySymPos, zeroPos, ptnReg, ptnReg, offsetDir);
             solutionMove[costPlus1] = Direction.UP;
             return nextMove(orgX, orgY - 1, zeroPos, nextPos, false, costPlus1, limit,
-                    wdPriority, orgValReg, orgValSym, ptnReg, ptnSym, keySymPos, orgCopy);
+                    wdPriority, orgValReg, orgValSym, ptnReg, ptnSym, keySymPos, orgCopy, swirlKey);
         }
         return wdPriority;
     }
@@ -548,7 +560,7 @@ public class SolverPDWD extends SolverWD {
     // continue to next move if not reach goal state or over limit
     private int nextMove(int orgX, int orgY, int zeroPos, int nextPos, boolean horizontalMove,
             int cost, int limit,int wdPriority, int orgValReg, int orgValSym, int ptnReg,
-            int ptnSym, int keySymPos, int[] orgCopy) {
+            int ptnSym, int keySymPos, int[] orgCopy, int swirlKey) {
         int updatePdValReg = getPDvalue(ptnReg, pdwdKeys[ptnReg]);
         int updatePdValSym = getPDvalue(ptnSym, pdwdKeys[keySymPos]);
         int posPdValReg = ptnReg + szGroup;
@@ -562,7 +574,8 @@ public class SolverPDWD extends SolverWD {
             tiles[nextPos] = 0;
             pdwdKeys[posPdValReg] = updatePdValReg;
             pdwdKeys[posPdValSym] = updatePdValSym;
-            updatePrio = recursiveDFS(orgX, orgY, cost, limit - 1, pdValReg, pdValSym, updatePrio);
+            updatePrio = recursiveDFS(orgX, orgY, cost, limit - 1, pdValReg, pdValSym,
+                    updatePrio, swirlKey);
             tiles[nextPos] = tiles[zeroPos];
             tiles[zeroPos] = 0;
             pdwdKeys[posPdValReg] = orgCopy[posPdValReg];

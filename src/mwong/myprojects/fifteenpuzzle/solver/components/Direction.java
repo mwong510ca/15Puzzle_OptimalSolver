@@ -84,35 +84,5 @@ public enum Direction {
             default : return NONE;
         }
     }
-    
-    /**
-     *  Returns the clockwise direction of current direction.
-     *
-     *  @return direction is the clockwise of current direction
-     */
-    public Direction clockwiseDirection() {
-        switch (this) {
-            case RIGHT : return DOWN;
-            case DOWN : return LEFT;
-            case LEFT : return UP;
-            case UP : return RIGHT;
-            default : return NONE;
-        }
-    }
-    
-    /**
-     *  Returns the counterclockwise direction of current direction.
-     *
-     *  @return direction is the counterclockwise of current direction
-     */
-    public Direction counterclockwiseDirection() {
-        switch (this) {
-            case RIGHT : return UP;
-            case DOWN : return RIGHT;
-            case LEFT : return DOWN;
-            case UP : return LEFT;
-            default : return NONE;
-        }
-    }
 }
 

@@ -25,6 +25,13 @@ public class SolverConstants {
     private static final boolean TAG_LINEAR_CONFLICT = true;
     private static final byte END_OF_SEARCH = (byte) (MAX_MOVES + 1);
     private static final Board GOAL_BOARD = new Board(PuzzleConstants.getGoalTiles());
+    private static final int CLOCKWISE_BITS_2 = 0x01;
+    private static final int COUNTERCLOCKWISE_BITS_2 = 0x02;
+    private static final int STRAIGHT_BITS_2 = 0x03;
+    private static final int CLOCKWISE_MAX_5 = 0x155;
+    private static final int COUNTERCLOCKWISE_MAX_4 = 0x00AA;
+    private static final int LAST_SHIFTS_5 = 0x07FF;
+    private static final int LAST_SHIFTS_4 = 0x00FF;
 
     /**
      * Returns the byte value of the puzzle size.
@@ -49,7 +56,7 @@ public class SolverConstants {
      *
      * @return byte value of maximum moves
      */
-    public static final byte getMaxMoves() {
+    protected static final byte getMaxMoves() {
         return MAX_MOVES;
     }
 
@@ -58,7 +65,7 @@ public class SolverConstants {
      *
      * @return byte array of symmetry position
      */
-    public static final byte[] getSymmetryPos() {
+    protected static final byte[] getSymmetryPos() {
         return SYMMETRY_POS;
     }
 
@@ -67,7 +74,7 @@ public class SolverConstants {
      *
      * @return byte array of symmetry value
      */
-    public static final byte[] getSymmetryVal() {
+    protected static final byte[] getSymmetryVal() {
         return SYMMETRY_VAL;
     }
 
@@ -94,7 +101,7 @@ public class SolverConstants {
      *
      * @return boolean value represent the advanced feature
      */
-    public static final boolean isTagSearch() {
+    protected static final boolean isTagSearch() {
         return TAG_SEARCH;
     }
 
@@ -112,7 +119,7 @@ public class SolverConstants {
      *
      * @return byte value of end of search.
      */
-    public static final byte getEndOfSearch() {
+    protected static final byte getEndOfSearch() {
         return END_OF_SEARCH;
     }
 
@@ -123,5 +130,33 @@ public class SolverConstants {
      */
     public static final Board getGoalBoard() {
         return GOAL_BOARD;
+    }
+
+    protected static final int getClockwiseBits2() {
+        return CLOCKWISE_BITS_2;
+    }
+
+    protected static final int getCounterclockwiseBits2() {
+        return COUNTERCLOCKWISE_BITS_2;
+    }
+
+    protected static final int getStraightBits2() {
+        return STRAIGHT_BITS_2;
+    }
+
+    protected static final int getClockwiseMax5() {
+        return CLOCKWISE_MAX_5;
+    }
+
+    protected static final int getCounterclockwiseMax4() {
+        return COUNTERCLOCKWISE_MAX_4;
+    }
+
+    protected static final int getLastShifts5() {
+        return LAST_SHIFTS_5;
+    }
+
+    protected static final int getLastShifts4() {
+        return LAST_SHIFTS_4;
     }
 }

@@ -177,17 +177,17 @@ public class SolverMD extends AbstractSolver {
             if (estimate < endOfSearch) {
                 int startCounter = idaCount++;
                 if (firstMoveIdx == Direction.RIGHT.getValue()) {
-                    lastDepthSummary[firstMoveIdx]
-                            = shiftRight(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio);
+                    lastDepthSummary[firstMoveIdx] = shiftRight(orgX, orgY, zeroPos, zeroSym,
+                            costPlus1, limit, orgPrio, 0);
                 } else if (firstMoveIdx == Direction.DOWN.getValue()) {
-                    lastDepthSummary[firstMoveIdx]
-                            = shiftDown(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio);
+                    lastDepthSummary[firstMoveIdx] = shiftDown(orgX, orgY, zeroPos, zeroSym,
+                            costPlus1, limit, orgPrio, 0);
                 } else if (firstMoveIdx == Direction.LEFT.getValue()) {
-                    lastDepthSummary[firstMoveIdx]
-                            = shiftLeft(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio);
+                    lastDepthSummary[firstMoveIdx] = shiftLeft(orgX, orgY, zeroPos, zeroSym,
+                            costPlus1, limit, orgPrio, 0);
                 } else if (firstMoveIdx == Direction.UP.getValue()) {
-                    lastDepthSummary[firstMoveIdx]
-                            = shiftUp(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio);
+                    lastDepthSummary[firstMoveIdx] = shiftUp(orgX, orgY, zeroPos, zeroSym,
+                            costPlus1, limit, orgPrio, 0);
                 }
                 if (terminated) {
                     return;
@@ -199,7 +199,7 @@ public class SolverMD extends AbstractSolver {
     }
 
     // recursive depth first search until it reach the goal state or timeout
-    private int recursiveDFS(int orgX, int orgY, int cost, int limit, int orgPrio) {
+    private int recursiveDFS(int orgX, int orgY, int cost, int limit, int orgPrio, int swirlKey) {
         idaCount++;
         if (terminated) {
             return endOfSearch;
@@ -233,73 +233,73 @@ public class SolverMD extends AbstractSolver {
         if (prevMove == Direction.RIGHT) {
             // RIGHT
             if (orgX < rowSize - 1) {
-                newEstimate = Math.min(newEstimate,
-                        shiftRight(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio));
+                newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
+                        costPlus1, limit, orgPrio, swirlKey << 2 | strMove));
             }
             if (nonIdentical) {
                 // UP
-                if (orgY > 0) {
-                    newEstimate = Math.min(newEstimate,
-                            shiftUp(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio));
+                if (orgY > 0 && (swirlKey & lastShifts4) != ccwMax4) {
+                    newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
+                            costPlus1, limit, orgPrio, swirlKey << 2 | ccwMove));
                 }
                 // DOWN
-                if (orgY < rowSize - 1) {
-                    newEstimate = Math.min(newEstimate,
-                            shiftDown(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio));
+                if (orgY < rowSize - 1 && (swirlKey & lastShifts5) != cwMax5) {
+                    newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
+                            costPlus1, limit, orgPrio, swirlKey << 2 | cwMove));
                 }
             }
         } else if (prevMove == Direction.DOWN) {
             // DOWN
             if (orgY < rowSize - 1) {
-                newEstimate = Math.min(newEstimate,
-                        shiftDown(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio));
+                newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
+                        costPlus1, limit, orgPrio, swirlKey << 2 | strMove));
             }
             if (nonIdentical) {
                 // LEFT
-                if (orgX > 0) {
-                    newEstimate = Math.min(newEstimate,
-                            shiftLeft(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio));
+                if (orgX > 0 && (swirlKey & lastShifts5) != cwMax5) {
+                    newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
+                            costPlus1, limit, orgPrio, swirlKey << 2 | cwMove));
                 }
                 // RIGHT
-                if (orgX < rowSize - 1) {
-                    newEstimate = Math.min(newEstimate,
-                            shiftRight(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio));
+                if (orgX < rowSize - 1 && (swirlKey & lastShifts4) != ccwMax4) {
+                    newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
+                            costPlus1, limit, orgPrio, swirlKey << 2 | ccwMove));
                 }
             }
         } else if (prevMove == Direction.LEFT) {
             // LEFT
             if (orgX > 0) {
-                newEstimate = Math.min(newEstimate,
-                        shiftLeft(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio));
+                newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
+                        costPlus1, limit, orgPrio, swirlKey << 2 | strMove));
             }
             if (nonIdentical) {
                 // DOWN
-                if (orgY < rowSize - 1) {
-                    newEstimate = Math.min(newEstimate,
-                            shiftDown(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio));
+                if (orgY < rowSize - 1 && (swirlKey & lastShifts4) != ccwMax4) {
+                    newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
+                            costPlus1, limit, orgPrio, swirlKey << 2 | ccwMove));
                 }
                 // UP
-                if (orgY > 0) {
-                    newEstimate = Math.min(newEstimate,
-                            shiftUp(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio));
+                if (orgY > 0 && (swirlKey & lastShifts5) != cwMax5) {
+                    newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
+                            costPlus1, limit, orgPrio, swirlKey << 2 | cwMove));
                 }
             }
         } else if (prevMove == Direction.UP) {
             // UP
             if (orgY > 0) {
-                newEstimate = Math.min(newEstimate,
-                        shiftUp(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio));
+                newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
+                        costPlus1, limit, orgPrio, swirlKey << 2 | strMove));
             }
             if (nonIdentical) {
                 // RIGHT
-                if (orgX < rowSize - 1) {
-                    newEstimate = Math.min(newEstimate,
-                            shiftRight(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio));
+                if (orgX < rowSize - 1 && (swirlKey & lastShifts5) != cwMax5) {
+                    newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
+                            costPlus1, limit, orgPrio, swirlKey << 2 | cwMove));
                 }
                 // LEFT
-                if (orgX > 0) {
-                    newEstimate = Math.min(newEstimate,
-                            shiftLeft(orgX, orgY, zeroPos, zeroSym, costPlus1, limit, orgPrio));
+                if (orgX > 0 && (swirlKey & lastShifts4) != ccwMax4) {
+                    newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
+                            costPlus1, limit, orgPrio, swirlKey << 2 | ccwMove));
                 }
             }
         }
@@ -308,7 +308,7 @@ public class SolverMD extends AbstractSolver {
 
     // shift the space to right
     private int shiftRight(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
-            int orgPrio) {
+            int orgPrio, int swirlKey) {
         if (terminated) {
             return endOfSearch;
         }
@@ -324,12 +324,12 @@ public class SolverMD extends AbstractSolver {
         }
         solutionMove[costPlus1] = Direction.RIGHT;
         return nextMove(orgX + 1, orgY, zeroPos, zeroSym, costPlus1, limit,
-                priority, zeroPos + 1, zeroSym + rowSize);
+                priority, zeroPos + 1, zeroSym + rowSize, swirlKey);
     }
 
     // shift the space to down
     private int shiftDown(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
-            int orgPriority) {
+            int orgPriority, int swirlKey) {
         if (terminated) {
             return endOfSearch;
         }
@@ -345,12 +345,12 @@ public class SolverMD extends AbstractSolver {
         }
         solutionMove[costPlus1] = Direction.DOWN;
         return nextMove(orgX, orgY + 1, zeroPos, zeroSym, costPlus1, limit,
-                priority, zeroPos + rowSize, zeroSym + 1);
+                priority, zeroPos + rowSize, zeroSym + 1, swirlKey);
     }
 
     // shift the space to left
     private int shiftLeft(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
-            int orgPriority) {
+            int orgPriority, int swirlKey) {
         if (terminated) {
             return endOfSearch;
         }
@@ -366,12 +366,12 @@ public class SolverMD extends AbstractSolver {
         }
         solutionMove[costPlus1] = Direction.LEFT;
         return nextMove(orgX - 1, orgY, zeroPos, zeroSym, costPlus1, limit,
-                priority, zeroPos - 1, zeroSym - rowSize);
+                priority, zeroPos - 1, zeroSym - rowSize, swirlKey);
     }
 
     // shift the space to up
     private int shiftUp(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
-            int orgPriority) {
+            int orgPriority, int swirlKey) {
         if (terminated) {
             return endOfSearch;
         }
@@ -387,12 +387,12 @@ public class SolverMD extends AbstractSolver {
         }
         solutionMove[costPlus1] = Direction.UP;
         return nextMove(orgX, orgY - 1, zeroPos, zeroSym, costPlus1, limit,
-                priority, zeroPos - rowSize, zeroSym - 1);
+                priority, zeroPos - rowSize, zeroSym - 1, swirlKey);
     }
 
     // continue to next move if not reach goal state or over limit
     private int nextMove(int orgX, int orgY, int zeroPos, int zeroSym, int cost,
-            int limit, int priority, int nextPos, int nextSym) {
+            int limit, int priority, int nextPos, int nextSym, int swirlKey) {
         int updatePrio = priority;
         if (priority == 0) {
             stopwatch.stop();
@@ -405,7 +405,8 @@ public class SolverMD extends AbstractSolver {
             tiles[nextPos] = 0;
             tilesSym[zeroSym] = tilesSym[nextSym];
             tilesSym[nextSym] = 0;
-            updatePrio = Math.min(updatePrio, recursiveDFS(orgX, orgY, cost, limit - 1, priority));
+            updatePrio = Math.min(updatePrio, recursiveDFS(orgX, orgY, cost, limit - 1,
+                    priority, swirlKey));
             tiles[nextPos] = tiles[zeroPos];
             tiles[zeroPos] = 0;
             tilesSym[nextSym] = tilesSym[zeroSym];

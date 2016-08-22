@@ -39,57 +39,19 @@ import mwong.myprojects.fifteenpuzzle.solver.standard.SolverWDMD;
 
 import java.util.Scanner;
 
-public class ApplicationCompareHeuristic extends AbstractApplication {
+public class ApplicationDemo extends AbstractApplication {
     private final ApplicationType applicationType;
-    private final boolean tagLinearConflict;
     private final boolean tagAdvanced;
-//    private SolverMD solverMd;
-//    private SolverWD solverWd;
-//    private SolverWDMD solverWdMd;
-//    private SolverPDWD solverPdWd555;
-//    private SolverPDWD solverPdWd663;
-//    private SolverPD solverPd78;
-    
-    private SmartSolverMD solverMd;
-    private SmartSolverWD solverWd;
-    private SmartSolverWDMD solverWdMd;
-    private SmartSolverPDWD solverPdWd555;
-    private SmartSolverPDWD solverPdWd663;
     private SmartSolverPD solverPd78;
     private final ReferenceAccumulator refAccumulator;
 
-    public ApplicationCompareHeuristic() {
+    public ApplicationDemo() {
     	super();
-        applicationType = ApplicationType.CompareHeuristic;
-        
+        applicationType = ApplicationType.CompareHeuristic;        
         final boolean messageOff = !ApplicationProperties.isMessageOn();
         final boolean timeoutOff = !ApplicationProperties.isTimeoutOn();
-        tagLinearConflict = ApplicationProperties.isTagLinearConflict();
         tagAdvanced = ApplicationProperties.isTagAdvanced();
         refAccumulator = new ReferenceAccumulator();
-//        refAccumulator = null;
-        
-//        solverMd = new SolverMD();
-        solverMd = new SmartSolverMD(refAccumulator);
-        solverMd.messageSwitch(messageOff);
-
-//        solverWd = new SolverWD();
-        solverWd = new SmartSolverWD(refAccumulator);
-        solverWd.messageSwitch(messageOff);
-
-//        solverWdMd = new SolverWDMD();
-        solverWdMd = new SmartSolverWDMD(refAccumulator);
-        solverWdMd.messageSwitch(messageOff);
-
-//        solverPdWd555 = new SolverPDWD(PatternOptions.Pattern_555);
-        solverPdWd555 = new SmartSolverPDWD(PatternOptions.Pattern_555, refAccumulator);
-        solverPdWd555.messageSwitch(messageOff);
-
-//        solverPdWd663 = new SolverPDWD(PatternOptions.Pattern_663);
-        solverPdWd663 = new SmartSolverPDWD(PatternOptions.Pattern_663, refAccumulator);
-        solverPdWd663.messageSwitch(messageOff);
-
-//        solverPd78 = new SolverPD(PatternOptions.Pattern_78);
         solverPd78 = new SmartSolverPD(PatternOptions.Pattern_78, refAccumulator);
         solverPd78.timeoutSwitch(timeoutOff);
         solverPd78.messageSwitch(messageOff);
@@ -177,19 +139,8 @@ public class ApplicationCompareHeuristic extends AbstractApplication {
                 System.out.print("\t\tEstimate\tTime\t\tMinimum Moves\tNodes generated");
                 
                 solvePuzzle(solverPd78, board);
-                /*
-                solvePuzzle(solverPdWd663, board);
-                solvePuzzle(solverPdWd555, board);
-                solvePuzzle(solverWdMd, board);
-                solvePuzzle(solverWd, board);
-                */
-                solverMd.linearConflictSwitch(tagLinearConflict);
-                solvePuzzle(solverMd, board);
-                solverMd.linearConflictSwitch(!tagLinearConflict);
-                solvePuzzle(solverMd, board);
-				
                 // Notes: updateLastSearch is optional.
-                //refAccumulator.updateLastSearch(solverPd78);
+                refAccumulator.updateLastSearch(solverPd78);
             } else {
                 System.out.println("The board is unsolvable, try again!");
             }

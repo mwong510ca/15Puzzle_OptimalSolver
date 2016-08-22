@@ -153,16 +153,16 @@ public class SolverWDMD extends SolverWD {
                 int startCounter = idaCount++;
                 if (firstMoveIdx == Direction.RIGHT.getValue()) {
                     lastDepthSummary[firstMoveIdx] = shiftRight(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV);
+                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV, 0);
                 } else if (firstMoveIdx == Direction.DOWN.getValue()) {
                     lastDepthSummary[firstMoveIdx] = shiftDown(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV);
+                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV, 0);
                 } else if (firstMoveIdx == Direction.LEFT.getValue()) {
                     lastDepthSummary[firstMoveIdx] = shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV);
+                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV, 0);
                 } else if (firstMoveIdx == Direction.UP.getValue()) {
                     lastDepthSummary[firstMoveIdx] = shiftUp(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV);
+                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV, 0);
                 }
                 lastDepthSummary[firstMoveIdx + rowSize] = idaCount - startCounter;
                 estimate1stMove[firstMoveIdx] = endOfSearch;
@@ -172,7 +172,7 @@ public class SolverWDMD extends SolverWD {
 
     // recursive depth first search until it reach the goal state or timeout
     private int recursiveDFS(int orgX, int orgY, int cost, int limit,
-            int orgMDLC, int idxH, int idxV, int valH, int valV) {
+            int orgMDLC, int idxH, int idxV, int valH, int valV, int swirlKey) {
         idaCount++;
         if (terminated) {
             return endOfSearch;
@@ -207,72 +207,84 @@ public class SolverWDMD extends SolverWD {
             // RIGHT
             if (orgX < rowSize - 1) {
                 newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgMDLC, idxH, idxV, valH, valV));
+                        costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
+                        swirlKey << 2 | strMove));
             }
             if (nonIdentical) {
                 // UP
-                if (orgY > 0) {
+                if (orgY > 0 && (swirlKey & lastShifts4) != ccwMax4) {
                     newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV));
+                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
+                            swirlKey << 2 | ccwMove));
                 }
                 // DOWN
-                if (orgY < rowSize - 1) {
+                if (orgY < rowSize - 1 && (swirlKey & lastShifts5) != cwMax5) {
                     newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV));
+                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
+                            swirlKey << 2 | cwMove));
                 }
             }
         } else if (prevMove == Direction.DOWN) {
             // DOWN
             if (orgY < rowSize - 1) {
                 newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgMDLC, idxH, idxV, valH, valV));
+                        costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
+                        swirlKey << 2 | strMove));
             }
             if (nonIdentical) {
                 // LEFT
-                if (orgX > 0) {
+                if (orgX > 0 && (swirlKey & lastShifts5) != cwMax5) {
                     newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV));
+                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
+                            swirlKey << 2 | cwMove));
                 }
                 // RIGHT
-                if (orgX < rowSize - 1) {
+                if (orgX < rowSize - 1 && (swirlKey & lastShifts4) != ccwMax4) {
                     newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV));
+                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
+                            swirlKey << 2 | ccwMove));
                 }
             }
         } else if (prevMove == Direction.LEFT) {
             // LEFT
             if (orgX > 0) {
                 newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgMDLC, idxH, idxV, valH, valV));
+                        costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
+                        swirlKey << 2 | strMove));
             }
             if (nonIdentical) {
                 // DOWN
-                if (orgY < rowSize - 1) {
+                if (orgY < rowSize - 1 && (swirlKey & lastShifts4) != ccwMax4) {
                     newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV));
+                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
+                            swirlKey << 2 | ccwMove));
                 }
                 // UP
-                if (orgY > 0) {
+                if (orgY > 0 && (swirlKey & lastShifts5) != cwMax5) {
                     newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV));
+                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
+                            swirlKey << 2 | cwMove));
                 }
             }
         } else if (prevMove == Direction.UP) {
             // UP
             if (orgY > 0) {
                 newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgMDLC, idxH, idxV, valH, valV));
+                        costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
+                        swirlKey << 2 | strMove));
             }
             if (nonIdentical) {
                 // RIGHT
-                if (orgX < rowSize - 1) {
+                if (orgX < rowSize - 1 && (swirlKey & lastShifts5) != cwMax5) {
                     newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV));
+                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
+                            swirlKey << 2 | cwMove));
                 }
                 // LEFT
-                if (orgX > 0) {
+                if (orgX > 0 && (swirlKey & lastShifts4) != ccwMax4) {
                     newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV));
+                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
+                            swirlKey << 2 | ccwMove));
                 }
             }
         }
@@ -281,7 +293,7 @@ public class SolverWDMD extends SolverWD {
 
     // shift the space to right
     private int shiftRight(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
-            int orgMDLC, int idxH, int idxV, int valH, int valV) {
+            int orgMDLC, int idxH, int idxV, int valH, int valV, int swirlKey) {
         if (terminated) {
             return endOfSearch;
         }
@@ -304,7 +316,7 @@ public class SolverWDMD extends SolverWD {
                 solutionMove[costPlus1] = Direction.RIGHT;
                 return newEstimate = Math.min(newEstimate, nextMove(orgX + 1, orgY,
                         zeroPos, zeroSym, costPlus1, limit, priorityMDLC,
-                        zeroPos + 1, zeroSym + rowSize, idxH, newWdIdx, valH, newWdVal));
+                        zeroPos + 1, zeroSym + rowSize, idxH, newWdIdx, valH, newWdVal, swirlKey));
             }
             return priorityMDLC;
         }
@@ -313,7 +325,7 @@ public class SolverWDMD extends SolverWD {
 
     // shift the space to down
     private int shiftDown(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
-            int orgMDLC, int idxH, int idxV, int valH, int valV) {
+            int orgMDLC, int idxH, int idxV, int valH, int valV, int swirlKey) {
         if (terminated) {
             return endOfSearch;
         }
@@ -336,7 +348,7 @@ public class SolverWDMD extends SolverWD {
                 solutionMove[costPlus1] = Direction.DOWN;
                 return newEstimate = Math.min(newEstimate, nextMove(orgX, orgY + 1,
                         zeroPos, zeroSym, costPlus1, limit, priorityMDLC,
-                        zeroPos + rowSize, zeroSym + 1, newWdIdx, idxV, newWdVal, valV));
+                        zeroPos + rowSize, zeroSym + 1, newWdIdx, idxV, newWdVal, valV, swirlKey));
             }
             return priorityMDLC;
         }
@@ -345,7 +357,7 @@ public class SolverWDMD extends SolverWD {
 
     // shift the space to left
     private int shiftLeft(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
-            int orgMDLC, int idxH, int idxV, int valH, int valV) {
+            int orgMDLC, int idxH, int idxV, int valH, int valV, int swirlKey) {
         if (terminated) {
             return endOfSearch;
         }
@@ -368,7 +380,7 @@ public class SolverWDMD extends SolverWD {
                 solutionMove[costPlus1] = Direction.LEFT;
                 return newEstimate = Math.min(newEstimate, nextMove(orgX - 1, orgY,
                         zeroPos, zeroSym, costPlus1, limit, priorityMDLC,
-                        zeroPos - 1, zeroSym - rowSize, idxH, newWdIdx, valH, newWdVal));
+                        zeroPos - 1, zeroSym - rowSize, idxH, newWdIdx, valH, newWdVal, swirlKey));
             }
             return priorityMDLC;
         }
@@ -377,7 +389,7 @@ public class SolverWDMD extends SolverWD {
 
     // shift the space to up
     private int shiftUp(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
-            int orgMDLC, int idxH, int idxV, int valH, int valV) {
+            int orgMDLC, int idxH, int idxV, int valH, int valV, int swirlKey) {
         if (terminated) {
             return endOfSearch;
         }
@@ -400,7 +412,7 @@ public class SolverWDMD extends SolverWD {
                 solutionMove[costPlus1] = Direction.UP;
                 return newEstimate = Math.min(newEstimate, nextMove(orgX, orgY - 1,
                         zeroPos, zeroSym, costPlus1, limit, priorityMDLC,
-                        zeroPos - rowSize, zeroSym - 1, newWdIdx, idxV, newWdVal, valV));
+                        zeroPos - rowSize, zeroSym - 1, newWdIdx, idxV, newWdVal, valV, swirlKey));
             }
             return priorityMDLC;
         }
@@ -420,13 +432,13 @@ public class SolverWDMD extends SolverWD {
     // continue to next move if not reach goal state or over limit
     private int nextMove(int orgX, int orgY, int zeroPos, int zeroSym, int cost,
             int limit, int priority, int nextPos, int nextSym, int idxH, int idxV,
-            int valH, int valV) {
+            int valH, int valV, int swirlKey) {
         tiles[zeroPos] = tiles[nextPos];
         tiles[nextPos] = 0;
         tilesSym[zeroSym] = tilesSym[nextSym];
         tilesSym[nextSym] = 0;
-        final int updatePrio
-                = recursiveDFS(orgX, orgY, cost, limit - 1, priority, idxH, idxV, valH, valV);
+        final int updatePrio = recursiveDFS(orgX, orgY, cost, limit - 1, priority,
+                idxH, idxV, valH, valV, swirlKey);
         tiles[nextPos] = tiles[zeroPos];
         tiles[zeroPos] = 0;
         tilesSym[nextSym] = tilesSym[zeroSym];

@@ -1,7 +1,11 @@
 package mwong.myprojects.fifteenpuzzle;
 
+import mwong.myprojects.fifteenpuzzle.console.AbstractApplication;
 import mwong.myprojects.fifteenpuzzle.console.ApplicationCompareHeuristic;
+import mwong.myprojects.fifteenpuzzle.console.ApplicationCustomPattern;
+import mwong.myprojects.fifteenpuzzle.console.ApplicationDemo;
 import mwong.myprojects.fifteenpuzzle.console.ApplicationSolver;
+import mwong.myprojects.fifteenpuzzle.console.ApplicationSolverStats;
 
 class ApplicationRun {
     /**
@@ -12,8 +16,18 @@ class ApplicationRun {
      *  @param args standard argument main function
      */
     public static void main(String[] args) {
-    	ApplicationCompareHeuristic app = new ApplicationCompareHeuristic();
-    	//ApplicationSolver app = new ApplicationSolver();
+    	AbstractApplication app = null;
+    	if (args.length == 0) {
+    		app = new ApplicationDemo();            
+    	} else {
+        	switch (args[0].charAt(0)) {
+        	case '1' : app = new ApplicationSolver(); break;
+        	case '2' : app = new ApplicationCompareHeuristic(); break;
+        	case '3' : app = new ApplicationCustomPattern(); break;
+        	case '4' : app = new ApplicationSolverStats(); break;    		
+        	}
+    	}
+        //ApplicationSolver app = new ApplicationSolver();
         app.run();
     }
 }

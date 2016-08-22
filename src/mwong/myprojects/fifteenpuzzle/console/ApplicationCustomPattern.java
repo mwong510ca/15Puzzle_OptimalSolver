@@ -20,17 +20,15 @@
 
 package mwong.myprojects.fifteenpuzzle.console;
 
-import mwong.myprojects.fifteenpuzzle.solver.Solver;
-import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
-import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
 import mwong.myprojects.fifteenpuzzle.console.ApplicationType;
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
+import mwong.myprojects.fifteenpuzzle.solver.Solver;
+import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
+import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPD;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternConstants;
-import mwong.myprojects.fifteenpuzzle.solver.components.PatternElement;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPD;
 
 import java.util.Scanner;
 

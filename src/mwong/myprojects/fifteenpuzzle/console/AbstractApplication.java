@@ -1,12 +1,12 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
-import java.util.Scanner;
-
+import mwong.myprojects.fifteenpuzzle.solver.Solver;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
-import mwong.myprojects.fifteenpuzzle.solver.Solver;
 
-class AbstractApplication implements Application {
+import java.util.Scanner;
+
+public abstract class AbstractApplication implements Application {
 	protected Scanner scanner;
 	protected final int puzzleSize;
 	
@@ -14,6 +14,7 @@ class AbstractApplication implements Application {
 		puzzleSize = ApplicationProperties.getPuzzleSize();
 	}
 	
+	public abstract void run();
     /**
      *  Print solver heading of given ApplicationType.
      */	

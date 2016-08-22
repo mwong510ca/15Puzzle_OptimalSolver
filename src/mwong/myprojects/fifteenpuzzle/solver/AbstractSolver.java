@@ -54,6 +54,14 @@ public abstract class AbstractSolver implements Solver {
     protected byte priorityAdvanced;
     protected int[] lastDepthSummary;
     protected Stopwatch stopwatch;
+    protected int cwMove;
+    protected int ccwMove;
+    protected int strMove;
+    protected int cwMax5;
+    protected int ccwMax4;
+    protected int lastShifts5;
+    protected int lastShifts4;
+
     // search results
     protected byte steps;
     protected int searchDepth;
@@ -80,6 +88,13 @@ public abstract class AbstractSolver implements Solver {
         symmetryPos = SolverConstants.getSymmetryPos();
         symmetryVal = SolverConstants.getSymmetryVal();
         goalBoard = SolverConstants.getGoalBoard();
+        cwMove = SolverConstants.getClockwiseBits2();
+        ccwMove = SolverConstants.getCounterclockwiseBits2();
+        strMove = SolverConstants.getStraightBits2();
+        cwMax5 = SolverConstants.getClockwiseMax5();
+        ccwMax4 = SolverConstants.getCounterclockwiseMax4();
+        lastShifts5 = SolverConstants.getLastShifts5();
+        lastShifts4 = SolverConstants.getLastShifts4();
 
         // initialize default setting
         lastBoard = goalBoard;
@@ -228,8 +243,7 @@ public abstract class AbstractSolver implements Solver {
      */
     @Override
     public byte heuristicAdvanced(Board board) {
-    	return heuristicStandard(board);
-        //throw new UnsupportedOperationException("Advanced version currently unavailable.");
+        return heuristicStandard(board);
     }
 
     /**
