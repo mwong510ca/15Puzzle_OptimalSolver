@@ -17,6 +17,9 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 public class SolverWDMD extends SolverWD {
     protected byte mdlcValue;
 
+    /**
+     * Initializes SolverWDMD object.
+     */
     public SolverWDMD() {
         super();
         inUseHeuristic = HeuristicOptions.WDMD;
@@ -207,84 +210,80 @@ public class SolverWDMD extends SolverWD {
             // RIGHT
             if (orgX < rowSize - 1) {
                 newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
-                        swirlKey << 2 | strMove));
+                        costPlus1, limit, orgMDLC, idxH, idxV, valH, valV, 0));
             }
             if (nonIdentical) {
                 // UP
-                if (orgY > 0 && (swirlKey & lastShifts4) != ccwMax4) {
+                if (orgY > 0 && isValidCounterClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
-                            swirlKey << 2 | ccwMove));
+                            swirlKey << 2 | Rotation.CCW.getValue()));
                 }
                 // DOWN
-                if (orgY < rowSize - 1 && (swirlKey & lastShifts5) != cwMax5) {
+                if (orgY < rowSize - 1 && isValidClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
-                            swirlKey << 2 | cwMove));
+                            swirlKey << 2 | Rotation.CW.getValue()));
                 }
             }
         } else if (prevMove == Direction.DOWN) {
             // DOWN
             if (orgY < rowSize - 1) {
                 newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
-                        swirlKey << 2 | strMove));
+                        costPlus1, limit, orgMDLC, idxH, idxV, valH, valV, 0));
             }
             if (nonIdentical) {
                 // LEFT
-                if (orgX > 0 && (swirlKey & lastShifts5) != cwMax5) {
+                if (orgX > 0 && isValidClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
-                            swirlKey << 2 | cwMove));
+                            swirlKey << 2 | Rotation.CW.getValue()));
                 }
                 // RIGHT
-                if (orgX < rowSize - 1 && (swirlKey & lastShifts4) != ccwMax4) {
+                if (orgX < rowSize - 1 && isValidCounterClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
-                            swirlKey << 2 | ccwMove));
+                            swirlKey << 2 | Rotation.CCW.getValue()));
                 }
             }
         } else if (prevMove == Direction.LEFT) {
             // LEFT
             if (orgX > 0) {
                 newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
-                        swirlKey << 2 | strMove));
+                        costPlus1, limit, orgMDLC, idxH, idxV, valH, valV, 0));
             }
             if (nonIdentical) {
                 // DOWN
-                if (orgY < rowSize - 1 && (swirlKey & lastShifts4) != ccwMax4) {
+                if (orgY < rowSize - 1 && isValidCounterClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
-                            swirlKey << 2 | ccwMove));
+                            swirlKey << 2 | Rotation.CCW.getValue()));
                 }
                 // UP
-                if (orgY > 0 && (swirlKey & lastShifts5) != cwMax5) {
+                if (orgY > 0 && isValidClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
-                            swirlKey << 2 | cwMove));
+                            swirlKey << 2 | Rotation.CW.getValue()));
                 }
             }
         } else if (prevMove == Direction.UP) {
             // UP
             if (orgY > 0) {
                 newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
-                        swirlKey << 2 | strMove));
+                        costPlus1, limit, orgMDLC, idxH, idxV, valH, valV, 0));
             }
             if (nonIdentical) {
                 // RIGHT
-                if (orgX < rowSize - 1 && (swirlKey & lastShifts5) != cwMax5) {
+                if (orgX < rowSize - 1 && isValidClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
-                            swirlKey << 2 | cwMove));
+                            swirlKey << 2 | Rotation.CW.getValue()));
                 }
                 // LEFT
-                if (orgX > 0 && (swirlKey & lastShifts4) != ccwMax4) {
+                if (orgX > 0 && isValidCounterClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgMDLC, idxH, idxV, valH, valV,
-                            swirlKey << 2 | ccwMove));
+                            swirlKey << 2 | Rotation.CCW.getValue()));
                 }
             }
         }

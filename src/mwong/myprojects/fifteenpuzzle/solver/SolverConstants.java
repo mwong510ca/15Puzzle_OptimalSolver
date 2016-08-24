@@ -1,5 +1,6 @@
 package mwong.myprojects.fifteenpuzzle.solver;
 
+import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceConstants;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleConstants;
 
@@ -25,13 +26,12 @@ public class SolverConstants {
     private static final boolean TAG_LINEAR_CONFLICT = true;
     private static final byte END_OF_SEARCH = (byte) (MAX_MOVES + 1);
     private static final Board GOAL_BOARD = new Board(PuzzleConstants.getGoalTiles());
-    private static final int CLOCKWISE_BITS_2 = 0x01;
-    private static final int COUNTERCLOCKWISE_BITS_2 = 0x02;
-    private static final int STRAIGHT_BITS_2 = 0x03;
-    private static final int CLOCKWISE_MAX_5 = 0x155;
-    private static final int COUNTERCLOCKWISE_MAX_4 = 0x00AA;
-    private static final int LAST_SHIFTS_5 = 0x07FF;
-    private static final int LAST_SHIFTS_4 = 0x00FF;
+    // SmartSolver constants
+    private static final byte[] REFERENCE_LOOKUP = ReferenceConstants.getReferenceLookup();
+    private static final byte[] REFERENCE_GROUP = ReferenceConstants.getReferenceGroup();
+    private static final boolean SYMMETRY = ReferenceConstants.isSymmetry();
+    private static final byte NUM_PARTIAL_MOVES = ReferenceConstants.getNumPartialMoves();
+    private static final byte REFERENCE_CUTOFF = 30;
 
     /**
      * Returns the byte value of the puzzle size.
@@ -132,31 +132,68 @@ public class SolverConstants {
         return GOAL_BOARD;
     }
 
-    protected static final int getClockwiseBits2() {
-        return CLOCKWISE_BITS_2;
+    /**
+     * Returns the byte array of the reference lookup key.
+     *
+     * @return byte array of the reference lookup key
+     */
+    protected static final byte[] getReferenceLookup() {
+        return REFERENCE_LOOKUP;
     }
 
-    protected static final int getCounterclockwiseBits2() {
-        return COUNTERCLOCKWISE_BITS_2;
+    /**
+     * Returns the byte value of the reference lookup key of the given zero position.
+     *
+     * @param zeroPos the given zero position
+     * @return byte value of the reference lookup key of the given zero position
+     */
+    public static final byte getReferenceLookup(int zeroPos) {
+        return REFERENCE_LOOKUP[zeroPos];
     }
 
-    protected static final int getStraightBits2() {
-        return STRAIGHT_BITS_2;
+    /**
+     * Returns the byte array of the reference group.
+     *
+     * @return byte array of the reference group
+     */
+    protected static final byte[] getReferenceGroup() {
+        return REFERENCE_GROUP;
     }
 
-    protected static final int getClockwiseMax5() {
-        return CLOCKWISE_MAX_5;
+    /**
+     * Returns the byte value of the reference group of the given zero position.
+     *
+     * @param zeroPos the given zero position
+     * @return byte value of the reference group of the given zero position
+     */
+    public static final byte getReferenceGroup(int zeroPos) {
+        return REFERENCE_GROUP[zeroPos];
     }
 
-    protected static final int getCounterclockwiseMax4() {
-        return COUNTERCLOCKWISE_MAX_4;
+    /**
+     * Returns the boolean represent the symmetry of the reference board.
+     *
+     * @return boolean represent the symmetry of the reference board
+     */
+    public static final boolean isSymmetry() {
+        return SYMMETRY;
     }
 
-    protected static final int getLastShifts5() {
-        return LAST_SHIFTS_5;
+    /**
+     * Returns the byte value of the number of partial solution.
+     *
+     * @return byte value of the number of partial solution
+     */
+    public static final byte getNumPartialMoves() {
+        return NUM_PARTIAL_MOVES;
     }
 
-    protected static final int getLastShifts4() {
-        return LAST_SHIFTS_4;
+    /**
+     * Returns the byte value of the cutoff estimate for advanced search.
+     *
+     * @return byte value of the cutoff estimate for advanced search
+     */
+    public static final byte getReferenceCutoff() {
+        return REFERENCE_CUTOFF;
     }
 }
