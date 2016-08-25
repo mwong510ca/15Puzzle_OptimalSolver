@@ -1,4 +1,6 @@
-###Advanced Version - Use a reference board to boost the initial estimate closer to solution moves:  
+###Advanced Version  
+Use a reference board to boost the initial estimate closer to solution moves:  
+
 1.  If the initial estimate is way off the optimal solution, it waste a lot of time to scan all the boards until it reach the solution depth.  Boost the initial estimate will reduce the search time.
 
   The maximum moves of 15 puzzle is 80, and there 17 boards of it.  Let's take a start point of the 80 move board (as below) and the end point is goal state.  The distance between them is 80.  
@@ -29,32 +31,36 @@
     14 10  6  5    14 10  6  5     2  6  4  8    0 13  9 15 11 14 10  7 12  1  6  8  3  5  2  4
      9 13  2  1     9 13  2  1     1  5  3  0</pre>
 
-3.  I have divide the board in 4 groups.  For each entry, it will store 4 boards per group.
+  I divided the board in 4 groups.  For each entry, it will store 4 boards per group.
     <pre>
-        1 1 2 2     Group 1:   0 1 x x    1 0 x x    1 2 x x    1 2 x x   
-        1 1 2 2                3 2 x x    3 2 x x    3 0 x x    0 3 x x
+        1 1 2 2      Group     0 1 x x    1 0 x x    1 2 x x    1 2 x x   
+        1 1 2 2      idx 2:    3 2 x x    3 2 x x    3 0 x x    0 3 x x
         3 3 4 4                x x x x    x x x x    x x x x    x x x x
         3 3 4 4                x x x x    x x x x    x x x x    x x x x  
 
-                    Group 2:   x x 3 0    x x 3 1    x x 3 1    x x 0 1
-                               x x 2 1    x x 2 0    x x 0 2    x x 3 2
+                     Group     x x 3 0    x x 3 1    x x 3 1    x x 0 1
+                     idx 1:    x x 2 1    x x 2 0    x x 0 2    x x 3 2
                                x x x x    x x x x    x x x x    x x x x
                                x x x x    x x x x    x x x x    x x x x  
                                
-                    Group 3:   Transfer to symmetry board and store as Group 1  
-                    
-                    Group 4:   x x x x    x x x x    x x x x    x x x x
+                     Group     Transfer to symmetry board and store as Group 1   
+                     idx 3:    x x x x    x x x x    x x x x    x x x x
                                x x x x    x x x x    x x x x    x x x x
+                               3 2 x x    3 2 x x    3 0 x x    0 3 x x
+                               0 1 x x    1 0 x x    1 2 x x    1 2 x x 
+
+                     Group     x x x x    x x x x    x x x x    x x x x
+                     idx 0:    x x x x    x x x x    x x x x    x x x x
                                x x 2 3    x x 2 3    x x 0 3    x x 3 0
                                x x 1 0    x x 0 1    x x 2 1    x x 2 1</pre>
                                
     If the board matched exactly the same these board, it will use pre-stored value.  Otherwise, only the corner zero will be use for advanced estimate calculation.
 
-4.  Also store the partial solution.  
+3.  Also store the partial solution.  
   Even the estimate matched with the solution moves, some board still take over 20 seconds to find the solution.  Such as the 68 moves example board above.  
   In order to store these value, there boards has been solved.  In addition to store it's solution moves, it also store the first eight directions of moves.  It will reduce the searching from 68 limit to 60 limit.  It's good enough to solve the puzzle within a second.  It is not necessary to store the full path.  It only take 16 bits (2 bits per direction x 8) for each partial solution.
 
-5.  Automatcally save the board after search by pattern database 7-8.  
+4.  Automatcally save the board after search by pattern database 7-8.  
   I set the cutoff to 10 seconds with 5% buffer, which will make all puzzles solve within 10 seconds eventually.  For any puzzle that take more than 9.5 seconds to solve, the system will automatically store this board as reference board.  (A few line of code added in SolverPD.java)
   * over 10 seconds using Original Search, it will compare original estimate and advanced estimate.
     If they are the same, store the borad.
