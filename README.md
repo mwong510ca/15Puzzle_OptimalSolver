@@ -34,7 +34,7 @@ I also added starting ordering detection to increase the possibility to solve fi
 Read [Solver Enhancement - standard version] for details.  
 
 ### Enhancement - self learning feature
-45 seconds seems pretty good, but I still not satify with it.  The maximum estimate is 68 and the maximum moves is 80, so the interactive deepening A* has to loop through all nodes that will not have solution before it reach the solution depth.  If I can boost the estimate to the solution depth, it will drop the search time dreamically.   
+45 seconds seems pretty good, but I still not satify with it.  The maximum estimate is 68 and the maximum moves is 80, so the [interactive deepening A*] has to loop through all nodes that will not have solution before it reach the solution depth.  If I can boost the estimate to the solution depth, it will drop the search time dreamically.   
 
 I started with 17 known 80 moves puzzles as reference boards to boost the estimate over 68.  It works but still missed a lot.  I applied the same concept to any puzzle that takes over 10 seconds to solve, the solver with pattern database 7-8 will automatically stored it as reference board.  Also stored first 8 solution moves to boost the search time within a second.  
 
@@ -58,6 +58,7 @@ Notes:  If you want to try my solver application using static 7-8 pattern, highl
 [15 slide puzzle]: https://en.wikipedia.org/wiki/15_puzzle
 [8puzzle]: http://algs4.cs.princeton.edu/24pq/
 [A* algorithm]: https://en.wikipedia.org/wiki/A*_search_algorithm
+[interactive deepening A*]: https://en.wikipedia.org/wiki/Iterative_deepening_A*
 [Pattern database]: https://www.aaai.org/Papers/JAIR/Vol22/JAIR-2209.pdf
 [symmetry reduction (Section 4)]: https://heuristicswiki.wikispaces.com/file/view/Searching+with+pattern+database.pdf
 [Herbert Kociemba's]: http://kociemba.org/fifteen/fifteensolver.html
