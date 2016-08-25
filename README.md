@@ -1,5 +1,7 @@
-Preface: I finished the programming assignment of [8puzzle] by Princeton University on Coursera.  It use priority queue to implement [A* algorithm] with Manhattan distance .  But it is not able to solve all boards of [15 slide puzzle] due to out of memory.  So I try to build an optimal solver for 15 puzzle.
+### Preface
+I finished the programming assignment of [8puzzle] by Princeton University on Coursera.  It use priority queue to implement [A* algorithm] with Manhattan distance .  But it is not able to solve all boards of [15 slide puzzle] due to out of memory.  So I try to build an optimal solver for 15 puzzle.
 
+### 15 puzzle optimal solver using additive pattern database 7-8
 I search the information on internet, I found the [Pattern database].  The concept is clear, but I can't figure out how transfer to a program.  I also found the [Walking Distance by Ken'ichiro Takahashi], so I try that first.  I read his codes and write my version in java.  It improve my 15 puzzle solver, but it can solve up to 70 moves in resonable time.  So I go back to the pattern database.  
 
 Unlike the 8 puzzle, full pattern database for 15 slide puzzle is too large, I have to use additive pattern database.  The most common statically partitioned additive pattern databases for 15 puzzle are 5-5-5, 6-6-3 or 7-8.  Generate 5-5-5 or 6-6-3 patterns are straight forward, but 7-8 pattern is challenge due to memory issue again.  For a group of 8 tiles, there are 518,918,400 (40320 tiles combinations x 12870 group 8 pattern) patterns.  Since [Herbert Kociemba's] can build the 7-8 pattern in c++, I may able to build my version in java.
@@ -7,6 +9,7 @@ Unlike the 8 puzzle, full pattern database for 15 slide puzzle is too large, I h
 While I learn about the Walking Distance by Ken'ichiro Takahashi, his techinque inspire me to figure out a way to generate the 7-8 pattern with minimum 2GB ram and takes about 2.5 - 3 hours.  First separate the tile and format components, and generate the links in [PatternElement.java].  Then I use these components to generate the patterns in [PatternDatabase.java].  
 Generation time:  [pattern 5-5-5] 15 seconds, [pattern 6-6-3] 2 minutes, [pattern 7-8] 2.5 hours.
 
+### Enhancement - optizimation
 After I finished my 15 puzzle optimal solver, most of the puzzles are solved within a second.  Only a few puzzles still take about 2 minutes to solve. 
 <pre>
              0 15  8  3     6  5  9 13    11  5  9 13     0 15  8 13     0 15  8 13     0 11  9 13
@@ -30,6 +33,7 @@ Nodes:        177653815       89470609       20109676        8436494        7693
 I also added starting ordering detection to increase the possibility to solve first move depth increment.  The starting order may vary each depth instead of hard coded the fixed order such as Right -> Down -> Left -> Up.  
 Read [Solver Enhancement - standard version] for details.  
 
+### Enhancement - self learning feature
 45 seconds seems pretty good, but I still not satify with it.  The maximum estimate is 68 and the maximum moves is 80, so the depth first search has too loop through all nodes that will not have solution before it reach the solution depth.  If I can boost the estimate to the solution depth, it will drop the search time dreamically.   
 I started with 17 (80 moves) puzzles as reference boards to boost the estimate over 68.  It works but still missed a lot.  I applied the same concept to any puzzle that takes over 10 seconds to solve, the solver with pattern database 7-8 will automatically stored it as reference board.  Also stored first 8 solution moves, it boost the search time within a second.  
 Now the solver has the self learning feature.   When it accumulate enough reference boards, it will solve any puzzle within 10 seconds (the preset cutoff setting) eventually.  
