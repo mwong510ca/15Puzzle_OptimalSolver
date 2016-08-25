@@ -51,7 +51,7 @@
                 
   I only need one path to stage 6.  At stage 5, I will take 4 clockwise turns and eliminate 6 counterclockwise turns.  Same for stage 7, I will take 4 counterwise turns and eliminate 6 clockwise turns. And so on...  
   
-  So I will limit to maximum 5 clockwise turns and maximum 4 counterclockwise truns to eliminate these re-visited boards.
+  So I set the maximum limit of 5 clockwise turns and maximum limit of  4 counterclockwise truns to eliminate these re-visited boards.
 
 ### 3. Starting order detection:  
   Instead of using the hard code order Right -> Down -> Left -> Up, determine the starting order during the depth expansion based on total number of nodes expended from previous depth.  When it hit the solution depth, it increase the possibility to solve the puzzle by the first move instead of loop to the last one.  
