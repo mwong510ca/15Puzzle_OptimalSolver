@@ -9,19 +9,19 @@
          5  6  7  8       5  6  7  8   ->    2  6 10 14        4  5  6  7  ->   1  5  9 13
          9 10 11 12       9 10 11 12         3  7 11 15        8  9 10 11       2  6 10 14
         13 14 15  0      13 14 15  0         4  8 12  0       12 13 14 15       3  7 11 15  
-
         With these converstion:
          1  2  3  0       1  2  3  4         6  1 10 14       6  2  3  4
          5  6  7  4  ->   5  6  7  8         5  2  7  8  ->   1  5  9 13
          9 10 11  8       9 10 11 12         9  3 11 12       7 10 11 12
         13 14 15 12       0 13 14 15        13  4 15  0       8 14 15  0</pre>
-
+        
+        
   But some boards will be exactly the same after these conversion, such as goal state.  Or swap each pair tile with these conversion tables.  I called it "identical symmetry board".
   <pre>
          0  A  B  C
          A  5  D  E      0 will be land on position 0, 5, 10 or 15 only.
          B  D 10  F      If it land on corner (0 or 15), it has 2 moves.
-         C  E  F 15      It it land on center (5 or 10), it has 4 moves. </pre>
+         C  E  F 15      It it land on center (5 or 10), it has 4 moves. </pre>  
          
   * If it cannot find a solution by shift right, it cannot find a solution by shift down either.  Same for shift left and shift up pairs.  If it starts from the identical symmetry board, it will reduce the expansion by 50%.  
   * If it shift to the corner, the serach is done.  Such as left shift to position 0:  
@@ -36,19 +36,19 @@
 ### 2. Circular reduction
   While it keep making clockwise(cw) turns or counterclockwise(ccw) turns only, after 12 moves it will back to original stated.  And at the 6th turns, bothe clockwise turns and counterclockwise turns will end at the same state.
   <pre>
-   0 1 x x      1 0 x x      1 2 x x      1 2 x x      0 2 x x      2 0 x x      2 3 x x 
+   0 1 x x      1 0 x x      1 2 x x      1 2 x x      0 2 x x      2 0 x x      2 3 x x
    3 2 x x      3 2 x x      3 0 x x      0 3 x x      1 3 x x      1 3 x x      1 0 x x
-   x x x x      x x x x      x x x x      x x x x      x x x x      x x x x      x x x x    
-   x x x x      x x x x      x x x x      x x x x      x x x x      x x x x      x x x x    
+   x x x x      x x x x      x x x x      x x x x      x x x x      x x x x      x x x x
+   x x x x      x x x x      x x x x      x x x x      x x x x      x x x x      x x x x
    original     1st move     cw:   1      cw:   2      cw:   3      cw:   4      cw:   5
-   ccw: 11      ccw: 10      ccw:  9      ccw:  8      ccw:  7      ccw:  6      ccw:  5
-
-                2 3 x x      0 3 x x      3 0 x x      3 1 x x      3 1 x x      0 1 x x 
+   ccw: 11      ccw: 10      ccw:  9      ccw:  8      ccw:  7      ccw:  6      ccw:  5  
+                2 3 x x      0 3 x x      3 0 x x      3 1 x x      3 1 x x      0 1 x x
                 0 1 x x      2 1 x x      2 1 x x      2 0 x x      0 2 x x      3 2 x x
-                x x x x      x x x x      x x x x      x x x x      x x x x      x x x x    
-                x x x x      x x x x      x x x x      x x x x      x x x x      x x x x    
+                x x x x      x x x x      x x x x      x x x x      x x x x      x x x x
+                x x x x      x x x x      x x x x      x x x x      x x x x      x x x x
                 cw:   6      cw:   7      cw:   8      cw:   9      cw:  10      cw:  11
-                ccw:  4      ccw:  3      ccw:  2      ccw:  1      1st move      original</pre>
+                ccw:  4      ccw:  3      ccw:  2      ccw:  1      1st move     original</pre>  
+                
   I only need one path to stage 6.  At stage 5, I will take 4 clockwise turns and eliminate 6 counterclockwise turns.  Same for stage 7, I will take 4 counterwise turns and eliminate 6 clockwise turns. And so on...  
   
   So I will limit to maximum 5 clockwise turns and maximum 4 counterclockwise truns to eliminate these re-visited boards.
@@ -63,8 +63,7 @@
              4  5  6  1     70    Up(451)      -> Left(272)  -> Right(194)   -> Down(64)
             estimate 64     72    Up(6901)     -> Left(3719) -> Right(2504)  -> Down(566)
                             74    Up(86458) solved
-            puzzle solved on the 1st expansion at depth 74
-
+            puzzle solved on the 1st expansion at depth 74  
         Example 2:
             15 12  9 13     64    Right(0)     -> Down(0)    -> Left(0)      -> Up(0)
             11  0  5 10     66    Up(32)       -> Right(25)  -> Left(11)     -> Down(2)
