@@ -20,9 +20,9 @@ Use a reference board to boost the initial estimate closer to solution moves:
       Actual solution                79              80              78              75</pre>
     
 2.  It's not only true for 80 move boards, but also vaild for any solvable puzzle to be use as the reference board.  
-  First step, move the zero space to the corner.  
-  Second step, rotate the board and make zero at position 15.  
-  Thrid step, generate the conversion key.  
+  * First step, move the zero space to the corner.  
+  * Second step, rotate the board and make zero at position 15.  
+  * Thrid step, generate the conversion key.  
     <pre>
     Example
     68 moves board    Step 1         Step 2                            Step 3
@@ -33,22 +33,19 @@ Use a reference board to boost the initial estimate closer to solution moves:
 
   I divided the board in 4 groups.  For each entry, it will store 4 boards per group.
     <pre>
-        1 1 2 2      Group     0 1 x x    1 0 x x    1 2 x x    1 2 x x   
+        1 1 2 2      Group     0 1 x x    1 0 x x    1 2 x x    1 2 x x
         1 1 2 2      idx 2:    3 2 x x    3 2 x x    3 0 x x    0 3 x x
         3 3 4 4                x x x x    x x x x    x x x x    x x x x
         3 3 4 4                x x x x    x x x x    x x x x    x x x x  
-
                      Group     x x 3 0    x x 3 1    x x 3 1    x x 0 1
                      idx 1:    x x 2 1    x x 2 0    x x 0 2    x x 3 2
                                x x x x    x x x x    x x x x    x x x x
                                x x x x    x x x x    x x x x    x x x x  
-                               
-                     Group     Transfer to symmetry board and store as Group 1   
+                     Group     Transfer to symmetry board and store as Group 1
                      idx 3:    x x x x    x x x x    x x x x    x x x x
                                x x x x    x x x x    x x x x    x x x x
                                3 2 x x    3 2 x x    3 0 x x    0 3 x x
-                               0 1 x x    1 0 x x    1 2 x x    1 2 x x 
-
+                               0 1 x x    1 0 x x    1 2 x x    1 2 x x  
                      Group     x x x x    x x x x    x x x x    x x x x
                      idx 0:    x x x x    x x x x    x x x x    x x x x
                                x x 2 3    x x 2 3    x x 0 3    x x 3 0
