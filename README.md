@@ -34,11 +34,11 @@ I also added starting ordering detection to increase the possibility to solve fi
 Read [Solver Enhancement - standard version] for details.  
 
 ### Enhancement - self learning feature
-45 seconds seems pretty good, but I still not satify with it.  The maximum estimate is 68 and the maximum moves is 80, so the depth first search has too loop through all nodes that will not have solution before it reach the solution depth.  If I can boost the estimate to the solution depth, it will drop the search time dreamically.   
+45 seconds seems pretty good, but I still not satify with it.  The maximum estimate is 68 and the maximum moves is 80, so the interactive deepening A* has to loop through all nodes that will not have solution before it reach the solution depth.  If I can boost the estimate to the solution depth, it will drop the search time dreamically.   
 
-I started with 17 (80 moves) puzzles as reference boards to boost the estimate over 68.  It works but still missed a lot.  I applied the same concept to any puzzle that takes over 10 seconds to solve, the solver with pattern database 7-8 will automatically stored it as reference board.  Also stored first 8 solution moves, it boost the search time within a second.  
+I started with 17 known 80 moves puzzles as reference boards to boost the estimate over 68.  It works but still missed a lot.  I applied the same concept to any puzzle that takes over 10 seconds to solve, the solver with pattern database 7-8 will automatically stored it as reference board.  Also stored first 8 solution moves to boost the search time within a second.  
 
-Now the solver has the self learning feature.   When it accumulate enough reference boards, it will solve any puzzle within 10 seconds (the preset cutoff setting) eventually.  
+Now the solver has the self learning feature.   When it accumulate enough reference boards, the solver will solve any puzzle within 10 seconds (the preset cutoff setting) eventually.  
 
 Read [Solver Enhancement - advanced version] for details.
 
