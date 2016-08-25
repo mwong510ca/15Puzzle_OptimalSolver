@@ -1,0 +1,75 @@
+PatternElement - load data from file succeeded : 0.029s
+Screen additive pattern 1 : (x x 3 4 x x 7 8 x x x 12 x x x 0) at 0.0s
+moves : 1     count : 5                scanned : 1               ended at 0.061s
+moves : 2     count : 21               scanned : 5               ended at 0.105s
+moves : 3     count : 73               scanned : 22              ended at 0.147s
+moves : 4     count : 215              scanned : 78              ended at 0.154s
+moves : 5     count : 587              scanned : 237             ended at 0.163s
+moves : 6     count : 1503             scanned : 665             ended at 0.183s
+moves : 7     count : 3526             scanned : 1740            ended at 0.191s
+moves : 8     count : 7593             scanned : 4191            ended at 0.205s
+moves : 9     count : 14815            scanned : 9333            ended at 0.23s
+moves : 10    count : 26452            scanned : 19006           ended at 0.282s
+moves : 11    count : 42809            scanned : 35785           ended at 0.374s
+moves : 12    count : 62546            scanned : 61815           ended at 0.527s
+moves : 13    count : 79882            scanned : 98331           ended at 0.766s
+moves : 14    count : 86719            scanned : 141697          ended at 1.087s
+moves : 15    count : 78371            scanned : 185050          ended at 1.427s
+moves : 16    count : 58200            scanned : 220068          ended at 1.818s
+moves : 17    count : 35106            scanned : 243250          ended at 2.249s
+moves : 18    count : 16923            scanned : 255174          ended at 2.693s
+moves : 19    count : 6481             scanned : 260173          ended at 3.131s
+moves : 20    count : 1879             scanned : 261655          ended at 3.571s
+moves : 21    count : 425              scanned : 262052          ended at 4.004s
+moves : 22    count : 28               scanned : 262080          ended at 4.451s
+
+Screen additive pattern 2 : (1 2 x x 5 x x x 9 x x x 13 x x 0) at 0.0s
+moves : 1     count : 5                scanned : 1               ended at 0.006s
+moves : 2     count : 15               scanned : 5               ended at 0.012s
+moves : 3     count : 42               scanned : 16              ended at 0.016s
+moves : 4     count : 129              scanned : 47              ended at 0.019s
+moves : 5     count : 399              scanned : 145             ended at 0.024s
+moves : 6     count : 1061             scanned : 446             ended at 0.031s
+moves : 7     count : 2564             scanned : 1206            ended at 0.036s
+moves : 8     count : 5565             scanned : 3010            ended at 0.047s
+moves : 9     count : 11010            scanned : 6771            ended at 0.071s
+moves : 10    count : 19807            scanned : 14020           ended at 0.11s
+moves : 11    count : 32246            scanned : 26578           ended at 0.178s
+moves : 12    count : 47422            scanned : 46266           ended at 0.278s
+moves : 13    count : 62693            scanned : 74000           ended at 0.414s
+moves : 14    count : 73845            scanned : 108959          ended at 0.621s
+moves : 15    count : 76507            scanned : 147845          ended at 0.894s
+moves : 16    count : 68804            scanned : 185466          ended at 1.221s
+moves : 17    count : 53198            scanned : 216649          ended at 1.599s
+moves : 18    count : 35118            scanned : 238664          ended at 2.019s
+moves : 19    count : 19617            scanned : 251767          ended at 2.453s
+moves : 20    count : 9149             scanned : 258281          ended at 2.926s
+moves : 21    count : 3547             scanned : 260916          ended at 3.438s
+moves : 22    count : 1124             scanned : 261828          ended at 3.877s
+moves : 23    count : 252              scanned : 262040          ended at 4.312s
+moves : 24    count : 40               scanned : 262080          ended at 4.757s
+
+Screen additive pattern 3 : (x x x x x 6 x x x 10 11 x x 14 15 0) at 0.0s
+moves : 1     count : 8                scanned : 1              ended at 0.005s
+moves : 2     count : 36               scanned : 8              ended at 0.009s
+moves : 3     count : 146              scanned : 37             ended at 0.014s
+moves : 4     count : 506              scanned : 154            ended at 0.018s
+moves : 5     count : 1549             scanned : 543            ended at 0.024s
+moves : 6     count : 4145             scanned : 1703           ended at 0.032s
+moves : 7     count : 9825             scanned : 4688           ended at 0.045s
+moves : 8     count : 20629            scanned : 11528          ended at 0.068s
+moves : 9     count : 38274            scanned : 25317          ended at 0.121s
+moves : 10    count : 60970            scanned : 49802          ended at 0.229s
+moves : 11    count : 81428            scanned : 86287          ended at 0.407s
+moves : 12    count : 90601            scanned : 131230         ended at 0.643s
+moves : 13    count : 83675            scanned : 176888         ended at 0.955s
+moves : 14    count : 63741            scanned : 214905         ended at 1.323s
+moves : 15    count : 39428            scanned : 240629         ended at 1.71s
+moves : 16    count : 19271            scanned : 254333         ended at 2.118s
+moves : 17    count : 7291             scanned : 259900         ended at 2.535s
+moves : 18    count : 2116             scanned : 261624         ended at 2.944s
+moves : 19    count : 452              scanned : 262016         ended at 3.353s
+moves : 20    count : 64               scanned : 262076         ended at 3.77s
+moves : 21    count : 4                scanned : 262080         ended at 4.18s
+
+PatternDatabase - generate additive pattern database completed

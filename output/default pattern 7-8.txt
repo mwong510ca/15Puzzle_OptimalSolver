@@ -1,0 +1,77 @@
+PatternElement - load data from file succeeded : 0.148s
+Screen additive pattern 1 : (1 2 3 4 5 6 7 8 x x x x x x x 0) at 0.0s
+moves : 1     count : 4                scanned : 1               ended at 2.123s
+moves : 2     count : 10               scanned : 4               ended at 4.753s
+moves : 3     count : 44               scanned : 11              ended at 8.491s
+moves : 4     count : 155              scanned : 48              ended at 12.122s
+moves : 5     count : 498              scanned : 166             ended at 13.795s
+moves : 6     count : 1454             scanned : 546             ended at 15.627s
+moves : 7     count : 3856             scanned : 1620            ended at 17.493s
+moves : 8     count : 9753             scanned : 4402            ended at 19.171s
+moves : 9     count : 23740            scanned : 11373           ended at 20.995s
+moves : 10    count : 57104            scanned : 28142           ended at 22.74s
+moves : 11    count : 131720           scanned : 68477           ended at 24.562s
+moves : 12    count : 294927           scanned : 159862          ended at 26.505s
+moves : 13    count : 624860           scanned : 363404          ended at 29.28s
+moves : 14    count : 1278710          scanned : 784722          ended at 32.46s
+moves : 15    count : 2456938          scanned : 1642114         ended at 37.643s
+moves : 16    count : 4529270          scanned : 3241660         ended at 45.558s
+moves : 17    count : 7768314          scanned : 6171384         ended at 60.503s
+moves : 18    count : 12755050         scanned : 11009974        ended at 82.592s
+moves : 19    count : 19446958         scanned : 18926434        ended at 125.989s
+moves : 20    count : 28359574         scanned : 30456932        ended at 192.12s
+moves : 21    count : 38145480         scanned : 47286008        ended at 293.896s
+moves : 22    count : 48739135         scanned : 68602412        ended at 445.786s
+moves : 23    count : 56731544         scanned : 96025143        ended at 666.219s
+moves : 24    count : 62044160         scanned : 125333956       ended at 944.141s
+moves : 25    count : 60881276         scanned : 158069303       ended at 1300.016s
+moves : 26    count : 55472562         scanned : 186215232       ended at 1713.677s
+moves : 27    count : 44521972         scanned : 213541865       ended at 2195.742s
+moves : 28    count : 32781777         scanned : 230737204       ended at 2714.83s
+moves : 29    count : 20794252         scanned : 246323642       ended at 3270.794s
+moves : 30    count : 11928080         scanned : 251531456       ended at 3826.407s
+moves : 31    count : 5692908          scanned : 258251722       ended at 4390.383s
+moves : 32    count : 2396445          scanned : 257224364       ended at 4961.065s
+moves : 33    count : 783878           scanned : 260648167       ended at 5540.403s
+moves : 34    count : 216751           scanned : 258008242       ended at 6114.102s
+moves : 35    count : 39436            scanned : 260864918       ended at 6687.679s
+moves : 36    count : 5465             scanned : 258047678       ended at 7260.337s
+moves : 37    count : 322              scanned : 260870383       ended at 7844.22s
+moves : 38    count : 17               scanned : 258048000       ended at 8423.507s
+
+Screen additive pattern 2 : (x x x x x x x x 9 10 11 12 13 14 15 0) at 0.0s
+moves : 1     count : 2                scanned : 1               ended at 0.107s
+moves : 2     count : 6                scanned : 2               ended at 0.367s
+moves : 3     count : 24               scanned : 7               ended at 0.566s
+moves : 4     count : 95               scanned : 26              ended at 0.76s
+moves : 5     count : 311              scanned : 102             ended at 0.961s
+moves : 6     count : 904              scanned : 337             ended at 1.165s
+moves : 7     count : 2392             scanned : 1006            ended at 1.62s
+moves : 8     count : 6056             scanned : 2729            ended at 1.826s
+moves : 9     count : 15091            scanned : 7062            ended at 2.033s
+moves : 10    count : 36696            scanned : 17820           ended at 2.264s
+moves : 11    count : 84265            scanned : 43758           ended at 2.526s
+moves : 12    count : 181968           scanned : 102085          ended at 2.889s
+moves : 13    count : 368821           scanned : 225726          ended at 3.442s
+moves : 14    count : 699428           scanned : 470906          ended at 5.216s
+moves : 15    count : 1236038          scanned : 925154          ended at 7.031s
+moves : 16    count : 2030914          scanned : 1706944         ended at 14.159s
+moves : 17    count : 3100164          scanned : 2956068         ended at 24.546s
+moves : 18    count : 4385247          scanned : 4807108         ended at 34.059s
+moves : 19    count : 5727394          scanned : 7341315         ended at 48.419s
+moves : 20    count : 6865358          scanned : 10534502        ended at 69.175s
+moves : 21    count : 7483204          scanned : 14206673        ended at 97.409s
+moves : 22    count : 7345188          scanned : 18017706        ended at 134.39s
+moves : 23    count : 6424533          scanned : 21551861        ended at 176.051s
+moves : 24    count : 4955682          scanned : 24442239        ended at 226.979s
+moves : 25    count : 3330386          scanned : 26507543        ended at 278.513s
+moves : 26    count : 1922268          scanned : 27772625        ended at 331.33s
+moves : 27    count : 935172           scanned : 28429811        ended at 385.82s
+moves : 28    count : 371883           scanned : 28707797        ended at 438.945s
+moves : 29    count : 116971           scanned : 28801694        ended at 492.263s
+moves : 30    count : 26821            scanned : 28824768        ended at 545.347s
+moves : 31    count : 4025             scanned : 28828515        ended at 605.523s
+moves : 32    count : 285              scanned : 28828793        ended at 658.75s
+moves : 33    count : 7                scanned : 28828800        ended at 712.043s
+
+PatternDatabase - generate additive pattern database completed
