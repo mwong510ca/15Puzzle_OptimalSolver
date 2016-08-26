@@ -61,9 +61,10 @@ Use a reference board to boost the initial estimate closer to solution moves:
   I set the cutoff to 10 seconds with 5% buffer, which will make all puzzles solve within 10 seconds eventually.  For any puzzle that take more than 9.5 seconds to solve, the system will automatically store this board as reference board.  (A few line of code added in SolverPD.java)
   * over 10 seconds using Original Search, it will compare original estimate and advanced estimate.
     If they are the same, store the borad.
-    If advanced estimate > original estimate, skip.  Undetmine runtime for advanced estimate.
+    If advanced estimate > original estimate, skip.  Unable to determine the runtime for advanced estimate.
   * over 10 seconds using Advanced Search, always store the board.
-  * Each store board contain a set of 4 boards as describe above.  These other 3 boards will store an estimate without solution.  It will wait for next update to complete the full set.
+
+  Each store board contain a set of 4 boards as describe above.  These other 3 boards will store an estimate without solution.  It will wait for next update to complete the full set.
   <pre>
     Example 1:    Original search: 11.8s Add      Advanced search: 11.8s Add
     org est 58     6  5  9 13          6  5  9 13          6  5  9 13          6  5  9 13 
