@@ -24,19 +24,19 @@ Use a reference board to boost the initial estimate closer to solution moves:
   * Second step, rotate the board and make zero at position 15.  
   * Thrid step, generate the conversion key.  
     <pre>
-    Example
-    68 moves board    Step 1         Step 2                            Step 3
-    15 11  8  3    15 11  8  0     9 14 12 15    0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15
-    12  7  4  0 -> 12  7  4  3 -> 13 10  7 11 -> |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-    14 10  6  5    14 10  6  5     2  6  4  8    0 13  9 15 11 14 10  7 12  1  6  8  3  5  2  4
-     9 13  2  1     9 13  2  1     1  5  3  0</pre>
+     Example
+     68 moves board    Step 1         Step 2                            Step 3
+     15 11  8  3    15 11  8  0     9 14 12 15    0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15
+     12  7  4  0 -> 12  7  4  3 -> 13 10  7 11 -> |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+     14 10  6  5    14 10  6  5     2  6  4  8    0 13  9 15 11 14 10  7 12  1  6  8  3  5  2  4
+       9 13  2  1     9 13  2  1     1  5  3  0</pre>
 
   I divided the board in 4 groups.  For each entry, it will store 4 boards per group.
     <pre>
-        1 1 2 2      Group     0 1 x x    1 0 x x    1 2 x x    1 2 x x
-        1 1 2 2      idx 2:    3 2 x x    3 2 x x    3 0 x x    0 3 x x
-        3 3 4 4                x x x x    x x x x    x x x x    x x x x
-        3 3 4 4                x x x x    x x x x    x x x x    x x x x  
+        2 2 1 1      Group     0 1 x x    1 0 x x    1 2 x x    1 2 x x
+        2 2 1 1      idx 2:    3 2 x x    3 2 x x    3 0 x x    0 3 x x
+        3 3 0 0                x x x x    x x x x    x x x x    x x x x
+        3 3 0 0                x x x x    x x x x    x x x x    x x x x  
                      Group     x x 3 0    x x 3 1    x x 3 1    x x 0 1
                      idx 1:    x x 2 1    x x 2 0    x x 0 2    x x 3 2
                                x x x x    x x x x    x x x x    x x x x
