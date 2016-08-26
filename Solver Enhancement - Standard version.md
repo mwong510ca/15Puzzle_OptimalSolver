@@ -54,20 +54,53 @@
   So I set the maximum limit of 5 clockwise turns and maximum limit of  4 counterclockwise truns to eliminate these re-visited boards.
 
 ### 3. Starting order detection:  
-  Instead of using the hard code order Right -> Down -> Left -> Up, determine the starting order during the depth expansion based on total number of nodes expended from previous depth.  When it hit the solution depth, it increase the possibility to solve the puzzle by the first move instead of loop to the last one.  
+  Instead of using the hard code order Right -> Down -> Left -> Up, determine the starting order based on least estimate terminated at previous depth expansion.  It terminated at the same estimate, least nodes generated will go first.  When it hit the solution depth, it increase the possibility to solve the puzzle by the first move instead of loop to the last one.  But somtimes takes longer than the hard cord order.  
     <pre>
         Example 1:         Limit
-            15 12 14 13     64    Right(0)     -> Down(0)    -> Left(0)      -> Up(0)
-             7  3  9 10     66    Up(8)        -> Left(6)    -> Right(1)     -> Down(1)
-            11  8  0  2     68    Left(35)     -> Up(29)     -> Right(11)    -> Left(4)
-             4  5  6  1     70    Up(451)      -> Left(272)  -> Right(194)   -> Down(64)
-            estimate 64     72    Up(6901)     -> Left(3719) -> Right(2504)  -> Down(566)
-                            74    Up(86458) solved
-            puzzle solved on the 1st expansion at depth 74  
+             6  5  9 14     54    (54) Right   -> (54) Down  -> (54) Left    -> (54) Up
+             2  0  1 10     56    (37) Left    -> (41) Up    -> (45) Down    -> (51) Right
+             8  3 12 13     58    (33) Up      -> (33) Down  -> (35) Left    -> (39) Right
+             4  7 15 11                147             427
+            estimate 54     60    (23) Left    -> (32) Down  -> (33) Up      -> (35) Right
+                            62    (15) Down    -> (18) Left  -> (25) Up      -> (32) Right
+                                       2423            3566
+                            64    (11) Down       (11) Left     (14) Up         (20) Right
+                                       163182          164378
+                                  Solved
+
         Example 2:
-            15 12  9 13     64    Right(0)     -> Down(0)    -> Left(0)      -> Up(0)
-            11  0  5 10     66    Up(32)       -> Right(25)  -> Left(11)     -> Down(2)
-             3  7  8 14     68    Right(415)   -> Up(273)    -> Left(231)    -> Down(33)
-             4  2  1  6     70    Right(4827)  -> Up(3243)   -> Left(2136)   -> Down(771)
-            estimate 64     72    Right(47068) -> Up(34204)  -> Left(19504) solved
-            puzzle solved on the 3rd expansion at depth 72</pre>
+            12 11 13 10     59    (59) Right   -> (59) Left  -> (59) Up
+             6 15  3 14     61    (56) Right   -> (56) Left  -> (60) Up
+             5  4  9  2                3               4
+             8  7  0  1     63    (40) Up      -> (50) Right -> (53) Left
+            estimate 59     65    (34) Up      -> (41) Right -> (45) Left
+                            67    (16) Up      -> (26) Right -> (38) Left
+                                  Solved
+
+        Example 3:
+            12 10  0 13     64    (64) Right   -> (64) Down  -> (64) Left
+            15  9  5 14     66    (53) Right   -> (54) Down  -> (62) Left
+             7 11  6  1     68    (44) Down    -> (45) Right -> (53) Left
+             3  4  8  2     70    (31) Down    -> (36) Right    (42) Left
+            estimate 64                           Solved
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
