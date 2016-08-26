@@ -34,14 +34,16 @@
     * Up shift to position 1 is the symmetry move of Up shift - eliminated duplicated move.  
 
 ### 2. Circular reduction
-  While it keep making clockwise(cw) turns or counterclockwise(ccw) turns only, after 12 moves it will back to original stated.  And at the 6th turns, bothe clockwise turns and counterclockwise turns will end at the same state.
+  While it keep making clockwise(cw) turns or counterclockwise(ccw) turns only, after 12 moves it will back to original stated.  At the 6th moves, both clockwise turns and counterclockwise turns will end at the same state.   
   <pre>
+   move: 0      move: 1      move: 2      move: 3      move: 4      move: 5      move: 6
    0 1 x x      1 0 x x      1 2 x x      1 2 x x      0 2 x x      2 0 x x      2 3 x x
    3 2 x x      3 2 x x      3 0 x x      0 3 x x      1 3 x x      1 3 x x      1 0 x x
    x x x x      x x x x      x x x x      x x x x      x x x x      x x x x      x x x x
    x x x x      x x x x      x x x x      x x x x      x x x x      x x x x      x x x x
    original     1st move     cw:   1      cw:   2      cw:   3      cw:   4      cw:   5
    ccw: 11      ccw: 10      ccw:  9      ccw:  8      ccw:  7      ccw:  6      ccw:  5  
+                move: 7      move: 8      move: 9      move: 10     move: 11     move: 12
                 2 3 x x      0 3 x x      3 0 x x      3 1 x x      3 1 x x      0 1 x x
                 0 1 x x      2 1 x x      2 1 x x      2 0 x x      0 2 x x      3 2 x x
                 x x x x      x x x x      x x x x      x x x x      x x x x      x x x x
@@ -49,16 +51,19 @@
                 cw:   6      cw:   7      cw:   8      cw:   9      cw:  10      cw:  11
                 ccw:  4      ccw:  3      ccw:  2      ccw:  1      1st move     original</pre>  
                 
-  I only need one path to stage 6.  At stage 5, I will take 4 clockwise turns and eliminate 6 counterclockwise turns.  Same for stage 7, I will take 4 counterwise turns and eliminate 6 clockwise turns. And so on...  
-  
-  So I set the maximum limit of 5 clockwise turns and maximum limit of  4 counterclockwise truns to eliminate these re-visited boards.
+  I only need one path to moves 6.  At moves 5, I will take 4 clockwise turns and eliminate 6 counterclockwise turns.  Same for moves 7, I will take 4 counterclockwise turns and eliminate 6 clockwise turns. And so on...  To eliminate these re-visited boards:
+  * The maximum limit of clockwise turns is 5.
+  * The maximum limit of counterclockwise truns 4. 
 
 ### 3. Starting order detection:  
   Instead of using the hard code order Right -> Down -> Left -> Up, determine the starting order based on least estimate terminated at previous depth expansion.  It terminated at the same estimate, least nodes generated will go first.  When it hit the solution depth, it increase the possibility to solve the puzzle by the first move instead of loop to the last one.  But somtimes takes longer than the hard cord order.  
-  * Example 1: Starting order changed in each depth level increment.  
-  * Example 2: Puzzle solved on 1st expansion at depth 67.  
-  * Example 3: Puzzle solved on 2nd expansion at depth 70.  It slow than hard code order, right will be the 1st move. 
-    <pre>
+  
+  * Example 1: Starting order changed in each depth level increment.
+  * Example 2: Puzzle solved on 1st expansion at depth 67.
+  * Example 3: Puzzle solved on 2nd expansion at depth 70.  It slow than hard code order, right will be the 1st move.
+
+  
+<pre>
         Example 1:         Depth
              6  5  9 14     54    (54) Right   -> (54) Down  -> (54) Left    -> (54) Up
              2  0  1 10     56    (37) Left    -> (41) Up    -> (45) Down    -> (51) Right
@@ -83,7 +88,6 @@
              7 11  6  1     68    (44) Down    -> (45) Right -> (53) Left
              3  4  8  2     70    (31) Down    -> (36) Right    (42) Left
             estimate 64                           Solved</pre>
-
 
 
 
