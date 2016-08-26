@@ -55,34 +55,34 @@
 
 ### 3. Starting order detection:  
   Instead of using the hard code order Right -> Down -> Left -> Up, determine the starting order based on least estimate terminated at previous depth expansion.  It terminated at the same estimate, least nodes generated will go first.  When it hit the solution depth, it increase the possibility to solve the puzzle by the first move instead of loop to the last one.  But somtimes takes longer than the hard cord order.  
+  * Example 1: Starting order changed in each depth level increment.  
+  * Example 2: Puzzle solved on 1st expansion at depth 67.  
+  * Example 3: Puzzle solved on 2nd expansion at depth 70.  It slow than hard code order, right will be the 1st move. 
     <pre>
-        Example 1:         Limit
+        Example 1:         Depth
              6  5  9 14     54    (54) Right   -> (54) Down  -> (54) Left    -> (54) Up
              2  0  1 10     56    (37) Left    -> (41) Up    -> (45) Down    -> (51) Right
              8  3 12 13     58    (33) Up      -> (33) Down  -> (35) Left    -> (39) Right
              4  7 15 11                147             427
             estimate 54     60    (23) Left    -> (32) Down  -> (33) Up      -> (35) Right
                             62    (15) Down    -> (18) Left  -> (25) Up      -> (32) Right
-                                       2423            3566
                             64    (11) Down       (11) Left     (14) Up         (20) Right
                                        163182          164378
-                                  Solved
-
-        Example 2:
+                                  Solved  
+        Example 2:         Depth
             12 11 13 10     59    (59) Right   -> (59) Left  -> (59) Up
              6 15  3 14     61    (56) Right   -> (56) Left  -> (60) Up
              5  4  9  2                3               4
              8  7  0  1     63    (40) Up      -> (50) Right -> (53) Left
             estimate 59     65    (34) Up      -> (41) Right -> (45) Left
-                            67    (16) Up      -> (26) Right -> (38) Left
-                                  Solved
-
-        Example 3:
+                            67    (16) Up         (26) Right    (38) Left
+                                  Solved  
+        Example 3:         Depth
             12 10  0 13     64    (64) Right   -> (64) Down  -> (64) Left
             15  9  5 14     66    (53) Right   -> (54) Down  -> (62) Left
              7 11  6  1     68    (44) Down    -> (45) Right -> (53) Left
              3  4  8  2     70    (31) Down    -> (36) Right    (42) Left
-            estimate 64                           Solved
+            estimate 64                           Solved</pre>
 
 
 
