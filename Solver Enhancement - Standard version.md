@@ -70,5 +70,4 @@
              3  7  8 14     68    Right(415)   -> Up(273)    -> Left(231)    -> Down(33)
              4  2  1  6     70    Right(4827)  -> Up(3243)   -> Left(2136)   -> Down(771)
             estimate 64     72    Right(47068) -> Up(34204)  -> Left(19504) solved
-            puzzle solved on the 3rd expansion at depth 72
-            </pre>
+            puzzle solved on the 3rd expansion at depth 72</pre>
