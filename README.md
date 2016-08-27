@@ -18,16 +18,16 @@ After I finished my 15 puzzle optimal solver, most of the puzzles are solved wit
              9 13  2  1     4  8 12 11     4  8 12  1 	  4 10  5  1     4  7  5  1     4  8  5  1
 Estimate:            48             58             58             58             62             66
 Moves:               70             72             74             76             78             80
-Time:            120.0s          57.1s          13.7s           6.0s           5.7s           3.7s
+Time:            111.4s          56.6s          13.7s           5.8s           5.7s           3.es
 Nodes:        492357819      231367077       46383751       20187376       18363209       12715201
 </pre>
 I analysis the behavior of 15 puzzle and my solver.  I added [symmetry reduction (Section 4)] and circular reduction to speed up the process. It improve the process time from 2 mintue to 45 seconds.
 <pre>
 Added symmetry reduction:
-Time:             58.6s          27.9s           7.1s           3.0s           2.8s           3.3s
-Nodes:        231367077      114874953       24447275       10207716        9123607       11456863
+Time:             57.3s          27.9s           7.1s           2.9s           2.8s           3.2s
+Nodes:        239416302      114874953       24447275       10207716        9123607       11456863
 Added circular reduction:
-Time:             44.2s          22.6s           6.1s           2.5s           2.4s           2.8s
+Time:             44.2s          22.4s           5.9s           2.5s           2.4s           2.8s
 Nodes:        177653815       89470609       20109676        8436494        7693686        9785986
 </pre>
 I also added starting ordering detection to increase the possibility to solve first move depth increment.  The starting order may vary each depth instead of hard coded the fixed order such as Right -> Down -> Left -> Up.  
