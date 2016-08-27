@@ -6,12 +6,14 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverWdMd;
 
+import java.util.Arrays;
+
 /**
- * SmartSolverWDMD extends SolverWDMD.  The advanced version extend the standard solver
+ * SmartSolverWdMd extends SolverWdMd.  The advanced version extend the standard solver
  * using the reference boards collection to boost the initial estimate.
  *
  * <p>Dependencies : AdvancedRecord.java, Board.java, Direction.java, ReferenceAccumulator.java,
- *                   SmartSolverConstants.java, SmartSolverExtra.java, SolverWDMD.java
+ *                   SmartSolverConstants.java, SmartSolverExtra.java, SolverWdMd.java
  *
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
@@ -23,7 +25,7 @@ public class SmartSolverWdMd extends SolverWdMd {
     private final SmartSolverExtra extra;
 
     /**
-     * Initializes SolverWDMD object.  If refAccumlator is null or empty,
+     * Initializes SmartSolverWdMd object.  If refAccumlator is null or empty,
      * it will act as standard version.
      *
      * @param refAccumulator the given ReferenceAccumulator object
@@ -71,7 +73,6 @@ public class SmartSolverWdMd extends SolverWdMd {
             return -1;
         }
 
-        priorityAdvanced = -1;
         if (!board.equals(lastBoard) || isSearch) {
             // walking distance from parent/superclass
             priorityGoal = super.heuristic(board);
@@ -80,6 +81,8 @@ public class SmartSolverWdMd extends SolverWdMd {
 
         if (!isAdvanced) {
             return priorityGoal;
+        } else if (!isSearch && priorityAdvanced != -1) {
+            return priorityAdvanced;
         }
 
         AdvancedRecord record = extra.advancedContains(board, isSearch, refAccumulator);
@@ -173,18 +176,12 @@ public class SmartSolverWdMd extends SolverWdMd {
         Board board = new Board(tiles);
         for (int i = 1; i < numPartialMoves; i++) {
             board = board.shift(dupSolution[i]);
+            assert board != null : i + "board is null\t" + Arrays.toString(solutionMove)
+            + (new Board(tiles));
         }
+        clearHistory();
         heuristic(board, tagStandard, tagSearch);
-
-        int firstDirValue = dupSolution[numPartialMoves].getValue();
-        for (int i = 0; i < 4; i++) {
-            if (i != firstDirValue) {
-                lastDepthSummary[i] = endOfSearch;
-                lastDepthSummary[i + 4] = 0;
-            } else {
-                lastDepthSummary[i + 4] = 1;
-            }
-        }
+        setLastDepthSummary(dupSolution[numPartialMoves]);
 
         idaCount = numPartialMoves;
         if (flagMessage) {

@@ -6,12 +6,14 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverWd;
 
+import java.util.Arrays;
+
 /**
- * SmartSolverWD extends SolverWD.  The advanced version extend the standard solver
+ * SmartSolverWd extends SolverWd.  The advanced version extend the standard solver
  * using the reference boards collection to boost the initial estimate.
  *
  * <p>Dependencies : AdvancedRecord.java, Board.java, Direction.java, ReferenceAccumulator.java,
- *                   SmartSolverConstants.java, SmartSolverExtra.java, SolverWD.java
+ *                   SmartSolverConstants.java, SmartSolverExtra.java, SolverWd.java
  *
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
@@ -23,7 +25,7 @@ public class SmartSolverWd extends SolverWd {
     private final SmartSolverExtra extra;
 
     /**
-     * Initializes SolverWD object.  If refAccumlator is null or empty,
+     * Initializes SmartSolverWd object.  If refAccumlator is null or empty,
      * it will act as standard version.
      *
      * @param refAccumulator the given ReferenceAccumulator object
@@ -71,23 +73,11 @@ public class SmartSolverWd extends SolverWd {
             return -1;
         }
 
-        priorityAdvanced = -1;
         if (!board.equals(lastBoard) || isSearch) {
-            lastBoard = board;
-
-            zeroX = board.getZeroX();
-            zeroY = board.getZeroY();
-            tiles = board.getTiles();
+            initialize(board);
             tilesSym = board.getTilesSym();
-            lastDepthSummary = new int [rowSize * 2];
-            for (int i = 0; i < 4; i++) {
-                if (board.getValidMoves()[i] == 0) {
-                    lastDepthSummary[i] = endOfSearch;
-                } else {
-                    lastDepthSummary[i + 4] = board.getValidMoves()[i];
-                }
-            }
-            
+            setLastDepthSummary(board);
+
             byte [] ctwdh = new byte[puzzleSize];
             byte [] ctwdv = new byte[puzzleSize];
 
@@ -114,6 +104,8 @@ public class SmartSolverWd extends SolverWd {
         }
         if (!isAdvanced) {
             return priorityGoal;
+        } else if (!isSearch && priorityAdvanced != -1) {
+            return priorityAdvanced;
         }
 
         AdvancedRecord record = extra.advancedContains(board, isSearch, refAccumulator);
@@ -194,18 +186,12 @@ public class SmartSolverWd extends SolverWd {
         Board board = new Board(tiles);
         for (int i = 1; i < numPartialMoves; i++) {
             board = board.shift(dupSolution[i]);
+            assert board != null : i + "board is null\t" + Arrays.toString(solutionMove)
+            + (new Board(tiles));
         }
+        clearHistory();
         heuristic(board, tagStandard, tagSearch);
-
-        int firstDirValue = dupSolution[numPartialMoves].getValue();
-        for (int i = 0; i < 4; i++) {
-            if (i != firstDirValue) {
-                lastDepthSummary[i] = endOfSearch;
-                lastDepthSummary[i + 4] = 0;
-            } else {
-                lastDepthSummary[i + 4] = 1;
-            }
-        }
+        setLastDepthSummary(dupSolution[numPartialMoves]);
 
         idaCount = numPartialMoves;
         if (flagMessage) {

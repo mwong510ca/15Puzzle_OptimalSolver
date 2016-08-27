@@ -1,8 +1,6 @@
 package mwong.myprojects.fifteenpuzzle.solver.standard;
 
 import mwong.myprojects.fifteenpuzzle.solver.AbstractSolver;
-import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
-import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternConstants;
@@ -56,64 +54,19 @@ public class SolverPdbBase extends AbstractSolver {
     protected int idaCount;
 
     /**
-     *  Initializes SolverPdbBase object using default preset pattern.
+     * Default constructor.
      */
-    public SolverPdbBase() {
-        this(SolverProperties.getDefaultPattern());
-    }
-
-    /**
-     *  Initializes SolverPdbBase object using given preset pattern.
-     *
-     *  @param presetPattern the given preset pattern type
-     */
-    public SolverPdbBase(PatternOptions presetPattern) {
-        this(presetPattern, 0);
-    }
-
-    /**
-     *  Initializes SolverPdbBase object with choice of given preset pattern.
-     *
-     *  @param presetPattern the given preset pattern type
-     *  @param choice the number of preset pattern option
-     */
-    public SolverPdbBase(PatternOptions presetPattern, int choice) {
+    SolverPdbBase() {
         super();
-        loadPDComponents(presetPattern, choice);
-        loadPDElements(presetPattern.getElements());
-        inUsePattern = presetPattern;
-        inUsePtnArray = presetPattern.getPattern(choice);
-        if (presetPattern == PatternOptions.Pattern_555) {
-            inUseHeuristic = HeuristicOptions.PD555;
-        } else if (presetPattern == PatternOptions.Pattern_663) {
-            inUseHeuristic = HeuristicOptions.PD663;
-        } else if (presetPattern == PatternOptions.Pattern_78) {
-            inUseHeuristic = HeuristicOptions.PD78;
-        } else {
-            System.err.println("SolverPD init error");
-        }
     }
 
     /**
-     *  Initializes SolverPdbBase object with user defined custom pattern.
+     * Initializes SolverPdbBase object with a given standard version SolverPdb instance,
+     * the concrete class of SolverPdbBase.
      *
-     *  @param customPattern byte array of user defined custom pattern
-     *  @param elementGroups boolean array of groups reference to given pattern
+     * @param copySolver an instance of SolverPdb
      */
-    public SolverPdbBase(byte[] customPattern, boolean[] elementGroups) {
-        customPDComponents(customPattern);
-        loadPDElements(elementGroups);
-        inUsePattern = PatternOptions.Pattern_Custom;
-        inUsePtnArray = customPattern;
-        inUseHeuristic = HeuristicOptions.PDCustom;
-    }
-
-    /**
-     *  Initializes SolverPdbBase object with a given concrete class.
-     *
-     *  @param copySolver an instance of SolverPdbBase
-     */
-    public SolverPdbBase(SolverPdbBase copySolver) {
+    public SolverPdbBase(SolverPdb copySolver) {
         this.inUsePattern = copySolver.inUsePattern;
         this.inUsePtnArray = copySolver.inUsePtnArray;
         this.inUseHeuristic = copySolver.inUseHeuristic;
@@ -143,7 +96,7 @@ public class SolverPdbBase extends AbstractSolver {
     // load preset additive pattern database from a data file, if file not exists
     // generate a new set.  Estimate takes 15s for 555 pattern, 2 minutes for 663 pattern,
     // 2.5 - 3 hours for 78 pattern also require minimum 2gigabytes memory -Xms2g.
-    private void loadPDComponents(PatternOptions presetPattern, int choice) {
+    protected void loadPDComponents(PatternOptions presetPattern, int choice) {
         PatternDatabase pd15 = new PatternDatabase(presetPattern, choice);
         patternGroups = pd15.getPatternGroups();
         patternFormatSize = new int[patternGroups.length];
@@ -160,7 +113,7 @@ public class SolverPdbBase extends AbstractSolver {
 
     // generate the additive pattern database components with give user defined
     // custom pattern
-    private void customPDComponents(byte[] customPattern) {
+    protected void customPDComponents(byte[] customPattern) {
         PatternDatabase pd15 = new PatternDatabase(customPattern);
         patternGroups = pd15.getPatternGroups();
         patternFormatSize = new int[patternGroups.length];
@@ -177,7 +130,7 @@ public class SolverPdbBase extends AbstractSolver {
 
     // load detected pattern key and format from a data file, if file not exists,
     // generate a new set
-    private void loadPDElements(boolean[] elementGroups) {
+    protected void loadPDElements(boolean[] elementGroups) {
         PatternElement pd15e = new PatternElement(elementGroups, mode);
         keys = pd15e.getKeys();
         formats = pd15e.getFormats();
@@ -319,8 +272,8 @@ public class SolverPdbBase extends AbstractSolver {
         }
     }
 
-    // recursive depth first search until it reach the goal state or timeout, the least
-    // estimate and node counts will be use to determine the starting order of next search
+    // recursive depth first search until it reach the goal state or timeout, use
+    // hard coded order Right -> Down -> Left -> Up
     protected void dfsStartingOrder(int orgX, int orgY, int limit, int orgValReg,
             int orgValSym) {
         int zeroPos = orgY * rowSize + orgX;
@@ -474,7 +427,7 @@ public class SolverPdbBase extends AbstractSolver {
     }
 
     // shift the space to right
-    protected int shiftRight(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
+    int shiftRight(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
             int orgValReg, int orgValSym, int[] orgCopy, int swirlKey) {
         if (terminated) {
             return endOfSearch;
@@ -492,7 +445,7 @@ public class SolverPdbBase extends AbstractSolver {
     }
 
     // shift the space to down
-    protected int shiftDown(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
+    int shiftDown(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
             int orgValReg, int orgValSym, int[] orgCopy, int swirlKey) {
         if (terminated) {
             return endOfSearch;
@@ -510,7 +463,7 @@ public class SolverPdbBase extends AbstractSolver {
     }
 
     // shift the space to left
-    protected int shiftLeft(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
+    int shiftLeft(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
             int orgValReg, int orgValSym, int[] orgCopy, int swirlKey) {
         if (terminated) {
             return endOfSearch;
@@ -528,7 +481,7 @@ public class SolverPdbBase extends AbstractSolver {
     }
 
     // shift the space to up
-    protected int shiftUp(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
+    int shiftUp(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
             int orgValReg, int orgValSym, int[] orgCopy, int swirlKey) {
         if (terminated) {
             return endOfSearch;

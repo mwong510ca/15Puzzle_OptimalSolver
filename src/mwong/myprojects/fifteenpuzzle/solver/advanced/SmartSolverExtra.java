@@ -17,7 +17,8 @@ import java.util.Map.Entry;
 /**
  * SmartSolverExtra has the add on functions for advanced version.  It return the
  * reference moves and solutions if the puzzle has been stored as a reference board.
- * It calculate the advanced estimate from the collection of reference boards.
+ * It use Manhattan distance to calculate the advanced estimate from the collection
+ * of reference boards.
  *
  * <p>Dependencies : Board.java, Direction.java, HeuristicOptions.java, PuzzleProperties.java,
  *                   ReferenceAccumulator.java ReferenceBoard.java, ReferenceMoves.java,
@@ -28,11 +29,11 @@ import java.util.Map.Entry;
  */
 class SmartSolverExtra extends SolverMd {
     /**
-     *  Print solver description.
+     * Print solver description.
      */
-    public void printDescription(boolean flagAdvancedPriority, HeuristicOptions inUseHeuristic) {
+    public void printDescription(boolean inUseAdvancedPriority, HeuristicOptions inUseHeuristic) {
         System.out.println("15 puzzle solver using " + inUseHeuristic.getDescription());
-        if (flagAdvancedPriority) {
+        if (inUseAdvancedPriority) {
             System.out.println("Advanced version - initial estimate use the goal state and "
                     + "stored reference boards.");
         } else {
@@ -180,13 +181,7 @@ class SmartSolverExtra extends SolverMd {
     private boolean advancedDistance(Board board, int lowerLimit, int upperLimit) {
         clearHistory();
         heuristic(board);
-        for (int i = 0; i < 4; i++) {
-            if (board.getValidMoves()[i] == 0) {
-                lastDepthSummary[i] = endOfSearch;
-            } else {
-                lastDepthSummary[i + 4] = board.getValidMoves()[i];
-            }
-        }
+        setLastDepthSummary(board);
         int initLimit = lowerLimit;
         while (lowerLimit <= upperLimit) {
             dfsStartingOrder(zeroX, zeroY, lowerLimit, initLimit);

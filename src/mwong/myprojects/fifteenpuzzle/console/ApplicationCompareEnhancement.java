@@ -17,12 +17,12 @@ import java.util.Scanner;
 public class ApplicationCompareEnhancement extends AbstractApplication {
     private final ApplicationType applicationType;
     private final boolean tagAdvanced;
-    private SolverPdbBase solverV1;
-    private SolverPdbEnh1 solverV2;
-    private SolverPdbEnh2 solverV3;
-    private SolverPdb solverV4;
-    private SmartSolverPdbBase solverV5;
-    private SmartSolverPdb solverV6;
+    private SolverPdbBase solverNoEnh;
+    private SolverPdbEnh1 solverEnh1;
+    private SolverPdbEnh2 solverEnh2;
+    private SolverPdb solverStandard;
+    private SmartSolverPdbBase solverAdvEst;
+    private SmartSolverPdb solverAdvanced;
     private final ReferenceAccumulator refAccumulator;
 
     public ApplicationCompareEnhancement() {
@@ -33,31 +33,31 @@ public class ApplicationCompareEnhancement extends AbstractApplication {
         tagAdvanced = ApplicationProperties.isTagAdvanced();
         refAccumulator = new ReferenceAccumulator();
 
-        solverV6 = new SmartSolverPdb(PatternOptions.Pattern_78, refAccumulator);
-        solverV6.messageSwitch(messageOff);
-        solverV6.timeoutSwitch(timeoutOff);
-        solverV6.advPrioritySwitch(tagAdvanced);
+        solverAdvanced = new SmartSolverPdb(PatternOptions.Pattern_78, refAccumulator);
+        solverAdvanced.messageSwitch(messageOff);
+        solverAdvanced.timeoutSwitch(timeoutOff);
+        solverAdvanced.advPrioritySwitch(tagAdvanced);
 
-        solverV5 = new SmartSolverPdbBase(solverV6, refAccumulator);
-        solverV5.messageSwitch(messageOff);
-        solverV5.timeoutSwitch(timeoutOff);
-        solverV5.advPrioritySwitch(tagAdvanced);
+        solverAdvEst = new SmartSolverPdbBase(solverAdvanced, refAccumulator);
+        solverAdvEst.messageSwitch(messageOff);
+        solverAdvEst.timeoutSwitch(timeoutOff);
+        solverAdvEst.advPrioritySwitch(tagAdvanced);
 
-        solverV4 = new SolverPdb(solverV6);
-        solverV4.messageSwitch(messageOff);
-        solverV4.timeoutSwitch(timeoutOff);
+        solverStandard = new SolverPdb(solverAdvanced);
+        solverStandard.messageSwitch(messageOff);
+        solverStandard.timeoutSwitch(timeoutOff);
 
-        solverV3 = new SolverPdbEnh2(solverV6);
-        solverV3.messageSwitch(messageOff);
-        solverV3.timeoutSwitch(timeoutOff);
+        solverEnh2 = new SolverPdbEnh2(solverAdvanced);
+        solverEnh2.messageSwitch(messageOff);
+        solverEnh2.timeoutSwitch(timeoutOff);
 
-        solverV2 = new SolverPdbEnh1(solverV6);
-        solverV2.messageSwitch(messageOff);
-        solverV2.timeoutSwitch(timeoutOff);
+        solverEnh1 = new SolverPdbEnh1(solverAdvanced);
+        solverEnh1.messageSwitch(messageOff);
+        solverEnh1.timeoutSwitch(timeoutOff);
 
-        solverV1 = new SolverPdbBase(solverV6);
-        solverV1.messageSwitch(messageOff);
-        solverV1.timeoutSwitch(timeoutOff);
+        solverNoEnh = new SolverPdbBase(solverAdvanced);
+        solverNoEnh.messageSwitch(messageOff);
+        solverNoEnh.timeoutSwitch(timeoutOff);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class ApplicationCompareEnhancement extends AbstractApplication {
     }
 
     public void run() {
-        printHeading(applicationType, solverV6);
+        printHeading(applicationType, solverAdvanced);
         
         scanner = new Scanner(System.in, "UTF-8");
         do {
@@ -117,35 +117,36 @@ public class ApplicationCompareEnhancement extends AbstractApplication {
 
             System.out.print("\n" + board);
             if (board.isSolvable()) {
-                int heuristicStandard = solverV6.heuristicStandard(board);
-                int heuristicAdvanced = solverV6.heuristicAdvanced(board);
+                int heuristicStandard = solverAdvanced.heuristicStandard(board);
+                int heuristicAdvanced = solverAdvanced.heuristicAdvanced(board);
                 System.out.print("Standard estimate : " + heuristicStandard + "\t\t");
                 System.out.println("Advanced estimate : " + heuristicAdvanced);
                 System.out.println("\t\t\t\tTime\t\tNodes");
                 
                 System.out.printf("%-32s", "No enhancement : ");
-                solvePuzzle(solverV1, board);
+                solvePuzzle(solverNoEnh, board);
                 System.out.printf("%-32s", "Add symmetry reduction : ");
-                solvePuzzle(solverV2, board);
+                solvePuzzle(solverEnh1, board);
                 System.out.printf("%-32s", "Add circular reduction : ");
-                solvePuzzle(solverV3, board);
+                solvePuzzle(solverEnh2, board);
                 System.out.printf("%-32s", "Add starting order detection : ");
-                solvePuzzle(solverV4, board);
+                solvePuzzle(solverStandard, board);
                 if (heuristicAdvanced > heuristicStandard) {
                     System.out.printf("%-32s", "Advanced version : ");
-                    solvePuzzle(solverV5, board);
-                    if (solverV6.hasPartialSolution(board)) {
+                    solvePuzzle(solverAdvEst, board);
+                    if (solverAdvanced.hasPartialSolution(board)) {
                         System.out.printf("%-32s", "Use preset partial solution :");
-                        solvePuzzle(solverV6, board);
+                        solvePuzzle(solverAdvanced, board);
                     } else {
                         System.out.printf("%-32s", "No preset partial solution.");
                     }
-                    refAccumulator.updateLastSearch(solverV5);
                 }
             } else {
                 System.out.println("The board is unsolvable, try again!");
             }
-            System.out.println("\t\t\tActual number of solution move : " + solverV4.moves() + "\n");
+            System.out.println("\t\t\tActual number of solution move : " + solverStandard.moves() + "\n");
+            
+            
         } while (true);
     }
 }

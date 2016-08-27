@@ -1,66 +1,38 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation  : javac SolverPD.java
- *  Dependencies : Board.java, Direction.java, Stopwatch.java,
- *                 PDElement.java, PDCombo.java, PDPresetPatterns.java,
- *                 SolverAbstract, AdvancedAccumulator.java
- *                 AdvancedBoard.java, AdvancedMoves.java
- *
- *  SolverPD implements SolverInterface.  It take a Board object and solve the
- *  puzzle with IDA* using additive pattern database.
- *
- ****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
-import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdb;
-import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdbBase;
 import mwong.myprojects.fifteenpuzzle.utilities.Stopwatch;
 
 /**
- * SmartSolverPD extends SolverPD.  The advanced version extend the standard solver
- * using the reference boards collection to boost the initial estimate.
+ * SmartSolverPdbBase extends SolverPdb.  It extends the standard solver using the reference
+ * boards collection to boost the initial estimate only, without using partial preset solution.
  *
  * <p>Dependencies : AdvancedRecord.java, Board.java, Direction.java, HeuristicOptions.java,
  *                   PatternOptions.java, ReferenceAccumulator.java, SmartSolverConstants.java,
- *                   SmartSolverExtra.java, SolverPD.java, SolverProperties.java, Stopwatch.java
+ *                   SmartSolverExtra.java, SolverPdb.java, SolverProperties.java, Stopwatch.java
  *
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SmartSolverPdbBase extends SolverPdb {
-    protected final byte numPartialMoves;
-    protected final byte refCutoff;
-    protected final ReferenceAccumulator refAccumulator;
-    protected final SmartSolverExtra extra;
+    protected final byte numPartialMoves = SolverConstants.getNumPartialMoves();
+    protected final byte refCutoff = SolverConstants.getReferenceCutoff();
+    protected SmartSolverExtra extra;
+    protected ReferenceAccumulator refAccumulator;
     protected Board lastSearchBoard;
+    protected boolean addedReference;
 
     /**
-     * Initializes SolverPD object using default preset pattern.
-     *
-     * @param refAccumulator the given ReferenceAccumulator object
+     * Default constructor.
      */
-    public SmartSolverPdbBase(ReferenceAccumulator refAccumulator) {
-        this(SolverProperties.getDefaultPattern(), refAccumulator);
-    }
-
-    /**
-     * Initializes SolverPD object using given preset pattern.
-     *
-     * @param presetPattern the given preset pattern type
-     * @param refAccumulator the given ReferenceAccumulator object
-     */
-    public SmartSolverPdbBase(PatternOptions presetPattern, ReferenceAccumulator refAccumulator) {
-        this(presetPattern, 0, refAccumulator);
+    SmartSolverPdbBase() {
+        super();
     }
 
     /**
@@ -71,23 +43,8 @@ public class SmartSolverPdbBase extends SolverPdb {
      * @param choice the number of preset pattern option
      * @param refAccumulator the given ReferenceAccumulator object
      */
-    public SmartSolverPdbBase(PatternOptions presetPattern, int choice,
-            ReferenceAccumulator refAccumulator) {
+    SmartSolverPdbBase(PatternOptions presetPattern, int choice) {
         super(presetPattern, choice);
-        if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
-            System.out.println("Referece board collection unavailable."
-                    + " Resume to the 15 puzzle solver standard version.");
-            extra = null;
-            this.refAccumulator = null;
-            refCutoff = 0;
-            numPartialMoves = 0;
-        } else {
-            activeSmartSolver = true;
-            extra = new SmartSolverExtra();
-            this.refAccumulator = refAccumulator;
-            refCutoff = SolverConstants.getReferenceCutoff();
-            numPartialMoves = SolverConstants.getNumPartialMoves();
-        }
     }
 
     /**
@@ -98,23 +55,8 @@ public class SmartSolverPdbBase extends SolverPdb {
      * @param elementGroups boolean array of groups reference to given pattern
      * @param refAccumulator the given ReferenceAccumulator object
      */
-    public SmartSolverPdbBase(byte[] customPattern, boolean[] elementGroups,
-            ReferenceAccumulator refAccumulator) {
+    SmartSolverPdbBase(byte[] customPattern, boolean[] elementGroups) {
         super(customPattern, elementGroups);
-        if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
-            System.out.println("Referece board collection unavailable."
-                    + " Resume to the 15 puzzle solver standard version.");
-            extra = null;
-            this.refAccumulator = null;
-            refCutoff = 0;
-            numPartialMoves = 0;
-        } else {
-            activeSmartSolver = true;
-            extra = new SmartSolverExtra();
-            this.refAccumulator = refAccumulator;
-            refCutoff = SolverConstants.getReferenceCutoff();
-            numPartialMoves = SolverConstants.getNumPartialMoves();
-        }
     }
 
     /**
@@ -122,21 +64,17 @@ public class SmartSolverPdbBase extends SolverPdb {
      *
      *  @param copySolver an instance of SolverPdb
      */
-    public SmartSolverPdbBase(SolverPdbBase copySolver, ReferenceAccumulator refAccumulator) {
+    public SmartSolverPdbBase(SolverPdb copySolver, ReferenceAccumulator refAccumulator) {
         super(copySolver);
         if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
             System.out.println("Referece board collection unavailable."
                     + " Resume to the 15 puzzle solver standard version.");
             extra = null;
             this.refAccumulator = null;
-            refCutoff = 0;
-            numPartialMoves = 0;
         } else {
             activeSmartSolver = true;
             extra = new SmartSolverExtra();
             this.refAccumulator = refAccumulator;
-            refCutoff = SolverConstants.getReferenceCutoff();
-            numPartialMoves = SolverConstants.getNumPartialMoves();
         }
     }
 
@@ -160,14 +98,7 @@ public class SmartSolverPdbBase extends SolverPdb {
         if (board.isSolvable()) {
             clearHistory();
             stopwatch = new Stopwatch();
-            lastDepthSummary = new int[rowSize * 2];
-            for (int i = 0; i < 4; i++) {
-                if (board.getValidMoves()[i] == 0) {
-                    lastDepthSummary[i] = endOfSearch;
-                } else {
-                    lastDepthSummary[i + 4] = board.getValidMoves()[i];
-                }
-            }
+            setLastDepthSummary(board);
             // initializes the board by calling heuristic function using original priority
             // then solve the puzzle with given estimate instead
             heuristic(board, tagStandard, tagSearch);
@@ -194,11 +125,7 @@ public class SmartSolverPdbBase extends SolverPdb {
         }
 
         if (!board.equals(lastBoard) || isSearch) {
-            priorityAdvanced = -1;
-            lastBoard = board;
-            tiles = board.getTiles();
-            zeroX = board.getZeroX();
-            zeroY = board.getZeroY();
+            initialize(board);
             byte[] tilesSym = board.getTilesSym();
 
             // additive pattern database components
@@ -215,6 +142,8 @@ public class SmartSolverPdbBase extends SolverPdb {
 
         if (!isAdvanced) {
             return priorityGoal;
+        } else if (!isSearch && priorityAdvanced != -1) {
+            return priorityAdvanced;
         }
 
         AdvancedRecord record = extra.advancedContains(board, isSearch, refAccumulator);
@@ -229,7 +158,7 @@ public class SmartSolverPdbBase extends SolverPdb {
         if (priorityAdvanced < refCutoff) {
             return priorityAdvanced;
         }
-        //System.out.println("send to advanced estimate");
+
         priorityAdvanced = extra.advancedEstimate(board, priorityAdvanced, refCutoff,
                 refAccumulator.getActiveMap());
 
@@ -279,6 +208,7 @@ public class SmartSolverPdbBase extends SolverPdb {
         if (inUsePattern == PatternOptions.Pattern_78) {
             lastSearchBoard = new Board(tiles);
         }
+        addedReference = false;
 
         int countDir = 0;
         for (int i = 0; i < rowSize; i++) {
@@ -346,6 +276,7 @@ public class SmartSolverPdbBase extends SolverPdb {
                         // and the initial board has added to the reference boards
                         if (refAccumulator.addBoard(this)) {
                             priorityAdvanced = backupSteps;
+                            addedReference = true;
                         }
 
                         // restore original solutions
@@ -398,5 +329,9 @@ public class SmartSolverPdbBase extends SolverPdb {
             throw new UnsupportedOperationException();
         }
         return lastSearchBoard;
+    }
+
+    protected final boolean isAddedReference() {
+        return addedReference;
     }
 }

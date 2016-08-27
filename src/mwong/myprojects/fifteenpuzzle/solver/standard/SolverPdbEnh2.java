@@ -1,59 +1,28 @@
 package mwong.myprojects.fifteenpuzzle.solver.standard;
 
-import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
-import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
-
 /**
  * SolverPdbEnh2 extends SolverPdbEnh1 with enhancement 2 circular reduction.
  *
- * <p>Dependencies : PatternOptions.java, SolverPdbEnh1.java, SolverProperties.java
+ * <p>Dependencies : SolverPdbEnh1.java
  *
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SolverPdbEnh2 extends SolverPdbEnh1 {
     /**
-     *  Initializes SolverPdbEnh2 object using default preset pattern.
+     * Default constructor.
      */
-    public SolverPdbEnh2() {
-        this(SolverProperties.getDefaultPattern());
+    SolverPdbEnh2() {
+        super();
     }
 
     /**
-     *  Initializes SolverPdbEnh2 object using given preset pattern.
+     * Initializes SolverPdbEnh2 object with a given standard version SolverPdb instance,
+     * the concrete class of SolverPdbEnh2.
      *
-     *  @param presetPattern the given preset pattern type
+     *  @param copySolver an instance of SolverPdb
      */
-    public SolverPdbEnh2(PatternOptions presetPattern) {
-        this(presetPattern, 0);
-    }
-
-    /**
-     *  Initializes SolverPdbEnh2 object with choice of given preset pattern.
-     *
-     *  @param presetPattern the given preset pattern type
-     *  @param choice the number of preset pattern option
-     */
-    public SolverPdbEnh2(PatternOptions presetPattern, int choice) {
-        super(presetPattern, choice);
-    }
-
-    /**
-     *  Initializes SolverPdbEnh2 object with user defined custom pattern.
-     *
-     *  @param customPattern byte array of user defined custom pattern
-     *  @param elementGroups boolean array of groups reference to given pattern
-     */
-    public SolverPdbEnh2(byte[] customPattern, boolean[] elementGroups) {
-        super(customPattern, elementGroups);
-    }
-
-    /**
-     *  Initializes SolverPdbEnh2 object with a given concrete class.
-     *
-     *  @param copySolver an instance of SolverPdbEnh2
-     */
-    public SolverPdbEnh2(SolverPdbBase copySolver) {
+    public SolverPdbEnh2(SolverPdb copySolver) {
         super(copySolver);
     }
 

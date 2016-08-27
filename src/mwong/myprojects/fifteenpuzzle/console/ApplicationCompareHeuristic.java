@@ -78,35 +78,43 @@ public class ApplicationCompareHeuristic extends AbstractApplication {
 
     //  It take a solver and a 15 puzzle board, display the the process time and number of
     //  nodes generated during the search, time out after 10 seconds.
-    private void solvePuzzle(Solver solver, Board board) {
+    private void solvePuzzle(Solver solver, Board board, boolean estimateOnly) {
         printHeading(applicationType, solver);
 
         solver.advPrioritySwitch(!tagAdvanced);
         int heuristicStandard = solver.heuristicStandard(board);
 
         System.out.print("Standard\t" + heuristicStandard + "\t\t");
-        solver.findOptimalPath(board);
-        if (solver.isSearchTimeout()) {
-            System.out.println("Timeout: " + solver.searchTime() + "s at depth "
-                    + solver.searchTerminateAtDepth() + "\t" + solver.searchNodeCount());
-        } else {
-            System.out.printf("%-15s %-15s " + solver.searchNodeCount() + "\n",
-                    solver.searchTime() + "s", solver.moves());
-        }
-
+        if (estimateOnly) {
+        	System.out.println("Skip searching - will not solved in 10s.");
+        } else { 
+        	solver.findOptimalPath(board);
+            if (solver.isSearchTimeout()) {
+                System.out.println("Timeout: " + solver.searchTime() + "s at depth "
+                        + solver.searchTerminateAtDepth() + "\t" + solver.searchNodeCount());
+            } else {
+                System.out.printf("%-15s %-15s " + solver.searchNodeCount() + "\n",
+                        solver.searchTime() + "s", solver.moves());
+            }
+        } 
+        
         if (solver.advPrioritySwitch(tagAdvanced)) {
             int heuristicAdvanced = solver.heuristicAdvanced(board);
             if (heuristicStandard == heuristicAdvanced) {
                 System.out.println("Advanced\t" + "Same value");
             } else {
-                System.out.print("Advanced\t" + heuristicAdvanced + "\t\t");
-                solver.findOptimalPath(board);
-                if (solver.isSearchTimeout()) {
-                    System.out.println("Timeout: " + solver.searchTime() + "s at depth "
-                            + solver.searchTerminateAtDepth() + "\t" + solver.searchNodeCount());
-                } else {
-                    System.out.printf("%-15s %-15s " + solver.searchNodeCount() + "\n",
-                            solver.searchTime() + "s", solver.moves());
+            	System.out.print("Advanced\t" + heuristicAdvanced + "\t\t");
+            	if (estimateOnly) {
+                	System.out.println("Skip searching - will not solved in 10s.");
+                } else { 
+                	solver.findOptimalPath(board);
+                    if (solver.isSearchTimeout()) {
+                        System.out.println("Timeout: " + solver.searchTime() + "s at depth "
+                                + solver.searchTerminateAtDepth() + "\t" + solver.searchNodeCount());
+                    } else {
+                        System.out.printf("%-15s %-15s " + solver.searchNodeCount() + "\n",
+                                solver.searchTime() + "s", solver.moves());
+                    }
                 }
             }
         }
@@ -156,47 +164,37 @@ public class ApplicationCompareHeuristic extends AbstractApplication {
             if (board.isSolvable()) {
                 System.out.print("\t\tEstimate\tTime\t\tMinimum Moves\tNodes generated");
 
-                solvePuzzle(solverPdb78, board);
+                boolean estimateOnly = false;
+                solvePuzzle(solverPdb78, board, estimateOnly);
                 
-                boolean nextHeuristic = true;
-                solvePuzzle(solverPdbWd663, board);
+                solvePuzzle(solverPdbWd663, board, estimateOnly);
                 if (solverPdbWd663.isSearchTimeout()) {
-                	nextHeuristic = false;
+                	estimateOnly = true;
                 }
                 
-                if (nextHeuristic) {
-                	solvePuzzle(solverPdbWd555, board);
-                	if (solverPdbWd555.isSearchTimeout()) {
-                    	nextHeuristic = false;
-                    }
+                solvePuzzle(solverPdbWd555, board, estimateOnly);
+                if (!estimateOnly && solverPdbWd555.isSearchTimeout()) {
+                	estimateOnly = true;
                 }    
                 
-                if (nextHeuristic) {
-                    solvePuzzle(solverWdMd, board);
-                	if (solverWdMd.isSearchTimeout()) {
-                    	nextHeuristic = false;
-                    }
+                solvePuzzle(solverWdMd, board, estimateOnly);
+                if (!estimateOnly && solverWdMd.isSearchTimeout()) {
+                	estimateOnly = true;
                 }    
                 
-                if (nextHeuristic) {
-                    solvePuzzle(solverWd, board);
-                	if (solverWd.isSearchTimeout()) {
-                    	nextHeuristic = false;
-                    }
-                }    
+                solvePuzzle(solverWd, board, estimateOnly);
+                if (!estimateOnly && solverWd.isSearchTimeout()) {
+                	estimateOnly = true;
+                }
                 
-                if (nextHeuristic) {
-                    solverMd.linearConflictSwitch(tagLinearConflict);
-                    solvePuzzle(solverMd, board);
-                	if (solverMd.isSearchTimeout()) {
-                    	nextHeuristic = false;
-                    }
-                }    
+                solverMd.linearConflictSwitch(tagLinearConflict);
+                solvePuzzle(solverMd, board, estimateOnly);
+                if (!estimateOnly && solverMd.isSearchTimeout()) {
+                	estimateOnly = true;
+                }
                    
-                if (nextHeuristic) {
-                    solverMd.linearConflictSwitch(!tagLinearConflict);
-                    solvePuzzle(solverMd, board);
-                }
+                solverMd.linearConflictSwitch(!tagLinearConflict);
+                solvePuzzle(solverMd, board, estimateOnly);
                 
                 // Notes: updateLastSearch is optional.
                 refAccumulator.updateLastSearch(solverPdb78);

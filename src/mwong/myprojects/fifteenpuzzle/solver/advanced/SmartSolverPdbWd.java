@@ -8,13 +8,15 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdbWd;
 
+import java.util.Arrays;
+
 /**
- * SmartSolverPDWD extends SolverPDWD.  The advanced version extend the standard solver
+ * SmartSolverPdbWd extends SolverPdbWd.  The advanced version extend the standard solver
  * using the reference boards collection to boost the initial estimate.
  *
  * <p>Dependencies : AdvancedRecord.java, Board.java, Direction.java, PatternOptions.java,
  *                   ReferenceAccumulator.java, SmartSolverConstants.java, SmartSolverExtra.java,
- *                   SolverPDWD.java
+ *                   SolverPdbWd.java
  *
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
@@ -26,7 +28,7 @@ public class SmartSolverPdbWd extends SolverPdbWd {
     private final SmartSolverExtra extra;
 
     /**
-     * Initializes SolverPDWD object using default preset pattern.
+     * Initializes SmartSolverPdbWd object using default preset pattern.
      *
      * @param refAccumulator the given ReferenceAccumulator object
      */
@@ -35,7 +37,7 @@ public class SmartSolverPdbWd extends SolverPdbWd {
     }
 
     /**
-     * Initializes SolverPDWD object with given preset pattern.
+     * Initializes SmartSolverPdbWd object with given preset pattern.
      *
      * @param presetPattern the given preset pattern type
      * @param refAccumulator the given ReferenceAccumulator object
@@ -45,7 +47,7 @@ public class SmartSolverPdbWd extends SolverPdbWd {
     }
 
     /**
-     * Initializes SolverPDWD object with given preset pattern and option. If refAccumlator
+     * Initializes SmartSolverPdbWd object with given preset pattern and option. If refAccumlator
      * is null or empty, it will act as standard version.
      *
      * @param presetPattern the given preset pattern type
@@ -97,7 +99,6 @@ public class SmartSolverPdbWd extends SolverPdbWd {
             return -1;
         }
 
-        priorityAdvanced = -1;
         if (!board.equals(lastBoard) || isSearch) {
             // walking distance from parent/superclass
             priorityGoal = super.heuristic(board);
@@ -106,6 +107,8 @@ public class SmartSolverPdbWd extends SolverPdbWd {
 
         if (!isAdvanced) {
             return priorityGoal;
+        } else if (!isSearch && priorityAdvanced != -1) {
+            return priorityAdvanced;
         }
 
         AdvancedRecord record = extra.advancedContains(board, isSearch, refAccumulator);
@@ -186,18 +189,12 @@ public class SmartSolverPdbWd extends SolverPdbWd {
         Board board = new Board(tiles);
         for (int i = 1; i < numPartialMoves; i++) {
             board = board.shift(dupSolution[i]);
+            assert board != null : i + "board is null\t" + Arrays.toString(solutionMove)
+            + (new Board(tiles));
         }
+        clearHistory();
         heuristic(board, tagStandard, tagSearch);
-
-        int firstDirValue = dupSolution[numPartialMoves].getValue();
-        for (int i = 0; i < 4; i++) {
-            if (i != firstDirValue) {
-                lastDepthSummary[i] = endOfSearch;
-                lastDepthSummary[i + 4] = 0;
-            } else {
-                lastDepthSummary[i + 4] = 1;
-            }
-        }
+        setLastDepthSummary(dupSolution[numPartialMoves]);
 
         idaCount = numPartialMoves;
         if (flagMessage) {

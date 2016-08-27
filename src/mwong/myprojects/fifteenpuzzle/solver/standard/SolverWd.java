@@ -6,7 +6,6 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.WalkingDistance;
 
-import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -150,8 +149,6 @@ public class SolverWd extends AbstractSolver {
         int [] estimate1stMove = new int[rowSize * 2];
         System.arraycopy(lastDepthSummary, 0, estimate1stMove, 0, rowSize * 2);
 
-        System.out.println(Arrays.toString(lastDepthSummary));
-        
         int estimate = limit;
         while (!terminated && estimate != endOfSearch) {
             int firstMoveIdx = -1;

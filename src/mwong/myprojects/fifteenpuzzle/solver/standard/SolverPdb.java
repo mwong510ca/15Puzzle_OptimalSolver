@@ -1,18 +1,16 @@
 package mwong.myprojects.fifteenpuzzle.solver.standard;
 
+import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
-
-import java.util.Arrays;
 
 /**
  * SolverPdb extends SolverPdbEnh2 with enhancement 3 starting order detection.  This is
  * the completed standard version of 15 puzzle optimal solver using pattern database.
  *
- * <p>Dependencies : AbstractSolver.java, Board.java, Direction.java, HeuristicOptions.java,
- *                   PatternDatabase.java, PatternElement.java, PatternElementMode.java,
- *                   PatternOptions.java, PatternPreoperties.java
+ * <p>Dependencies : Direction.java, HeuristicOptions.java, PatternOptions.java,
+ *                   SolverPdbEnh2.java, SolverProperties.java
  *
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
@@ -41,7 +39,19 @@ public class SolverPdb extends SolverPdbEnh2 {
      *  @param choice the number of preset pattern option
      */
     public SolverPdb(PatternOptions presetPattern, int choice) {
-        super(presetPattern, choice);
+        loadPDComponents(presetPattern, choice);
+        loadPDElements(presetPattern.getElements());
+        inUsePattern = presetPattern;
+        inUsePtnArray = presetPattern.getPattern(choice);
+        if (presetPattern == PatternOptions.Pattern_555) {
+            inUseHeuristic = HeuristicOptions.PD555;
+        } else if (presetPattern == PatternOptions.Pattern_663) {
+            inUseHeuristic = HeuristicOptions.PD663;
+        } else if (presetPattern == PatternOptions.Pattern_78) {
+            inUseHeuristic = HeuristicOptions.PD78;
+        } else {
+            System.err.println("SolverPD init error");
+        }
     }
 
     /**
@@ -51,7 +61,11 @@ public class SolverPdb extends SolverPdbEnh2 {
      *  @param elementGroups boolean array of groups reference to given pattern
      */
     public SolverPdb(byte[] customPattern, boolean[] elementGroups) {
-        super(customPattern, elementGroups);
+        customPDComponents(customPattern);
+        loadPDElements(elementGroups);
+        inUsePattern = PatternOptions.Pattern_Custom;
+        inUsePtnArray = customPattern;
+        inUseHeuristic = HeuristicOptions.PDCustom;
     }
 
     /**
@@ -59,7 +73,7 @@ public class SolverPdb extends SolverPdbEnh2 {
      *
      *  @param copySolver an instance of SolverPdb
      */
-    public SolverPdb(SolverPdbBase copySolver) {
+    public SolverPdb(SolverPdb copySolver) {
         super(copySolver);
     }
 
@@ -73,11 +87,8 @@ public class SolverPdb extends SolverPdbEnh2 {
         int zeroSym = symmetryPos[zeroPos];
         int[] orgCopy = new int[szPdKeys];
         System.arraycopy(pdKeys, 0, orgCopy, 0, szPdKeys);
-        int[] estimate1stMove = new int[rowSize * 2];
-        System.arraycopy(lastDepthSummary, 0, estimate1stMove, 0, rowSize * 2);
-        if (flagMessage) {
-            System.out.println(Arrays.toString(lastDepthSummary));
-        }
+        int[] estimate1stMove = new int[4 * 2];
+        System.arraycopy(lastDepthSummary, 0, estimate1stMove, 0, 4 * 2);
 
         int estimate = limit;
         while (!terminated && estimate != endOfSearch) {
@@ -101,36 +112,21 @@ public class SolverPdb extends SolverPdbEnh2 {
             if (!terminated && estimate < endOfSearch) {
                 int startCounter = idaCount++;
                 if (firstMoveIdx == Direction.RIGHT.getValue()) {
-                    if (flagMessage) {
-                        System.out.print("R ");
-                    }
                     lastDepthSummary[firstMoveIdx] = shiftRight(orgX, orgY, zeroPos, zeroSym,
                             1, limit, orgValReg, orgValSym, orgCopy, reset);
                 } else if (firstMoveIdx == Direction.DOWN.getValue()) {
-                    if (flagMessage) {
-                        System.out.print("D ");
-                    }
                     lastDepthSummary[firstMoveIdx] = shiftDown(orgX, orgY, zeroPos, zeroSym,
                             1, limit, orgValReg, orgValSym, orgCopy, reset);
                 } else if (firstMoveIdx == Direction.LEFT.getValue()) {
-                    if (flagMessage) {
-                        System.out.print("L ");
-                    }
                     lastDepthSummary[firstMoveIdx] = shiftLeft(orgX, orgY, zeroPos, zeroSym,
                             1, limit, orgValReg, orgValSym, orgCopy, reset);
                 } else if (firstMoveIdx == Direction.UP.getValue()) {
-                    if (flagMessage) {
-                        System.out.print("U ");
-                    }
                     lastDepthSummary[firstMoveIdx] = shiftUp(orgX, orgY, zeroPos, zeroSym,
                             1, limit, orgValReg, orgValSym, orgCopy, reset);
                 }
                 lastDepthSummary[firstMoveIdx + rowSize] = idaCount - startCounter;
                 estimate1stMove[firstMoveIdx] = endOfSearch;
             }
-        }
-        if (flagMessage) {
-            System.out.println();
         }
     }
 }

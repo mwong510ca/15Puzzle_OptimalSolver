@@ -209,7 +209,7 @@ public abstract class AbstractSolver implements Solver {
         priorityGoal = 0;
         priorityAdvanced = -1;
     }
-
+    
     /**
      * Returns the byte value of the standard version of the heuristic value of the board.
      *
@@ -261,14 +261,7 @@ public abstract class AbstractSolver implements Solver {
                 terminated = true;
             } else {
                 stopwatch.start();
-                lastDepthSummary = new int[4 * 2];
-                for (int i = 0; i < 4; i++) {
-                    if (board.getValidMoves()[i] == 0) {
-                        lastDepthSummary[i] = endOfSearch;
-                    } else {
-                        lastDepthSummary[i + 4] = board.getValidMoves()[i];
-                    }
-                }
+                setLastDepthSummary(board);
                 limit = heuristic(board);
                 assert limit > 0 : "Board must be solvable and is not the goal state.";
                 idaStar(limit);
@@ -281,7 +274,32 @@ public abstract class AbstractSolver implements Solver {
         stopwatch = null;
     }
 
-    // solve the puzzle using interactive deepening A* algorithm
+    protected final void setLastDepthSummary(Board board) {
+    	lastDepthSummary = new int[4 * 2];
+    	int[] validMoves = board.getValidMoves();
+        for (int i = 0; i < 4; i++) {
+            if (validMoves[i] == 0) {
+                lastDepthSummary[i] = endOfSearch;
+            } else {
+                lastDepthSummary[i + 4] = board.getValidMoves()[i];
+            }
+        }
+    }
+    	
+    protected final void setLastDepthSummary(Direction dir) {
+    	lastDepthSummary = new int[4 * 2];
+    	int dirValue = dir.getValue();
+    	for (int i = 0; i < 4; i++) {
+            if (i == dirValue) {
+            	lastDepthSummary[i + 4] = 1;
+            } else {
+                lastDepthSummary[i] = endOfSearch;
+                lastDepthSummary[i + 4] = 0;
+            }
+        }
+	}
+
+	// solve the puzzle using interactive deepening A* algorithm
     protected abstract void idaStar(int limit);
 
     // maximum allow 5 continues clockwise turn.

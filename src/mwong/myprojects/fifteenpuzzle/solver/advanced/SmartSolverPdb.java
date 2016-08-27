@@ -1,18 +1,3 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation  : javac SolverPD.java
- *  Dependencies : Board.java, Direction.java, Stopwatch.java,
- *                 PDElement.java, PDCombo.java, PDPresetPatterns.java,
- *                 SolverAbstract, AdvancedAccumulator.java
- *                 AdvancedBoard.java, AdvancedMoves.java
- *
- *  SolverPD implements SolverInterface.  It take a Board object and solve the
- *  puzzle with IDA* using additive pattern database.
- *
- ****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
 import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
@@ -20,17 +5,17 @@ import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
-import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdbBase;
 
 import java.util.Arrays;
 
 /**
- * SmartSolverPD extends SolverPD.  The advanced version extend the standard solver
- * using the reference boards collection to boost the initial estimate.
+ * SmartSolverPdb extends SmartSolverPdbBase use preset partial solution from the reference
+ * collection to boost the search time.  This is the completed advanced version of 15 puzzle
+ * optimal solver using pattern database.
  *
- * <p>Dependencies : AdvancedRecord.java, Board.java, Direction.java, HeuristicOptions.java,
- *                   PatternOptions.java, ReferenceAccumulator.java, SmartSolverConstants.java,
- *                   SmartSolverExtra.java, SolverPD.java, SolverProperties.java, Stopwatch.java
+ * <p>Dependencies : AdvancedRecord.java, Board.java, Direction.java, PatternOptions.java,
+ *                   ReferenceAccumulator.java, SmartSolverExtra.java, SmartSolverPdbBase.java,
+ *                   SolverProperties.java,
  *
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
@@ -65,7 +50,17 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
      */
     public SmartSolverPdb(PatternOptions presetPattern, int choice,
             ReferenceAccumulator refAccumulator) {
-        super(presetPattern, choice, refAccumulator);
+        super(presetPattern, choice);
+        if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
+            System.out.println("Referece board collection unavailable."
+                    + " Resume to the 15 puzzle solver standard version.");
+            extra = null;
+            this.refAccumulator = null;
+        } else {
+            activeSmartSolver = true;
+            extra = new SmartSolverExtra();
+            this.refAccumulator = refAccumulator;
+        }
     }
 
     /**
@@ -78,16 +73,17 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
      */
     public SmartSolverPdb(byte[] customPattern, boolean[] elementGroups,
             ReferenceAccumulator refAccumulator) {
-        super(customPattern, elementGroups, refAccumulator);
-    }
-
-    /**
-     *  Initializes SolverPdb object with a given concrete class.
-     *
-     *  @param copySolver an instance of SolverPdb
-     */
-    public SmartSolverPdb(SolverPdbBase copySolver, ReferenceAccumulator refAccumulator) {
-        super(copySolver, refAccumulator);
+        super(customPattern, elementGroups);
+        if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
+            System.out.println("Referece board collection unavailable."
+                    + " Resume to the 15 puzzle solver standard version.");
+            extra = null;
+            this.refAccumulator = null;
+        } else {
+            activeSmartSolver = true;
+            extra = new SmartSolverExtra();
+            this.refAccumulator = refAccumulator;
+        }
     }
 
     // overload method to calculate the heuristic value of the given board and conditions
@@ -98,11 +94,7 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
         }
 
         if (!board.equals(lastBoard) || isSearch) {
-            priorityAdvanced = -1;
-            lastBoard = board;
-            tiles = board.getTiles();
-            zeroX = board.getZeroX();
-            zeroY = board.getZeroY();
+            initialize(board);
             byte[] tilesSym = board.getTilesSym();
 
             // additive pattern database components
@@ -113,12 +105,13 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
                 pdValReg += pdKeys[i];
                 pdValSym += pdKeys[i +  offsetPdSym];
             }
-
             priorityGoal = (byte) Math.max(pdValReg, pdValSym);
         }
 
         if (!isAdvanced) {
             return priorityGoal;
+        } else if (!isSearch && priorityAdvanced != -1) {
+            return priorityAdvanced;
         }
 
         AdvancedRecord record = extra.advancedContains(board, isSearch, refAccumulator);
@@ -146,6 +139,12 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
         return priorityAdvanced;
     }
 
+    /**
+     * Returns the boolean value of the given board is a reference board with partial solution.
+     *
+     * @param board the given Board object
+     * @return boolean value of the given board is a reference board with partial solution.
+     */
     public boolean hasPartialSolution(Board board) {
         AdvancedRecord record = extra.advancedContains(board, tagSearch, refAccumulator);
         if (record != null && record.hasPartialMoves()) {
@@ -176,23 +175,12 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
         Board board = new Board(tiles);
         for (int i = 1; i < numPartialMoves; i++) {
             board = board.shift(dupSolution[i]);
-            if (board == null) {
-                System.out.println(i + "board is null");
-                System.out.println(Arrays.toString(solutionMove));
-                System.out.println(new Board(tiles));
-            }
+            assert board != null : i + "board is null" + Arrays.toString(solutionMove)
+                + (new Board(tiles));
         }
+        clearHistory();
         heuristic(board, tagStandard, tagSearch);
-
-        int firstDirValue = dupSolution[numPartialMoves].getValue();
-        for (int i = 0; i < 4; i++) {
-            if (i != firstDirValue) {
-                lastDepthSummary[i] = endOfSearch;
-                lastDepthSummary[i + 4] = 0;
-            } else {
-                lastDepthSummary[i + 4] = 1;
-            }
-        }
+        setLastDepthSummary(dupSolution[numPartialMoves]);
 
         idaCount = numPartialMoves;
         if (flagMessage) {

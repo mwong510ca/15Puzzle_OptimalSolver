@@ -278,8 +278,8 @@ public class SolverPdbWd extends SolverWd {
         int zeroSym = symmetryPos[zeroPos];
         int[] orgCopy = new int[szPdWdKeys];
         System.arraycopy(pdwdKeys, 0, orgCopy, 0, szPdWdKeys);
-        int[] estimate1stMove = new int[rowSize * 2];
-        System.arraycopy(lastDepthSummary, 0, estimate1stMove, 0, rowSize * 2);
+        int[] estimate1stMove = new int[4 * 2];
+        System.arraycopy(lastDepthSummary, 0, estimate1stMove, 0, 4 * 2);
 
         int estimate = limit;
         while (!terminated && estimate != endOfSearch) {

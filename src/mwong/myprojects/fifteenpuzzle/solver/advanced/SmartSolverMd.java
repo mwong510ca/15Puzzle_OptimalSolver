@@ -6,8 +6,10 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverMd;
 
+import java.util.Arrays;
+
 /**
- * SmartSolverMD extends SolverMD.  The advanced version extend the standard solver
+ * SmartSolverMd extends SolverMd.  The advanced version extend the standard solver
  * using the reference boards collection to boost the initial estimate.
  *
  * <p>Dependencies : AdvancedRecord.java, Board.java, Direction.java, ReferenceAccumulator.java,
@@ -24,7 +26,7 @@ public class SmartSolverMd extends SolverMd {
     private final SmartSolverExtra extra;
 
     /**
-     * Initializes SmartSolverMD object.
+     * Initializes SmartSolverMd object.
      *
      * @param refAccumulator the given ReferenceAccumulator object
      */
@@ -33,7 +35,7 @@ public class SmartSolverMd extends SolverMd {
     }
 
     /**
-     * Initializes SmartSolverMD object.  If refAccumlator is null or empty,
+     * Initializes SmartSolverMd object.  If refAccumlator is null or empty,
      * it will act as standard version.
      *
      * @param lcFlag boolean flag for linear conflict feature
@@ -82,22 +84,11 @@ public class SmartSolverMd extends SolverMd {
             return -1;
         }
 
-        priorityAdvanced = -1;
         if (!board.equals(lastBoard)) {
-            lastBoard = board;
-            zeroX = board.getZeroX();
-            zeroY = board.getZeroY();
-            tiles = board.getTiles();
+            initialize(board);
             tilesSym = board.getTilesSym();
-            lastDepthSummary = new int [rowSize * 2];
-            for (int i = 0; i < 4; i++) {
-                if (board.getValidMoves()[i] == 0) {
-                    lastDepthSummary[i] = endOfSearch;
-                } else {
-                    lastDepthSummary[i + 4] = board.getValidMoves()[i];
-                }
-            }
-            
+            setLastDepthSummary(board);
+
             priorityGoal = 0;
             int base = 0;
 
@@ -145,18 +136,13 @@ public class SmartSolverMd extends SolverMd {
             zeroY = board.getZeroY();
             tiles = board.getTiles();
             tilesSym = board.getTilesSym();
-            lastDepthSummary = new int [rowSize * 2];
-            for (int i = 0; i < 4; i++) {
-                if (board.getValidMoves()[i] == 0) {
-                    lastDepthSummary[i] = endOfSearch;
-                } else {
-                    lastDepthSummary[i + 4] = board.getValidMoves()[i];
-                }
-            }
+            setLastDepthSummary(board);
         }
 
         if (!isAdvanced) {
             return priorityGoal;
+        } else if (!isSearch && priorityAdvanced != -1) {
+            return priorityAdvanced;
         }
 
         AdvancedRecord record = extra.advancedContains(board, isSearch, refAccumulator);
@@ -238,18 +224,12 @@ public class SmartSolverMd extends SolverMd {
         Board board = new Board(tiles);
         for (int i = 1; i < numPartialMoves; i++) {
             board = board.shift(dupSolution[i]);
+            assert board != null : i + "board is null" + Arrays.toString(solutionMove)
+            + (new Board(tiles));
         }
+        clearHistory();
         heuristic(board, tagStandard, tagSearch);
-
-        int firstDirValue = dupSolution[numPartialMoves].getValue();
-        for (int i = 0; i < 4; i++) {
-            if (i != firstDirValue) {
-                lastDepthSummary[i] = endOfSearch;
-                lastDepthSummary[i + 4] = 0;
-            } else {
-                lastDepthSummary[i + 4] = 1;
-            }
-        }
+        setLastDepthSummary(dupSolution[numPartialMoves]);
 
         idaCount = numPartialMoves;
         if (flagMessage) {

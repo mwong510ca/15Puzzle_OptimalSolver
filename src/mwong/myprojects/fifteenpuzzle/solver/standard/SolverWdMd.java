@@ -130,8 +130,8 @@ public class SolverWdMd extends SolverWd {
             int valH, int valV) {
         int zeroPos = orgY * rowSize + orgX;
         int zeroSym = symmetryPos[zeroPos];
-        int [] estimate1stMove = new int[rowSize * 2];
-        System.arraycopy(lastDepthSummary, 0, estimate1stMove, 0, rowSize * 2);
+        int [] estimate1stMove = new int[4 * 2];
+        System.arraycopy(lastDepthSummary, 0, estimate1stMove, 0, 4 * 2);
 
         int estimate = limit;
         while (!terminated && estimate != endOfSearch) {
