@@ -1,9 +1,10 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
+import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
-import mwong.myprojects.fifteenpuzzle.solver.standard.SolverWDMD;
+import mwong.myprojects.fifteenpuzzle.solver.standard.SolverWdMd;
 
 /**
  * SmartSolverWDMD extends SolverWDMD.  The advanced version extend the standard solver
@@ -15,7 +16,7 @@ import mwong.myprojects.fifteenpuzzle.solver.standard.SolverWDMD;
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
-public class SmartSolverWDMD extends SolverWDMD {
+public class SmartSolverWdMd extends SolverWdMd {
     private final byte numPartialMoves;
     private final byte refCutoff;
     private final ReferenceAccumulator refAccumulator;
@@ -27,7 +28,7 @@ public class SmartSolverWDMD extends SolverWDMD {
      *
      * @param refAccumulator the given ReferenceAccumulator object
      */
-    public SmartSolverWDMD(ReferenceAccumulator refAccumulator) {
+    public SmartSolverWdMd(ReferenceAccumulator refAccumulator) {
         super();
         if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
             System.out.println("Referece board collection unavailable."
@@ -40,8 +41,8 @@ public class SmartSolverWDMD extends SolverWDMD {
             activeSmartSolver = true;
             extra = new SmartSolverExtra();
             this.refAccumulator = refAccumulator;
-            refCutoff = SmartSolverConstants.getReferenceCutoff();
-            numPartialMoves = SmartSolverConstants.getNumPartialMoves();
+            refCutoff = SolverConstants.getReferenceCutoff();
+            numPartialMoves = SolverConstants.getNumPartialMoves();
         }
     }
 
@@ -160,62 +161,7 @@ public class SmartSolverWDMD extends SolverWDMD {
             advancedSearch(limit);
             return;
         }
-
-        int countDir = 0;
-        for (int i = 0; i < rowSize; i++) {
-            if (lastDepthSummary[i + rowSize] > 0) {
-                countDir++;
-            }
-        }
-
-        // quick scan for advanced priority, determine the start order for optimization
-        if (flagAdvancedPriority && countDir > 1) {
-            int initLimit = priorityGoal;
-            while (initLimit < limit) {
-                idaCount = 0;
-                dfsStartingOrder(zeroX, zeroY, 0, initLimit, mdlcValue, wdIdxH, wdIdxV,
-                        wdValueH, wdValueV);
-                initLimit += 2;
-
-                boolean overload = false;
-                for (int i = rowSize; i < rowSize * 2; i++) {
-                    if (lastDepthSummary[i] > 10000) {
-                        overload = true;
-                        break;
-                    }
-                }
-                if (overload) {
-                    break;
-                }
-            }
-        }
-
-        while (limit <= maxMoves) {
-            idaCount = 0;
-            if (flagMessage) {
-                System.out.print("ida limit " + limit);
-            }
-            dfsStartingOrder(zeroX, zeroY, 0, limit, mdlcValue, wdIdxH, wdIdxV, wdValueH, wdValueV);
-
-            searchDepth = limit;
-            searchNodeCount += idaCount;
-
-            if (timeout) {
-                if (flagMessage) {
-                    System.out.printf("\tNodes : %-15s timeout\n", Integer.toString(idaCount));
-                }
-                return;
-            } else {
-                if (flagMessage) {
-                    System.out.printf("\tNodes : %-15s  " + stopwatch.currentTime() + "s\n",
-                            Integer.toString(idaCount));
-                }
-                if (solved) {
-                    return;
-                }
-            }
-            limit += 2;
-        }
+        super.idaStar(limit);
     }
 
     // skip the first 8 moves from stored record then solve the remaining puzzle
@@ -233,6 +179,7 @@ public class SmartSolverWDMD extends SolverWDMD {
         int firstDirValue = dupSolution[numPartialMoves].getValue();
         for (int i = 0; i < 4; i++) {
             if (i != firstDirValue) {
+                lastDepthSummary[i] = endOfSearch;
                 lastDepthSummary[i + 4] = 0;
             } else {
                 lastDepthSummary[i + 4] = 1;
@@ -243,7 +190,7 @@ public class SmartSolverWDMD extends SolverWDMD {
         if (flagMessage) {
             System.out.print("ida limit " + limit);
         }
-        dfsStartingOrder(zeroX, zeroY, 0, limit - numPartialMoves + 1, mdlcValue,
+        dfsStartingOrder(zeroX, zeroY, limit - numPartialMoves + 1, mdlcValue,
                 wdIdxH, wdIdxV, wdValueH, wdValueV);
         if (solved) {
             System.arraycopy(solutionMove, 2, dupSolution, numPartialMoves + 1,

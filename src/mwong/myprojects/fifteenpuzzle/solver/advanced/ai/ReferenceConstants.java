@@ -2,6 +2,7 @@ package mwong.myprojects.fifteenpuzzle.solver.advanced.ai;
 
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
+import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleConstants;
 
 /**
@@ -11,7 +12,7 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleConstants;
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class ReferenceConstants {
-    private static final String CORE_SOLVER_CLASS_NAME = "SmartSolverPD";
+    private static final String CORE_SOLVER_CLASS_NAME = SmartSolverPdb.class.getSimpleName();
     private static final HeuristicOptions CORE_HEURISTIC = HeuristicOptions.PD78;
     private static final boolean ON_SWITCH = SolverConstants.isOnSwitch();
 

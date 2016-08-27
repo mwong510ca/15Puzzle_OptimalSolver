@@ -27,7 +27,7 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import java.util.HashMap;
 
 /**
- * SolverPDWD extends SolverWD.  It is the 15 puzzle optimal solver.
+ * SolverPdbWd extends SolverWd.  It is the 15 puzzle optimal solver.
  * It takes a Board object of the puzzle and solve it with IDA* using combination of
  * Walking Distance and Additive Pattern Database of predefined pattern from PatternOptions.
  *
@@ -38,7 +38,7 @@ import java.util.HashMap;
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
-public class SolverPDWD extends SolverWD {
+public class SolverPdbWd extends SolverWd {
     private final int offsetReverse = 2;
     private final PatternElementMode mode = PatternElementMode.PUZZLE_SOLVER;
 
@@ -67,28 +67,28 @@ public class SolverPDWD extends SolverWD {
     private int wdKeyIdx;
 
     /**
-     *  Initializes SolverPDWD object using default preset pattern.
+     *  Initializes SolverPdbWd object using default preset pattern.
      */
-    public SolverPDWD() {
+    public SolverPdbWd() {
         this(SolverProperties.getDefaultPattern());
     }
 
     /**
-     *  Initializes SolverPDWD object with given preset pattern.
+     *  Initializes SolverPdbWd object with given preset pattern.
      *
      *  @param presetPattern the given preset pattern type
      */
-    public SolverPDWD(PatternOptions presetPattern) {
+    public SolverPdbWd(PatternOptions presetPattern) {
         this(presetPattern, 0);
     }
 
     /**
-     *  Initializes SolverPDWD object with choice of given preset pattern.
+     *  Initializes SolverPdbWd object with choice of given preset pattern.
      *
      *  @param presetPattern the given preset pattern type
      *  @param choice the number of preset pattern option
      */
-    public SolverPDWD(PatternOptions presetPattern, int choice) {
+    public SolverPdbWd(PatternOptions presetPattern, int choice) {
         super();
         loadPDComponents(presetPattern, choice);
         loadPDElements(presetPattern.getElements());
@@ -249,7 +249,7 @@ public class SolverPDWD extends SolverWD {
                 System.out.print("ida limit " + limit);
             }
 
-            dfsStartingOrder(zeroX, zeroY, 0, limit, regVal, symVal);
+            dfsStartingOrder(zeroX, zeroY, limit, regVal, symVal);
             searchDepth = limit;
             searchNodeCount += idaCount;
 
@@ -273,31 +273,30 @@ public class SolverPDWD extends SolverWD {
 
     // recursive depth first search until it reach the goal state or timeout, the least estimate and
     // node counts will be use to determine the starting order of next search
-    protected void dfsStartingOrder(int orgX, int orgY, int cost, int limit, int orgValReg,
-            int orgValSym) {
+    protected void dfsStartingOrder(int orgX, int orgY, int limit, int orgValReg, int orgValSym) {
         int zeroPos = orgY * rowSize + orgX;
         int zeroSym = symmetryPos[zeroPos];
-        int costPlus1 = cost + 1;
         int[] orgCopy = new int[szPdWdKeys];
         System.arraycopy(pdwdKeys, 0, orgCopy, 0, szPdWdKeys);
         int[] estimate1stMove = new int[rowSize * 2];
         System.arraycopy(lastDepthSummary, 0, estimate1stMove, 0, rowSize * 2);
 
         int estimate = limit;
-        do {
+        while (!terminated && estimate != endOfSearch) {
             int firstMoveIdx = -1;
-            int nodeCount = 0;
+            int nodeCount = Integer.MAX_VALUE;
 
             estimate = endOfSearch;
             for (int i = 0; i < 4; i++) {
                 if (estimate1stMove[i] == endOfSearch) {
                     continue;
-                } else if (lastDepthSummary[i + rowSize] > nodeCount) {
+                } else if (lastDepthSummary[i] < estimate) {
                     estimate = estimate1stMove[i];
-                    nodeCount = lastDepthSummary[i + rowSize];
+                    nodeCount = lastDepthSummary[i + 4];
                     firstMoveIdx = i;
-                } else {
-                    lastDepthSummary[i] = endOfSearch;
+                } else if (lastDepthSummary[i] == estimate && lastDepthSummary[i + 4] < nodeCount) {
+                    nodeCount = lastDepthSummary[i + 4];
+                    firstMoveIdx = i;
                 }
             }
 
@@ -305,21 +304,21 @@ public class SolverPDWD extends SolverWD {
                 int startCounter = idaCount++;
                 if (firstMoveIdx == Direction.RIGHT.getValue()) {
                     lastDepthSummary[firstMoveIdx] = shiftRight(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy, 0);
+                            1, limit, orgValReg, orgValSym, orgCopy, reset);
                 } else if (firstMoveIdx == Direction.DOWN.getValue()) {
                     lastDepthSummary[firstMoveIdx] = shiftDown(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy, 0);
+                            1, limit, orgValReg, orgValSym, orgCopy, reset);
                 } else if (firstMoveIdx == Direction.LEFT.getValue()) {
                     lastDepthSummary[firstMoveIdx] = shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy, 0);
+                            1, limit, orgValReg, orgValSym, orgCopy, reset);
                 } else if (firstMoveIdx == Direction.UP.getValue()) {
                     lastDepthSummary[firstMoveIdx] = shiftUp(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy, 0);
+                            1, limit, orgValReg, orgValSym, orgCopy, reset);
                 }
                 lastDepthSummary[firstMoveIdx + rowSize] = idaCount - startCounter;
                 estimate1stMove[firstMoveIdx] = endOfSearch;
             }
-        } while (!terminated && estimate != endOfSearch);
+        }
     }
 
     // recursive depth first search until it reach the goal state or timeout
@@ -344,11 +343,14 @@ public class SolverPDWD extends SolverWD {
         System.arraycopy(pdwdKeys, 0, orgCopy, 0, pdwdKeys.length);
         int newEstimate = orgPriority;
 
-        boolean nonIdentical = false;
-        for (int i = 0; i < szGroup; i++) {
-            if (pdwdKeys[i] != pdwdKeys[i + offsetPdSym]) {
-                nonIdentical = true;
-                break;
+        boolean nonIdentical = true;
+        if (zeroPos == zeroSym) {
+            nonIdentical = false;
+            for (int i = 0; i < szGroup; i++) {
+                if (pdwdKeys[i] != pdwdKeys[i + offsetPdSym]) {
+                    nonIdentical = true;
+                    break;
+                }
             }
         }
 
@@ -358,80 +360,80 @@ public class SolverPDWD extends SolverWD {
             // RIGHT
             if (orgX < rowSize - 1) {
                 newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgValReg, orgValSym, orgCopy, 0));
+                        costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
             }
             if (nonIdentical) {
                 // UP
                 if (orgY > 0 && isValidCounterClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | Rotation.CCW.getValue()));
+                            swirlKey << 2 | ccwKey));
                 }
                 // DOWN
                 if (orgY < rowSize - 1 && isValidClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | Rotation.CW.getValue()));
+                            swirlKey << 2 | cwKey));
                 }
             }
         } else if (prevMove == Direction.DOWN) {
             // DOWN
             if (orgY < rowSize - 1) {
                 newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgValReg, orgValSym, orgCopy, 0));
+                        costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
             }
             if (nonIdentical) {
                 // LEFT
                 if (orgX > 0 && isValidClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | Rotation.CW.getValue()));
+                            swirlKey << 2 | cwKey));
                 }
                 // RIGHT
                 if (orgX < rowSize - 1 && isValidCounterClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | Rotation.CCW.getValue()));
+                            swirlKey << 2 | ccwKey));
                 }
             }
         } else if (prevMove == Direction.LEFT) {
             // LEFT
             if (orgX > 0) {
                 newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgValReg, orgValSym, orgCopy, 0));
+                        costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
             }
             if (nonIdentical) {
                 // DOWN
                 if (orgY < rowSize - 1 && isValidCounterClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | Rotation.CCW.getValue()));
+                            swirlKey << 2 | ccwKey));
                 }
                 // UP
                 if (orgY > 0 && isValidClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | Rotation.CW.getValue()));
+                            swirlKey << 2 | cwKey));
                 }
             }
         } else if (prevMove == Direction.UP) {
             // UP
             if (orgY > 0) {
                 newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgValReg, orgValSym, orgCopy, 0));
+                        costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
             }
             if (nonIdentical) {
                 // RIGHT
                 if (orgX < rowSize - 1 && isValidClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | Rotation.CW.getValue()));
+                            swirlKey << 2 | cwKey));
                 }
                 // LEFT
                 if (orgX > 0 && isValidCounterClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | Rotation.CCW.getValue()));
+                            swirlKey << 2 | ccwKey));
                 }
             }
         }

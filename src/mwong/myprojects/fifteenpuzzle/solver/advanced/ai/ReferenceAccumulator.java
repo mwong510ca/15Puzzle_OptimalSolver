@@ -2,7 +2,7 @@ package mwong.myprojects.fifteenpuzzle.solver.advanced.ai;
 
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.Solver;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPD;
+import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.FileProperties;
@@ -21,7 +21,7 @@ import java.util.Map.Entry;
 
 /**
  * ReferenceBoard is the data type of stored board of reference collection.
- * It analysis each board's actual number of moves, first 8 moves to goal state, 
+ * It analysis each board's actual number of moves, first 8 moves to goal state,
  * and a conversion set for reverse estimate (use reference board as goal state).
  *
  * <p>Dependencies : Board.java, Direction.java, FileProperties.java, HeuristicOptions.java,
@@ -118,9 +118,9 @@ public class ReferenceAccumulator {
      * @return HashMap of collection of reference boards
      */
     public final HashMap<ReferenceBoard, ReferenceMoves> getActiveMap() {
-    	if (referenceMap == null) {
-    		return defaultMap;
-    	}
+        if (referenceMap == null) {
+            return defaultMap;
+        }
         return referenceMap;
     }
 
@@ -254,9 +254,9 @@ public class ReferenceAccumulator {
     }
 
     // create and return a SmartSolverPD object.
-    SmartSolverPD createSolver() {
+    SmartSolverPdb createSolver() {
         try {
-            SmartSolverPD solver = new SmartSolverPD(PatternOptions.Pattern_78, this);
+        	SmartSolverPdb solver = new SmartSolverPdb(PatternOptions.Pattern_78, this);
             solver.messageSwitch(offSwitch);
             solver.timeoutSwitch(offSwitch);
             solver.advPrioritySwitch(onSwitch);
@@ -291,7 +291,7 @@ public class ReferenceAccumulator {
             System.out.println("System update failed - not enough memory.");
             return;
         }
-        updateAll((SmartSolverPD) solver);
+        updateAll((SmartSolverPdb) solver);
     }
 
     /**
@@ -304,12 +304,12 @@ public class ReferenceAccumulator {
         if (!validateSolver(inSolver)) {
             return;
         }
-        updateAll((SmartSolverPD) inSolver);
+        updateAll((SmartSolverPdb) inSolver);
     }
 
     // scan the full collection, if the reference board is not verified, verify it now.
-    private void updateAll(SmartSolverPD solverPD) {
-        assert solverPD instanceof SmartSolverPD : "updateAll did not recevie SmartSolverPD object";
+    private void updateAll(SmartSolverPdb solverPD) {
+        assert solverPD instanceof SmartSolverPdb : "updateAll did not recevie SmartSolverPD object";
         final boolean backupAdvPriority = solverPD.getPriorityFlag();
         final boolean backupMessageFlag = solverPD.getMessageFlag();
         final boolean backupTimeoutFlag = solverPD.getTimeoutFlag();
@@ -354,7 +354,7 @@ public class ReferenceAccumulator {
         if (!bypass && inSolver.searchTime() < getCutoffLimit()) {
             return false;
         }
-        SmartSolverPD solverPD = (SmartSolverPD) inSolver;
+        SmartSolverPdb solverPD = (SmartSolverPdb) inSolver;
         Board board = solverPD.lastSearchBoard();
         Direction[] solution = solverPD.solution().clone();
 
@@ -442,7 +442,7 @@ public class ReferenceAccumulator {
             return false;
         }
 
-        SmartSolverPD solverPD = (SmartSolverPD) inSolver;
+        SmartSolverPdb solverPD = (SmartSolverPdb) inSolver;
 
         final boolean backupAdvPriority = solverPD.getPriorityFlag();
         final boolean backupMessageFlag = solverPD.getMessageFlag();

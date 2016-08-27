@@ -1,6 +1,6 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced.ai;
 
-import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPD;
+import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 
 import java.util.Arrays;
@@ -32,7 +32,7 @@ public class ReferenceAdministrator {
         Action action = Action.Add;
         boolean bypass = true;
 
-        SmartSolverPD solver = advAccumulator.createSolver();
+        SmartSolverPdb solver = advAccumulator.createSolver();
         if (solver == null) {
             return;
         }

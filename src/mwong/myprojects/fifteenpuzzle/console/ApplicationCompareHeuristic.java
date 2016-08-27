@@ -21,21 +21,15 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
 import mwong.myprojects.fifteenpuzzle.solver.Solver;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverMD;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPD;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPDWD;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverWD;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverWDMD;
+import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverMd;
+import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
+import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdbWd;
+import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverWd;
+import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverWdMd;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleDifficultyLevel;
-import mwong.myprojects.fifteenpuzzle.solver.standard.SolverMD;
-import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPD;
-import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPDWD;
-import mwong.myprojects.fifteenpuzzle.solver.standard.SolverWD;
-import mwong.myprojects.fifteenpuzzle.solver.standard.SolverWDMD;
-
 
 import java.util.Scanner;
 
@@ -43,66 +37,53 @@ public class ApplicationCompareHeuristic extends AbstractApplication {
     private final ApplicationType applicationType;
     private final boolean tagLinearConflict;
     private final boolean tagAdvanced;
-//    private SolverMD solverMd;
-//    private SolverWD solverWd;
-//    private SolverWDMD solverWdMd;
-//    private SolverPDWD solverPdWd555;
-//    private SolverPDWD solverPdWd663;
-//    private SolverPD solverPd78;
-    
-    private SmartSolverMD solverMd;
-    private SmartSolverWD solverWd;
-    private SmartSolverWDMD solverWdMd;
-    private SmartSolverPDWD solverPdWd555;
-    private SmartSolverPDWD solverPdWd663;
-    private SmartSolverPD solverPd78;
+
+    private SmartSolverMd solverMd;
+    private SmartSolverWd solverWd;
+    private SmartSolverWdMd solverWdMd;
+    private SmartSolverPdbWd solverPdbWd555;
+    private SmartSolverPdbWd solverPdbWd663;
+    private SmartSolverPdb solverPdb78;
     private final ReferenceAccumulator refAccumulator;
 
     public ApplicationCompareHeuristic() {
-    	super();
+        super();
         applicationType = ApplicationType.CompareHeuristic;
-        
+
         final boolean messageOff = !ApplicationProperties.isMessageOn();
         final boolean timeoutOff = !ApplicationProperties.isTimeoutOn();
         tagLinearConflict = ApplicationProperties.isTagLinearConflict();
         tagAdvanced = ApplicationProperties.isTagAdvanced();
         refAccumulator = new ReferenceAccumulator();
-//        refAccumulator = null;
-        
-//        solverMd = new SolverMD();
-        solverMd = new SmartSolverMD(refAccumulator);
+
+        solverMd = new SmartSolverMd(refAccumulator);
         solverMd.messageSwitch(messageOff);
 
-//        solverWd = new SolverWD();
-        solverWd = new SmartSolverWD(refAccumulator);
+        solverWd = new SmartSolverWd(refAccumulator);
         solverWd.messageSwitch(messageOff);
 
-//        solverWdMd = new SolverWDMD();
-        solverWdMd = new SmartSolverWDMD(refAccumulator);
+        solverWdMd = new SmartSolverWdMd(refAccumulator);
         solverWdMd.messageSwitch(messageOff);
 
-//        solverPdWd555 = new SolverPDWD(PatternOptions.Pattern_555);
-        solverPdWd555 = new SmartSolverPDWD(PatternOptions.Pattern_555, refAccumulator);
-        solverPdWd555.messageSwitch(messageOff);
+        solverPdbWd555 = new SmartSolverPdbWd(PatternOptions.Pattern_555, refAccumulator);
+        solverPdbWd555.messageSwitch(messageOff);
 
-//        solverPdWd663 = new SolverPDWD(PatternOptions.Pattern_663);
-        solverPdWd663 = new SmartSolverPDWD(PatternOptions.Pattern_663, refAccumulator);
-        solverPdWd663.messageSwitch(messageOff);
+        solverPdbWd663 = new SmartSolverPdbWd(PatternOptions.Pattern_663, refAccumulator);
+        solverPdbWd663.messageSwitch(messageOff);
 
-//        solverPd78 = new SolverPD(PatternOptions.Pattern_78);
-        solverPd78 = new SmartSolverPD(PatternOptions.Pattern_78, refAccumulator);
-        solverPd78.timeoutSwitch(timeoutOff);
-        solverPd78.messageSwitch(messageOff);
+        solverPdb78 = new SmartSolverPdb(PatternOptions.Pattern_78, refAccumulator);
+        solverPdb78.timeoutSwitch(timeoutOff);
+        solverPdb78.messageSwitch(messageOff);
     }
 
     //  It take a solver and a 15 puzzle board, display the the process time and number of
     //  nodes generated during the search, time out after 10 seconds.
     private void solvePuzzle(Solver solver, Board board) {
         printHeading(applicationType, solver);
-        
+
         solver.advPrioritySwitch(!tagAdvanced);
         int heuristicStandard = solver.heuristicStandard(board);
-        
+
         System.out.print("Standard\t" + heuristicStandard + "\t\t");
         solver.findOptimalPath(board);
         if (solver.isSearchTimeout()) {
@@ -110,23 +91,22 @@ public class ApplicationCompareHeuristic extends AbstractApplication {
                     + solver.searchTerminateAtDepth() + "\t" + solver.searchNodeCount());
         } else {
             System.out.printf("%-15s %-15s " + solver.searchNodeCount() + "\n",
-            		solver.searchTime() + "s", solver.moves());
-//            solutionDetail(board, solver);
+                    solver.searchTime() + "s", solver.moves());
         }
-        
+
         if (solver.advPrioritySwitch(tagAdvanced)) {
-        	int heuristicAdvanced = solver.heuristicAdvanced(board);
+            int heuristicAdvanced = solver.heuristicAdvanced(board);
             if (heuristicStandard == heuristicAdvanced) {
                 System.out.println("Advanced\t" + "Same value");
             } else {
-            	System.out.print("Advanced\t" + heuristicAdvanced + "\t\t");
+                System.out.print("Advanced\t" + heuristicAdvanced + "\t\t");
                 solver.findOptimalPath(board);
                 if (solver.isSearchTimeout()) {
                     System.out.println("Timeout: " + solver.searchTime() + "s at depth "
                             + solver.searchTerminateAtDepth() + "\t" + solver.searchNodeCount());
                 } else {
                     System.out.printf("%-15s %-15s " + solver.searchNodeCount() + "\n",
-                    		solver.searchTime() + "s", solver.moves());
+                            solver.searchTime() + "s", solver.moves());
                 }
             }
         }
@@ -134,7 +114,7 @@ public class ApplicationCompareHeuristic extends AbstractApplication {
 
     public void run() {
         scanner = new Scanner(System.in, "UTF-8");
-        do {
+        while (true) {
             System.out.println("Enter 'Q' - quit the program");
             System.out.println("      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random");
             System.out.println("      or 16 numbers from 0 to 15 for the puzzle");
@@ -175,25 +155,55 @@ public class ApplicationCompareHeuristic extends AbstractApplication {
             System.out.print("\n" + board);
             if (board.isSolvable()) {
                 System.out.print("\t\tEstimate\tTime\t\tMinimum Moves\tNodes generated");
+
+                solvePuzzle(solverPdb78, board);
                 
-                solvePuzzle(solverPd78, board);
-                /*
-                solvePuzzle(solverPdWd663, board);
-                solvePuzzle(solverPdWd555, board);
-                solvePuzzle(solverWdMd, board);
-                solvePuzzle(solverWd, board);
-                */
-                solverMd.linearConflictSwitch(tagLinearConflict);
-                solvePuzzle(solverMd, board);
-                solverMd.linearConflictSwitch(!tagLinearConflict);
-                solvePuzzle(solverMd, board);
-				
+                boolean nextHeuristic = true;
+                solvePuzzle(solverPdbWd663, board);
+                if (solverPdbWd663.isSearchTimeout()) {
+                	nextHeuristic = false;
+                }
+                
+                if (nextHeuristic) {
+                	solvePuzzle(solverPdbWd555, board);
+                	if (solverPdbWd555.isSearchTimeout()) {
+                    	nextHeuristic = false;
+                    }
+                }    
+                
+                if (nextHeuristic) {
+                    solvePuzzle(solverWdMd, board);
+                	if (solverWdMd.isSearchTimeout()) {
+                    	nextHeuristic = false;
+                    }
+                }    
+                
+                if (nextHeuristic) {
+                    solvePuzzle(solverWd, board);
+                	if (solverWd.isSearchTimeout()) {
+                    	nextHeuristic = false;
+                    }
+                }    
+                
+                if (nextHeuristic) {
+                    solverMd.linearConflictSwitch(tagLinearConflict);
+                    solvePuzzle(solverMd, board);
+                	if (solverMd.isSearchTimeout()) {
+                    	nextHeuristic = false;
+                    }
+                }    
+                   
+                if (nextHeuristic) {
+                    solverMd.linearConflictSwitch(!tagLinearConflict);
+                    solvePuzzle(solverMd, board);
+                }
+                
                 // Notes: updateLastSearch is optional.
-                //refAccumulator.updateLastSearch(solverPd78);
+                refAccumulator.updateLastSearch(solverPdb78);
             } else {
                 System.out.println("The board is unsolvable, try again!");
             }
             System.out.println();
-        } while (true);
+        }
     }
 }

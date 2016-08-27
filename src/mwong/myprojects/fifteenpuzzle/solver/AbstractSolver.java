@@ -36,13 +36,17 @@ public abstract class AbstractSolver implements Solver {
     protected final byte[] symmetryPos;
     protected final byte[] symmetryVal;
     protected final Board goalBoard;
+    protected final int reset;
+    protected final int cwKey;
+    protected final int ccwKey;
+
     // solver setting
     protected boolean flagTimeout;
     protected boolean flagMessage;
     protected boolean flagAdvancedPriority;
     protected boolean activeSmartSolver;
     protected int searchTimeoutLimit;
-    protected HeuristicOptions inUseHeuristic;
+    public HeuristicOptions inUseHeuristic;
     // board related
     protected byte[] tiles;
     protected int zeroX;
@@ -80,6 +84,9 @@ public abstract class AbstractSolver implements Solver {
         symmetryPos = SolverConstants.getSymmetryPos();
         symmetryVal = SolverConstants.getSymmetryVal();
         goalBoard = SolverConstants.getGoalBoard();
+        reset = Rotation.RST.getValue();
+        cwKey = Rotation.CW.getValue();
+        ccwKey = Rotation.CCW.getValue();
         // initialize default setting
         lastBoard = goalBoard;
         flagMessage = onSwitch;
@@ -187,7 +194,7 @@ public abstract class AbstractSolver implements Solver {
         terminated = false;
         searchDepth = 0;
         searchNodeCount = 0;
-        lastDepthSummary = new int [rowSize * 2];
+        lastDepthSummary = new int [4 * 2];
         solutionMove = new Direction[maxMoves + 1];
         solutionMove[0] = Direction.NONE;
         steps = 0;
@@ -254,8 +261,14 @@ public abstract class AbstractSolver implements Solver {
                 terminated = true;
             } else {
                 stopwatch.start();
-                lastDepthSummary = new int[rowSize * 2];
-                System.arraycopy(board.getValidMoves(), 0, lastDepthSummary, rowSize, rowSize);
+                lastDepthSummary = new int[4 * 2];
+                for (int i = 0; i < 4; i++) {
+                    if (board.getValidMoves()[i] == 0) {
+                        lastDepthSummary[i] = endOfSearch;
+                    } else {
+                        lastDepthSummary[i + 4] = board.getValidMoves()[i];
+                    }
+                }
                 limit = heuristic(board);
                 assert limit > 0 : "Board must be solvable and is not the goal state.";
                 idaStar(limit);
@@ -271,16 +284,16 @@ public abstract class AbstractSolver implements Solver {
     // solve the puzzle using interactive deepening A* algorithm
     protected abstract void idaStar(int limit);
 
-    // maximum allow 5 continues clockwise turn 
+    // maximum allow 5 continues clockwise turn.
     protected boolean isValidClockwise(int swirlKey) {
-    	return (swirlKey & 0x07FF) != 0x0155;
+        return (swirlKey & 0x07FF) != 0x0155;
     }
 
-    // maximum allow 4 continues counterclockwise turn 
+    // maximum allow 4 continues counterclockwise turn.
     protected boolean isValidCounterClockwise(int swirlKey) {
-    	return (swirlKey & 0x00FF) != 0x00AA;
+        return (swirlKey & 0x00FF) != 0x00AA;
     }
-    
+
     // assertion tool : check the initial board reach the goal state after the solution moves.
     private boolean checkGoal(Board initial) {
         if (initial == null) {

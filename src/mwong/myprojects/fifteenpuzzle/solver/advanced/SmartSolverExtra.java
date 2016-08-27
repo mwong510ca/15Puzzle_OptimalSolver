@@ -8,7 +8,7 @@ import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceMoves;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleProperties;
-import mwong.myprojects.fifteenpuzzle.solver.standard.SolverMD;
+import mwong.myprojects.fifteenpuzzle.solver.standard.SolverMd;
 import mwong.myprojects.fifteenpuzzle.utilities.Stopwatch;
 
 import java.util.Map;
@@ -26,7 +26,7 @@ import java.util.Map.Entry;
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
-class SmartSolverExtra extends SolverMD {
+class SmartSolverExtra extends SolverMd {
     /**
      *  Print solver description.
      */
@@ -50,8 +50,8 @@ class SmartSolverExtra extends SolverMD {
             return null;
         }
 
-        byte lookupKey = SmartSolverConstants.getReferenceLookup(board.getZero1d());
-        int group = SmartSolverConstants.getReferenceGroup(board.getZero1d());
+        byte lookupKey = SolverConstants.getReferenceLookup(board.getZero1d());
+        int group = SolverConstants.getReferenceGroup(board.getZero1d());
 
         ReferenceBoard checkBoard = new ReferenceBoard(board);
         ReferenceBoard checkBoardSym = null;
@@ -61,8 +61,8 @@ class SmartSolverExtra extends SolverMD {
         }
 
         if (refMap.containsKey(checkBoard)) {
-            boolean symmetry = SmartSolverConstants.isSymmetry();
-            int numPartialMoves = SmartSolverConstants.getNumPartialMoves();
+            boolean symmetry = SolverConstants.isSymmetry();
+            int numPartialMoves = SolverConstants.getNumPartialMoves();
 
             ReferenceMoves advMoves = refMap.get(checkBoard);
             final byte steps = advMoves.getEstimate(lookupKey);
@@ -85,8 +85,8 @@ class SmartSolverExtra extends SolverMD {
             }
             return new AdvancedRecord(steps);
         } else if (refMap.containsKey(checkBoardSym)) {
-            boolean symmetry = SmartSolverConstants.isSymmetry();
-            int numPartialMoves = SmartSolverConstants.getNumPartialMoves();
+            boolean symmetry = SolverConstants.isSymmetry();
+            int numPartialMoves = SolverConstants.getNumPartialMoves();
 
             ReferenceMoves advMoves = refMap.get(checkBoardSym);
             if (lookupKey == 1) {
@@ -180,10 +180,16 @@ class SmartSolverExtra extends SolverMD {
     private boolean advancedDistance(Board board, int lowerLimit, int upperLimit) {
         clearHistory();
         heuristic(board);
-        System.arraycopy(board.getValidMoves(), 0, lastDepthSummary, rowSize, rowSize);
+        for (int i = 0; i < 4; i++) {
+            if (board.getValidMoves()[i] == 0) {
+                lastDepthSummary[i] = endOfSearch;
+            } else {
+                lastDepthSummary[i + 4] = board.getValidMoves()[i];
+            }
+        }
         int initLimit = lowerLimit;
         while (lowerLimit <= upperLimit) {
-            dfsStartingOrder(zeroX, zeroY, 0, lowerLimit, initLimit);
+            dfsStartingOrder(zeroX, zeroY, lowerLimit, initLimit);
             if (solved) {
                 return true;
             }

@@ -1,10 +1,12 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
+import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
+import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
-import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPDWD;
+import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdbWd;
 
 /**
  * SmartSolverPDWD extends SolverPDWD.  The advanced version extend the standard solver
@@ -17,7 +19,7 @@ import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPDWD;
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
-public class SmartSolverPDWD extends SolverPDWD {
+public class SmartSolverPdbWd extends SolverPdbWd {
     private final byte numPartialMoves;
     private final byte refCutoff;
     private final ReferenceAccumulator refAccumulator;
@@ -28,8 +30,8 @@ public class SmartSolverPDWD extends SolverPDWD {
      *
      * @param refAccumulator the given ReferenceAccumulator object
      */
-    public SmartSolverPDWD(ReferenceAccumulator refAccumulator) {
-        this(defaultPattern, refAccumulator);
+    public SmartSolverPdbWd(ReferenceAccumulator refAccumulator) {
+        this(SolverProperties.getDefaultPattern(), refAccumulator);
     }
 
     /**
@@ -38,7 +40,7 @@ public class SmartSolverPDWD extends SolverPDWD {
      * @param presetPattern the given preset pattern type
      * @param refAccumulator the given ReferenceAccumulator object
      */
-    public SmartSolverPDWD(PatternOptions presetPattern, ReferenceAccumulator refAccumulator) {
+    public SmartSolverPdbWd(PatternOptions presetPattern, ReferenceAccumulator refAccumulator) {
         this(presetPattern, 0, refAccumulator);
     }
 
@@ -50,7 +52,7 @@ public class SmartSolverPDWD extends SolverPDWD {
      * @param choice the given preset pattern option
      * @param refAccumulator the given ReferenceAccumulator object
      */
-    public SmartSolverPDWD(PatternOptions presetPattern, int choice,
+    public SmartSolverPdbWd(PatternOptions presetPattern, int choice,
             ReferenceAccumulator refAccumulator) {
         super(presetPattern, choice);
         if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
@@ -64,8 +66,8 @@ public class SmartSolverPDWD extends SolverPDWD {
             activeSmartSolver = true;
             extra = new SmartSolverExtra();
             this.refAccumulator = refAccumulator;
-            refCutoff = SmartSolverConstants.getReferenceCutoff();
-            numPartialMoves = SmartSolverConstants.getNumPartialMoves();
+            refCutoff = SolverConstants.getReferenceCutoff();
+            numPartialMoves = SolverConstants.getNumPartialMoves();
         }
     }
 
@@ -172,61 +174,7 @@ public class SmartSolverPDWD extends SolverPDWD {
             advancedSearch(limit);
             return;
         }
-
-        int countDir = 0;
-        for (int i = 0; i < rowSize; i++) {
-            if (lastDepthSummary[i + rowSize] > 0) {
-                countDir++;
-            }
-        }
-
-        // quick scan for advanced priority, determine the start order for optimization
-        if (flagAdvancedPriority && countDir > 1) {
-            int initLimit = priorityGoal;
-            while (initLimit < limit) {
-                idaCount = 0;
-                dfsStartingOrder(zeroX, zeroY, 0, initLimit, regVal, symVal);
-                initLimit += 2;
-
-                boolean overload = false;
-                for (int i = rowSize; i < rowSize * 2; i++) {
-                    if (lastDepthSummary[i] > 10000) {
-                        overload = true;
-                        break;
-                    }
-                }
-                if (overload) {
-                    break;
-                }
-            }
-        }
-
-        while (limit <= maxMoves) {
-            idaCount = 0;
-            if (flagMessage) {
-                System.out.print("ida limit " + limit);
-            }
-
-            dfsStartingOrder(zeroX, zeroY, 0, limit, regVal, symVal);
-            searchDepth = limit;
-            searchNodeCount += idaCount;
-
-            if (timeout) {
-                if (flagMessage) {
-                    System.out.printf("\tNodes : %-15s timeout\n", Integer.toString(idaCount));
-                }
-                return;
-            } else {
-                if (flagMessage) {
-                    System.out.printf("\tNodes : %-15s  " + stopwatch.currentTime() + "s\n",
-                            Integer.toString(idaCount));
-                }
-                if (solved) {
-                    return;
-                }
-            }
-            limit += 2;
-        }
+        super.idaStar(limit);
     }
 
     // skip the first 8 moves from stored record then solve the remaining puzzle
@@ -244,6 +192,7 @@ public class SmartSolverPDWD extends SolverPDWD {
         int firstDirValue = dupSolution[numPartialMoves].getValue();
         for (int i = 0; i < 4; i++) {
             if (i != firstDirValue) {
+                lastDepthSummary[i] = endOfSearch;
                 lastDepthSummary[i + 4] = 0;
             } else {
                 lastDepthSummary[i + 4] = 1;
@@ -255,7 +204,7 @@ public class SmartSolverPDWD extends SolverPDWD {
             System.out.print("ida limit " + limit);
         }
 
-        dfsStartingOrder(zeroX, zeroY, 0, limit - numPartialMoves + 1, regVal, symVal);
+        dfsStartingOrder(zeroX, zeroY, limit - numPartialMoves + 1, regVal, symVal);
         if (solved) {
             System.arraycopy(solutionMove, 2, dupSolution, numPartialMoves + 1,
                     limit - numPartialMoves);

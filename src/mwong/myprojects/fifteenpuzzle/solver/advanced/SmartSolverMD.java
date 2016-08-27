@@ -4,7 +4,7 @@ import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
-import mwong.myprojects.fifteenpuzzle.solver.standard.SolverMD;
+import mwong.myprojects.fifteenpuzzle.solver.standard.SolverMd;
 
 /**
  * SmartSolverMD extends SolverMD.  The advanced version extend the standard solver
@@ -17,7 +17,7 @@ import mwong.myprojects.fifteenpuzzle.solver.standard.SolverMD;
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
-public class SmartSolverMD extends SolverMD {
+public class SmartSolverMd extends SolverMd {
     private final byte numPartialMoves;
     private final byte refCutoff;
     private final ReferenceAccumulator refAccumulator;
@@ -28,7 +28,7 @@ public class SmartSolverMD extends SolverMD {
      *
      * @param refAccumulator the given ReferenceAccumulator object
      */
-    public SmartSolverMD(ReferenceAccumulator refAccumulator) {
+    public SmartSolverMd(ReferenceAccumulator refAccumulator) {
         this(!SolverConstants.isTagLinearConflict(), refAccumulator);
     }
 
@@ -39,7 +39,7 @@ public class SmartSolverMD extends SolverMD {
      * @param lcFlag boolean flag for linear conflict feature
      * @param refAccumulator the given ReferenceAccumulator object
      */
-    public SmartSolverMD(boolean lcFlag, ReferenceAccumulator refAccumulator) {
+    public SmartSolverMd(boolean lcFlag, ReferenceAccumulator refAccumulator) {
         super(lcFlag);
         if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
             System.out.println("Attention: Referece board collection unavailable."
@@ -52,8 +52,8 @@ public class SmartSolverMD extends SolverMD {
             activeSmartSolver = true;
             extra = new SmartSolverExtra();
             this.refAccumulator = refAccumulator;
-            refCutoff = SmartSolverConstants.getReferenceCutoff();
-            numPartialMoves = SmartSolverConstants.getNumPartialMoves();
+            refCutoff = SolverConstants.getReferenceCutoff();
+            numPartialMoves = SolverConstants.getNumPartialMoves();
         }
     }
 
@@ -90,8 +90,14 @@ public class SmartSolverMD extends SolverMD {
             tiles = board.getTiles();
             tilesSym = board.getTilesSym();
             lastDepthSummary = new int [rowSize * 2];
-            System.arraycopy(board.getValidMoves(), 0, lastDepthSummary, rowSize, rowSize);
-
+            for (int i = 0; i < 4; i++) {
+                if (board.getValidMoves()[i] == 0) {
+                    lastDepthSummary[i] = endOfSearch;
+                } else {
+                    lastDepthSummary[i + 4] = board.getValidMoves()[i];
+                }
+            }
+            
             priorityGoal = 0;
             int base = 0;
 
@@ -140,7 +146,13 @@ public class SmartSolverMD extends SolverMD {
             tiles = board.getTiles();
             tilesSym = board.getTilesSym();
             lastDepthSummary = new int [rowSize * 2];
-            System.arraycopy(board.getValidMoves(), 0, lastDepthSummary, rowSize, rowSize);
+            for (int i = 0; i < 4; i++) {
+                if (board.getValidMoves()[i] == 0) {
+                    lastDepthSummary[i] = endOfSearch;
+                } else {
+                    lastDepthSummary[i + 4] = board.getValidMoves()[i];
+                }
+            }
         }
 
         if (!isAdvanced) {
@@ -214,60 +226,7 @@ public class SmartSolverMD extends SolverMD {
             advancedSearch(limit);
             return;
         }
-
-        int countDir = 0;
-        for (int i = 0; i < rowSize; i++) {
-            if (lastDepthSummary[i + rowSize] > 0) {
-                countDir++;
-            }
-        }
-
-        // quick scan for advanced priority, determine the start order for optimization
-        if (flagAdvancedPriority && countDir > 1) {
-            int initLimit = priorityGoal;
-            while (initLimit < limit) {
-                idaCount = 0;
-                dfsStartingOrder(zeroX, zeroY, 0, initLimit, priorityGoal);
-                initLimit += 2;
-
-                boolean overload = false;
-                for (int i = rowSize; i < rowSize * 2; i++) {
-                    if (lastDepthSummary[i] > 10000) {
-                        overload = true;
-                        break;
-                    }
-                }
-                if (overload) {
-                    break;
-                }
-            }
-        }
-
-        while (limit <= maxMoves) {
-            idaCount = 0;
-            if (flagMessage) {
-                System.out.print("ida limit " + limit);
-            }
-            dfsStartingOrder(zeroX, zeroY, 0, limit, priorityGoal);
-            searchDepth = limit;
-            searchNodeCount += idaCount;
-
-            if (timeout) {
-                if (flagMessage) {
-                    System.out.printf("\tNodes : %-15s timeout\n", Integer.toString(idaCount));
-                }
-                return;
-            } else {
-                if (flagMessage) {
-                    System.out.printf("\tNodes : %-15s  " + stopwatch.currentTime() + "s\n",
-                            Integer.toString(idaCount));
-                }
-                if (solved) {
-                    return;
-                }
-            }
-            limit += 2;
-        }
+        super.idaStar(limit);
     }
 
     // skip the first 8 moves from stored record then solve the remaining puzzle
@@ -285,6 +244,7 @@ public class SmartSolverMD extends SolverMD {
         int firstDirValue = dupSolution[numPartialMoves].getValue();
         for (int i = 0; i < 4; i++) {
             if (i != firstDirValue) {
+                lastDepthSummary[i] = endOfSearch;
                 lastDepthSummary[i + 4] = 0;
             } else {
                 lastDepthSummary[i + 4] = 1;
@@ -295,7 +255,7 @@ public class SmartSolverMD extends SolverMD {
         if (flagMessage) {
             System.out.print("ida limit " + limit);
         }
-        dfsStartingOrder(zeroX, zeroY, 0, limit - numPartialMoves + 1, priorityGoal);
+        dfsStartingOrder(zeroX, zeroY, limit - numPartialMoves + 1, priorityGoal);
         if (solved) {
             System.arraycopy(solutionMove, 2, dupSolution, numPartialMoves + 1,
                     limit - numPartialMoves);

@@ -1,7 +1,8 @@
-package mwong.myprojects.fifteenpuzzle.solver.standard;
+package mwong.myprojects.fifteenpuzzle.solver;
 
 /**
  * Rotations that can be used.
+ * <li>{@link #RST}</li>
  * <li>{@link #CW}</li>
  * <li>{@link #CCW}</li>
  *
@@ -9,6 +10,11 @@ package mwong.myprojects.fifteenpuzzle.solver.standard;
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 enum Rotation {
+    /**
+     * Rotation (RST) Reset.
+     */
+    RST(0),
+
     /**
      * Rotation (CW) Clockwise.
      */

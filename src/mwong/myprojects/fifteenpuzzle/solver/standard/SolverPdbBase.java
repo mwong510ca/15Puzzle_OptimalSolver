@@ -14,39 +14,38 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import java.util.HashMap;
 
 /**
- * SolverPD extends AbstractSolver.  It is the 15 puzzle optimal solver.
- * It takes a Board object of the puzzle and solve it with IDA* using Additive
- * Pattern Database.  It may use predefined pattern from PatternOptions or
- * a set of user defined custom pattern.
+ * SolverPD extends AbstractSolver without enhancement.  It is the 15 puzzle optimal solver.
+ * It takes a Board object of the puzzle and solve it with IDA* using Additive Pattern Database.
+ * It may use predefined pattern from PatternOptions or a set of user defined custom pattern.
  *
  * <p>Dependencies : AbstractSolver.java, Board.java, Direction.java, HeuristicOptions.java,
  *                   PatternDatabase.java, PatternElement.java, PatternElementMode.java,
- *                   PatternOptions.java, PatternPreoperties.java
+ *                   PatternOptions.java, PatternPreoperties.java, SolverProperties.java
  *
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
-public class SolverPD extends AbstractSolver {
+public class SolverPdbBase extends AbstractSolver {
     private final int offsetReverse = 2;
     private final PatternElementMode mode = PatternElementMode.PUZZLE_SOLVER;
 
     // Additive Pattern Database Components
-    private byte[] patternGroups;
-    private int[] patternFormatSize;
+    protected byte[] patternGroups;
+    protected int[] patternFormatSize;
     // # of pattern | szKeys | szFormats
-    private byte[][] patternSet;
-    private byte[] val2ptnKey;
-    private byte[] val2ptnOrder;
+    protected byte[][] patternSet;
+    protected byte[] val2ptnKey;
+    protected byte[] val2ptnOrder;
 
     // Detached Pattern Database Keys and Formats Components with links
-    private HashMap<Integer, Integer> keys;
-    private HashMap<Integer, Integer> formats;
-    private int[][] linkFormatMove;
-    private int[][] rotateKeysByPos;
-    private int[] maxShiftX2;
+    protected HashMap<Integer, Integer> keys;
+    protected HashMap<Integer, Integer> formats;
+    protected int[][] linkFormatMove;
+    protected int[][] rotateKeysByPos;
+    protected int[] maxShiftX2;
 
     protected PatternOptions inUsePattern;
-    private byte[] inUsePtnArray;
+    protected byte[] inUsePtnArray;
 
     protected int[] pdKeys;
     protected int szGroup;
@@ -57,28 +56,28 @@ public class SolverPD extends AbstractSolver {
     protected int idaCount;
 
     /**
-     *  Initializes SolverPD object using default preset pattern.
+     *  Initializes SolverPdbBase object using default preset pattern.
      */
-    public SolverPD() {
+    public SolverPdbBase() {
         this(SolverProperties.getDefaultPattern());
     }
 
     /**
-     *  Initializes SolverPD object using given preset pattern.
+     *  Initializes SolverPdbBase object using given preset pattern.
      *
      *  @param presetPattern the given preset pattern type
      */
-    public SolverPD(PatternOptions presetPattern) {
+    public SolverPdbBase(PatternOptions presetPattern) {
         this(presetPattern, 0);
     }
 
     /**
-     *  Initializes SolverPD object with choice of given preset pattern.
+     *  Initializes SolverPdbBase object with choice of given preset pattern.
      *
      *  @param presetPattern the given preset pattern type
      *  @param choice the number of preset pattern option
      */
-    public SolverPD(PatternOptions presetPattern, int choice) {
+    public SolverPdbBase(PatternOptions presetPattern, int choice) {
         super();
         loadPDComponents(presetPattern, choice);
         loadPDElements(presetPattern.getElements());
@@ -96,17 +95,49 @@ public class SolverPD extends AbstractSolver {
     }
 
     /**
-     *  Initializes SolverPD object with user defined custom pattern.
+     *  Initializes SolverPdbBase object with user defined custom pattern.
      *
      *  @param customPattern byte array of user defined custom pattern
      *  @param elementGroups boolean array of groups reference to given pattern
      */
-    public SolverPD(byte[] customPattern, boolean[] elementGroups) {
+    public SolverPdbBase(byte[] customPattern, boolean[] elementGroups) {
         customPDComponents(customPattern);
         loadPDElements(elementGroups);
         inUsePattern = PatternOptions.Pattern_Custom;
         inUsePtnArray = customPattern;
         inUseHeuristic = HeuristicOptions.PDCustom;
+    }
+
+    /**
+     *  Initializes SolverPdbBase object with a given concrete class.
+     *
+     *  @param copySolver an instance of SolverPdbBase
+     */
+    public SolverPdbBase(SolverPdbBase copySolver) {
+        this.inUsePattern = copySolver.inUsePattern;
+        this.inUsePtnArray = copySolver.inUsePtnArray;
+        this.inUseHeuristic = copySolver.inUseHeuristic;
+        this.patternGroups = copySolver.patternGroups;
+        this.patternFormatSize = copySolver.patternFormatSize;
+        for (int i = 0; i < patternGroups.length; i++) {
+            this.patternFormatSize[i] = copySolver.patternFormatSize[i];
+        }
+        this.patternSet = copySolver.patternSet;
+        this.val2ptnKey = copySolver.val2ptnKey;
+        this.val2ptnOrder = copySolver.val2ptnOrder;
+        this.szGroup = copySolver.szGroup;
+        this.szPdKeys = copySolver.szPdKeys;
+        this.offsetPdSym = copySolver.offsetPdSym;
+        this.keys = copySolver.keys;
+        this.formats = copySolver.formats;
+        this.linkFormatMove = copySolver.linkFormatMove;
+        this.rotateKeysByPos = copySolver.rotateKeysByPos;
+        this.maxShiftX2 = copySolver.maxShiftX2;
+        for (int i = 0; i < szGroup; i++) {
+            this.linkFormatMove[i] = copySolver.linkFormatMove[i];
+            this.rotateKeysByPos[i] = copySolver.rotateKeysByPos[i];
+            this.maxShiftX2[i] = copySolver.maxShiftX2[i];
+        }
     }
 
     // load preset additive pattern database from a data file, if file not exists
@@ -265,7 +296,7 @@ public class SolverPD extends AbstractSolver {
             if (flagMessage) {
                 System.out.print("ida limit " + limit);
             }
-            dfsStartingOrder(zeroX, zeroY, 0, limit, pdValReg, pdValSym);
+            dfsStartingOrder(zeroX, zeroY, limit, pdValReg, pdValSym);
             searchDepth = limit;
             searchNodeCount += idaCount;
 
@@ -290,53 +321,46 @@ public class SolverPD extends AbstractSolver {
 
     // recursive depth first search until it reach the goal state or timeout, the least
     // estimate and node counts will be use to determine the starting order of next search
-    protected void dfsStartingOrder(int orgX, int orgY, int cost, int limit, int orgValReg,
+    protected void dfsStartingOrder(int orgX, int orgY, int limit, int orgValReg,
             int orgValSym) {
         int zeroPos = orgY * rowSize + orgX;
         int zeroSym = symmetryPos[zeroPos];
-        int costPlus1 = cost + 1;
         int[] orgCopy = new int[szPdKeys];
         System.arraycopy(pdKeys, 0, orgCopy, 0, szPdKeys);
-        int[] estimate1stMove = new int[rowSize * 2];
-        System.arraycopy(lastDepthSummary, 0, estimate1stMove, 0, rowSize * 2);
 
-        int estimate = limit;
-        do {
-            int firstMoveIdx = -1;
-            int nodeCount = 0;
+        if (orgX < rowSize - 1) {
+            shiftRight(orgX, orgY, zeroPos, zeroSym,
+                1, limit, orgValReg, orgValSym, orgCopy, reset);
+        }
+        if (orgY < rowSize - 1) {
+            shiftDown(orgX, orgY, zeroPos, zeroSym,
+                1, limit, orgValReg, orgValSym, orgCopy, reset);
+        }
+        if (orgX > 0) {
+            shiftLeft(orgX, orgY, zeroPos, zeroSym,
+                1, limit, orgValReg, orgValSym, orgCopy, reset);
+        }
+        if (orgY > 0) {
+            shiftUp(orgX, orgY, zeroPos, zeroSym,
+                1, limit, orgValReg, orgValSym, orgCopy, reset);
+        }
+    }
 
-            estimate = endOfSearch;
-            for (int i = 0; i < 4; i++) {
-                if (estimate1stMove[i] == endOfSearch) {
-                    continue;
-                } else if (lastDepthSummary[i + rowSize] > nodeCount) {
-                    estimate = estimate1stMove[i];
-                    nodeCount = lastDepthSummary[i + rowSize];
-                    firstMoveIdx = i;
-                } else {
-                    lastDepthSummary[i] = endOfSearch;
-                }
-            }
+    // disable circular reduction for clockwise turns.
+    @Override
+    protected boolean isValidClockwise(int swirlKey) {
+        return true;
+    }
 
-            if (estimate < endOfSearch) {
-                int startCounter = idaCount++;
-                if (firstMoveIdx == Direction.RIGHT.getValue()) {
-                    lastDepthSummary[firstMoveIdx] = shiftRight(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy, 0);
-                } else if (firstMoveIdx == Direction.DOWN.getValue()) {
-                    lastDepthSummary[firstMoveIdx] = shiftDown(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy, 0);
-                } else if (firstMoveIdx == Direction.LEFT.getValue()) {
-                    lastDepthSummary[firstMoveIdx] = shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy, 0);
-                } else if (firstMoveIdx == Direction.UP.getValue()) {
-                    lastDepthSummary[firstMoveIdx] = shiftUp(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy, 0);
-                }
-                lastDepthSummary[firstMoveIdx + rowSize] = idaCount - startCounter;
-                estimate1stMove[firstMoveIdx] = endOfSearch;
-            }
-        } while (!terminated && estimate != endOfSearch);
+    // disable circular reduction for counterclockwise turns.
+    @Override
+    protected boolean isValidCounterClockwise(int swirlKey) {
+        return true;
+    }
+
+    // disable symmetry reduction, always return false.
+    protected boolean isIdenticalSymmetry(int zeroPos, int zeroSym) {
+        return false;
     }
 
     // recursive depth first search until it reach the goal state or timeout
@@ -361,14 +385,7 @@ public class SolverPD extends AbstractSolver {
         int[] orgCopy = new int[pdKeys.length];
         System.arraycopy(pdKeys, 0, orgCopy, 0, pdKeys.length);
 
-        boolean nonIdentical = true;
-        nonIdentical = false;
-        for (int i = 0; i < szGroup; i++) {
-            if (pdKeys[i] != pdKeys[i + offsetPdSym]) {
-                nonIdentical = true;
-                break;
-            }
-        }
+        boolean nonIdentical = !isIdenticalSymmetry(zeroPos, zeroSym);
 
         // hard code different order to next moves base on the current move
         Direction prevMove = solutionMove[cost];
@@ -376,80 +393,80 @@ public class SolverPD extends AbstractSolver {
             // RIGHT
             if (orgX < rowSize - 1) {
                 newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgValReg, orgValSym, orgCopy, 0));
+                        costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
             }
             if (nonIdentical) {
                 // UP
                 if (orgY > 0 && isValidCounterClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | Rotation.CCW.getValue()));
+                            swirlKey << 2 | ccwKey));
                 }
                 // DOWN
                 if (orgY < rowSize - 1 && isValidClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | Rotation.CW.getValue()));
+                            swirlKey << 2 | cwKey));
                 }
             }
         } else if (prevMove == Direction.DOWN) {
             // DOWN
             if (orgY < rowSize - 1) {
                 newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgValReg, orgValSym, orgCopy, 0));
+                        costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
             }
             if (nonIdentical) {
                 // LEFT
                 if (orgX > 0 && isValidClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | Rotation.CW.getValue()));
+                            swirlKey << 2 | cwKey));
                 }
                 // RIGHT
                 if (orgX < rowSize - 1 && isValidCounterClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | Rotation.CCW.getValue()));
+                            swirlKey << 2 | ccwKey));
                 }
             }
         } else if (prevMove == Direction.LEFT) {
             // LEFT
             if (orgX > 0) {
                 newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgValReg, orgValSym, orgCopy, 0));
+                        costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
             }
             if (nonIdentical) {
                 // DOWN
                 if (orgY < rowSize - 1 &&  isValidCounterClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | Rotation.CCW.getValue()));
+                            swirlKey << 2 | ccwKey));
                 }
                 // UP
                 if (orgY > 0 && isValidClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | Rotation.CW.getValue()));
+                            swirlKey << 2 | cwKey));
                 }
             }
         } else if (prevMove == Direction.UP) {
             // UP
             if (orgY > 0) {
                 newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgValReg, orgValSym, orgCopy, 0));
+                        costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
             }
             if (nonIdentical) {
                 // RIGHT
                 if (orgX < rowSize - 1 && isValidClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | Rotation.CW.getValue()));
+                            swirlKey << 2 | cwKey));
                 }
                 // LEFT
                 if (orgX > 0 && isValidCounterClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
                             costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | Rotation.CCW.getValue()));
+                            swirlKey << 2 | ccwKey));
                 }
             }
         }
@@ -457,7 +474,7 @@ public class SolverPD extends AbstractSolver {
     }
 
     // shift the space to right
-    private int shiftRight(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
+    protected int shiftRight(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
             int orgValReg, int orgValSym, int[] orgCopy, int swirlKey) {
         if (terminated) {
             return endOfSearch;
@@ -475,7 +492,7 @@ public class SolverPD extends AbstractSolver {
     }
 
     // shift the space to down
-    private int shiftDown(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
+    protected int shiftDown(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
             int orgValReg, int orgValSym, int[] orgCopy, int swirlKey) {
         if (terminated) {
             return endOfSearch;
@@ -493,7 +510,7 @@ public class SolverPD extends AbstractSolver {
     }
 
     // shift the space to left
-    private int shiftLeft(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
+    protected int shiftLeft(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
             int orgValReg, int orgValSym, int[] orgCopy, int swirlKey) {
         if (terminated) {
             return endOfSearch;
@@ -511,7 +528,7 @@ public class SolverPD extends AbstractSolver {
     }
 
     // shift the space to up
-    private int shiftUp(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
+    protected int shiftUp(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
             int orgValReg, int orgValSym, int[] orgCopy, int swirlKey) {
         if (terminated) {
             return endOfSearch;

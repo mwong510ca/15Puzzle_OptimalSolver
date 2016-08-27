@@ -33,7 +33,6 @@ public abstract class AbstractApplication implements Application {
             System.out.println(" will run until solution found:");
         }
     }
-    
 
     /**
      * Print the minimum number of moves to the goal state.

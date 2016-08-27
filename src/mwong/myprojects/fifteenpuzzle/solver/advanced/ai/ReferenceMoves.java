@@ -1,6 +1,6 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced.ai;
 
-import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPD;
+import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 
@@ -86,7 +86,7 @@ public class ReferenceMoves {
 
     // update a full set of moves and partial solutions with a given reference board
     // and a SmartSolverPD object
-    void updateSolutions(ReferenceBoard advBoard, SmartSolverPD solver) {
+    void updateSolutions(ReferenceBoard advBoard, SmartSolverPdb solver) {
         assert solver != null : "SmartSolverPD is null";
         byte group = advBoard.group;
         byte[] blocks = advBoard.getTiles();

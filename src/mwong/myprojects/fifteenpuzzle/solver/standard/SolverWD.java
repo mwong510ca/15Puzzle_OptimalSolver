@@ -6,10 +6,11 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.WalkingDistance;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
- * SolverWD extends AbstractSolver.  It is the 15 puzzle optimal solver.
+ * SolverWd extends AbstractSolver.  It is the 15 puzzle optimal solver.
  * It takes a Board object of the puzzle and solve it with IDA* using Walking Distance.
  *
  * <p>Dependencies : AbstractSolver.java, Board.java, Direction.java, HeuristicOptions.java,
@@ -18,7 +19,7 @@ import java.util.HashMap;
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
-public class SolverWD extends AbstractSolver {
+public class SolverWd extends AbstractSolver {
     protected final boolean forward = true;
     protected final boolean backward = !forward;
 
@@ -36,9 +37,9 @@ public class SolverWD extends AbstractSolver {
     protected int idaCount;
 
     /**
-     * Initializes SolverWD object.
+     * Initializes SolverWd object.
      */
-    public SolverWD() {
+    public SolverWd() {
         super();
         inUseHeuristic = HeuristicOptions.WD;
         loadWDComponents();
@@ -107,7 +108,7 @@ public class SolverWD extends AbstractSolver {
             if (flagMessage) {
                 System.out.print("ida limit " + limit);
             }
-            dfsStartingOrder(zeroX, zeroY, 0, limit, wdIdxH, wdIdxV, wdValueH, wdValueV);
+            dfsStartingOrder(zeroX, zeroY, limit, wdIdxH, wdIdxV, wdValueH, wdValueV);
             searchDepth = limit;
             searchNodeCount += idaCount;
 
@@ -132,7 +133,7 @@ public class SolverWD extends AbstractSolver {
     // overload idaStar to solve the puzzle with the given max limit for advancedEstimate
     protected void idaStar(int limit, int maxLimit) {
         while (limit <= maxLimit) {
-            dfsStartingOrder(zeroX, zeroY, 0, limit, wdIdxH, wdIdxV, wdValueH, wdValueV);
+            dfsStartingOrder(zeroX, zeroY, limit, wdIdxH, wdIdxV, wdValueH, wdValueV);
             if (solved) {
                 return;
             }
@@ -142,29 +143,31 @@ public class SolverWD extends AbstractSolver {
 
     // recursive depth first search until it reach the goal state or timeout, the least estimate and
     // node counts will be use to determine the starting order of next search
-    protected void dfsStartingOrder(int orgX, int orgY, int cost, int limit, int idxH, int idxV,
+    protected void dfsStartingOrder(int orgX, int orgY, int limit, int idxH, int idxV,
             int valH, int valV) {
         int zeroPos = orgY * rowSize + orgX;
         int zeroSym = symmetryPos[zeroPos];
-        int costPlus1 = cost + 1;
         int [] estimate1stMove = new int[rowSize * 2];
         System.arraycopy(lastDepthSummary, 0, estimate1stMove, 0, rowSize * 2);
 
+        System.out.println(Arrays.toString(lastDepthSummary));
+        
         int estimate = limit;
-        do {
+        while (!terminated && estimate != endOfSearch) {
             int firstMoveIdx = -1;
-            int nodeCount = 0;
+            int nodeCount = Integer.MAX_VALUE;
 
             estimate = endOfSearch;
             for (int i = 0; i < 4; i++) {
                 if (estimate1stMove[i] == endOfSearch) {
                     continue;
-                } else if (lastDepthSummary[i + rowSize] > nodeCount) {
+                } else if (lastDepthSummary[i] < estimate) {
                     estimate = estimate1stMove[i];
-                    nodeCount = lastDepthSummary[i + rowSize];
+                    nodeCount = lastDepthSummary[i + 4];
                     firstMoveIdx = i;
-                } else {
-                    lastDepthSummary[i] = endOfSearch;
+                } else if (lastDepthSummary[i] == estimate && lastDepthSummary[i + 4] < nodeCount) {
+                    nodeCount = lastDepthSummary[i + 4];
+                    firstMoveIdx = i;
                 }
             }
 
@@ -172,21 +175,21 @@ public class SolverWD extends AbstractSolver {
                 int startCounter = idaCount++;
                 if (firstMoveIdx == Direction.RIGHT.getValue()) {
                     lastDepthSummary[firstMoveIdx] = shiftRight(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, idxH, idxV, valH, valV, 0);
+                            1, limit, idxH, idxV, valH, valV, reset);
                 } else if (firstMoveIdx == Direction.DOWN.getValue()) {
                     lastDepthSummary[firstMoveIdx] = shiftDown(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, idxH, idxV, valH, valV, 0);
+                            1, limit, idxH, idxV, valH, valV, reset);
                 } else if (firstMoveIdx == Direction.LEFT.getValue()) {
                     lastDepthSummary[firstMoveIdx] = shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, idxH, idxV, valH, valV, 0);
+                            1, limit, idxH, idxV, valH, valV, reset);
                 } else if (firstMoveIdx == Direction.UP.getValue()) {
                     lastDepthSummary[firstMoveIdx] = shiftUp(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, idxH, idxV, valH, valV, 0);
+                            1, limit, idxH, idxV, valH, valV, reset);
                 }
                 lastDepthSummary[firstMoveIdx + rowSize] = idaCount - startCounter;
                 estimate1stMove[firstMoveIdx] = endOfSearch;
             }
-        } while (!terminated && estimate != endOfSearch);
+        }
     }
 
     // recursive depth first search until it reach the goal state or timeout
@@ -226,80 +229,72 @@ public class SolverWD extends AbstractSolver {
             // RIGHT
             if (orgX < rowSize - 1) {
                 newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, idxH, idxV, valH, valV, 0));
+                        costPlus1, limit, idxH, idxV, valH, valV, reset));
             }
             if (nonIdentical) {
                 // UP
                 if (orgY > 0 && isValidCounterClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, idxH, idxV, valH,
-                            valV, swirlKey << 2 | Rotation.CCW.getValue()));
+                            costPlus1, limit, idxH, idxV, valH, valV, swirlKey << 2 | ccwKey));
                 }
                 // DOWN
                 if (orgY < rowSize - 1 && isValidClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, idxH, idxV, valH, valV,
-                            swirlKey << 2 | Rotation.CW.getValue()));
+                            costPlus1, limit, idxH, idxV, valH, valV, swirlKey << 2 | cwKey));
                 }
             }
         } else if (prevMove == Direction.DOWN) {
             // DOWN
             if (orgY < rowSize - 1) {
                 newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, idxH, idxV, valH, valV, 0));
+                        costPlus1, limit, idxH, idxV, valH, valV, reset));
             }
             if (nonIdentical) {
                 // LEFT
                 if (orgX > 0 && isValidClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, idxH, idxV, valH, valV,
-                            swirlKey << 2 | Rotation.CW.getValue()));
+                            costPlus1, limit, idxH, idxV, valH, valV, swirlKey << 2 | cwKey));
                 }
                 // RIGHT
                 if (orgX < rowSize - 1 && isValidCounterClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, idxH, idxV, valH, valV,
-                            swirlKey << 2 | Rotation.CCW.getValue()));
+                            costPlus1, limit, idxH, idxV, valH, valV, swirlKey << 2 | ccwKey));
                 }
             }
         } else if (prevMove == Direction.LEFT) {
             // LEFT
             if (orgX > 0) {
                 newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, idxH, idxV, valH, valV, 0));
+                        costPlus1, limit, idxH, idxV, valH, valV, reset));
             }
             if (nonIdentical) {
                 // DOWN
                 if (orgY < rowSize - 1 && isValidCounterClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, idxH, idxV, valH, valV,
-                            swirlKey << 2 | Rotation.CCW.getValue()));
+                            costPlus1, limit, idxH, idxV, valH, valV, swirlKey << 2 | ccwKey));
                 }
                 // UP
                 if (orgY > 0 && isValidClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, idxH, idxV, valH, valV,
-                            swirlKey << 2 | Rotation.CW.getValue()));
+                            costPlus1, limit, idxH, idxV, valH, valV, swirlKey << 2 | cwKey));
                 }
             }
         } else if (prevMove == Direction.UP) {
             // UP
             if (orgY > 0) {
                 newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, idxH, idxV, valH, valV, 0));
+                        costPlus1, limit, idxH, idxV, valH, valV, reset));
             }
             if (nonIdentical) {
                 // RIGHT
                 if (orgX < rowSize - 1 && isValidClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, idxH, idxV, valH, valV,
-                            swirlKey << 2 | Rotation.CW.getValue()));
+                            costPlus1, limit, idxH, idxV, valH, valV, swirlKey << 2 | cwKey));
                 }
                 // LEFT
                 if (orgX > 0 && isValidCounterClockwise(swirlKey)) {
                     newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, idxH, idxV, valH, valV,
-                            swirlKey << 2 | Rotation.CCW.getValue()));
+                            costPlus1, limit, idxH, idxV, valH, valV, swirlKey << 2 | ccwKey));
                 }
             }
         }

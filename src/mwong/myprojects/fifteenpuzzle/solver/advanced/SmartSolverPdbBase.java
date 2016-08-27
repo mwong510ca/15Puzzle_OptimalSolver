@@ -16,15 +16,15 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
+import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
 import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
-import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPD;
+import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdb;
+import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdbBase;
 import mwong.myprojects.fifteenpuzzle.utilities.Stopwatch;
-
-import java.util.Arrays;
 
 /**
  * SmartSolverPD extends SolverPD.  The advanced version extend the standard solver
@@ -37,19 +37,19 @@ import java.util.Arrays;
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
-public class SmartSolverPD extends SolverPD {
-    private final byte numPartialMoves;
-    private final byte refCutoff;
-    private final ReferenceAccumulator refAccumulator;
-    private final SmartSolverExtra extra;
-    private Board lastSearchBoard;
+public class SmartSolverPdbBase extends SolverPdb {
+    protected final byte numPartialMoves;
+    protected final byte refCutoff;
+    protected final ReferenceAccumulator refAccumulator;
+    protected final SmartSolverExtra extra;
+    protected Board lastSearchBoard;
 
     /**
      * Initializes SolverPD object using default preset pattern.
      *
      * @param refAccumulator the given ReferenceAccumulator object
      */
-    public SmartSolverPD(ReferenceAccumulator refAccumulator) {
+    public SmartSolverPdbBase(ReferenceAccumulator refAccumulator) {
         this(SolverProperties.getDefaultPattern(), refAccumulator);
     }
 
@@ -59,7 +59,7 @@ public class SmartSolverPD extends SolverPD {
      * @param presetPattern the given preset pattern type
      * @param refAccumulator the given ReferenceAccumulator object
      */
-    public SmartSolverPD(PatternOptions presetPattern, ReferenceAccumulator refAccumulator) {
+    public SmartSolverPdbBase(PatternOptions presetPattern, ReferenceAccumulator refAccumulator) {
         this(presetPattern, 0, refAccumulator);
     }
 
@@ -71,7 +71,7 @@ public class SmartSolverPD extends SolverPD {
      * @param choice the number of preset pattern option
      * @param refAccumulator the given ReferenceAccumulator object
      */
-    public SmartSolverPD(PatternOptions presetPattern, int choice,
+    public SmartSolverPdbBase(PatternOptions presetPattern, int choice,
             ReferenceAccumulator refAccumulator) {
         super(presetPattern, choice);
         if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
@@ -85,8 +85,8 @@ public class SmartSolverPD extends SolverPD {
             activeSmartSolver = true;
             extra = new SmartSolverExtra();
             this.refAccumulator = refAccumulator;
-            refCutoff = SmartSolverConstants.getReferenceCutoff();
-            numPartialMoves = SmartSolverConstants.getNumPartialMoves();
+            refCutoff = SolverConstants.getReferenceCutoff();
+            numPartialMoves = SolverConstants.getNumPartialMoves();
         }
     }
 
@@ -98,7 +98,7 @@ public class SmartSolverPD extends SolverPD {
      * @param elementGroups boolean array of groups reference to given pattern
      * @param refAccumulator the given ReferenceAccumulator object
      */
-    public SmartSolverPD(byte[] customPattern, boolean[] elementGroups,
+    public SmartSolverPdbBase(byte[] customPattern, boolean[] elementGroups,
             ReferenceAccumulator refAccumulator) {
         super(customPattern, elementGroups);
         if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
@@ -112,8 +112,31 @@ public class SmartSolverPD extends SolverPD {
             activeSmartSolver = true;
             extra = new SmartSolverExtra();
             this.refAccumulator = refAccumulator;
-            refCutoff = SmartSolverConstants.getReferenceCutoff();
-            numPartialMoves = SmartSolverConstants.getNumPartialMoves();
+            refCutoff = SolverConstants.getReferenceCutoff();
+            numPartialMoves = SolverConstants.getNumPartialMoves();
+        }
+    }
+
+    /**
+     *  Initializes SolverPdb object with a given concrete class.
+     *
+     *  @param copySolver an instance of SolverPdb
+     */
+    public SmartSolverPdbBase(SolverPdbBase copySolver, ReferenceAccumulator refAccumulator) {
+        super(copySolver);
+        if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
+            System.out.println("Referece board collection unavailable."
+                    + " Resume to the 15 puzzle solver standard version.");
+            extra = null;
+            this.refAccumulator = null;
+            refCutoff = 0;
+            numPartialMoves = 0;
+        } else {
+            activeSmartSolver = true;
+            extra = new SmartSolverExtra();
+            this.refAccumulator = refAccumulator;
+            refCutoff = SolverConstants.getReferenceCutoff();
+            numPartialMoves = SolverConstants.getNumPartialMoves();
         }
     }
 
@@ -138,7 +161,13 @@ public class SmartSolverPD extends SolverPD {
             clearHistory();
             stopwatch = new Stopwatch();
             lastDepthSummary = new int[rowSize * 2];
-            System.arraycopy(board.getValidMoves(), 0, lastDepthSummary, rowSize, rowSize);
+            for (int i = 0; i < 4; i++) {
+                if (board.getValidMoves()[i] == 0) {
+                    lastDepthSummary[i] = endOfSearch;
+                } else {
+                    lastDepthSummary[i + 4] = board.getValidMoves()[i];
+                }
+            }
             // initializes the board by calling heuristic function using original priority
             // then solve the puzzle with given estimate instead
             heuristic(board, tagStandard, tagSearch);
@@ -159,7 +188,7 @@ public class SmartSolverPD extends SolverPD {
     }
 
     // overload method to calculate the heuristic value of the given board and conditions
-    private byte heuristic(Board board, boolean isAdvanced, boolean isSearch) {
+    protected byte heuristic(Board board, boolean isAdvanced, boolean isSearch) {
         if (!board.isSolvable()) {
             return -1;
         }
@@ -191,9 +220,6 @@ public class SmartSolverPD extends SolverPD {
         AdvancedRecord record = extra.advancedContains(board, isSearch, refAccumulator);
         if (record != null) {
             priorityAdvanced = record.getEstimate();
-            if (record.hasPartialMoves()) {
-                solutionMove = record.getPartialMoves();
-            }
         }
         if (priorityAdvanced != -1) {
             return priorityAdvanced;
@@ -254,11 +280,6 @@ public class SmartSolverPD extends SolverPD {
             lastSearchBoard = new Board(tiles);
         }
 
-        if (solutionMove[1] != null) {
-            advancedSearch(limit);
-            return;
-        }
-
         int countDir = 0;
         for (int i = 0; i < rowSize; i++) {
             if (lastDepthSummary[i + rowSize] > 0) {
@@ -271,7 +292,7 @@ public class SmartSolverPD extends SolverPD {
             int initLimit = priorityGoal;
             while (initLimit < limit) {
                 idaCount = 0;
-                dfsStartingOrder(zeroX, zeroY, 0, initLimit, pdValReg, pdValSym);
+                dfsStartingOrder(zeroX, zeroY, initLimit, pdValReg, pdValSym);
                 initLimit += 2;
 
                 boolean overload = false;
@@ -293,7 +314,7 @@ public class SmartSolverPD extends SolverPD {
             if (flagMessage) {
                 System.out.print("ida limit " + limit);
             }
-            dfsStartingOrder(zeroX, zeroY, 0, limit, pdValReg, pdValSym);
+            dfsStartingOrder(zeroX, zeroY, limit, pdValReg, pdValSym);
             searchDepth = limit;
             searchNodeCount += idaCount;
 
@@ -339,57 +360,6 @@ public class SmartSolverPD extends SolverPD {
             limit += 2;
         }
     }
-
-    // skip the first 8 moves from stored record then solve the remaining puzzle
-    // using depth first search with exact number of steps of optimal solution
-    private void advancedSearch(int limit) {
-        Direction[] dupSolution = new Direction[limit + 1];
-        System.arraycopy(solutionMove, 1, dupSolution, 1, numPartialMoves);
-
-        Board board = new Board(tiles);
-        for (int i = 1; i < numPartialMoves; i++) {
-            board = board.shift(dupSolution[i]);
-            if (board == null) {
-                System.out.println(i + "board is null");
-                System.out.println(Arrays.toString(solutionMove));
-                System.out.println(new Board(tiles));
-            }
-        }
-        heuristic(board, tagStandard, tagSearch);
-
-        int firstDirValue = dupSolution[numPartialMoves].getValue();
-        for (int i = 0; i < 4; i++) {
-            if (i != firstDirValue) {
-                lastDepthSummary[i + 4] = 0;
-            } else {
-                lastDepthSummary[i + 4] = 1;
-            }
-        }
-
-        idaCount = numPartialMoves;
-        if (flagMessage) {
-            System.out.print("ida limit " + limit);
-        }
-        dfsStartingOrder(zeroX, zeroY, 0, limit - numPartialMoves + 1, pdValReg, pdValSym);
-        if (solved) {
-            System.arraycopy(solutionMove, 2, dupSolution, numPartialMoves + 1,
-                    limit - numPartialMoves);
-            solutionMove = dupSolution;
-        }
-        steps = (byte) limit;
-        searchDepth = limit;
-        searchNodeCount += idaCount;
-
-        if (flagMessage) {
-            if (timeout) {
-                System.out.printf("\tNodes : %-15s timeout\n", Integer.toString(idaCount));
-            } else {
-                System.out.printf("\tNodes : %-15s  " + stopwatch.currentTime() + "s\n",
-                        Integer.toString(idaCount));
-            }
-        }
-    }
-
 
     /**
      * Returns the boolean represents the advanced priority in use.
