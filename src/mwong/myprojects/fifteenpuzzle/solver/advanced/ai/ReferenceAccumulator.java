@@ -256,10 +256,10 @@ public class ReferenceAccumulator {
     // create and return a SmartSolverPD object.
     SmartSolverPdb createSolver() {
         try {
-        	SmartSolverPdb solver = new SmartSolverPdb(PatternOptions.Pattern_78, this);
+            SmartSolverPdb solver = new SmartSolverPdb(PatternOptions.Pattern_78, this);
             solver.messageSwitch(offSwitch);
             solver.timeoutSwitch(offSwitch);
-            solver.advPrioritySwitch(onSwitch);
+            solver.versionSwitch(onSwitch);
             return solver;
         } catch (OutOfMemoryError ex) {
             return null;
@@ -267,7 +267,13 @@ public class ReferenceAccumulator {
     }
 
     // verify the given solver is SmartSolverPD object using pattern database 7-8
-    private boolean validateSolver(Solver inSolver) {
+    /**
+     * Returns the boolean value of the given solver is the valid for ReferenceAccumulator.
+     *
+     * @param inSolver the giver concrete instance of Solver interface.
+     * @return boolean value of the given solver is the valid for ReferenceAccumulator
+     */
+    public boolean validateSolver(Solver inSolver) {
         if (inSolver == null) {
             return false;
         }
@@ -309,13 +315,13 @@ public class ReferenceAccumulator {
 
     // scan the full collection, if the reference board is not verified, verify it now.
     private void updateAll(SmartSolverPdb solverPD) {
-        assert solverPD instanceof SmartSolverPdb : "updateAll did not recevie SmartSolverPD object";
-        final boolean backupAdvPriority = solverPD.getPriorityFlag();
+        assert solverPD instanceof SmartSolverPdb : "updateAll without SmartSolverPD object";
+        final boolean backupAdvPriority = solverPD.getInUseVersionFlag();
         final boolean backupMessageFlag = solverPD.getMessageFlag();
         final boolean backupTimeoutFlag = solverPD.getTimeoutFlag();
         solverPD.timeoutSwitch(offSwitch);
         solverPD.messageSwitch(offSwitch);
-        solverPD.advPrioritySwitch(onSwitch);
+        solverPD.versionSwitch(onSwitch);
 
         for (Entry<ReferenceBoard, ReferenceMoves> entry : referenceMap.entrySet()) {
             ReferenceMoves advMoves = entry.getValue();
@@ -326,7 +332,7 @@ public class ReferenceAccumulator {
             advMoves.updateSolutions(advBoard, solverPD);
             add2file(advBoard, advMoves);
         }
-        solverPD.advPrioritySwitch(backupAdvPriority);
+        solverPD.versionSwitch(backupAdvPriority);
         solverPD.messageSwitch(backupMessageFlag);
         solverPD.timeoutSwitch(backupTimeoutFlag);
     }
@@ -358,7 +364,7 @@ public class ReferenceAccumulator {
         Board board = solverPD.lastSearchBoard();
         Direction[] solution = solverPD.solution().clone();
 
-        if (!bypass && !solverPD.getPriorityFlag()) {
+        if (!bypass && !solverPD.getInUseVersionFlag()) {
             int heuristicOrg = solverPD.heuristicStandard(board);
             int heuristicAdv = solverPD.heuristicAdvanced(board);
             if (heuristicOrg != heuristicAdv) {
@@ -366,12 +372,12 @@ public class ReferenceAccumulator {
             }
         }
 
-        final boolean backupAdvPriority = solverPD.getPriorityFlag();
+        final boolean backupAdvPriority = solverPD.getInUseVersionFlag();
         final boolean backupMessageFlag = solverPD.getMessageFlag();
         final boolean backupTimeoutFlag = solverPD.getTimeoutFlag();
         solverPD.timeoutSwitch(offSwitch);
         solverPD.messageSwitch(offSwitch);
-        solverPD.advPrioritySwitch(onSwitch);
+        solverPD.versionSwitch(onSwitch);
 
         ReferenceBoard advBoard = new ReferenceBoard(board);
         byte lookup = ReferenceConstants.getReferenceLookup(board.getZero1d());
@@ -385,7 +391,7 @@ public class ReferenceAccumulator {
                 advMoves.updateSolution(lookup, solverPD.moves(), solution, !symmetry);
             }
             add2file(advBoard, advMoves);
-            inSolver.advPrioritySwitch(backupAdvPriority);
+            inSolver.versionSwitch(backupAdvPriority);
             inSolver.messageSwitch(backupMessageFlag);
             inSolver.timeoutSwitch(backupTimeoutFlag);
             return true;
@@ -404,7 +410,7 @@ public class ReferenceAccumulator {
             }
             advMoves.updateSolution(lookup, solverPD.moves(), solution, symmetry);
             add2file(advBoardSym, advMoves);
-            inSolver.advPrioritySwitch(backupAdvPriority);
+            inSolver.versionSwitch(backupAdvPriority);
             inSolver.messageSwitch(backupMessageFlag);
             inSolver.timeoutSwitch(backupTimeoutFlag);
             return true;
@@ -418,7 +424,7 @@ public class ReferenceAccumulator {
         }
         referenceMap.put(advBoard, advMoves);
         add2file(advBoard, advMoves);
-        inSolver.advPrioritySwitch(backupAdvPriority);
+        inSolver.versionSwitch(backupAdvPriority);
         inSolver.messageSwitch(backupMessageFlag);
         inSolver.timeoutSwitch(backupTimeoutFlag);
         return true;
@@ -444,12 +450,12 @@ public class ReferenceAccumulator {
 
         SmartSolverPdb solverPD = (SmartSolverPdb) inSolver;
 
-        final boolean backupAdvPriority = solverPD.getPriorityFlag();
+        final boolean backupAdvPriority = solverPD.getInUseVersionFlag();
         final boolean backupMessageFlag = solverPD.getMessageFlag();
         final boolean backupTimeoutFlag = solverPD.getTimeoutFlag();
         solverPD.timeoutSwitch(offSwitch);
         solverPD.messageSwitch(offSwitch);
-        solverPD.advPrioritySwitch(onSwitch);
+        solverPD.versionSwitch(onSwitch);
 
         Board board = solverPD.lastSearchBoard();
         ReferenceBoard advBoard = new ReferenceBoard(board);
@@ -462,7 +468,7 @@ public class ReferenceAccumulator {
                 add2file(advBoard, advMoves);
             }
 
-            inSolver.advPrioritySwitch(backupAdvPriority);
+            inSolver.versionSwitch(backupAdvPriority);
             inSolver.messageSwitch(backupMessageFlag);
             inSolver.timeoutSwitch(backupTimeoutFlag);
             return true;
@@ -478,12 +484,12 @@ public class ReferenceAccumulator {
                 advMoves.updateSolutions(advBoardSym, solverPD);
                 add2file(advBoardSym, advMoves);
             }
-            inSolver.advPrioritySwitch(backupAdvPriority);
+            inSolver.versionSwitch(backupAdvPriority);
             inSolver.messageSwitch(backupMessageFlag);
             inSolver.timeoutSwitch(backupTimeoutFlag);
             return true;
         }
-        inSolver.advPrioritySwitch(backupAdvPriority);
+        inSolver.versionSwitch(backupAdvPriority);
         inSolver.messageSwitch(backupMessageFlag);
         inSolver.timeoutSwitch(backupTimeoutFlag);
         return false;

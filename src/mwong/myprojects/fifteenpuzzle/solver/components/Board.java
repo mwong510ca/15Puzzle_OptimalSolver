@@ -115,7 +115,7 @@ public class Board {
         }
         hashcode = hashKey1 * (hashKey2 + 0x1111);
 
-        tilesSym = PuzzleProperties.tiles2sym(tiles);
+        tilesSym = PuzzleConstants.tiles2sym(tiles);
 
         validMoves = new int[4];
         if (zeroX < ROW_SIZE - 1) {
@@ -501,28 +501,4 @@ public class Board {
         }
         return false;
     }
-
-    /**
-     * Unit test.
-     *
-     * @param args Standard argument main function
-     *
-    public static void main(String[] args) {
-        byte[] arr1 = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0};
-        byte[] arr2 = {1,2,3,4,9,10,11,12,5,6,7,8,13,14,15,0};
-        byte[] arr3 = {1,4,2,3,9,10,11,12,5,6,7,8,13,14,15,0};
-        Board board = new Board(arr1);
-        System.out.println(board.isGoal());
-        System.out.println(board.isIdenticalSymmetry());
-
-        Board b2 = new Board(arr2);
-        Board b3 = new Board(arr3);
-        System.out.println(b2.equals(b3));
-        System.out.println(b2.equals(b2));
-        System.out.println(b2.isGoal());
-        System.out.println(b2.isIdenticalSymmetry());
-        System.out.println(b3.isGoal());
-        System.out.println(b3.isIdenticalSymmetry());
-    }
-    */
 }

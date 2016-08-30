@@ -37,7 +37,7 @@ public class FileProperties {
         if (choice == 0) {
             return filepath + FILE_PD_DEFAULT + FILE_EXTENSION;
         }
-        return filepath + FILE_PD_OPTION + FILE_EXTENSION;
+        return filepath + FILE_PD_OPTION  + choice + FILE_EXTENSION;
     }
 
     public static final String getFilepathReference() {

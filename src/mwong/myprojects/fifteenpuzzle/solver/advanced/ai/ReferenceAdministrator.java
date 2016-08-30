@@ -6,6 +6,11 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import java.util.Arrays;
 import java.util.Scanner;
 
+//TODO
+/**
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public class ReferenceAdministrator {
     private enum Action {
         // Add a board without checking the total time to solve

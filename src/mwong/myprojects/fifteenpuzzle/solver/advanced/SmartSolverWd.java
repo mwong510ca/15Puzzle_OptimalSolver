@@ -53,7 +53,7 @@ public class SmartSolverWd extends SolverWd {
      */
     @Override
     public void printDescription() {
-        extra.printDescription(flagAdvancedPriority, inUseHeuristic);
+        extra.printDescription(flagAdvancedVersion, inUseHeuristic);
     }
 
     /**
@@ -64,7 +64,7 @@ public class SmartSolverWd extends SolverWd {
      */
     @Override
     public byte heuristic(Board board) {
-        return heuristic(board, flagAdvancedPriority, tagSearch);
+        return heuristic(board, flagAdvancedVersion, tagSearch);
     }
 
     // overload method to calculate the heuristic value of the given board and conditions

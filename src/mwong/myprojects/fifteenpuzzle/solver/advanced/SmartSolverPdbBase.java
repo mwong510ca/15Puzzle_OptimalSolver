@@ -35,26 +35,12 @@ public class SmartSolverPdbBase extends SolverPdb {
         super();
     }
 
-    /**
-     * Initializes SolverPD object with choice of given preset pattern.  If refAccumlator is null
-     * or empty, it will act as standard version.
-     *
-     * @param presetPattern the given preset pattern type
-     * @param choice the number of preset pattern option
-     * @param refAccumulator the given ReferenceAccumulator object
-     */
+    // Initializes SmartSolverPdbBase object with choice of given preset pattern.
     SmartSolverPdbBase(PatternOptions presetPattern, int choice) {
         super(presetPattern, choice);
     }
 
-    /**
-     * Initializes SolverPD object with user defined custom pattern.  If refAccumlator is null
-     * or empty, it will act as standard version.
-     *
-     * @param customPattern byte array of user defined custom pattern
-     * @param elementGroups boolean array of groups reference to given pattern
-     * @param refAccumulator the given ReferenceAccumulator object
-     */
+    // Initializes SmartSolverPdbBase object with user defined custom pattern.
     SmartSolverPdbBase(byte[] customPattern, boolean[] elementGroups) {
         super(customPattern, elementGroups);
     }
@@ -83,7 +69,7 @@ public class SmartSolverPdbBase extends SolverPdb {
      */
     @Override
     public void printDescription() {
-        extra.printDescription(flagAdvancedPriority, inUseHeuristic);
+        extra.printDescription(flagAdvancedVersion, inUseHeuristic);
         printInUsePattern();
     }
 
@@ -115,7 +101,7 @@ public class SmartSolverPdbBase extends SolverPdb {
      */
     @Override
     public byte heuristic(Board board) {
-        return heuristic(board, flagAdvancedPriority, tagSearch);
+        return heuristic(board, flagAdvancedVersion, tagSearch);
     }
 
     // overload method to calculate the heuristic value of the given board and conditions
@@ -218,7 +204,7 @@ public class SmartSolverPdbBase extends SolverPdb {
         }
 
         // quick scan for advanced priority, determine the start order for optimization
-        if (flagAdvancedPriority && countDir > 1) {
+        if (flagAdvancedVersion && countDir > 1) {
             int initLimit = priorityGoal;
             while (initLimit < limit) {
                 idaCount = 0;
@@ -315,8 +301,8 @@ public class SmartSolverPdbBase extends SolverPdb {
      *
      * @return boolean represents the advanced priority in use
      */
-    public final boolean getPriorityFlag() {
-        return flagAdvancedPriority;
+    public final boolean getInUseVersionFlag() {
+        return flagAdvancedVersion;
     }
 
     /**
@@ -331,7 +317,7 @@ public class SmartSolverPdbBase extends SolverPdb {
         return lastSearchBoard;
     }
 
-    protected final boolean isAddedReference() {
+    public final boolean isAddedReference() {
         return addedReference;
     }
 }

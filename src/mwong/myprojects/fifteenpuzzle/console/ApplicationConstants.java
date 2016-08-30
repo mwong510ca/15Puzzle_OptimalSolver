@@ -2,7 +2,15 @@ package mwong.myprojects.fifteenpuzzle.console;
 
 import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
 
-public class ApplicationProperties {
+/**
+ * ApplicationConstants contains all constant variables for any console application.
+ *
+ * <p>Dependencies : SolverConstants.java
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
+public class ApplicationConstants {
     private static final boolean TAG_LINEAR_CONFLICT = SolverConstants.isTagLinearConflict();
     private static final boolean TAG_ADVANCED = SolverConstants.isTagAdvanced();
     private static final boolean TIMEOUT_ON = SolverConstants.isOnSwitch();

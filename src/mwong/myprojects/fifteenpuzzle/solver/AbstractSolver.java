@@ -1,17 +1,3 @@
-/****************************************************************************
- *  @author   Meisze Wong
- *            www.linkedin.com/pub/macy-wong/46/550/37b/
- *
- *  Compilation  : javac SolverAbstract.java
- *  Dependencies : Board.java, Direction.java, Stopwatch.java,
- *                 SolverInterface.java, AdvancedAccumulator.java,
- *                 AdvancedBoard.java, AdvancedMoves.java
- *
- *  SolverAbstract class implements SolverInterface of 15 puzzle that has the
- *  following variables and methods.
- *
- ****************************************************************************/
-
 package mwong.myprojects.fifteenpuzzle.solver;
 
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
@@ -20,6 +6,15 @@ import mwong.myprojects.fifteenpuzzle.utilities.Stopwatch;
 
 import java.util.Arrays;
 
+/**
+ * AbstractSolver is the abstract class extends Solver Interface of 15 puzzle that
+ * has the following variables and methods.
+ *
+ * <p>Dependencies : Board.java, Direction.java, Solver.java, Stopwatch.java
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public abstract class AbstractSolver implements Solver {
     // constants
     protected final int puzzleSize;
@@ -43,7 +38,7 @@ public abstract class AbstractSolver implements Solver {
     // solver setting
     protected boolean flagTimeout;
     protected boolean flagMessage;
-    protected boolean flagAdvancedPriority;
+    protected boolean flagAdvancedVersion;
     protected boolean activeSmartSolver;
     protected int searchTimeoutLimit;
     public HeuristicOptions inUseHeuristic;
@@ -91,7 +86,7 @@ public abstract class AbstractSolver implements Solver {
         lastBoard = goalBoard;
         flagMessage = onSwitch;
         flagTimeout = onSwitch;
-        flagAdvancedPriority = tagStandard;
+        flagAdvancedVersion = tagStandard;
         searchTimeoutLimit = defaultTimeoutLimit;
         activeSmartSolver = false;
     }
@@ -142,14 +137,14 @@ public abstract class AbstractSolver implements Solver {
      *  @param flag the boolean represent the ON/OFF advanced feature
      */
     @Override
-    public boolean advPrioritySwitch(boolean flag) {
+    public boolean versionSwitch(boolean flag) {
         if (activeSmartSolver) {
-            flagAdvancedPriority = flag;
+            flagAdvancedVersion = flag;
             return true;
         } else {
             System.out.println("Referece board collection unavailable."
                 + " Advanced search feature will act as standard search.");
-            flagAdvancedPriority = tagStandard;
+            flagAdvancedVersion = tagStandard;
             return false;
         }
     }
@@ -209,7 +204,7 @@ public abstract class AbstractSolver implements Solver {
         priorityGoal = 0;
         priorityAdvanced = -1;
     }
-    
+
     /**
      * Returns the byte value of the standard version of the heuristic value of the board.
      *
@@ -274,9 +269,10 @@ public abstract class AbstractSolver implements Solver {
         stopwatch = null;
     }
 
+    // initialize lastDepthSummary from the given board object
     protected final void setLastDepthSummary(Board board) {
-    	lastDepthSummary = new int[4 * 2];
-    	int[] validMoves = board.getValidMoves();
+        lastDepthSummary = new int[4 * 2];
+        int[] validMoves = board.getValidMoves();
         for (int i = 0; i < 4; i++) {
             if (validMoves[i] == 0) {
                 lastDepthSummary[i] = endOfSearch;
@@ -285,21 +281,21 @@ public abstract class AbstractSolver implements Solver {
             }
         }
     }
-    	
+
+    // initialize lastDepthSummary from the given Direction
     protected final void setLastDepthSummary(Direction dir) {
-    	lastDepthSummary = new int[4 * 2];
-    	int dirValue = dir.getValue();
-    	for (int i = 0; i < 4; i++) {
+        lastDepthSummary = new int[4 * 2];
+        int dirValue = dir.getValue();
+        for (int i = 0; i < 4; i++) {
             if (i == dirValue) {
-            	lastDepthSummary[i + 4] = 1;
+                lastDepthSummary[i + 4] = 1;
             } else {
                 lastDepthSummary[i] = endOfSearch;
-                lastDepthSummary[i + 4] = 0;
             }
         }
-	}
+    }
 
-	// solve the puzzle using interactive deepening A* algorithm
+    // solve the puzzle using interactive deepening A* algorithm
     protected abstract void idaStar(int limit);
 
     // maximum allow 5 continues clockwise turn.

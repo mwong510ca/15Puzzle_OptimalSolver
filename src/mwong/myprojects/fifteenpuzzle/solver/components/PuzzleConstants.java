@@ -90,4 +90,22 @@ public class PuzzleConstants {
     public static final byte[] getSymmetryVal() {
         return SYMMETRY_VAL;
     }
+
+    /**
+     * Returns the byte array of tiles after symmetry conversion.
+     *
+     * @param original the byte array of given tiles
+     * @return byte array of tiles after symmetry conversion
+     */
+    public static final byte[] tiles2sym(byte[] original) {
+        final int puzzleSize = PuzzleConstants.getSize();
+        final byte[] symmetryPos = PuzzleConstants.getSymmetryPos();
+        final byte[] symmetryVal = PuzzleConstants.getSymmetryVal();
+        byte[] tiles2sym = new byte[puzzleSize];
+
+        for (int i = 0; i < puzzleSize; i++) {
+            tiles2sym[symmetryPos[i]] = symmetryVal[original[i]];
+        }
+        return tiles2sym;
+    }
 }

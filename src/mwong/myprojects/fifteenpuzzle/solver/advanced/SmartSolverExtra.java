@@ -7,7 +7,7 @@ import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceBoard;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceMoves;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
-import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleProperties;
+import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleConstants;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverMd;
 import mwong.myprojects.fifteenpuzzle.utilities.Stopwatch;
 
@@ -20,14 +20,14 @@ import java.util.Map.Entry;
  * It use Manhattan distance to calculate the advanced estimate from the collection
  * of reference boards.
  *
- * <p>Dependencies : Board.java, Direction.java, HeuristicOptions.java, PuzzleProperties.java,
+ * <p>Dependencies : Board.java, Direction.java, HeuristicOptions.java, PuzzleConstants.java,
  *                   ReferenceAccumulator.java ReferenceBoard.java, ReferenceMoves.java,
  *                   SolverConstants.java, SolverMD.java, Stopwatch.java
  *
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
-class SmartSolverExtra extends SolverMd {
+public class SmartSolverExtra extends SolverMd {
     /**
      * Print solver description.
      */
@@ -41,10 +41,17 @@ class SmartSolverExtra extends SolverMd {
         }
     }
 
-    // quick check if the given board is one of the reference board.  If so,
-    // use the reference estimate.  If search in progress, also update partial
-    // solutions if exists.
-    final AdvancedRecord advancedContains(Board board, boolean inSearch,
+    /**
+     * Returns the AdvancedRecord object if the given board is one of the reference board.
+     * It carries the reference estimate and partial solutions for searching if exists.
+     * Otherwise return null.
+     *
+     * @param board the given board object
+     * @param inSearch the boolean value represent the usage for search or review.
+     * @param refAccumulator the given reference collection object to use.
+     * @return AdvancedRecord object if the given board is one of the reference board.
+     */
+    public final AdvancedRecord advancedContains(Board board, boolean inSearch,
             ReferenceAccumulator refAccumulator) {
         Map<ReferenceBoard, ReferenceMoves> refMap = refAccumulator.getActiveMap();
         if (refMap == null || refMap.size() == 0) {
@@ -134,7 +141,7 @@ class SmartSolverExtra extends SolverMd {
         for (Entry<ReferenceBoard, ReferenceMoves> entry
                 : advMap.entrySet()) {
             byte[] transTiles = entry.getKey().transformer(board.getTiles());
-            byte[] transTilesSym = PuzzleProperties.tiles2sym(transTiles);
+            byte[] transTilesSym = PuzzleConstants.tiles2sym(transTiles);
 
             int transPriority = 0;
             int transPrioritySym = 0;

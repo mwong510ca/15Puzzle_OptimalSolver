@@ -22,7 +22,7 @@ import java.util.Arrays;
  */
 public class SmartSolverPdb extends SmartSolverPdbBase {
     /**
-     * Initializes SolverPD object using default preset pattern.
+     * Initializes SmartSolverPdb object using default preset pattern.
      *
      * @param refAccumulator the given ReferenceAccumulator object
      */
@@ -31,7 +31,7 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
     }
 
     /**
-     * Initializes SolverPD object using given preset pattern.
+     * Initializes SmartSolverPdb object using given preset pattern.
      *
      * @param presetPattern the given preset pattern type
      * @param refAccumulator the given ReferenceAccumulator object
@@ -41,8 +41,8 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
     }
 
     /**
-     * Initializes SolverPD object with choice of given preset pattern.  If refAccumlator is null
-     * or empty, it will act as standard version.
+     * Initializes SmartSolverPdb object with choice of given preset pattern.  If refAccumlator
+     * is null or empty, it will act as standard version.
      *
      * @param presetPattern the given preset pattern type
      * @param choice the number of preset pattern option
@@ -64,8 +64,8 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
     }
 
     /**
-     * Initializes SolverPD object with user defined custom pattern.  If refAccumlator is null
-     * or empty, it will act as standard version.
+     * Initializes SmartSolverPdb object with user defined custom pattern.  If refAccumlator
+     * is null or empty, it will act as standard version.
      *
      * @param customPattern byte array of user defined custom pattern
      * @param elementGroups boolean array of groups reference to given pattern
@@ -158,6 +158,7 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
         if (inUsePattern == PatternOptions.Pattern_78) {
             lastSearchBoard = new Board(tiles);
         }
+        addedReference = false;
 
         if (solutionMove[1] != null) {
             advancedSearch(limit);

@@ -1,51 +1,49 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
 import mwong.myprojects.fifteenpuzzle.solver.Solver;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
-import mwong.myprojects.fifteenpuzzle.solver.components.Board;
-import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
-import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleDifficultyLevel;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdbBase;
-import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdb;
-import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdbEnh2;
-import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdbEnh1;
+import mwong.myprojects.fifteenpuzzle.solver.components.Board;
+import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdbBase;
+import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdbEnh1;
+import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdbEnh2;
 
-import java.util.Scanner;
-
-public class ApplicationCompareEnhancement extends AbstractApplication {
-    private final ApplicationType applicationType;
-    private final boolean tagAdvanced;
+/**
+ * CompareEnhancement is the console application extends AbstractApplication. It takes a
+ * 16 numbers or choice of random board.  It use default pattern database 7-8 heuristic function,
+ * display the process time and number of nodes generated during the search by adding the
+ * enhancement one at a time.  If standard estimate and advanced estimate are the same, it will not
+ * display the runtime for advanced version.
+ *
+ * <p>Dependencies : AbstractApplication.java, Board.java, PatternOptions.java, Solver.java,
+ *                   SmartSolverPdb.java, SmartSolverPdbBase.java, SolverPdbBase.java,
+ *                   SolverPdbEnh1.java, SolverPdbEnh2.java
+ *
+ * @author   Meisze Wong
+ *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
+public class CompareEnhancement extends AbstractApplication {
     private SolverPdbBase solverNoEnh;
     private SolverPdbEnh1 solverEnh1;
     private SolverPdbEnh2 solverEnh2;
-    private SolverPdb solverStandard;
     private SmartSolverPdbBase solverAdvEst;
     private SmartSolverPdb solverAdvanced;
-    private final ReferenceAccumulator refAccumulator;
 
-    public ApplicationCompareEnhancement() {
+    /**
+     * Initial CompareEnhancement object.
+     */
+    public CompareEnhancement() {
         super();
-        applicationType = ApplicationType.CompareEnhancement;
-        final boolean messageOff = !ApplicationProperties.isMessageOn();
-        final boolean timeoutOff = !ApplicationProperties.isTimeoutOn();
-        tagAdvanced = ApplicationProperties.isTagAdvanced();
-        refAccumulator = new ReferenceAccumulator();
 
         solverAdvanced = new SmartSolverPdb(PatternOptions.Pattern_78, refAccumulator);
         solverAdvanced.messageSwitch(messageOff);
         solverAdvanced.timeoutSwitch(timeoutOff);
-        solverAdvanced.advPrioritySwitch(tagAdvanced);
 
         solverAdvEst = new SmartSolverPdbBase(solverAdvanced, refAccumulator);
         solverAdvEst.messageSwitch(messageOff);
         solverAdvEst.timeoutSwitch(timeoutOff);
-        solverAdvEst.advPrioritySwitch(tagAdvanced);
-
-        solverStandard = new SolverPdb(solverAdvanced);
-        solverStandard.messageSwitch(messageOff);
-        solverStandard.timeoutSwitch(timeoutOff);
+        solverAdvEst.versionSwitch(tagAdvanced);
 
         solverEnh2 = new SolverPdbEnh2(solverAdvanced);
         solverEnh2.messageSwitch(messageOff);
@@ -60,59 +58,38 @@ public class ApplicationCompareEnhancement extends AbstractApplication {
         solverNoEnh.timeoutSwitch(timeoutOff);
     }
 
-    @Override
-    public void printHeading(ApplicationType type, Solver solver) {
-        System.out.println("Compare 15 puzzle solver enhancement using "
-                + solver.getHeuristicOptions().getDescription() + "\n");
-    }
-
     //  It take a solver and a 15 puzzle board, display the the process time and number of
-    //  nodes generated during the search, time out after 10 seconds.
+    //  nodes generated during the search.
     private void solvePuzzle(Solver solver, Board board) {
         solver.findOptimalPath(board);
         System.out.printf("%-15s %-20s\n", solver.searchTime() + "s", solver.searchNodeCount());
     }
 
+    /**
+     * Start the application.
+     */
     public void run() {
-        printHeading(applicationType, solverAdvanced);
-        
-        scanner = new Scanner(System.in, "UTF-8");
-        do {
-            System.out.println("Enter 'Q' - quit the program");
-            System.out.println("      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random");
-            System.out.println("      or 16 numbers from 0 to 15 for the puzzle");
-
+        System.out.println("Compare 15 puzzle solver enhancement using "
+                + solver.getHeuristicOptions().getDescription() + "\n");
+        while (true) {
+            printOption('q');
+            printOption('b');
             Board board = null;
             while (true) {
                 if (scanner.hasNextInt()) {
+                    board = keyInBoard();
                     break;
                 }
-                char value = scanner.next().charAt(0);
-                if (value == 'Q' || value == 'q') {
+                char choice = scanner.next().charAt(0);
+                if (choice == 'q') {
                     System.out.println("Goodbye!\n");
                     System.exit(0);
                 }
-                if (value == 'E' || value == 'e') {
-                    board = new Board(PuzzleDifficultyLevel.EASY);
-                    break;
-                }
-                if (value == 'M' || value == 'm') {
-                    board = new Board(PuzzleDifficultyLevel.MODERATE);
-                    break;
-                }
-                if (value == 'H' || value == 'h') {
-                    board = new Board(PuzzleDifficultyLevel.HARD);
-                    break;
-                }
-                if (value == 'R' || value == 'r') {
-                    board = new Board();
+                board = createBoard(choice);
+                if (board != null) {
                     break;
                 }
                 System.out.println("Please enter 'Q', 'E', 'M', 'H', 'R' or 16 numbers (0 - 15):");
-            }
-
-            if (board == null) {
-                board = puzzleIn();
             }
 
             System.out.print("\n" + board);
@@ -122,7 +99,7 @@ public class ApplicationCompareEnhancement extends AbstractApplication {
                 System.out.print("Standard estimate : " + heuristicStandard + "\t\t");
                 System.out.println("Advanced estimate : " + heuristicAdvanced);
                 System.out.println("\t\t\t\tTime\t\tNodes");
-                
+
                 System.out.printf("%-32s", "No enhancement : ");
                 solvePuzzle(solverNoEnh, board);
                 System.out.printf("%-32s", "Add symmetry reduction : ");
@@ -130,23 +107,35 @@ public class ApplicationCompareEnhancement extends AbstractApplication {
                 System.out.printf("%-32s", "Add circular reduction : ");
                 solvePuzzle(solverEnh2, board);
                 System.out.printf("%-32s", "Add starting order detection : ");
-                solvePuzzle(solverStandard, board);
+                solverAdvanced.versionSwitch(tagStandard);
+                solvePuzzle(solverAdvanced, board);
+                if (solverAdvanced.isAddedReference()) {
+                    heuristicAdvanced = solverAdvanced.heuristicAdvanced(board);
+                }
                 if (heuristicAdvanced > heuristicStandard) {
                     System.out.printf("%-32s", "Advanced version : ");
                     solvePuzzle(solverAdvEst, board);
                     if (solverAdvanced.hasPartialSolution(board)) {
                         System.out.printf("%-32s", "Use preset partial solution :");
+                        solverAdvanced.versionSwitch(tagAdvanced);
                         solvePuzzle(solverAdvanced, board);
+                        if (solverAdvEst.isAddedReference()) {
+                            refAccumulator.updateLastSearch(solverAdvEst);
+                        }
                     } else {
                         System.out.printf("%-32s", "No preset partial solution.");
+                        if (solverAdvanced.isAddedReference()) {
+                            refAccumulator.updateLastSearch(solverAdvEst);
+                        }
                     }
+                } else if (solverAdvanced.isAddedReference()) {
+                    refAccumulator.updateLastSearch(solverAdvEst);
                 }
             } else {
                 System.out.println("The board is unsolvable, try again!");
             }
-            System.out.println("\t\t\tActual number of solution move : " + solverStandard.moves() + "\n");
-            
-            
-        } while (true);
+            System.out.println("\t\t\tActual number of solution move : "
+                    + solverAdvanced.moves() + "\n");
+        }
     }
 }

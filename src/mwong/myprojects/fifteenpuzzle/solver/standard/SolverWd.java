@@ -38,7 +38,7 @@ public class SolverWd extends AbstractSolver {
     /**
      * Initializes SolverWd object.
      */
-    public SolverWd() {
+    protected SolverWd() {
         super();
         inUseHeuristic = HeuristicOptions.WD;
         loadWDComponents();

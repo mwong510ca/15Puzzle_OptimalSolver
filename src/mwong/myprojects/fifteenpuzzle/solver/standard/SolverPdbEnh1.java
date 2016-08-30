@@ -12,9 +12,7 @@ public class SolverPdbEnh1 extends SolverPdbBase {
     /**
      * Default constructor.
      */
-    SolverPdbEnh1() {
-        super();
-    }
+    SolverPdbEnh1() {}
 
     /**
      * Initializes SolverPdbEnh1 object with a given standard version SolverPdb instance,

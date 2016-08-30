@@ -56,9 +56,7 @@ public class SolverPdbBase extends AbstractSolver {
     /**
      * Default constructor.
      */
-    SolverPdbBase() {
-        super();
-    }
+    SolverPdbBase() {}
 
     /**
      * Initializes SolverPdbBase object with a given standard version SolverPdb instance,

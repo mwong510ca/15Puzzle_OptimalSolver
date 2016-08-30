@@ -14,11 +14,11 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 public interface Solver extends SolverStandard {
     // ----- solver setting -----
     /**
-     *  Set the advanced priority with the given flag.
+     *  Set the advanced version with the given flag.
      *
-     *  @param flag the boolean represent the active status of advanced priority
+     *  @param flag the boolean represent the active status of in use solver version
      */
-    boolean advPrioritySwitch(boolean flag);
+    boolean versionSwitch(boolean flag);
 
     // ----- heuristic -----
     /**

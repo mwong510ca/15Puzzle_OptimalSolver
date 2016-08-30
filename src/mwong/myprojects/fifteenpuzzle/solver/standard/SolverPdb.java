@@ -73,7 +73,7 @@ public class SolverPdb extends SolverPdbEnh2 {
      *
      *  @param copySolver an instance of SolverPdb
      */
-    public SolverPdb(SolverPdb copySolver) {
+    protected SolverPdb(SolverPdb copySolver) {
         super(copySolver);
     }
 

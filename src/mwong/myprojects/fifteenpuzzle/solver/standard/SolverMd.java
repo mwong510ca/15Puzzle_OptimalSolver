@@ -25,8 +25,8 @@ public class SolverMd extends AbstractSolver {
     /**
      * Initializes SolverMd object.
      */
-    public SolverMd() {
-        this(!SolverConstants.isTagLinearConflict());
+    protected SolverMd() {
+    	super();
     }
 
     /**
@@ -34,7 +34,7 @@ public class SolverMd extends AbstractSolver {
      *
      * @param lcFlag boolean flag for linear conflict feature
      */
-    public SolverMd(boolean lcFlag) {
+    protected SolverMd(boolean lcFlag) {
         super();
         linearConflictSwitch(lcFlag);
     }
