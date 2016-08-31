@@ -110,6 +110,7 @@ Use a reference board to boost the initial estimate closer to solution moves:
     after review full set
     store value change to       67                 66                 67                 68
     with partial solution      YES                YES                YES                YES  
+    
     Example 2:    Standard estimate: 48    Advanced estimate: 64        Actual moves: 66
      0 15 11  3   Search time: 10.6s       Search time: 10.2s
     12  7  8  4   Skip                     Add to reference collection
