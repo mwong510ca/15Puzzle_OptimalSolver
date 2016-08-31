@@ -30,7 +30,7 @@ Use a reference board to boost the initial estimate closer to solution moves:
      15 11  8  3    15 11  8  0     9 14 12 15    0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15
      12  7  4  0 -> 12  7  4  3 -> 13 10  7 11 -> |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
      14 10  6  5    14 10  6  5     2  6  4  8    0 13  9 15 11 14 10  7 12  1  6  8  3  5  2  4
-      9 13  2  1     9 13  2  1     1  5  3  0</pre>
+       9 13  2  1     9 13  2  1     1  5  3  0</pre>
 
   I divided the board in 4 groups.  For each entry, it will store 4 boards per group.
     <pre>
@@ -98,7 +98,7 @@ Use a reference board to boost the initial estimate closer to solution moves:
   <pre>
     Example 1:    Standard estimate: 52    Advanced estimate: same      Actual moves: 68    
                   Search time: 26.4s       
-                  Add to reference collection after the search, either standard/advance version.
+                  Add to reference collection after the search, either std/adv version.
                   Group 3 -> convert to Group 1
                        lookup 0           lookup 1           lookup 2           lookup 3
     15 11  8  3        12 15  4  0        12 15  4  7        12 15  4  7        12 15  0  7       
@@ -110,13 +110,13 @@ Use a reference board to boost the initial estimate closer to solution moves:
     after review full set
     store value change to       67                 66                 67                 68
     with partial solution      YES                YES                YES                YES  
-    Example 2:    Standard estimate: 48    Advanced estimate: 64        Actual moves: 66    
+    Example 2:    Standard estimate: 48    Advanced estimate: 64        Actual moves: 66
      0 15 11  3   Search time: 10.6s       Search time: 10.2s
     12  7  8  4   Skip                     Add to reference collection
     14 10  6  5                            after advanced search only.
      9 13  2  1 
                    
-    Example 3:    Standard estimate: 48    Advanced estimate: 66        Actual moves: 66   
+    Example 3:    Standard estimate: 48    Advanced estimate: 66        Actual moves: 66
     15 11  0  3   Search time: 8.4s        Search time: 0.47s      
     12  7  8  4   Skip                     Skip         
     14 10  6  5 
