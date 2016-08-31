@@ -101,10 +101,10 @@ Use a reference board to boost the initial estimate closer to solution moves:
                   Add to reference collection after the search, either std/adv version.
                   Group 3 -> convert to Group 1
                        lookup 0           lookup 1           lookup 2           lookup 3
-    15 11  8  3        12 15  4  0        12 15  4  7        12 15  4  7        12 15  0  7       
-    12 14  7  4        11  8  3  7        11  8  3  0        11  8  0  3        11  8  4  3         
+    15 11  8  3        12 15  4  0        12 15  4  7        12 15  4  7        12 15  0  7 
+    12 14  7  4        11  8  3  7        11  8  3  0        11  8  0  3        11  8  4  3 
      0 13  6  2        14 10  6  2        14 10  6  2        14 10  6  2        14 10  6  2        
-    10  9  5  1         4  3  5  1         4  3  5  1         4  3  5  1         4  3  5  1        
+    10  9  5  1         4  3  5  1         4  3  5  1         4  3  5  1         4  3  5  1   
     store value    est (68 - 3) 65    est (68 - 2) 66    est (68 - 1) 67                 68
     partial solution            NO                 NO                 NO                YES
     after review full set
