@@ -1,6 +1,5 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
-import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.Solver;
 import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
@@ -35,8 +34,6 @@ public abstract class AbstractApplication {
     protected ReferenceAccumulator refAccumulator;
     protected int timeoutLimit;
     protected boolean flagAdvVersion;
-    protected Solver solver;
-    protected HeuristicOptions inUseHeuristic;
 
     AbstractApplication() {
         puzzleSize = ApplicationConstants.getPuzzleSize();
@@ -146,8 +143,16 @@ public abstract class AbstractApplication {
             System.out.println("      'V' - change initial heuristic estimate from Advanced "
                     + "to Standard version");
         } else {
-            System.out.println("      'V' - change initial heuristic estimate from Original "
+            System.out.println("      'V' - change initial heuristic estimate from Standard "
                     + "to Advanced version");
+        }
+    }
+
+    void printOption(Solver solver) {
+        if (solver.isFlagTimeout()) {
+            System.out.println("      'O' - turn timeout feature off");
+        } else {
+            System.out.println("      'O' - turn timeout feature on");
         }
     }
 
@@ -198,11 +203,11 @@ public abstract class AbstractApplication {
         }
     }
 
-    void changeTimeout(int min, int max) {
+    void changeTimeout(Solver solver, int min, int max) {
         int limit = 0;
         do {
-            System.out.println("Enter timeout limit in seconds, minimun 3 seconds"
-                    + " and maximum 5 mins (300s):");
+            System.out.println("Enter timeout limit in seconds, minimun " + min + " seconds"
+                    + " and maximum " + max + " seconds:");
             if (!scanner.hasNextInt()) {
                 scanner.next();
             } else {

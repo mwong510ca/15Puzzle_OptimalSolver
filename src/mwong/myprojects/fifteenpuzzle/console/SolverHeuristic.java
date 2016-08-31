@@ -1,6 +1,7 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
+import mwong.myprojects.fifteenpuzzle.solver.Solver;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverMd;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdbWd;
@@ -24,6 +25,9 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SolverHeuristic extends AbstractApplication {
+    private Solver solver;
+    private HeuristicOptions inUseHeuristic;
+
     /**
      * Initial SolverHeuristic object.
      */
@@ -262,7 +266,7 @@ public class SolverHeuristic extends AbstractApplication {
             solver.findOptimalPath(initial);
             if (solver.isSearchTimeout()) {
                 System.out.println("Search terminated after " + timeoutLimit + "s.\n");
-                menuMain();
+                initial = menuMain();
             } else {
                 solutionSummary(solver);
                 // Notes: updateLastSearch is optional.

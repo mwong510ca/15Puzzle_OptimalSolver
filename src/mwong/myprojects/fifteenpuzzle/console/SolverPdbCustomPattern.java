@@ -1,6 +1,7 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
+import mwong.myprojects.fifteenpuzzle.solver.Solver;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternConstants;
@@ -22,9 +23,9 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SolverPdbCustomPattern extends AbstractApplication {
+    private Solver solver;
     private HeuristicOptions inUsePattern;
     private int inUsePatternOption;
-    private int timeoutLimit;
 
     /**
      * Initial SolverPdbCustomPattern object.
@@ -146,11 +147,11 @@ public class SolverPdbCustomPattern extends AbstractApplication {
                     int zero = scanner.nextInt();
                     if (zero != 0) {
                         System.out.println("Your input pattern is invalid, please try again");
-                        System.out.println("Enter '1 - 4' for 15 puzzle patterns, '0' no change");
+                        System.out.println("Enter '1 - 3' for default patterns,"
+                                + "'4' for custome pattern' or '0' no change");
                         break;
                     }
 
-                    boolean [] elementGroups = pattern2elementGroups(pattern, 7);
                     for (count = 0; count < puzzleSize; count++) {
                         System.out.print(pattern[count] + " ");
                         if (count % 4 == 3) {
@@ -158,6 +159,7 @@ public class SolverPdbCustomPattern extends AbstractApplication {
                         }
                     }
                     System.out.println();
+                    boolean [] elementGroups = pattern2elementGroups(pattern, 7);
 
                     if (elementGroups != null) {
                         solver = null;
@@ -168,10 +170,12 @@ public class SolverPdbCustomPattern extends AbstractApplication {
                         break;
                     }
                     System.out.println("Your input pattern is invalid, please try again");
-                    System.out.println("Enter '1 - 4' for 15 puzzle patterns, '0' no change");
+                    System.out.println("Enter '1 - 3' for default patterns,"
+                            + "'4' for custome pattern' or '0' no change");
                     break;
                 default:
-                    System.out.println("Enter '1 - 4' for 15puzzle patterns, '0' no change");
+                    System.out.println("Enter '1 - 3' for default patterns,"
+                            + "'4' for custome pattern' or '0' no change");
             }
         } while (pending);
 
@@ -248,7 +252,7 @@ public class SolverPdbCustomPattern extends AbstractApplication {
                 return null;
             case 'T': case 't':
                 if (optionT) {
-                    changeTimeout(3, 300);
+                    changeTimeout(solver, 3, 300);
                     return menuSub(optionV, false);
                 }
                 return null;

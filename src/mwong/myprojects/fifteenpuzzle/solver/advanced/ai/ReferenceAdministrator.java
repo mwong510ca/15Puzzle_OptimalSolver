@@ -19,6 +19,15 @@ public class ReferenceAdministrator {
         Add,
         // Remove a board
         Remove;
+
+        @Override
+        public String toString() {
+            if (this == Remove) {
+                return "remove";
+            } else {
+                return "add";
+            }
+        }
     }
 
     private static Scanner scanner;
@@ -177,6 +186,8 @@ public class ReferenceAdministrator {
                         if (advAccumulator.updateLastSearch(solver)) {
                             solver.findOptimalPath(initial);
                             System.out.println("\t\t" + solver.searchTime());
+                        } else {
+                            System.out.println("\t\t\t\tskip");
                         }
                     }
                 } else {
@@ -184,8 +195,8 @@ public class ReferenceAdministrator {
                     System.out.println("unsolvable");
                 }
 
-                System.out.println("Please 16 numbers (0 - 15) to add, or any characters "
-                        + "return to main menu:");
+                System.out.println("Please 16 numbers (0 - 15) to " + action
+                        + ", or any characters return to main menu:");
             } while (scanner.hasNextInt());
         }
     }

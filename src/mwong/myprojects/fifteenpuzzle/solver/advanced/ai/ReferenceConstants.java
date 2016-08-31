@@ -1,7 +1,6 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced.ai;
 
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
-import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleConstants;
 
@@ -14,7 +13,6 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleConstants;
 public class ReferenceConstants {
     private static final String CORE_SOLVER_CLASS_NAME = SmartSolverPdb.class.getSimpleName();
     private static final HeuristicOptions CORE_HEURISTIC = HeuristicOptions.PD78;
-    private static final boolean ON_SWITCH = SolverConstants.isOnSwitch();
 
     // Constants for ReferenceBoard
     private static final int PUZZLE_SIZE = PuzzleConstants.getSize();
@@ -50,15 +48,6 @@ public class ReferenceConstants {
      */
     static final HeuristicOptions getCoreHeuristic() {
         return CORE_HEURISTIC;
-    }
-
-    /**
-     * Returns the byte array of symmetry tiles conversion.
-     *
-     * @return byte array of symmetry value
-     */
-    static final boolean isOnSwitch() {
-        return ON_SWITCH;
     }
 
     /**

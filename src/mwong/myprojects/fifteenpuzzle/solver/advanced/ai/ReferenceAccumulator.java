@@ -2,6 +2,7 @@ package mwong.myprojects.fifteenpuzzle.solver.advanced.ai;
 
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.Solver;
+import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
@@ -55,7 +56,7 @@ public class ReferenceAccumulator {
         coreSolverClassName = ReferenceConstants.getCoreSolverClassName();
         coreHeuristic = ReferenceConstants.getCoreHeuristic();
         symmetry = ReferenceConstants.isSymmetry();
-        onSwitch = ReferenceConstants.isOnSwitch();
+        onSwitch = SolverConstants.isOnSwitch();
         offSwitch = !onSwitch;
 
         loadDefault();
@@ -79,24 +80,6 @@ public class ReferenceAccumulator {
             ReferenceBoard advBoard = new ReferenceBoard(new Board(preset[0]));
             ReferenceMoves advMoves = new ReferenceMoves(preset[1][0], preset[1][1]);
             defaultMap.put(advBoard, advMoves);
-
-            if (preset[1][0] == 5) {
-                byte[] tiles = preset[0].clone();
-                tiles[5] = tiles[6];
-                tiles[6] = 0;
-                advBoard = new ReferenceBoard(new Board(tiles));
-                advMoves = new ReferenceMoves((byte) 6, (byte) (preset[1][1] - 1));
-                defaultMap.put(advBoard, advMoves);
-            }
-
-            if (preset[1][0] == 10) {
-                byte[] tiles = preset[0].clone();
-                tiles[10] = tiles[6];
-                tiles[6] = 0;
-                advBoard = new ReferenceBoard(new Board(tiles));
-                advMoves = new ReferenceMoves((byte) 6, (byte) (preset[1][1] - 1));
-                defaultMap.put(advBoard, advMoves);
-            }
         }
     }
 
@@ -266,7 +249,6 @@ public class ReferenceAccumulator {
         }
     }
 
-    // verify the given solver is SmartSolverPD object using pattern database 7-8
     /**
      * Returns the boolean value of the given solver is the valid for ReferenceAccumulator.
      *
@@ -314,14 +296,14 @@ public class ReferenceAccumulator {
     }
 
     // scan the full collection, if the reference board is not verified, verify it now.
-    private void updateAll(SmartSolverPdb solverPD) {
-        assert solverPD instanceof SmartSolverPdb : "updateAll without SmartSolverPD object";
-        final boolean backupAdvPriority = solverPD.getInUseVersionFlag();
-        final boolean backupMessageFlag = solverPD.getMessageFlag();
-        final boolean backupTimeoutFlag = solverPD.getTimeoutFlag();
-        solverPD.timeoutSwitch(offSwitch);
-        solverPD.messageSwitch(offSwitch);
-        solverPD.versionSwitch(onSwitch);
+    private void updateAll(SmartSolverPdb solverPdb78) {
+        assert solverPdb78 instanceof SmartSolverPdb : "updateAll without SmartSolverPD object";
+        final boolean backupAdvPriority = solverPdb78.getInUseVersionFlag();
+        final boolean backupMessageFlag = solverPdb78.getMessageFlag();
+        final boolean backupTimeoutFlag = solverPdb78.getTimeoutFlag();
+        solverPdb78.timeoutSwitch(offSwitch);
+        solverPdb78.messageSwitch(offSwitch);
+        solverPdb78.versionSwitch(onSwitch);
 
         for (Entry<ReferenceBoard, ReferenceMoves> entry : referenceMap.entrySet()) {
             ReferenceMoves advMoves = entry.getValue();
@@ -329,12 +311,12 @@ public class ReferenceAccumulator {
                 continue;
             }
             ReferenceBoard advBoard = entry.getKey();
-            advMoves.updateSolutions(advBoard, solverPD);
+            advMoves.updateSolutions(advBoard, solverPdb78);
             add2file(advBoard, advMoves);
         }
-        solverPD.versionSwitch(backupAdvPriority);
-        solverPD.messageSwitch(backupMessageFlag);
-        solverPD.timeoutSwitch(backupTimeoutFlag);
+        solverPdb78.versionSwitch(backupAdvPriority);
+        solverPdb78.messageSwitch(backupMessageFlag);
+        solverPdb78.timeoutSwitch(backupTimeoutFlag);
     }
 
     /**
@@ -348,7 +330,7 @@ public class ReferenceAccumulator {
         return addBoard(inSolver, false);
     }
 
-    // add a reference board in collection, allow bypass mininum
+    // add a reference board in collection, allow bypass minimum
     // cutoff limit requirement
     boolean addBoard(Solver inSolver, boolean bypass) {
         if (referenceMap == null) {
@@ -360,24 +342,24 @@ public class ReferenceAccumulator {
         if (!bypass && inSolver.searchTime() < getCutoffLimit()) {
             return false;
         }
-        SmartSolverPdb solverPD = (SmartSolverPdb) inSolver;
-        Board board = solverPD.lastSearchBoard();
-        Direction[] solution = solverPD.solution().clone();
+        SmartSolverPdb solverPdb78 = (SmartSolverPdb) inSolver;
+        Board board = solverPdb78.lastSearchBoard();
+        Direction[] solution = solverPdb78.solution().clone();
 
-        if (!bypass && !solverPD.getInUseVersionFlag()) {
-            int heuristicOrg = solverPD.heuristicStandard(board);
-            int heuristicAdv = solverPD.heuristicAdvanced(board);
+        if (!bypass && !solverPdb78.getInUseVersionFlag()) {
+            int heuristicOrg = solverPdb78.heuristicStandard(board);
+            int heuristicAdv = solverPdb78.heuristicAdvanced(board);
             if (heuristicOrg != heuristicAdv) {
                 return false;
             }
         }
 
-        final boolean backupAdvPriority = solverPD.getInUseVersionFlag();
-        final boolean backupMessageFlag = solverPD.getMessageFlag();
-        final boolean backupTimeoutFlag = solverPD.getTimeoutFlag();
-        solverPD.timeoutSwitch(offSwitch);
-        solverPD.messageSwitch(offSwitch);
-        solverPD.versionSwitch(onSwitch);
+        final boolean backupAdvPriority = solverPdb78.getInUseVersionFlag();
+        final boolean backupMessageFlag = solverPdb78.getMessageFlag();
+        final boolean backupTimeoutFlag = solverPdb78.getTimeoutFlag();
+        solverPdb78.timeoutSwitch(offSwitch);
+        solverPdb78.messageSwitch(offSwitch);
+        solverPdb78.versionSwitch(onSwitch);
 
         ReferenceBoard advBoard = new ReferenceBoard(board);
         byte lookup = ReferenceConstants.getReferenceLookup(board.getZero1d());
@@ -386,9 +368,12 @@ public class ReferenceAccumulator {
         if (referenceMap.containsKey(advBoard)) {
             ReferenceMoves advMoves = referenceMap.get(advBoard);
             if (group == 3) {
-                advMoves.updateSolution(lookup, solverPD.moves(), solution, symmetry);
+                advMoves.updateSolution(lookup, solverPdb78.moves(), solution, symmetry);
             } else {
-                advMoves.updateSolution(lookup, solverPD.moves(), solution, !symmetry);
+                advMoves.updateSolution(lookup, solverPdb78.moves(), solution, !symmetry);
+            }
+            if (bypass && !advMoves.isCompleted()) {
+                advMoves.updateSolutions(advBoard, solverPdb78);
             }
             add2file(advBoard, advMoves);
             inSolver.versionSwitch(backupAdvPriority);
@@ -408,7 +393,10 @@ public class ReferenceAccumulator {
             } else if (lookup == 3) {
                 lookup = 1;
             }
-            advMoves.updateSolution(lookup, solverPD.moves(), solution, symmetry);
+            advMoves.updateSolution(lookup, solverPdb78.moves(), solution, symmetry);
+            if (bypass && !advMoves.isCompleted()) {
+                advMoves.updateSolutions(advBoardSym, solverPdb78);
+            }
             add2file(advBoardSym, advMoves);
             inSolver.versionSwitch(backupAdvPriority);
             inSolver.messageSwitch(backupMessageFlag);
@@ -416,11 +404,14 @@ public class ReferenceAccumulator {
             return true;
         }
 
-        ReferenceMoves advMoves = new ReferenceMoves(board.getZero1d(), solverPD.moves());
+        ReferenceMoves advMoves = new ReferenceMoves(board.getZero1d(), solverPdb78.moves());
         if (group == 3) {
-            advMoves.updateSolution(lookup, solverPD.moves(), solution, symmetry);
+            advMoves.updateSolution(lookup, solverPdb78.moves(), solution, symmetry);
         } else {
-            advMoves.updateSolution(lookup, solverPD.moves(), solution, !symmetry);
+            advMoves.updateSolution(lookup, solverPdb78.moves(), solution, !symmetry);
+        }
+        if (bypass && !advMoves.isCompleted()) {
+            advMoves.updateSolutions(advBoard, solverPdb78);
         }
         referenceMap.put(advBoard, advMoves);
         add2file(advBoard, advMoves);
@@ -444,27 +435,25 @@ public class ReferenceAccumulator {
         if (!validateSolver(inSolver)) {
             return false;
         }
-        if (inSolver.isSearchTimeout() || inSolver.searchTime() < cutoffLimit) {
-            return false;
-        }
 
-        SmartSolverPdb solverPD = (SmartSolverPdb) inSolver;
+        SmartSolverPdb solverPdb78 = (SmartSolverPdb) inSolver;
 
-        final boolean backupAdvPriority = solverPD.getInUseVersionFlag();
-        final boolean backupMessageFlag = solverPD.getMessageFlag();
-        final boolean backupTimeoutFlag = solverPD.getTimeoutFlag();
-        solverPD.timeoutSwitch(offSwitch);
-        solverPD.messageSwitch(offSwitch);
-        solverPD.versionSwitch(onSwitch);
+        final boolean backupAdvPriority = solverPdb78.getInUseVersionFlag();
+        final boolean backupMessageFlag = solverPdb78.getMessageFlag();
+        final boolean backupTimeoutFlag = solverPdb78.getTimeoutFlag();
+        solverPdb78.timeoutSwitch(offSwitch);
+        solverPdb78.messageSwitch(offSwitch);
+        solverPdb78.versionSwitch(onSwitch);
 
-        Board board = solverPD.lastSearchBoard();
+        Board board = solverPdb78.lastSearchBoard();
         ReferenceBoard advBoard = new ReferenceBoard(board);
         int group = ReferenceConstants.getReferenceGroup(board.getZero1d());
 
         if (referenceMap.containsKey(advBoard)) {
             ReferenceMoves advMoves = referenceMap.get(advBoard);
             if (!advMoves.isCompleted()) {
-                advMoves.updateSolutions(advBoard, solverPD);
+                System.out.println("System update, please wait.");
+                advMoves.updateSolutions(advBoard, solverPdb78);
                 add2file(advBoard, advMoves);
             }
 
@@ -481,7 +470,8 @@ public class ReferenceAccumulator {
         if (referenceMap.containsKey(advBoardSym)) {
             ReferenceMoves advMoves = referenceMap.get(advBoardSym);
             if (!advMoves.isCompleted()) {
-                advMoves.updateSolutions(advBoardSym, solverPD);
+                System.out.println("System update, please wait.");
+                advMoves.updateSolutions(advBoardSym, solverPdb78);
                 add2file(advBoardSym, advMoves);
             }
             inSolver.versionSwitch(backupAdvPriority);

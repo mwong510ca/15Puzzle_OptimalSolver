@@ -137,7 +137,7 @@ public class CompareHeuristic extends AbstractApplication {
 
             System.out.print("\n" + board);
             if (board.isSolvable()) {
-                System.out.print("\t\tEstimate\tTime\t\tMinimum Moves\tNodes generated");
+                System.out.println("\t\tEstimate\tTime\t\tMinimum Moves\tNodes generated");
 
                 boolean estimateOnly = false;
                 solvePuzzle(solverPdb78, board, estimateOnly);

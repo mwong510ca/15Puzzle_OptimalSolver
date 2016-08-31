@@ -9,9 +9,10 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
  * DemoSolverPdb78 is the console application extends AbstractApplication.  It use default
  * pattern database 7-8 heuristic function with monitor the changes on reference collection.
  * It takes a 16 numbers or choice of random board. It solved with standard version and
- * advanced version, while the estimate are different.  If it takes more than 10s and added to
+ * advanced version, while the estimate are different.  If it takes more than 8s and added to
  * reference collection, it will display the new count of reference collection.  It will
  * search again to showed the difference after the puzzle added to the reference collection.
+ * If the board is the reference board, standard version will timeout at 8s.
  *
  * <p>Dependencies : AdvancedRecord.java, Board.java, PatternOptions.java, SmartSolverExtra.java,
  *                   SmartSolverPdbBase.java
@@ -29,49 +30,62 @@ public class DemoSolverPdb78 extends AbstractApplication {
     public DemoSolverPdb78() {
         super();
         solverPdb78 = new SmartSolverPdb(PatternOptions.Pattern_78, refAccumulator);
+        solverPdb78.setTimeoutLimit(refAccumulator.getCutoffSetting());
         solverPdb78.timeoutSwitch(timeoutOff);
         extra = new SmartSolverExtra();
     }
 
     //  It take a solver and a 15 puzzle board, display the the process time and number of
     //  nodes generated during the search, time out after 10 seconds.
-    private void solvePuzzle(SmartSolverPdb solver, Board board) {
+    private void solvePuzzle(Board board) {
         if (extra.advancedContains(board, false, refAccumulator) == null) {
-            System.out.println("This is not a reference board.\n");
+            System.out.println("\t\tThis is NOT a reference board.\n");
         } else {
-            System.out.println("This board stored as reference board.\n");
+            System.out.println("\t\tExists in stored reference collection.\n");
+            solverPdb78.timeoutSwitch(timeoutOn);
         }
 
-        solver.versionSwitch(!tagAdvanced);
-        int heuristicStandard = solver.heuristicStandard(board);
+        solverPdb78.versionSwitch(!tagAdvanced);
+        int heuristicStandard = solverPdb78.heuristicStandard(board);
 
         System.out.println("Standard Estimate\t" + heuristicStandard);
-        solver.findOptimalPath(board);
-        System.out.printf("\t\tTotal : %-15s  Time : "
-                + solver.searchTime() + "s\n\n", solver.searchNodeCount());
-        if (solver.isAddedReference()) {
-            System.out.println("It added to reference collection after the search.");
+        solverPdb78.findOptimalPath(board);
+        if (solverPdb78.isSearchTimeout()) {
+            System.out.println("\t\tTimeout: " + solverPdb78.searchTime() + "s at depth "
+                    + solverPdb78.searchTerminateAtDepth() + "\t" + solverPdb78.searchNodeCount());
+        } else {
+            System.out.printf("\t\tTotal : %-15s  Time : "
+                    + solverPdb78.searchTime() + "s\n\n", solverPdb78.searchNodeCount());
+        }
+        if (solverPdb78.isAddedReference()) {
+            System.out.println("System detect the dvanced estimate is the same, added to"
+                    + " reference collection after the search.");
             System.out.println(refAccumulator.getActiveMap().size()
                     + " reference board in system.\n");
+            refAccumulator.updateLastSearch(solverPdb78);
         }
 
-        solver.versionSwitch(tagAdvanced);
-        int heuristicAdvanced = solver.heuristicAdvanced(board);
+        solverPdb78.timeoutSwitch(timeoutOff);
+        solverPdb78.versionSwitch(tagAdvanced);
+        int heuristicAdvanced = solverPdb78.heuristicAdvanced(board);
         if (heuristicStandard == heuristicAdvanced) {
             System.out.println("Advanced Estimate\t" + "Same value");
         } else {
             System.out.println("Advanced Estimate \t" + heuristicAdvanced);
-            solver.findOptimalPath(board);
+            solverPdb78.findOptimalPath(board);
             System.out.printf("\t\tTotal : %-15s  Time : "
-                    + solver.searchTime() + "s\n", solver.searchNodeCount());
-            if (solver.isAddedReference()) {
+                    + solverPdb78.searchTime() + "s\n", solverPdb78.searchNodeCount());
+            if (solverPdb78.isAddedReference()) {
                 System.out.println("\nIt added to reference collection after the search.");
                 System.out.println(refAccumulator.getActiveMap().size()
                         + " reference board in system.\n");
-                System.out.println("Advanced\t" + heuristicAdvanced + "\t\tSearch again.");
-                solver.findOptimalPath(board);
+                heuristicAdvanced = solverPdb78.heuristicAdvanced(board);
+                System.out.println("Estimate change to\t" + heuristicAdvanced
+                        + "\t\t(Search again)");
+                solverPdb78.findOptimalPath(board);
                 System.out.printf("\t\tTotal : %-15s  Time : "
-                        + solver.searchTime() + "s\n", solver.searchNodeCount());
+                        + solverPdb78.searchTime() + "s\n", solverPdb78.searchNodeCount());
+                refAccumulator.updateLastSearch(solverPdb78);
             }
         }
     }
@@ -105,9 +119,7 @@ public class DemoSolverPdb78 extends AbstractApplication {
 
             System.out.print("\n" + board);
             if (board.isSolvable()) {
-                solvePuzzle(solverPdb78, board);
-                // Notes: updateLastSearch is optional.
-                refAccumulator.updateLastSearch(solverPdb78);
+                solvePuzzle(board);
             } else {
                 System.out.println("The board is unsolvable, try again!");
             }

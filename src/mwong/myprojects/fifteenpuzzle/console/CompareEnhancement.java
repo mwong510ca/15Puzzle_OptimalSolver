@@ -70,7 +70,7 @@ public class CompareEnhancement extends AbstractApplication {
      */
     public void run() {
         System.out.println("Compare 15 puzzle solver enhancement using "
-                + solver.getHeuristicOptions().getDescription() + "\n");
+                + solverAdvanced.getHeuristicOptions().getDescription() + "\n");
         while (true) {
             printOption('q');
             printOption('b');

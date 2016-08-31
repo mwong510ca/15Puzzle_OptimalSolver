@@ -1,6 +1,7 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
+import mwong.myprojects.fifteenpuzzle.solver.Solver;
 import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverMd;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
@@ -17,9 +18,9 @@ import java.util.Scanner;
 /**
  * SolverHeuristicStats is the console application extends AbstractApplication.  It takes
  * a number of trial T and run the solver T time with random board.  User may choose the type of
- * heuristic function, type of random board, and change the timeout limit from 1 to 60 seconds
- * except pattern database 7-8. It will display the total process time, number of timeout boards,
- * and average time of boards with solution.
+ * heuristic function, type of random board, and change the timeout limit from 1 to 60 seconds.
+ * Only pattern database 7-8 has an option to turn timeout feature off. It will display the total
+ * process time, number of timeout boards, and average time of boards with solution.
  *
  * <p>Dependencies : AbstractApplication.java, Board.java, PatternOptions.java,
  *                   HeuristicOptions.java, PuzzleDifficultyLevel.java, SmartSolverMd.java,
@@ -30,6 +31,9 @@ import java.util.Scanner;
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SolverHeuristicStats extends AbstractApplication {
+    private Solver solver;
+    private HeuristicOptions inUseHeuristic;
+
     /**
      * Initial SolverHeuristicStats object.
      */
@@ -119,12 +123,17 @@ public class SolverHeuristicStats extends AbstractApplication {
         solver.versionSwitch(flagAdvVersion);
         solver.setTimeoutLimit(timeoutLimit);
         solver.printDescription();
-        if (inUseHeuristic == HeuristicOptions.PD78) {
-            solver.timeoutSwitch(timeoutOff);
-            menuSub(true, false);
-        } else {
-            menuSub(true, true);
+        boolean optionT = false;
+        if (solver.isFlagTimeout()) {
+            printOption('t');
+            optionT = true;
         }
+        boolean optionO = false;
+        if (inUseHeuristic == HeuristicOptions.PD78) {
+            printOption(solver);
+            optionO = true;
+        }
+        menuSub(true, optionT, optionO);
     }
 
     // display a list of options
@@ -132,8 +141,15 @@ public class SolverHeuristicStats extends AbstractApplication {
         printOption('q');
         printOption('c');
         printOption(flagAdvVersion);
-        if (inUseHeuristic != HeuristicOptions.PD78) {
+        boolean optionT = false;
+        if (solver.isFlagTimeout()) {
             printOption('t');
+            optionT = true;
+        }
+        boolean optionO = false;
+        if (inUseHeuristic == HeuristicOptions.PD78) {
+            printOption(solver);
+            optionO = true;
         }
         System.out.println("      a positive integer of number of trials");
 
@@ -152,32 +168,42 @@ public class SolverHeuristicStats extends AbstractApplication {
                     break;
                 case 'V': case 'v':
                     flipVersion(solver);
-                    menuSub(false, true);
+                    menuSub(false, optionT, optionO);
                     break;
                 case 'T': case 't':
-                    if (inUseHeuristic != HeuristicOptions.PD78) {
-                        changeTimeout(1, 60);
+                    if (optionT) {
+                        changeTimeout(solver, 1, 60);
                     }
-                    menuSub(true, false);
+                    menuSub(true, false, optionO);
+                    break;
+                case 'O': case 'o':
+                    if (optionO && inUseHeuristic == HeuristicOptions.PD78) {
+                        solver.timeoutSwitch(!solver.isFlagTimeout());
+                    }
+                    menuSub(true, optionT, false);
                     break;
                 default:
-                    if (inUseHeuristic != HeuristicOptions.PD78) {
-                        System.out.println("Please enter 'Q', 'C', 'H', 'T' or positive integer:");
+                    if (inUseHeuristic == HeuristicOptions.PD78) {
+                        System.out.println("Please enter 'Q', 'C', 'H', 'T', 'O'"
+                                + " or positive integer:");
                     } else {
-                        System.out.println("Please enter 'Q', 'C', 'H' or positive integer:");
+                        System.out.println("Please enter 'Q', 'C', 'H', 'T' or positive integer:");
                     }
             }
         }
     }
 
     // display a list of options after user change the solver
-    private void menuSub(boolean optionV, boolean optionT) {
+    private void menuSub(boolean optionV, boolean optionT, boolean optionO) {
         printOption('q');
         if (optionV) {
             printOption(flagAdvVersion);
         }
         if (optionT) {
             printOption('t');
+        }
+        if (optionO) {
+            printOption(solver);
         }
         System.out.println("      a positive integer of number of trials");
         while (true) {
@@ -194,29 +220,31 @@ public class SolverHeuristicStats extends AbstractApplication {
                     if (optionV) {
                         flipVersion(solver);
                     }
-                    if (optionT) {
-                        menuSub(false, true);
-                    } else {
-                        System.out.println("Enter a positive integer of number of trials");
-                    }
+                    menuSub(false, optionT, optionO);
                     break;
                 case 'T': case 't':
-                    if (inUseHeuristic != HeuristicOptions.PD78) {
-                        changeTimeout(1, 60);
+                    if (optionT) {
+                        changeTimeout(solver, 1, 60);
                     }
-                    if (optionV) {
-                        menuSub(true, false);
-                    } else {
-                        System.out.println("Enter a positive integer of number of trials");
+                    menuSub(optionV, false, optionO);
+                    break;
+                case 'O': case 'o':
+                    if (optionO && inUseHeuristic == HeuristicOptions.PD78) {
+                        solver.timeoutSwitch(!solver.isFlagTimeout());
+                        optionT = !optionT;
                     }
+                    menuSub(optionV, optionT, false);
                     break;
                 default:
                     System.out.print("Please enter 'Q', ");
-                    if (optionV && inUseHeuristic != HeuristicOptions.PD78) {
-                        System.out.print("  'V',");
+                    if (optionV) {
+                        System.out.print(" 'V', ");
                     }
                     if (optionT) {
-                        System.out.print("  'T',");
+                        System.out.print(" 'T', ");
+                    }
+                    if (optionO) {
+                        System.out.print(" 'O', ");
                     }
                     System.out.println("or a positive integer:");
             }

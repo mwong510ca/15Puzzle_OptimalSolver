@@ -27,7 +27,7 @@ public class SolverConstants {
     private static final byte END_OF_SEARCH = (byte) (MAX_MOVES + 1);
     private static final Board GOAL_BOARD = new Board(PuzzleConstants.getGoalTiles());
     // SmartSolver constants
-    private static final byte[] REFERENCE_LOOKUP = ReferenceConstants.getReferenceLookup();
+    private static final byte[] REFERENCE_LOOKUP = ReferenceConstants.getReferenceLookup().clone();
     private static final byte[] REFERENCE_GROUP = ReferenceConstants.getReferenceGroup();
     private static final boolean SYMMETRY = ReferenceConstants.isSymmetry();
     private static final byte NUM_PARTIAL_MOVES = ReferenceConstants.getNumPartialMoves();

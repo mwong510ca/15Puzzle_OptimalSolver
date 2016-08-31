@@ -26,7 +26,7 @@ public class SolverMd extends AbstractSolver {
      * Initializes SolverMd object.
      */
     protected SolverMd() {
-    	super();
+        super();
     }
 
     /**
