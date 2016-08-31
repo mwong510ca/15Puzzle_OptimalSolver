@@ -38,7 +38,7 @@ Read [Solver Enhancement - standard version] for details.
 
 I started with 17 known 80 moves puzzles as reference boards to boost the estimate over 68.  It works but still missed a lot.  I applied the same concept to any puzzle that takes over 10 seconds to solve, the solver with pattern database 7-8 will automatically stored it as reference board.  Also stored first 8 solution moves to boost the search time within a second.  
 
-Now the solver has the self learning feature.   When it accumulate enough reference boards, the solver will solve any puzzle within 10 seconds (the preset cutoff setting) eventually.  
+Now the solver has the self learning feature.   When it accumulate enough reference boards, the solver will solve any puzzle within 8 seconds (the preset cutoff setting) eventually.  
 
 Read [Solver Enhancement - advanced version] for details.
 
