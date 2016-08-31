@@ -30,7 +30,7 @@ Use a reference board to boost the initial estimate closer to solution moves:
      15 11  8  3    15 11  8  0     9 14 12 15    0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15
      12  7  4  0 -> 12  7  4  3 -> 13 10  7 11 -> |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
      14 10  6  5    14 10  6  5     2  6  4  8    0 13  9 15 11 14 10  7 12  1  6  8  3  5  2  4
-       9 13  2  1     9 13  2  1     1  5  3  0</pre>
+      9 13  2  1     9 13  2  1     1  5  3  0</pre>
 
   I divided the board in 4 groups.  For each entry, it will store 4 boards per group.
     <pre>
@@ -58,29 +58,29 @@ Use a reference board to boost the initial estimate closer to solution moves:
   * At least 30 initial estimate from goal state. - For any puzzle is far away from the goal state, it will check the reference collection.  
   * At most 30 estimate to the reference board. - For any puzzle is near by the reference baord, it will use it as advanced estimate.
   * Reduce the range between best estimate and reference estimate.  Find the shortest path to the reference board, update the best estimate if it is closer to the reference board.
-  <pre>
-    Example 1:                  Reference 1:                Reference 2:
-    12 15  4  8                 12 15  8  0                 12 15  4  0 
-    11  0 10  3                 11 10  4  3                 11 10  3  8 
-    14 13  6  2                 13  7  6  2                 14 13  6  2 
-     9  5  7  1    19 ref       14  9  5  1    8 ref         9  5  7  1
-    init est 52    boards                      boards                        Advanced estimate 62
-    ref moves:     reviewed              67    reviewed              65      Actual solution   66 moves
-    max range:     out of      (67 - 52) 15    out of      (65 - 56)  9
-    dist to ref:   range                 11    range                  3
-    new est:       no change   (67 - 11) 56    no change   (65 -  3) 62   
-    Example 2:         Reference 1:       Reference 2:       Reference 3:       Reference 4:       Reference 5:
-    12 15  4  8         0 15  4  8         0 12  8  3         0 15  8  3         0 15  4  8        12 15  8  0
-    14  7  6  3        12 11  7  3        14 15  7  4        12 14  7  4        12 14  7  3        14  7  4  3  
-    11 13  0  2        10 14  6  2        11 13  6  2        11 13  6  2        11 13  6  2        11 13  6  2  
-    10  9  5  1         9 13  5  1        10  9  5  1        10  9  5  1        10  9  5  1        10  9  5  1
-    init est 52                          
-    ref moves:                  68                 68                 70                 68                 69
-    max range:        (68 - 52) 16       (68 - 58) 10       (70 - 60) 10       (68 - 62)  6       (69 - 64)  5
-    dist to ref:                10                  8                  8                  4                  3
-    new est:      ->  (68 - 10) 58   ->  (68 -  8) 60   ->  (70 -  8) 62   ->  (68 -  4) 64   ->  (69 -  3) 66
-                      Advanced estimate 66                 Total reviewed reference boards: 13
-                      Actual solution   68 moves           include 8 board are out of range
+    <pre>
+       Example 1:                  Reference 1:                Reference 2:
+       12 15  4  8                 12 15  8  0                 12 15  4  0 
+       11  0 10  3                 11 10  4  3                 11 10  3  8 
+       14 13  6  2                 13  7  6  2                 14 13  6  2 
+        9  5  7  1    19 ref       14  9  5  1    8 ref         9  5  7  1
+       init est 52    boards                      boards                     Adv est  62
+       ref moves:     reviewed              67    reviewed              65   Actual   66 moves
+       max range:     out of      (67 - 52) 15    out of      (65 - 56)  9
+       dist to ref:   range                 11    range                  3
+       new est:       no change   (67 - 11) 56    no change   (65 -  3) 62   
+       Example 2:    Reference 1:   Reference 2:   Reference 3:   Reference 4:   Reference 5:
+       12 15 4 8       0 15 4 8       0 12 8 3       0 15 8 3       0 15 4 8      12 15 8 0
+       14  7 6 3      12 11 7 3      14 15 7 4      12 14 7 4      12 14 7 3      14  7 4 3
+       11 13 0 2      10 14 6 2      11 13 6 2      11 13 6 2      11 13 6 2      11 13 6 2
+       10  9 5 1       9 13   1      10  9 5 1      10  9 5 1      10  9 5 1      10  9 5 1
+       init est 52                          
+       ref moves:            68             68             70             68             69
+       max range:    (68-52) 16     (68-58) 10     (70-60) 10      (68-62) 6      (69-64) 5
+       dist to ref:          10              8              8              4              3
+       new est:  ->  (68-10) 58  ->  (68-8) 60  ->  (70-8) 62  ->  (68-4) 64  ->  (69-3) 66
+                          Advanced estimate 66          Total reviewed reference boards: 13
+                          Actual solution   68 moves    include 8 board are out of range
   </pre>
 
 4.  Also store the partial solution.  
@@ -96,9 +96,9 @@ Use a reference board to boost the initial estimate closer to solution moves:
 
   Each store board contain a set of 4 boards as describe above.  These other 3 boards will store an estimate without solution.  It will wait for next update to complete the full set.
   <pre>
-    Example 1:    Standard estimate: 52    Advanced estimate: same value    Actual moves: 68    
+    Example 1:    Standard estimate: 52    Advanced estimate: same      Actual moves: 68    
                   Search time: 26.4s       
-                  Add to reference collection after the search, either standard or advance version.
+                  Add to reference collection after the search, either standard/advance version.
                   Group 3 -> convert to Group 1
                        lookup 0           lookup 1           lookup 2           lookup 3
     15 11  8  3        12 15  4  0        12 15  4  7        12 15  4  7        12 15  0  7       
@@ -109,15 +109,14 @@ Use a reference board to boost the initial estimate closer to solution moves:
     partial solution            NO                 NO                 NO                YES
     after review full set
     store value change to       67                 66                 67                 68
-    with partial solution      YES                YES                YES                YES
-
-    Example 2:    Standard estimate: 48    Advanced estimate: 64    Actual moves: 66    
+    with partial solution      YES                YES                YES                YES  
+    Example 2:    Standard estimate: 48    Advanced estimate: 64        Actual moves: 66    
      0 15 11  3   Search time: 10.6s       Search time: 10.2s
     12  7  8  4   Skip                     Add to reference collection
     14 10  6  5                            after advanced search only.
      9 13  2  1 
                    
-    Example 3:    Standard estimate: 48    Advanced estimate: 66   Actual moves: 66   
+    Example 3:    Standard estimate: 48    Advanced estimate: 66        Actual moves: 66   
     15 11  0  3   Search time: 8.4s        Search time: 0.47s      
     12  7  8  4   Skip                     Skip         
     14 10  6  5 
