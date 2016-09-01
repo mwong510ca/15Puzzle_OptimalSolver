@@ -50,6 +50,7 @@ option 3 (default) - [compare heuristic functions]
 option 4 - [custom pattern]  
 option 5 - [solver with display solution]  
 option 6 - [timeout counter and average time per puzzle]  
+Notes: runtime takes a little longer due to screen recording.
 
 Heuristic Functions - 7 heuristic functions to choose from:  
 Manhattan Distance  
