@@ -33,7 +33,7 @@ Nodes:        177653815       89470609       20109676        8436494        7693
 I also added starting ordering detection to increase the possibility to solve first move depth increment.  The starting order may vary each depth instead of hard coded the fixed order such as Right -> Down -> Left -> Up.  
 Read [Solver Enhancement - standard version] for details.  
 
-### Enhancement - self learning feature
+### Enhancement - [self learning feature]
 45 seconds seems pretty good, but I still not satify with it.  The maximum estimate is 68 and the maximum moves is 80, so the [interactive deepening A*] has to loop through all nodes that will not have solution before it reach the solution depth.  If I can boost the estimate to the solution depth, it will drop the search time dreamically.   
 
 I started with 17 known 80 moves puzzles as reference boards to boost the estimate over 68.  It works but still missed a lot.  I applied the same concept to any puzzle that takes over 8 seconds to solve, the solver with pattern database 7-8 will automatically stored it as reference board.  Also stored first 8 solution moves to boost the search time within a second.  
@@ -43,8 +43,8 @@ Now the solver has the self learning feature.   When it accumulate enough refere
 Read [Solver Enhancement - advanced version] for details.
 
 ----
-###Console applications (youtube video)
-option 1 - [demo self learning feature]  
+###Console applications (screen recording on youtube)
+option 1 - demo [self learning feature]  
 option 2 - [compare enhancement]  
 option 3 (default) - [compare heuristic functions]  
 option 4 - [custom pattern]  
@@ -78,7 +78,7 @@ Notes:  If you want to try my solver application using static 7-8 pattern, highl
 [pattern 5-5-5]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/default%20pattern%205-5-5.txt
 [pattern 6-6-3]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/default%20pattern%206-6-3.txt
 [pattern 7-8]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/default%20pattern%207-8.txt
-[demo self learning feature]: https://youtu.be/EoVaDM2OISM
+[self learning feature]: https://youtu.be/EoVaDM2OISM
 [compare enhancement]: https://youtu.be/MtYdN2FfA8w
 [compare heuristic functions]: https://youtu.be/NAlZbsfwFRg
 [custom pattern]: https://youtu.be/39vNF9g5wJs
