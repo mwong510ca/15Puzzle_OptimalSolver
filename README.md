@@ -78,7 +78,7 @@ Notes:  If you want to try my solver application using static 7-8 pattern, highl
 [pattern 5-5-5]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/default%20pattern%205-5-5.txt
 [pattern 6-6-3]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/default%20pattern%206-6-3.txt
 [pattern 7-8]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/default%20pattern%207-8.txt
-[self learning feature]: https://youtu.be/watch?v=MArgPYZ0_Ks
+[self learning feature]: https://youtu.be/MArgPYZ0_Ks
 [compare enhancement]: https://youtu.be/MtYdN2FfA8w
 [compare heuristic functions]: https://youtu.be/NAlZbsfwFRg
 [custom pattern]: https://youtu.be/39vNF9g5wJs
