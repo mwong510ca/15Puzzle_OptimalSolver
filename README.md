@@ -43,6 +43,13 @@ Now the solver has the self learning feature.   When it accumulate enough refere
 Read [Solver Enhancement - advanced version] for details.
 
 ----
+###Console applications (youtube video)
+option 1 - [demo self learning feature]  
+option 2 - [compare enhancement]  
+option 3 (default) - [compare heuristic functions]  
+option 4 - [custom pattern]  
+option 5 - [solver with display solution]  
+option 6 - [timeout counter and average time per puzzle]  
 
 Heuristic Functions - 7 heuristic functions to choose from:  
 Manhattan Distance  
@@ -71,3 +78,9 @@ Notes:  If you want to try my solver application using static 7-8 pattern, highl
 [pattern 5-5-5]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/default%20pattern%205-5-5.txt
 [pattern 6-6-3]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/default%20pattern%206-6-3.txt
 [pattern 7-8]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/default%20pattern%207-8.txt
+[demo self learning feature]: https://youtu.be/EoVaDM2OISM
+[compare enhancement]: https://youtu.be/MtYdN2FfA8w
+[compare heuristic functions]: https://youtu.be/NAlZbsfwFRg
+[custom pattern]: https://youtu.be/39vNF9g5wJs
+[solver with display solution]: https://youtu.be/0AD2_ZKLWwU
+[timeout counter and average time per puzzle]: https://youtu.be/_dyc3d6Ne_o
