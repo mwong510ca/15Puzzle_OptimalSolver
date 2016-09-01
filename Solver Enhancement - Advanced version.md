@@ -42,11 +42,11 @@ Use a reference board to boost the initial estimate closer to solution moves:
                      idx 1:    x x 2 1    x x 2 0    x x 0 2    x x 3 2
                                x x x x    x x x x    x x x x    x x x x
                                x x x x    x x x x    x x x x    x x x x  
-                     Group     Transfer to symmetry board and store as Group 1
+                     Group     x x x x    x x x x    x x x x    x x x x
                      idx 3:    x x x x    x x x x    x x x x    x x x x
-                               x x x x    x x x x    x x x x    x x x x
                                3 2 x x    3 2 x x    3 0 x x    0 3 x x
-                               0 1 x x    1 0 x x    1 2 x x    1 2 x x  
+                               0 1 x x    1 0 x x    1 2 x x    1 2 x x
+                               Transfer to symmetry board and store as Group 1  
                      Group     x x x x    x x x x    x x x x    x x x x
                      idx 0:    x x x x    x x x x    x x x x    x x x x
                                x x 2 3    x x 2 3    x x 0 3    x x 3 0
@@ -74,7 +74,7 @@ Use a reference board to boost the initial estimate closer to solution moves:
        14  7 6 3      12 11 7 3      14 15 7 4      12 14 7 4      12 14 7 3      14  7 4 3
        11 13 0 2      10 14 6 2      11 13 6 2      11 13 6 2      11 13 6 2      11 13 6 2
        10  9 5 1       9 13   1      10  9 5 1      10  9 5 1      10  9 5 1      10  9 5 1
-       init est 52                          
+       init est 52
        ref moves:            68             68             70             68             69
        max range:    (68-52) 16     (68-58) 10     (70-60) 10      (68-62) 6      (69-64) 5
        dist to ref:          10              8              8              4              3
