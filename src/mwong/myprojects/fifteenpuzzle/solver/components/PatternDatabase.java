@@ -89,7 +89,7 @@ public class PatternDatabase {
      * @param pattern the byte array of user defined pattern
      */
     public PatternDatabase(byte[] pattern) {
-        formatBit16 = PatternConstants.getFormatBit16();
+    	formatBit16 = PatternConstants.getFormatBit16();
         formatZero8Order = null;
         puzzleSize = PuzzleConstants.getSize();
         rowSize = PuzzleConstants.getRowSize();
@@ -227,6 +227,9 @@ public class PatternDatabase {
 
             // check runtime memory for pattern 8, stop if less than 1.6 GB.
             if (ctGroup[i] == maxGroupSize) {
+                if (formatZero8Order == null) {
+                    throw new UnsupportedOperationException("Pattern group of 8 is not supported.");
+                }
                 int mb = 1024 * 1024;
                 if (Runtime.getRuntime().maxMemory() / mb < 1600) {
                     System.out.println("Not enough estimate memory : "
@@ -235,9 +238,6 @@ public class PatternDatabase {
                     System.out.println("Please increase runtime memory (java -d64 -Xms2g)"
                             + " and try again!");
                     System.exit(0);
-                }
-                if (formatZero8Order == null) {
-                    throw new UnsupportedOperationException("Pattern group of 8 is not supported.");
                 }
             }
         }

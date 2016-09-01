@@ -48,11 +48,12 @@ public class SolverPdbCustomPattern extends AbstractApplication {
         System.out.println("      '0' no change");
         boolean pending = true;
         int choice;
-        do {
+        int option = 0;
+        while (pending) {
             if (!scanner.hasNextInt()) {
                 scanner.next();
             }
-            int option = scanner.nextInt();
+            option = scanner.nextInt();
             switch (option) {
                 case 0:
                     pending = false;
@@ -159,14 +160,28 @@ public class SolverPdbCustomPattern extends AbstractApplication {
                         }
                     }
                     System.out.println();
-                    boolean [] elementGroups = pattern2elementGroups(pattern, 7);
+                    try {
+                        boolean [] elementGroups = pattern2elementGroups(pattern, 7);
 
-                    if (elementGroups != null) {
-                        solver = null;
-                        solver = new SmartSolverPdb(pattern, elementGroups, refAccumulator);
-                        inUsePattern = HeuristicOptions.PDCustom;
-                        inUsePatternOption = -1;
-                        pending = false;
+                        if (elementGroups != null) {
+                            solver = null;
+                            solver = new SmartSolverPdb(pattern, elementGroups, refAccumulator);
+                            inUsePattern = HeuristicOptions.PDCustom;
+                            inUsePatternOption = -1;
+                            pending = false;
+                            break;
+                        }
+                    } catch (ArrayIndexOutOfBoundsException ex) {
+                        System.err.println(ex);
+                        System.out.println("Your input pattern is invalid, please try again");
+                        System.out.println("Enter '1 - 3' for default patterns,"
+                                + "'4' for custome pattern' or '0' no change");
+                        break;
+                    } catch (UnsupportedOperationException ex2) {
+                        System.err.println(ex2);
+                        System.out.println("Your input pattern is invalid, please try again");
+                        System.out.println("Enter '1 - 3' for default patterns,"
+                                + "'4' for custome pattern' or '0' no change");
                         break;
                     }
                     System.out.println("Your input pattern is invalid, please try again");
@@ -177,11 +192,12 @@ public class SolverPdbCustomPattern extends AbstractApplication {
                     System.out.println("Enter '1 - 3' for default patterns,"
                             + "'4' for custome pattern' or '0' no change");
             }
-        } while (pending);
-
-        solver.versionSwitch(flagAdvVersion);
-        solver.setTimeoutLimit(timeoutLimit);
-        solver.printDescription();
+        }
+        if (option > 0 && option < 5) {
+            solver.versionSwitch(flagAdvVersion);
+            solver.setTimeoutLimit(timeoutLimit);
+            solver.printDescription();
+        }
         return menuSub(true, true);
     }
 
@@ -278,6 +294,10 @@ public class SolverPdbCustomPattern extends AbstractApplication {
                 return keyInBoard();
             }
             char choice = scanner.next().charAt(0);
+            if (choice == 'q') {
+                System.out.println("Goodbye!\n");
+                System.exit(0);
+            }
             Board board = action(choice, optionV, optionT);
             if (board != null) {
                 return board;
@@ -297,6 +317,9 @@ public class SolverPdbCustomPattern extends AbstractApplication {
      * Start the application.
      */
     public void run() {
+        System.out.println("Allow user to try on more preset patterns"
+                + " or enter a user defined custom pattern.\n");
+
         solver.versionSwitch(flagAdvVersion);
         solver.setTimeoutLimit(timeoutLimit);
         solver.printDescription();

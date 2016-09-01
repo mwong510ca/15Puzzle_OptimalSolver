@@ -147,7 +147,7 @@ public class SolverHeuristicStats extends AbstractApplication {
             optionT = true;
         }
         boolean optionO = false;
-        if (inUseHeuristic == HeuristicOptions.PD78) {
+        if (solver.isFlagTimeout() && inUseHeuristic == HeuristicOptions.PD78) {
             printOption(solver);
             optionO = true;
         }
@@ -180,7 +180,11 @@ public class SolverHeuristicStats extends AbstractApplication {
                     if (optionO && inUseHeuristic == HeuristicOptions.PD78) {
                         solver.timeoutSwitch(!solver.isFlagTimeout());
                     }
-                    menuSub(true, optionT, false);
+                    if (solver.isFlagTimeout()) {
+                        menuSub(true, true, false);
+                    } else {
+                        menuSub(true, false, false);
+                    }
                     break;
                 default:
                     if (inUseHeuristic == HeuristicOptions.PD78) {

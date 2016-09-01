@@ -155,7 +155,7 @@ public enum PatternOptions {
 
         String str = "15 puzzle preset patterns " + type + " :\n";
         str += "default\t\t";
-        for (int i = 1; i < patterns.length - 1; i++) {
+        for (int i = 1; i < patterns.length; i++) {
             str += "option " + i + "\t";
         }
         str += "\n";

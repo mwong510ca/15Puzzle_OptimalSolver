@@ -9,8 +9,6 @@ import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverWdMd;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 
-import java.util.Scanner;
-
 /**
  * CompareHeuristic is the console application extends AbstractApplication. It takes a
  * 16 numbers or choice of random board.  It will go through each heuristic function from
@@ -63,9 +61,9 @@ public class CompareHeuristic extends AbstractApplication {
     private void solvePuzzle(Solver solver, Board board, boolean estimateOnly) {
         System.out.print(solver.getHeuristicOptions().getDescription());
         if (solver.isFlagTimeout()) {
-            System.out.println("will timeout at " + solver.getSearchTimeoutLimit() + "s:");
+            System.out.println(" will timeout at " + solver.getSearchTimeoutLimit() + "s:");
         } else {
-            System.out.println("will run until solution found:");
+            System.out.println(" will run until solution found:");
         }
 
         solver.versionSwitch(tagStandard);
@@ -112,7 +110,8 @@ public class CompareHeuristic extends AbstractApplication {
      * Start the application.
      */
     public void run() {
-        scanner = new Scanner(System.in, "UTF-8");
+        System.out.println("Compare 7 heuristic functions with standard and advanced version.\n");
+
         while (true) {
             printOption('q');
             printOption('b');
