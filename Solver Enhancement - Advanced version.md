@@ -20,10 +20,10 @@ Use a reference board to boost the initial estimate closer to solution moves:
       Actual solution                79              80              78              75</pre>
   It will boost the estimate of the puzzles that near by the stored reference board.
     
-2.  It's not only true for 80 move boards, but also vaild for any solvable puzzle to be use as the reference board.  Each reference board will store the values for a group of 4 position as describe below. 
+2.  It's not only true for 80 move boards, but also valid for any solvable puzzle to be use as the reference board.  Each reference board will store the values for a group of 4 position as describe below. 
   * First step, move the zero space to the corner.  
   * Second step, rotate the board and make zero at position 15.  
-  * Thrid step, generate the conversion key.  
+  * Third step, generate the conversion key.  
     <pre>
      Example
      68 moves board    Step 1         Step 2                            Step 3
@@ -56,7 +56,7 @@ Use a reference board to boost the initial estimate closer to solution moves:
 
 3.  The cost is tiny.  Compare to million of expansions, checking an additional thousand of reference boards is cheap.  To pick a good range is a little tricky, I try my best to explain in English. 
   * At least 30 initial estimate from goal state. - For any puzzle is far away from the goal state, it will check the reference collection.  
-  * At most 30 estimate to the reference board. - For any puzzle is near by the reference baord, it will use it as advanced estimate.
+  * At most 30 estimate to the reference board. - For any puzzle is near by the reference board, it will use it as advanced estimate.
   * Reduce the range between best estimate and reference estimate.  Find the shortest path to the reference board, update the best estimate if it is closer to the reference board.
     <pre>
        Example 1:                  Reference 1:                Reference 2:
@@ -87,10 +87,10 @@ Use a reference board to boost the initial estimate closer to solution moves:
   Even the estimate matched with the solution moves, some board still take over 20 seconds to find the solution.  Such as the 68 moves example board above.  
   While storing these value, there boards has been solved.  In addition to store it's solution moves, it also store the first 8 directions of solution moves.  It will reduce the searching time from 68 limit to 60 limit.  It's good enough to solve the puzzle within a second.  It is not necessary to store the full path.  I stored them as 16 bits short value (2 bits per direction x 8) for each partial solution.
 
-5.  Automatcally save the board after search by pattern database 7-8.  ([video])  
+5.  Automatically save the board after search by pattern database 7-8.  ([video])  
   I set the cutoff to 8 seconds with 5% buffer, which will make all puzzles solve within 8 seconds eventually.  For any puzzle that take more than 8.6 seconds to solve, the system will automatically store this board as reference board.  (A few lines of code added in SmartSolverPdbBase.java idaStar functions)
   * over 8 seconds using Standard Search, it will compare original estimate and advanced estimate.
-    If they are the same, store the borad.
+    If they are the same, store the board.
     If advanced estimate > original estimate, skip.  Unable to determine the runtime for advanced estimate.
   * over 8 seconds using Advanced Search, always store the board.
 
