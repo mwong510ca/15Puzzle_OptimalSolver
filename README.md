@@ -53,13 +53,15 @@ option 6 - [timeout counter and average time per puzzle]
 Notes: runtime takes a little longer due to screen recording.
 
 Heuristic Functions - 7 heuristic functions to choose from:  
-Manhattan Distance  
-Manhattan Distance with Linear Conflict  
-Walking Distance  
-Walking Distance + Manhattan Distance with Linear Conflict  
-Additive Pattern Database 5-5-5 + Walking Distance  
-Additive Pattern Database 6-6-3 + Walking Distance  
-Additive Pattern Database 7-8  
+Average search time of 100 random board with Standard version 
+<pre>
+Manhattan Distance                                         (1.33s, 18 timeout at 10s)
+Manhattan Distance with Linear Conflict                    (1.01s, 5 timeout at 10s)
+Walking Distance                                           (0.81s, 7 timeout at 10s)
+Walking Distance + Manhattan Distance with Linear Conflict (0.63s, 3 timeout at 10s)
+Additive Pattern Database 5-5-5 + Walking Distance         (0.27s)
+Additive Pattern Database 6-6-3 + Walking Distance         (0.14s) 
+Additive Pattern Database 7-8                              (0.0077s)</pre>
 
 Notes:  If you want to try my solver application using static 7-8 pattern, highlight recommended to [download] the pre-generated database files from the cloud storage.
 
@@ -79,7 +81,6 @@ Notes:  If you want to try my solver application using static 7-8 pattern, highl
 [pattern 5-5-5]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/default%20pattern%205-5-5.txt
 [pattern 6-6-3]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/default%20pattern%206-6-3.txt
 [pattern 7-8]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/default%20pattern%207-8.txt
-
 [self learning feature]: https://youtu.be/QBhoM1RySPQ
 [compare enhancement]: https://youtu.be/lKFi-05uIMc
 [compare heuristic functions]:  https://youtu.be/hdHWnHxvX5A 
