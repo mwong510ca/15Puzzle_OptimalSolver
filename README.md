@@ -43,7 +43,7 @@ Now the solver has the self learning feature.   When it accumulate enough refere
 Read [Solver Enhancement - advanced version] for details.
 
 ----
-###Console applications (screen recording on youtube - upload soon!)
+###Console applications (screen recording on youtube)
 option 1 - demo [self learning feature]  
 option 2 - [compare enhancement]  
 option 3 (default) - [compare heuristic functions]  
@@ -79,3 +79,10 @@ Notes:  If you want to try my solver application using static 7-8 pattern, highl
 [pattern 5-5-5]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/default%20pattern%205-5-5.txt
 [pattern 6-6-3]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/default%20pattern%206-6-3.txt
 [pattern 7-8]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/default%20pattern%207-8.txt
+
+[self learning feature]: https://youtu.be/QBhoM1RySPQ
+[compare enhancement]: https://youtu.be/lKFi-05uIMc
+[compare heuristic functions]:  https://youtu.be/hdHWnHxvX5A 
+[custom pattern]: https://youtu.be/sY6JU2ElhdI
+[solver with display solution]: https://youtu.be/3Exp3QT5s_A
+[timeout counter and average time per puzzle]: https://youtu.be/TBsui-_b74A
