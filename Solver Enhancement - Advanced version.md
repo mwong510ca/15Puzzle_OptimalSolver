@@ -3,8 +3,8 @@ Use a reference board to boost the initial estimate closer to solution moves:
 
 1.  If the initial estimate is way off the optimal solution, it waste a lot of time to scan all the boards until it reach the solution depth.  Boost the initial estimate will reduce the search time.
 
-  The maximum moves of 15 puzzle is 80, and there 17 boards of it.  Let's take a start point of the selected 80 move board as below and the end point is goal state.    
-  I also use the start point as goal state.  Now I can have 2 estimates instead of 1, one towards the goal state and the other one towards the 80 move board.
+  The maximum moves of 15 puzzle is 80, and there are 17 boards of it.  Let's take a start point of the selected 80 move board as below and the end point is goal state.    
+  I also use the start point as the goal state.  Now I can have 2 estimates instead of 1, one towards the goal state and the other one towards the 80 move board.
   If I take a board on the shortest path to the 80 move board that is 5 moves to the 80 move board.  Which means it is exactly (80 - 5) 75 moves towards the goal state.
   If the is off the shortest path and it take 5 moves to the 80 move board, it take at least 75+ moves to the goal state.
     <pre>
@@ -54,7 +54,7 @@ Use a reference board to boost the initial estimate closer to solution moves:
                                
     If the board matched exactly the same these board, it will use pre-stored value.  Otherwise, only the corner zero will be use for advanced estimate calculation.
 
-3.  The cost is tiny.  Compare to million of expanstion, checking an additional thousand of reference boards is cheap.  To pick a good range is a little tricky, I try my best to explain in English. 
+3.  The cost is tiny.  Compare to million of expansions, checking an additional thousand of reference boards is cheap.  To pick a good range is a little tricky, I try my best to explain in English. 
   * At least 30 initial estimate from goal state. - For any puzzle is far away from the goal state, it will check the reference collection.  
   * At most 30 estimate to the reference board. - For any puzzle is near by the reference baord, it will use it as advanced estimate.
   * Reduce the range between best estimate and reference estimate.  Find the shortest path to the reference board, update the best estimate if it is closer to the reference board.
@@ -87,14 +87,14 @@ Use a reference board to boost the initial estimate closer to solution moves:
   Even the estimate matched with the solution moves, some board still take over 20 seconds to find the solution.  Such as the 68 moves example board above.  
   In order to store these value, there boards has been solved.  In addition to store it's solution moves, it also store the first 8 directions of solution moves.  It will reduce the searching time from 68 limit to 60 limit.  It's good enough to solve the puzzle within a second.  It is not necessary to store the full path.  It only take 16 bits (2 bits per direction x 8) for each partial solution.
 
-5.  Automatcally save the board after search by pattern database 7-8.  
+5.  Automatcally save the board after search by pattern database 7-8.  ([video])  
   I set the cutoff to 8 seconds with 5% buffer, which will make all puzzles solve within 8 seconds eventually.  For any puzzle that take more than 8.6 seconds to solve, the system will automatically store this board as reference board.  (A few lines of code added in SmartSolverPdbBase.java idaStar functions)
   * over 8 seconds using Standard Search, it will compare original estimate and advanced estimate.
     If they are the same, store the borad.
     If advanced estimate > original estimate, skip.  Unable to determine the runtime for advanced estimate.
   * over 8 seconds using Advanced Search, always store the board.
 
-  Each store board contain a set of 4 boards as describe above.  These other 3 boards will store an estimate without solution.  It will wait for next update to complete the full set.
+  Each store board contain a set of 4 boards as describe above.  These other 3 boards will store an estimate without solution.  It will wait for next update to complete the full set.  
   <pre>
     Example 1:    Standard estimate: 52    Advanced estimate: same      Actual moves: 68    
                   Search time: 26.4s       
@@ -123,4 +123,5 @@ Use a reference board to boost the initial estimate closer to solution moves:
     14 10  6  5 
      9 13  2  1</pre>
 
+[video]: https://youtu.be/QBhoM1RySPQ
 
