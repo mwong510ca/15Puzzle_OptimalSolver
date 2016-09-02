@@ -85,5 +85,5 @@ Notes:  If you want to try my solver application using static 7-8 pattern, highl
 [compare heuristic functions]:
 [custom pattern]:
 [solver with display solution]:
-[timeout counter and average time per puzzle]: 
+[timeout counter and average time per puzzle]:
 -->
