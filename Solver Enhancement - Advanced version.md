@@ -85,7 +85,7 @@ Use a reference board to boost the initial estimate closer to solution moves:
 
 4.  Also store the partial solution.  
   Even the estimate matched with the solution moves, some board still take over 20 seconds to find the solution.  Such as the 68 moves example board above.  
-  In order to store these value, there boards has been solved.  In addition to store it's solution moves, it also store the first 8 directions of solution moves.  It will reduce the searching time from 68 limit to 60 limit.  It's good enough to solve the puzzle within a second.  It is not necessary to store the full path.  It only take 16 bits (2 bits per direction x 8) for each partial solution.
+  While storing these value, there boards has been solved.  In addition to store it's solution moves, it also store the first 8 directions of solution moves.  It will reduce the searching time from 68 limit to 60 limit.  It's good enough to solve the puzzle within a second.  It is not necessary to store the full path.  I stored them as 16 bits short value (2 bits per direction x 8) for each partial solution.
 
 5.  Automatcally save the board after search by pattern database 7-8.  ([video])  
   I set the cutoff to 8 seconds with 5% buffer, which will make all puzzles solve within 8 seconds eventually.  For any puzzle that take more than 8.6 seconds to solve, the system will automatically store this board as reference board.  (A few lines of code added in SmartSolverPdbBase.java idaStar functions)
