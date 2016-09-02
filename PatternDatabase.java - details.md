@@ -39,7 +39,7 @@ Group 2 - 7: pattern size x (1 byte pattern value + 2 byte x 2 current and next 
 Group 8:     pattern size x (1 byte pattern value + 1 byte x 2 current and next moves)
                  518918400 x (1 byte + 1 byte x 2) = 1.6 GB.</pre>
 3. Think of the moves of zero space, instead of 1 shift at a time.  Here is how my FreeMove functions works:  
-  * Zero is free to move on any (x) until it trigger changed.  It will stop next to any tiles.  If the moves are block by the tiles, it cannnot across to the other side.  Group of 2 to 7, it will pass in 16 bits of its position 0000 0000 0000 0001, and group 8 as 8 bits of space order 0000 0001.  But both will return in 16 bits.  
+  * Zero is free to move on any (x) until it trigger changed.  It will stop next to any tiles.  If the moves are block by the tiles, it cannot across to the other side.  Group of 2 to 7, it will pass in 16 bits of its position 0000 0000 0000 0001, and group 8 as 8 bits of space order 0000 0001.  But both will return in 16 bits.  
 
     <pre>
         Example 1 - Pattern 6-6-3 : 1 1 1 1 
@@ -110,7 +110,7 @@ Group 8:     pattern size x (1 byte pattern value + 1 byte x 2 current and next 
 
 4. Now, Ready to generate the pattern.  
 For each pattern set starts with the goal state, only one combo will carry the initial zero.  Loop through all combo; if the pattern value still zero, fill with current number of moves.  Repeat the process until all combo fill with value.  
-Notes: Unlike the solver, eliminated backword moves will result in incorrect pattern values.  
+Notes: Unlike the solver, eliminated backward moves will result in incorrect pattern values.  
 See [sample output] of each default pattern.  
 
 5.  Save a re-useable copy.  
