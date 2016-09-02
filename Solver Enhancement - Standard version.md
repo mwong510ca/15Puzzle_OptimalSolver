@@ -1,15 +1,15 @@
 ### Standard version
-  In the IDA*, it will loop on the same board more than once before it reach the solution.  In addition to aviod the backward move, I add the following optimization to improve performance.
+  In the IDA*, it will loop on the same board more than once before it reach the solution.  In addition to avoid the backward move, I add the following optimization to improve performance.
 
 ### 1. Symmetry reduction  
-  Let's look at the symmetry, take the diagional axis from upper left corner to lower right corner:  
+  Let's look at the symmetry, take the diagonal axis from upper left corner to lower right corner:  
   <pre>
         Goal state       Tile conversion                      Position conversion
          1  2  3  4       1  2  3  4         1  5  9 13        0  1  2  3       0  4  8 12
          5  6  7  8       5  6  7  8   ->    2  6 10 14        4  5  6  7  ->   1  5  9 13
          9 10 11 12       9 10 11 12         3  7 11 15        8  9 10 11       2  6 10 14
         13 14 15  0      13 14 15  0         4  8 12  0       12 13 14 15       3  7 11 15  
-        With these converstion:
+        With these conversion:
          1  2  3  0       1  2  3  4         6  1 10 14       6  2  3  4
          5  6  7  4  ->   5  6  7  8         5  2  7  8  ->   1  5  9 13
          9 10 11  8       9 10 11 12         9  3 11 12       7 10 11 12
@@ -24,7 +24,7 @@
          C  E  F 15      It it land on center (5 or 10), it has 4 moves. </pre>  
          
   * If it cannot find a solution by shift right, it cannot find a solution by shift down either.  Same for shift left and shift up pairs.  If it starts from the identical symmetry board, it will reduce the expansion by 50%.  
-  * If it shift to the corner, the serach is done.  Such as left shift to position 0:  
+  * If it shift to the corner, the search is done.  Such as left shift to position 0:  
     * Right shift to position 1 is the backward move - eliminated.
     * Down shift to position 4 is the symmetry move of Right shift - eliminated as well.  
   * If if shift to the center, the search will drop from 3 remaining moves to 1 move.  Such as left shift to position 5:  
@@ -53,10 +53,10 @@
                 
   I only need one path to moves 6.  At moves 5, I will take 4 clockwise turns and eliminate 6 counterclockwise turns.  Same for moves 7, I will take 4 counterclockwise turns and eliminate 6 clockwise turns. And so on...  To eliminate these re-visited boards:
   * The maximum limit of clockwise turns is 5.
-  * The maximum limit of counterclockwise truns 4. 
+  * The maximum limit of counterclockwise turns 4. 
 
 ### 3. Starting order detection:  
-  Instead of using the hard code order Right -> Down -> Left -> Up, determine the starting order based on least estimate terminated at previous depth expansion.  It terminated at the same estimate, least nodes generated will go first.  When it hit the solution depth, it increase the possibility to solve the puzzle by the first move instead of loop to the last one.  But somtimes takes longer than the hard cord order.  
+  Instead of using the hard code order Right -> Down -> Left -> Up, determine the starting order based on least estimate terminated at previous depth expansion.  It terminated at the same estimate, least nodes generated will go first.  When it hit the solution depth, it increase the possibility to solve the puzzle by the first move instead of loop to the last one.  But sometimes takes longer than the hard cord order.  
   
   * Example 1: Starting order changed in each depth level increment.
   * Example 2: Puzzle solved on 1st expansion at depth 67.
@@ -88,23 +88,3 @@
              7 11  6  1     68    (44) Down    -> (45) Right -> (53) Left
              3  4  8  2     70    (31) Down    -> (36) Right    (42) Left
             estimate 64                           Solved</pre>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
