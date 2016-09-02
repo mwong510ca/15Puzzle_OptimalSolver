@@ -1,12 +1,12 @@
-package mwong.myprojects.fifteenpuzzle.solver.advanced.ai;
+package mwong.myprojects.fifteenpuzzle.solver.ai;
 
+import mwong.myprojects.fifteenpuzzle.solver.FileProperties;
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.Solver;
 import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
-import mwong.myprojects.fifteenpuzzle.solver.components.FileProperties;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 
 import java.io.File;
@@ -85,10 +85,11 @@ public class ReferenceAccumulator {
 
     // reset to default set
     void reset() {
-        cutoffSetting = ReferenceProperties.getDefaultCutoffLimit();
+        cutoffSetting = ReferenceProperties.getCutoffLimit();
         System.out.println("Default setting : cutoff archive limit - "
                 + cutoffSetting);
-        cutoffLimit = cutoffSetting * ReferenceProperties.getDefaultCutoffBuffer();
+        int cutoffBuffer = ReferenceProperties.getCutoffBuffer();
+        cutoffLimit = cutoffSetting * ((100 - cutoffBuffer) / 100.0);
         referenceMap = new HashMap<ReferenceBoard, ReferenceMoves>();
         for (Entry<ReferenceBoard, ReferenceMoves> entry : defaultMap.entrySet()) {
             referenceMap.put(entry.getKey(), entry.getValue());
@@ -132,7 +133,8 @@ public class ReferenceAccumulator {
         ByteBuffer buffer = inChannel.map(FileChannel.MapMode.READ_ONLY, 0, inChannel.size());
 
         cutoffSetting = buffer.getInt();
-        cutoffLimit = cutoffSetting * ReferenceProperties.getDefaultCutoffBuffer();
+        int cutoffBuffer = ReferenceProperties.getCutoffBuffer();
+        cutoffLimit = cutoffSetting * ((100 - cutoffBuffer) / 100.0);
 
         while (buffer.remaining() >= 34) {
             ReferenceBoard advBoard = null;
@@ -541,7 +543,8 @@ public class ReferenceAccumulator {
             return;
         }
         cutoffSetting = cutoff;
-        cutoffLimit = cutoffSetting * ReferenceProperties.getDefaultCutoffBuffer();
+        int cutoffBuffer = ReferenceProperties.getCutoffBuffer();
+        cutoffLimit = cutoffSetting * ((100 - cutoffBuffer) / 100.0);
 
         System.out.println("Cutoff archive limit changed to " + cutoffSetting
                 + " seconds, existing archive boards will remain as is.");

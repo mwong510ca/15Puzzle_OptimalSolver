@@ -97,39 +97,42 @@ public class CompareEnhancement extends AbstractApplication {
                 int heuristicStandard = solverAdvanced.heuristicStandard(board);
                 int heuristicAdvanced = solverAdvanced.heuristicAdvanced(board);
                 System.out.print("Standard estimate : " + heuristicStandard + "\t\t");
-                System.out.println("Advanced estimate : " + heuristicAdvanced);
-                System.out.println("\t\t\t\tTime\t\tNodes");
+                System.out.println("    Advanced estimate : " + heuristicAdvanced);
+                System.out.println("\t\t\t\t    Time\t    Nodes");
 
-                System.out.printf("%-32s", "No enhancement : ");
+                System.out.printf("%-36s", "1. No enhancement : ");
                 solvePuzzle(solverNoEnh, board);
-                System.out.printf("%-32s", "Add symmetry reduction : ");
+                System.out.printf("%-36s", "2. Add symmetry reduction : ");
                 solvePuzzle(solverEnh1, board);
-                System.out.printf("%-32s", "Add circular reduction : ");
+                System.out.printf("%-36s", "3. Add circular reduction : ");
                 solvePuzzle(solverEnh2, board);
-                System.out.printf("%-32s", "Add starting order detection : ");
+                System.out.printf("%-36s", "4. Add starting order detection : ");
                 solverAdvanced.versionSwitch(tagStandard);
                 solvePuzzle(solverAdvanced, board);
                 if (solverAdvanced.isAddedReference()) {
                     heuristicAdvanced = solverAdvanced.heuristicAdvanced(board);
                 }
                 if (heuristicAdvanced > heuristicStandard) {
-                    System.out.printf("%-32s", "Advanced version : ");
+                    System.out.printf("%-36s", "5. Advanced estimate : ");
                     solvePuzzle(solverAdvEst, board);
                     if (solverAdvanced.hasPartialSolution(board)) {
-                        System.out.printf("%-32s", "Use preset partial solution :");
+                        System.out.printf("%-36s", "6. Use preset partial solution :");
                         solverAdvanced.versionSwitch(tagAdvanced);
                         solvePuzzle(solverAdvanced, board);
                         if (solverAdvEst.isAddedReference()) {
                             refAccumulator.updateLastSearch(solverAdvEst);
                         }
                     } else {
-                        System.out.printf("%-32s", "No preset partial solution.");
+                        System.out.println("6. Skip - No preset partial solution.");
                         if (solverAdvanced.isAddedReference()) {
                             refAccumulator.updateLastSearch(solverAdvEst);
                         }
                     }
-                } else if (solverAdvanced.isAddedReference()) {
-                    refAccumulator.updateLastSearch(solverAdvEst);
+                } else {
+                    System.out.println("5 & 6. Skip - Both estimate are the same.");
+                    if (solverAdvanced.isAddedReference()) {
+                        refAccumulator.updateLastSearch(solverAdvEst);
+                    }
                 }
             } else {
                 System.out.println("The board is unsolvable, try again!");

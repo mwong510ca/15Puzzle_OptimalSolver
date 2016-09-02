@@ -1,4 +1,6 @@
-package mwong.myprojects.fifteenpuzzle.solver.advanced.ai;
+package mwong.myprojects.fifteenpuzzle.solver.ai;
+
+import mwong.myprojects.fifteenpuzzle.PropertiesCache;
 
 /**
  * ReferenceProperties contains the default values of the ReferenceAccumulator.
@@ -7,9 +9,6 @@ package mwong.myprojects.fifteenpuzzle.solver.advanced.ai;
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class ReferenceProperties {
-    //ReferenceAccumulator
-    private static final int DEFAULT_CUTOFF_LIMIT = 8;
-    private static final double DEFAULT_CUTOFF_BUFFER = 0.95;
     // selected reference boards for default setting, total 40 after generation.
     private static final byte[][][] DEFAULT_BOARDS = {
             {{ 0, 15,  8,  3, 12, 11,  7,  4, 14, 10,  6,  5,  9, 13,  2,  1}, {0,  70}},
@@ -44,14 +43,56 @@ public class ReferenceProperties {
             {{ 0, 12, 14, 13, 15, 11,  9, 10,  8,  3,  6,  2,  4,  7,  5,  1}, { 0, 80}},
             {{ 0, 12, 10, 13, 15, 11, 14,  9,  7,  8,  6,  2,  4,  3,  5,  1}, { 0, 80}}
     };
+    //ReferenceAccumulator
+    private static int cutoffLimit;
+    private static int cutoffBuffer;
+
+    static {
+        cutoffLimit = 8;
+        cutoffBuffer = 5;
+
+        if (PropertiesCache.getInstance().containsKey("referenceCutoffLimit")) {
+            try {
+                int limit = Integer.parseInt(PropertiesCache.getInstance().getProperty(
+                        "referenceCutoffLimit"));
+                if (limit > 0 && limit <= 15) {
+                    cutoffLimit = limit;
+                } else {
+                    System.err.println("Invalid reference cutoff limit setting " + limit
+                            + ", allow minimum 1 second to maximum 15 seconds only."
+                            + " Restore to system default 8 seconds.");
+                }
+            } catch (NumberFormatException ex) {
+                System.err.println("Configuration reference cutoff limit is not an iteger,"
+                        + " restore to system default 8 seconds.");
+            }
+        }
+
+        if (PropertiesCache.getInstance().containsKey("referenceCutoffBuffer")) {
+            try {
+                int buffer = Integer.parseInt(PropertiesCache.getInstance().getProperty(
+                        "referenceCutoffBuffer"));
+                if (buffer >= -5 && buffer <= 15) {
+                    cutoffBuffer = buffer;
+                } else {
+                    System.err.println("Invalid reference cutoff buffer setting " + buffer
+                            + ", allow minimum -5 (105%) to maximum 15 (85%) only."
+                            + " Restore to system default 5 (95%).");
+                }
+            } catch (NumberFormatException ex) {
+                System.err.println("Configuration reference cutoff limit is not an iteger,"
+                        + " restore to system default 5 (95%).");
+            }
+        }
+    }
 
     /**
      * Returns the integer value of the default cutoff limit (10 seconds).
      *
      * @return integer value of the default cutoff limit
      */
-    public static final int getDefaultCutoffLimit() {
-        return DEFAULT_CUTOFF_LIMIT;
+    public static final int getCutoffLimit() {
+        return cutoffLimit;
     }
 
     /**
@@ -59,8 +100,8 @@ public class ReferenceProperties {
      *
      * @return double value of the default cutoff buffer
      */
-    public static final double getDefaultCutoffBuffer() {
-        return DEFAULT_CUTOFF_BUFFER;
+    public static final int getCutoffBuffer() {
+        return cutoffBuffer;
     }
 
     /**

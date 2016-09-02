@@ -1,5 +1,6 @@
 package mwong.myprojects.fifteenpuzzle.solver.components;
 
+import mwong.myprojects.fifteenpuzzle.solver.FileProperties;
 import mwong.myprojects.fifteenpuzzle.utilities.Stopwatch;
 
 import java.io.File;

@@ -1,6 +1,6 @@
 package mwong.myprojects.fifteenpuzzle.solver;
 
-import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceConstants;
+import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceConstants;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleConstants;
 

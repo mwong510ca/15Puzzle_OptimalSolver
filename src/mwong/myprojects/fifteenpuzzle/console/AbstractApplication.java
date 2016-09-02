@@ -1,8 +1,9 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
+import mwong.myprojects.fifteenpuzzle.PropertiesCache;
 import mwong.myprojects.fifteenpuzzle.solver.Solver;
 import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
+import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
@@ -20,6 +21,7 @@ import java.util.Scanner;
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public abstract class AbstractApplication {
+    private static int displayDelay;
     protected final int puzzleSize;
     protected final boolean tagLinearConflict;
     protected final boolean messageOn;
@@ -35,6 +37,26 @@ public abstract class AbstractApplication {
     protected int timeoutLimit;
     protected boolean flagAdvVersion;
 
+    static {
+        displayDelay = 1000;
+        if (PropertiesCache.getInstance().containsKey("solutionDisplayRate")) {
+            try {
+                int delay = Integer.parseInt(PropertiesCache.getInstance().getProperty(
+                        "solutionDisplayRate"));
+                if (delay >= 100 || delay <= 5000) {
+                    displayDelay = delay;
+                } else {
+                    System.err.println("Invalid solution display rate setting " + delay
+                            + ", allow minimum 0.1 second (100) to maximum 5 seconds (5000) only."
+                            + " Restore to system default 1 second.");
+                }
+            } catch (NumberFormatException ex) {
+                System.err.println("Configuration solution display rate is not an iteger,"
+                        + " restore to system default 1 second.");
+            }
+        }
+    }
+    
     AbstractApplication() {
         puzzleSize = ApplicationConstants.getPuzzleSize();
         tagLinearConflict = ApplicationConstants.isTagLinearConflict();
@@ -44,11 +66,11 @@ public abstract class AbstractApplication {
         timeoutOff = !timeoutOn;
         tagAdvanced = ApplicationConstants.isTagAdvanced();
         tagStandard = !tagAdvanced;
-        defaultPattern = SolverProperties.getDefaultPattern();
+        defaultPattern = SolverProperties.getPattern();
 
         scanner = new Scanner(System.in, "UTF-8");
         refAccumulator = new ReferenceAccumulator();
-        timeoutLimit = SolverProperties.getDefaultTimeoutLimit();
+        timeoutLimit = SolverProperties.getTimeoutLimit();
         flagAdvVersion = tagStandard;
     }
 
@@ -73,7 +95,7 @@ public abstract class AbstractApplication {
     void solutionList(Solver solver) {
         int steps = solver.moves();
         for (int i = 1; i <= steps; i++) {
-            System.out.print(i + " : " + solver.solution()[i] + " ");
+            System.out.printf("%2s : %-5s ", Integer.toString(i), solver.solution()[i]);
             if (i % 10 == 0 && steps > i) {
                 System.out.println();
             }
@@ -87,20 +109,39 @@ public abstract class AbstractApplication {
     void solutionDetail(Board board, Solver solver) {
         int count = 0;
         int steps = solver.moves();
+        System.out.print("Step : " + (count));
+        System.out.println();
+        System.out.println(board);
+
         Direction dir = Direction.NONE;
-        do {
-            System.out.print("Step : " + (count));
-            if (count > 0) {
+        dir = solver.solution()[++count];
+        board = board.shift(dir);
+
+        try {
+            Thread.sleep(displayDelay);
+            while (count <= steps) {
+                System.out.print("Step : " + (count));
                 System.out.print("\t" + dir);
+                System.out.println();
+                System.out.println(board);
+                if (++count <= steps) {
+                    dir = solver.solution()[count];
+                    board = board.shift(dir);
+                    Thread.sleep(displayDelay);
+                }
             }
-            System.out.println();
-            System.out.println(board);
-            count++;
-            if (count <= steps) {
-                dir = solver.solution()[count];
-                board = board.shift(dir);
+        } catch (InterruptedException ex) {
+            while (count <= steps) {
+                System.out.print("Step : " + (count));
+                System.out.print("\t" + dir);
+                System.out.println();
+                System.out.println(board);
+                if (++count <= steps) {
+                    dir = solver.solution()[count];
+                    board = board.shift(dir);
+                }
             }
-        } while (count <= steps);
+        }
     }
 
     void printOption(char option) {
@@ -121,8 +162,9 @@ public abstract class AbstractApplication {
                 System.out.println("Enter 'Q' - quit the program");
                 return;
             case 'm':
-                System.out.println("      'L' - print a list of moves");
-                System.out.println("      'D' - display the board of each moves");
+                System.out.println("      'L' - print a direction list of moves");
+                System.out.println("      'D' - display each board of moves at "
+                        + (displayDelay / 1000.0) + " board per second rate");
                 return;
             case 'c':
                 System.out.println("      'C' - for change your choice of heuristic function");

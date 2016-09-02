@@ -70,7 +70,7 @@ public class SolverPdbWd extends SolverWd {
      *  Initializes SolverPdbWd object using default preset pattern.
      */
     public SolverPdbWd() {
-        this(SolverProperties.getDefaultPattern());
+        this(SolverProperties.getPattern());
     }
 
     /**

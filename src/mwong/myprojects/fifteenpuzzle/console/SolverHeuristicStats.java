@@ -114,7 +114,7 @@ public class SolverHeuristicStats extends AbstractApplication {
                     pending = false;
                     break;
                 default:
-                    System.out.println("Enter '1 - 5' for heuristic function, '0' no change");
+                    System.out.println("Enter '1 - 7' for heuristic function, '0' no change");
             }
         } while (pending);
 

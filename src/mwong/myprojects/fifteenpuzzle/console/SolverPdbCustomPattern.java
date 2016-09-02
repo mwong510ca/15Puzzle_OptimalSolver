@@ -171,14 +171,8 @@ public class SolverPdbCustomPattern extends AbstractApplication {
                             pending = false;
                             break;
                         }
-                    } catch (ArrayIndexOutOfBoundsException ex) {
+                    } catch (ArrayIndexOutOfBoundsException | UnsupportedOperationException ex) {
                         System.err.println(ex);
-                        System.out.println("Your input pattern is invalid, please try again");
-                        System.out.println("Enter '1 - 3' for default patterns,"
-                                + "'4' for custome pattern' or '0' no change");
-                        break;
-                    } catch (UnsupportedOperationException ex2) {
-                        System.err.println(ex2);
                         System.out.println("Your input pattern is invalid, please try again");
                         System.out.println("Enter '1 - 3' for default patterns,"
                                 + "'4' for custome pattern' or '0' no change");

@@ -1,4 +1,4 @@
-package mwong.myprojects.fifteenpuzzle.solver.advanced.ai;
+package mwong.myprojects.fifteenpuzzle.solver.ai;
 
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;

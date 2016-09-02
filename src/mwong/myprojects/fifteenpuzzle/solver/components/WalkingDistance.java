@@ -1,5 +1,7 @@
 package mwong.myprojects.fifteenpuzzle.solver.components;
 
+import mwong.myprojects.fifteenpuzzle.solver.FileProperties;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

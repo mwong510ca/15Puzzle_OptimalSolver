@@ -20,7 +20,7 @@ public class SolverPdb extends SolverPdbEnh2 {
      *  Initializes SolverPdb object using default preset pattern.
      */
     public SolverPdb() {
-        this(SolverProperties.getDefaultPattern());
+        this(SolverProperties.getPattern());
     }
 
     /**

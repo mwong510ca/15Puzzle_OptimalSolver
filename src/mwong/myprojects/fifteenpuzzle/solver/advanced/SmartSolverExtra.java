@@ -2,9 +2,9 @@ package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceBoard;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceMoves;
+import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceAccumulator;
+import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceBoard;
+import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceMoves;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleConstants;

@@ -69,7 +69,7 @@ public abstract class AbstractSolver implements Solver {
         rowSize = SolverConstants.getRowSize();
         maxMoves = SolverConstants.getMaxMoves();
         endOfSearch = SolverConstants.getEndOfSearch();
-        defaultTimeoutLimit = SolverProperties.getDefaultTimeoutLimit();
+        defaultTimeoutLimit = SolverProperties.getTimeoutLimit();
         onSwitch = SolverConstants.isOnSwitch();
         offSwitch = !onSwitch;
         tagAdvanced = SolverConstants.isTagAdvanced();

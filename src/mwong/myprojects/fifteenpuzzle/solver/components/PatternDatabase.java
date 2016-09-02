@@ -1,5 +1,6 @@
 package mwong.myprojects.fifteenpuzzle.solver.components;
 
+import mwong.myprojects.fifteenpuzzle.solver.FileProperties;
 import mwong.myprojects.fifteenpuzzle.utilities.Stopwatch;
 
 import java.io.File;
@@ -89,7 +90,7 @@ public class PatternDatabase {
      * @param pattern the byte array of user defined pattern
      */
     public PatternDatabase(byte[] pattern) {
-    	formatBit16 = PatternConstants.getFormatBit16();
+        formatBit16 = PatternConstants.getFormatBit16();
         formatZero8Order = null;
         puzzleSize = PuzzleConstants.getSize();
         rowSize = PuzzleConstants.getRowSize();

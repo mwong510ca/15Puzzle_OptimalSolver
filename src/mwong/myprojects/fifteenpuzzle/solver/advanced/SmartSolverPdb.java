@@ -1,7 +1,7 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
 import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.ai.ReferenceAccumulator;
+import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
@@ -27,7 +27,7 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
      * @param refAccumulator the given ReferenceAccumulator object
      */
     public SmartSolverPdb(ReferenceAccumulator refAccumulator) {
-        this(SolverProperties.getDefaultPattern(), refAccumulator);
+        this(SolverProperties.getPattern(), refAccumulator);
     }
 
     /**

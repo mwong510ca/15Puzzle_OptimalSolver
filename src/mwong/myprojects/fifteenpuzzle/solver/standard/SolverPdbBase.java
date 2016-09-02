@@ -112,7 +112,7 @@ public class SolverPdbBase extends AbstractSolver {
     // generate the additive pattern database components with give user defined
     // custom pattern
     protected void customPDComponents(byte[] customPattern) {
-    	PatternDatabase pd15 = new PatternDatabase(customPattern);
+        PatternDatabase pd15 = new PatternDatabase(customPattern);
         patternGroups = pd15.getPatternGroups();
         patternFormatSize = new int[patternGroups.length];
         for (int i = 0; i < patternGroups.length; i++) {
