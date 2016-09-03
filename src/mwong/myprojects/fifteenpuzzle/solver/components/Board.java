@@ -147,11 +147,11 @@ public class Board {
     // generate a solvable random board with a given difficulty level
     private void generateBoard(PuzzleDifficultyLevel level) {
         if (level == PuzzleDifficultyLevel.MODERATE) {
-            int estimate;
-            do {
+            int estimate = 0;
+            while (estimate < 20 || estimate > 45) {
                 generateRandomBoard();
                 estimate = heuristic();
-            } while (estimate < 20 || estimate > 45);
+            }
         } else {
             byte [] blocks = new byte[SIZE];
             int zero = 15;

@@ -368,6 +368,7 @@ public class WalkingDistance {
                                 default:
                                     System.err.println("ERROR");
                             }
+
                             newPtn = (newPtn << zeroBitsSize) | (zeroRow - 1);
                             if (ptnKeys.containsKey(newPtn)) {
                                 ptnLink[linkBase + j * 2 + 1] = ptnKeys.get(newPtn);

@@ -69,6 +69,7 @@ public class ReferenceAccumulator {
         } catch (IOException ex) {
             reset();
         }
+
         updateData(createSolver());
         refreshFile();
     }
@@ -85,11 +86,12 @@ public class ReferenceAccumulator {
 
     // reset to default set
     void reset() {
-        cutoffSetting = ReferenceProperties.getCutoffLimit();
+        cutoffSetting = ReferenceProperties.getDefaultCutoffLimit();
         System.out.println("Default setting : cutoff archive limit - "
                 + cutoffSetting);
         int cutoffBuffer = ReferenceProperties.getCutoffBuffer();
         cutoffLimit = cutoffSetting * ((100 - cutoffBuffer) / 100.0);
+
         referenceMap = new HashMap<ReferenceBoard, ReferenceMoves>();
         for (Entry<ReferenceBoard, ReferenceMoves> entry : defaultMap.entrySet()) {
             referenceMap.put(entry.getKey(), entry.getValue());
@@ -261,12 +263,15 @@ public class ReferenceAccumulator {
         if (inSolver == null) {
             return false;
         }
+
         if (!inSolver.getClass().getSimpleName().equals(coreSolverClassName)) {
             return false;
         }
+
         if (inSolver.getHeuristicOptions() != coreHeuristic) {
             return false;
         }
+
         return true;
     }
 
@@ -277,10 +282,12 @@ public class ReferenceAccumulator {
         if (!validateSolver(inSolver)) {
             solver = createSolver();
         }
+
         if (solver == null) {
             System.out.println("System update failed - not enough memory.");
             return;
         }
+
         updateAll((SmartSolverPdb) solver);
     }
 
@@ -294,6 +301,7 @@ public class ReferenceAccumulator {
         if (!validateSolver(inSolver)) {
             return;
         }
+
         updateAll((SmartSolverPdb) inSolver);
     }
 
@@ -316,6 +324,7 @@ public class ReferenceAccumulator {
             advMoves.updateSolutions(advBoard, solverPdb78);
             add2file(advBoard, advMoves);
         }
+
         solverPdb78.versionSwitch(backupAdvPriority);
         solverPdb78.messageSwitch(backupMessageFlag);
         solverPdb78.timeoutSwitch(backupTimeoutFlag);
@@ -338,12 +347,15 @@ public class ReferenceAccumulator {
         if (referenceMap == null) {
             return false;
         }
+
         if (!validateSolver(inSolver)) {
             return false;
         }
+
         if (!bypass && inSolver.searchTime() < getCutoffLimit()) {
             return false;
         }
+
         SmartSolverPdb solverPdb78 = (SmartSolverPdb) inSolver;
         Board board = solverPdb78.lastSearchBoard();
         Direction[] solution = solverPdb78.solution().clone();
@@ -378,6 +390,7 @@ public class ReferenceAccumulator {
                 advMoves.updateSolutions(advBoard, solverPdb78);
             }
             add2file(advBoard, advMoves);
+
             inSolver.versionSwitch(backupAdvPriority);
             inSolver.messageSwitch(backupMessageFlag);
             inSolver.timeoutSwitch(backupTimeoutFlag);
@@ -388,6 +401,7 @@ public class ReferenceAccumulator {
         if (group == 0 || group == 2) {
             advBoardSym = new ReferenceBoard(new Board(board.getTilesSym()));
         }
+
         if (referenceMap.containsKey(advBoardSym)) {
             ReferenceMoves advMoves = referenceMap.get(advBoardSym);
             if (lookup == 1) {
@@ -400,6 +414,7 @@ public class ReferenceAccumulator {
                 advMoves.updateSolutions(advBoardSym, solverPdb78);
             }
             add2file(advBoardSym, advMoves);
+
             inSolver.versionSwitch(backupAdvPriority);
             inSolver.messageSwitch(backupMessageFlag);
             inSolver.timeoutSwitch(backupTimeoutFlag);
@@ -417,6 +432,7 @@ public class ReferenceAccumulator {
         }
         referenceMap.put(advBoard, advMoves);
         add2file(advBoard, advMoves);
+
         inSolver.versionSwitch(backupAdvPriority);
         inSolver.messageSwitch(backupMessageFlag);
         inSolver.timeoutSwitch(backupTimeoutFlag);
@@ -434,6 +450,7 @@ public class ReferenceAccumulator {
         if (referenceMap == null) {
             return false;
         }
+
         if (!validateSolver(inSolver)) {
             return false;
         }
@@ -469,6 +486,7 @@ public class ReferenceAccumulator {
         if (group == 0 || group == 2) {
             advBoardSym = new ReferenceBoard(new Board(board.getTilesSym()));
         }
+
         if (referenceMap.containsKey(advBoardSym)) {
             ReferenceMoves advMoves = referenceMap.get(advBoardSym);
             if (!advMoves.isCompleted()) {
@@ -476,11 +494,13 @@ public class ReferenceAccumulator {
                 advMoves.updateSolutions(advBoardSym, solverPdb78);
                 add2file(advBoardSym, advMoves);
             }
+
             inSolver.versionSwitch(backupAdvPriority);
             inSolver.messageSwitch(backupMessageFlag);
             inSolver.timeoutSwitch(backupTimeoutFlag);
             return true;
         }
+
         inSolver.versionSwitch(backupAdvPriority);
         inSolver.messageSwitch(backupMessageFlag);
         inSolver.timeoutSwitch(backupTimeoutFlag);
@@ -494,6 +514,7 @@ public class ReferenceAccumulator {
         if (defaultMap.containsKey(advBoard)) {
             return;
         }
+
         if (referenceMap.containsKey(advBoard)) {
             referenceMap.remove(advBoard);
         }
@@ -504,7 +525,8 @@ public class ReferenceAccumulator {
         System.out.println("Data file size: " + (new File(filepath).length())
                 + " saved at " + new Date((new File(filepath)).lastModified()));
         System.out.println("Boards takes over " + cutoffSetting + "s will store in file.");
-        System.out.println(referenceMap.size() + " of boards stored in data file.\n");
+        System.out.println(referenceMap.size() + " of boards stored in data file.");
+        System.out.println("The cutoff limit with buffer: " + cutoffLimit + "\n");
     }
 
     // print all reference boards and it's components.
@@ -516,6 +538,7 @@ public class ReferenceAccumulator {
                 System.out.print(advBoard.getTiles()[i] + " ");
             }
             System.out.println();
+
             for (int i = 0; i < puzzleSize; i++) {
                 System.out.print(advBoard.tilesTransform[i] + " ");
             }
@@ -542,6 +565,7 @@ public class ReferenceAccumulator {
             System.out.println("Same cutoff limit - no change.");
             return;
         }
+
         cutoffSetting = cutoff;
         int cutoffBuffer = ReferenceProperties.getCutoffBuffer();
         cutoffLimit = cutoffSetting * ((100 - cutoffBuffer) / 100.0);

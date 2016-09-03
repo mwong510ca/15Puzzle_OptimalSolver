@@ -47,25 +47,29 @@ public class SolverPdbCustomPattern extends AbstractApplication {
         System.out.println("      '4' enter your custom pattern");
         System.out.println("      '0' no change");
         boolean pending = true;
-        int choice;
         int option = 0;
         while (pending) {
             if (!scanner.hasNextInt()) {
                 scanner.next();
             }
+            int choice = -1;
             option = scanner.nextInt();
+
             switch (option) {
                 case 0:
                     pending = false;
                     break;
                 case 1:
                     System.out.println(PatternOptions.Pattern_555);
-                    do {
+                    while (!PatternOptions.Pattern_555.isValidPattern(choice)) {
                         System.out.println("Choose your pattern option, enter '0' for default");
                         System.out.println("Notes: If data file not exists, it takes about"
                                 + " 15s to generate.");
+                        while (!scanner.hasNextInt()) {
+                            scanner.next();
+                        }
                         choice = scanner.nextInt();
-                    } while (!PatternOptions.Pattern_555.isValidPattern(choice));
+                    }
 
                     if (inUsePattern != HeuristicOptions.PD555 || inUsePatternOption != choice) {
                         solver = new SmartSolverPdb(PatternOptions.Pattern_555, choice,
@@ -79,12 +83,15 @@ public class SolverPdbCustomPattern extends AbstractApplication {
                     break;
                 case 2:
                     System.out.println(PatternOptions.Pattern_663);
-                    do {
+                    while (!PatternOptions.Pattern_663.isValidPattern(choice)) {
                         System.out.println("Choose your pattern option, enter '0' for default");
                         System.out.println("Notes: If data file not exists, it takes about"
                                 + " 2 minutes to generate.");
+                        while (!scanner.hasNextInt()) {
+                            scanner.next();
+                        }
                         choice = scanner.nextInt();
-                    } while (!PatternOptions.Pattern_663.isValidPattern(choice));
+                    }
 
                     if (inUsePattern != HeuristicOptions.PD663 || inUsePatternOption != choice) {
                         solver = new SmartSolverPdb(PatternOptions.Pattern_663, choice,
@@ -105,6 +112,9 @@ public class SolverPdbCustomPattern extends AbstractApplication {
                         System.out.println("       Also equire minimum 2gig memory -Xms2g "
                                 + "to run.");
                         System.out.println("If you are not sure, please choose default '0'.");
+                        while (!scanner.hasNextInt()) {
+                            scanner.next();
+                        }
                         choice = scanner.nextInt();
                     } while (!PatternOptions.Pattern_78.isValidPattern(choice));
 
@@ -187,6 +197,7 @@ public class SolverPdbCustomPattern extends AbstractApplication {
                             + "'4' for custome pattern' or '0' no change");
             }
         }
+
         if (option > 0 && option < 5) {
             solver.versionSwitch(flagAdvVersion);
             solver.setTimeoutLimit(timeoutLimit);

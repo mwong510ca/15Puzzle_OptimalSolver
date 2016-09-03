@@ -136,6 +136,7 @@ public class SmartSolverPdbBase extends SolverPdb {
         if (record != null) {
             priorityAdvanced = record.getEstimate();
         }
+
         if (priorityAdvanced != -1) {
             return priorityAdvanced;
         }
@@ -164,6 +165,7 @@ public class SmartSolverPdbBase extends SolverPdb {
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
+
         if (!board.isSolvable()) {
             return -1;
         }
@@ -180,9 +182,11 @@ public class SmartSolverPdbBase extends SolverPdb {
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
+
         if (!board.isSolvable()) {
             return -1;
         }
+
         if (!activeSmartSolver) {
             heuristic(board, tagStandard, tagReview);
         }

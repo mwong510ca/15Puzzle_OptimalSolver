@@ -9,6 +9,8 @@ import mwong.myprojects.fifteenpuzzle.PropertiesCache;
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class ReferenceProperties {
+    //ReferenceAccumulator
+    private static final int DEFAULT_CUTOFF_LIMIT = 8;
     // selected reference boards for default setting, total 40 after generation.
     private static final byte[][][] DEFAULT_BOARDS = {
             {{ 0, 15,  8,  3, 12, 11,  7,  4, 14, 10,  6,  5,  9, 13,  2,  1}, {0,  70}},
@@ -44,30 +46,10 @@ public class ReferenceProperties {
             {{ 0, 12, 10, 13, 15, 11, 14,  9,  7,  8,  6,  2,  4,  3,  5,  1}, { 0, 80}}
     };
     //ReferenceAccumulator
-    private static int cutoffLimit;
     private static int cutoffBuffer;
 
     static {
-        cutoffLimit = 8;
         cutoffBuffer = 5;
-
-        if (PropertiesCache.getInstance().containsKey("referenceCutoffLimit")) {
-            try {
-                int limit = Integer.parseInt(PropertiesCache.getInstance().getProperty(
-                        "referenceCutoffLimit"));
-                if (limit > 0 && limit <= 15) {
-                    cutoffLimit = limit;
-                } else {
-                    System.err.println("Invalid reference cutoff limit setting " + limit
-                            + ", allow minimum 1 second to maximum 15 seconds only."
-                            + " Restore to system default 8 seconds.");
-                }
-            } catch (NumberFormatException ex) {
-                System.err.println("Configuration reference cutoff limit is not an iteger,"
-                        + " restore to system default 8 seconds.");
-            }
-        }
-
         if (PropertiesCache.getInstance().containsKey("referenceCutoffBuffer")) {
             try {
                 int buffer = Integer.parseInt(PropertiesCache.getInstance().getProperty(
@@ -91,8 +73,8 @@ public class ReferenceProperties {
      *
      * @return integer value of the default cutoff limit
      */
-    public static final int getCutoffLimit() {
-        return cutoffLimit;
+    public static final int getDefaultCutoffLimit() {
+        return DEFAULT_CUTOFF_LIMIT;
     }
 
     /**

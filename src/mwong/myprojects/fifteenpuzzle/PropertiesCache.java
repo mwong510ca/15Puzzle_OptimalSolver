@@ -17,7 +17,7 @@ public class PropertiesCache {
 
     private PropertiesCache() {
         try (FileInputStream in = new FileInputStream(filepath)) {
-        	prop.load(in);
+            prop.load(in);
         } catch (IOException ex) {
             System.err.println("Unable to locate configuration files, restore to"
                     + " system default settings");

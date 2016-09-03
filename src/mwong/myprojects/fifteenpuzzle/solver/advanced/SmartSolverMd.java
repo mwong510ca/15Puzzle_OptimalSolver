@@ -43,6 +43,7 @@ public class SmartSolverMd extends SolverMd {
      */
     public SmartSolverMd(boolean lcFlag, ReferenceAccumulator refAccumulator) {
         super(lcFlag);
+
         if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
             System.out.println("Attention: Referece board collection unavailable."
                     + " Advanced estimate will use standard estimate.");
@@ -152,6 +153,7 @@ public class SmartSolverMd extends SolverMd {
                 solutionMove = record.getPartialMoves();
             }
         }
+
         if (priorityAdvanced != -1) {
             return priorityAdvanced;
         }
@@ -180,6 +182,7 @@ public class SmartSolverMd extends SolverMd {
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
+
         if (!board.isSolvable()) {
             return -1;
         }
@@ -196,9 +199,11 @@ public class SmartSolverMd extends SolverMd {
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
+
         if (!board.isSolvable()) {
             return -1;
         }
+
         if (!activeSmartSolver) {
             heuristic(board, tagStandard, tagReview);
         }
@@ -236,6 +241,7 @@ public class SmartSolverMd extends SolverMd {
             System.out.print("ida limit " + limit);
         }
         dfsStartingOrder(zeroX, zeroY, limit - numPartialMoves + 1, priorityGoal);
+
         if (solved) {
             System.arraycopy(solutionMove, 2, dupSolution, numPartialMoves + 1,
                     limit - numPartialMoves);

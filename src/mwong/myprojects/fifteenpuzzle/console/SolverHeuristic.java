@@ -42,12 +42,13 @@ public class SolverHeuristic extends AbstractApplication {
     private Board menuChangeSolver() {
         printOption('s');
         boolean pending = true;
-        do {
+        while (pending) {
             if (!scanner.hasNextInt()) {
                 scanner.next();
                 continue;
             }
             int option = scanner.nextInt();
+
             switch (option) {
                 case 0:
                     pending = false;
@@ -111,7 +112,7 @@ public class SolverHeuristic extends AbstractApplication {
                 default:
                     System.out.println("Enter '1 - 5' for heuristic function, '0' no change");
             }
-        } while (pending);
+        }
 
         inUseHeuristic = solver.getHeuristicOptions();
         solver.versionSwitch(flagAdvVersion);
@@ -129,22 +130,24 @@ public class SolverHeuristic extends AbstractApplication {
         printOption(flagAdvVersion);
         printOption('b');
 
-        do {
+        while (true) {
             if (scanner.hasNextInt()) {
                 return keyInBoard();
             }
+
             char choice = scanner.next().charAt(0);
             if (choice == 'q') {
                 System.out.println("Goodbye!\n");
                 System.exit(0);
             }
+
             Board board = action(choice, null);
             if (board != null) {
                 return board;
             }
             System.out.println("Please enter 'Q', 'C', 'V', 'E', 'M', 'H', 'R'"
                     + " or 16 numbers (0 - 15):");
-        } while (true);
+        }
     }
 
     // display a list of options
@@ -152,17 +155,18 @@ public class SolverHeuristic extends AbstractApplication {
         printOption('q');
         printOption('b');
 
-        do {
+        while (true) {
             if (scanner.hasNextInt()) {
                 return keyInBoard();
             }
+
             char choice = scanner.next().charAt(0);
             Board board = createBoard(choice);
             if (board != null) {
                 return board;
             }
             System.out.println("Please enter 'Q', 'E', 'M', 'H', 'R' or 16 numbers (0 - 15):");
-        } while (true);
+        }
     }
 
     // display a list of options after user change the solver
@@ -171,21 +175,23 @@ public class SolverHeuristic extends AbstractApplication {
         printOption(flagAdvVersion);
         printOption('b');
 
-        do {
+        while (true) {
             if (scanner.hasNextInt()) {
                 return keyInBoard();
             }
+
             char choice = scanner.next().charAt(0);
             if (choice == 'q') {
                 System.out.println("Goodbye!\n");
                 System.exit(0);
             }
+
             Board board = action(choice, null);
             if (board != null) {
                 return board;
             }
             System.out.println("Please enter 'Q', 'V', 'E', 'M', 'H', 'R' or 16 numbers (0 - 15):");
-        } while (true);
+        }
     }
 
     // display a list of options after the puzzle has solved
@@ -196,15 +202,17 @@ public class SolverHeuristic extends AbstractApplication {
         printOption(flagAdvVersion);
         printOption('b');
 
-        do {
+        while (true) {
             if (scanner.hasNextInt()) {
                 return keyInBoard();
             }
+
             char choice = scanner.next().charAt(0);
             if (choice == 'q') {
                 System.out.println("Goodbye!\n");
                 System.exit(0);
             }
+
             Board board = action(choice, initial);
             if (board != null) {
                 return board;
@@ -212,7 +220,7 @@ public class SolverHeuristic extends AbstractApplication {
             System.out.println("Please enter 'L', 'D', 'Q', 'C', 'V', 'E', 'M', 'H', 'R'"
                     + " or 16 numbers"
                     + " (0 - 15):");
-        } while (true);
+        }
     }
 
     private Board action(char choice, Board initial) {
@@ -250,6 +258,7 @@ public class SolverHeuristic extends AbstractApplication {
             } else {
                 System.out.print(" (Standard version) ");
             }
+
             if (solver.isFlagTimeout()) {
                 System.out.println("will timeout at " + solver.getSearchTimeoutLimit() + "s:");
             } else {

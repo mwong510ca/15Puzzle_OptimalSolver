@@ -46,6 +46,7 @@ public class ReferenceMoves {
             moves[refLookup - count] = (byte) (steps - count);
             count++;
         }
+
         count = 1;
         while (refLookup + count < 4) {
             moves[refLookup + count] = (byte) (steps - count);
@@ -114,6 +115,7 @@ public class ReferenceMoves {
             }
             value <<= 2;
         }
+
         if (isSymmetry) {
             value |= dir[1].symmetryDirection().getValue();
         } else {
@@ -135,15 +137,7 @@ public class ReferenceMoves {
         Direction[] movesDir = new Direction[numPartialMoves];
         for (int i = 0; i < numPartialMoves; i++) {
             int dir = value & 0x03;
-            if (dir == 0) {
-                movesDir[i] = Direction.RIGHT;
-            } else if (dir == 1) {
-                movesDir[i] = Direction.DOWN;
-            } else if (dir == 2) {
-                movesDir[i] = Direction.LEFT;
-            } else if (dir == 3) {
-                movesDir[i] = Direction.UP;
-            }
+            movesDir[i] = Direction.values()[dir];
             value >>>= 2;
         }
 

@@ -22,9 +22,6 @@ class ApplicationRun {
      * @param args standard argument main function
      */
     public static void main(String[] args) {
-    	// TODO remove when done.
-        System.out.println(PropertiesCache.getInstance().getAllPropertyNames());
-
         AbstractApplication app = null;
         int choice = 0;
         if (args.length > 0 && args[0].matches("\\d+")) {
@@ -46,6 +43,7 @@ class ApplicationRun {
                 break;
             default :app = new CompareHeuristic();
         }
+
         app.run();
     }
 }

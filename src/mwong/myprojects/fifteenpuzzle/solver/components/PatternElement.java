@@ -471,12 +471,14 @@ public class PatternElement {
                         int[] next = {-1, -1, -1, -1};
                         int[] shift = {0, 0, 0, 0};
                         int base = fmt ^ formatBit16[pos];
+
                         // space right, tile left
                         if (pos % 4 > 0) {
                             if ((fmt & formatBit16[pos - 1]) == 0) {
                                 next[Direction.RIGHT.getValue()] = base | formatBit16[pos - 1];
                             }
                         }
+
                         // space down, tile up
                         if (pos > 3) {
                             if ((fmt & formatBit16[pos - 4]) == 0) {
@@ -492,12 +494,14 @@ public class PatternElement {
                                 }
                             }
                         }
+
                         // space left, tile right
                         if (pos % 4 < 3) {
                             if ((fmt & formatBit16[pos + 1]) == 0) {
                                 next[Direction.LEFT.getValue()] = base | formatBit16[pos + 1];
                             }
                         }
+
                         // space up, tile down
                         if (pos < 12) {
                             if ((fmt & formatBit16[pos + 4]) == 0) {

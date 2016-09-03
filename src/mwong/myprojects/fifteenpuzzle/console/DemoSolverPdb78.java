@@ -95,7 +95,7 @@ public class DemoSolverPdb78 extends AbstractApplication {
      */
     public void run() {
         System.out.println(refAccumulator.getActiveMap().size() + " reference board in system.");
-        do {
+        while (true) {
             printOption('q');
             printOption('b');
 
@@ -124,6 +124,6 @@ public class DemoSolverPdb78 extends AbstractApplication {
                 System.out.println("The board is unsolvable, try again!");
             }
             System.out.println();
-        } while (true);
+        }
     }
 }

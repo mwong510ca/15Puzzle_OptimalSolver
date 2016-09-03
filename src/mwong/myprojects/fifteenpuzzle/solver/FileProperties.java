@@ -77,7 +77,7 @@ public class FileProperties {
 
     /**
      * Returns the String of file path for preset pattern database.
-     * 
+     *
      * @param type the given PatternOptions type
      * @param choice the index of preset pattern option
      * @return String of file path for preset pattern database

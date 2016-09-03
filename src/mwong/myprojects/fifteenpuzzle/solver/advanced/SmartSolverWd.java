@@ -199,6 +199,7 @@ public class SmartSolverWd extends SolverWd {
         }
         dfsStartingOrder(zeroX, zeroY, limit - numPartialMoves + 1, wdIdxH, wdIdxV,
                 wdValueH, wdValueV);
+
         if (solved) {
             System.arraycopy(solutionMove, 2, dupSolution, numPartialMoves + 1,
                     limit - numPartialMoves);

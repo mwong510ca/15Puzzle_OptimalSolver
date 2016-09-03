@@ -103,8 +103,7 @@ public class PatternDatabase {
     private void loadData(PatternOptions type, int choice) {
         String filepath = FileProperties.getFilepathPD(type, choice);
         try (FileInputStream fin = new FileInputStream(filepath);
-                FileChannel inChannel = fin.getChannel();
-                ) {
+                FileChannel inChannel = fin.getChannel();) {
             ByteBuffer buf = inChannel.map(FileChannel.MapMode.READ_ONLY, 0, inChannel.size());
             int numPatterns = buf.get();
             patternGroups = new byte[numPatterns];
@@ -164,6 +163,7 @@ public class PatternDatabase {
                 buffer.flip();
                 outChannel.write(buffer);
             }
+
             System.out.println("PatternDatabase - save data set in file succeeded.");
         } catch (BufferUnderflowException | IOException ex) {
             System.out.println("PatternDatabase - save data set in file failed");
@@ -181,10 +181,12 @@ public class PatternDatabase {
                 System.err.println("Invalid pattern - size != 16");
                 throw new IllegalArgumentException();
             }
+
             if (pattern[15] != 0) {
                 System.err.println("Invalid pattern - pattern[15] != 0");
                 throw new IllegalArgumentException();
             }
+
             if (pattern[14] < 2 || pattern[14] > 8) {
                 System.err.println("Invalid pattern - pattern[14] num of groups");
                 throw new IllegalArgumentException();
@@ -286,6 +288,7 @@ public class PatternDatabase {
             if ((fmt & formatBit16[zeroPos]) > 0) {
                 continue;
             }
+
             if ((zeroOrder & formatZero8Order[order]) != 0) {
                 initMoves |= (short) formatBit16[zeroPos];
                 next[zeroPos] = true;
@@ -306,6 +309,7 @@ public class PatternDatabase {
             if ((fmt & formatBit16[i]) > 0) {
                 continue;
             }
+
             if ((zeroPos & formatBit16[i]) != 0) {
                 initMoves |= (short) formatBit16[i];
                 next[i] = true;
@@ -316,9 +320,9 @@ public class PatternDatabase {
 
     // return 16 bits short represents a set of final moves that stop by a tile only
     private short freeMove(short initMoves, int fmt, boolean [] next) {
-        boolean flag;
+        boolean flag = true;
         short validMoves = initMoves;
-        do {
+        while (flag) {
             flag = false;
             for (int i = 0; i < puzzleSize; i++) {
                 if (next[i]) {
@@ -328,18 +332,21 @@ public class PatternDatabase {
                         next[i + 1] = true;
                         flag = true;
                     }
+
                     if (i + rowSize < 16 && (fmt & formatBit16[i + rowSize]) == 0
                             && (validMoves & formatBit16[i + rowSize]) == 0) {
                         validMoves |= (short) formatBit16[i + rowSize];
                         next[i + rowSize] = true;
                         flag = true;
                     }
+
                     if (i % 4 > 0 && (fmt & formatBit16[i - 1]) == 0
                             && (validMoves & formatBit16[i - 1]) == 0) {
                         validMoves |= (short) formatBit16[i - 1];
                         next[i - 1] = true;
                         flag = true;
                     }
+
                     if (i - 4 > -1 && (fmt & formatBit16[i - rowSize]) == 0
                             && (validMoves & formatBit16[i - rowSize]) == 0) {
                         validMoves |= (short) formatBit16[i - rowSize];
@@ -349,7 +356,7 @@ public class PatternDatabase {
                     next[i] = false;
                 }
             }
-        } while (flag);
+        }
         return validMoves;
     }
 
@@ -425,19 +432,23 @@ public class PatternDatabase {
 
                         if ((freeMove & formatBit16[zeorPos]) > 0) {
                             ArrayList<Integer> neighbors = new ArrayList<Integer>();
+
                             if (zeorPos - 4 >= 0 && (fmt & formatBit16[zeorPos - 4]) > 0) {
                                 neighbors.add(zeorPos - 4);
                                 neighbors.add(Direction.UP.getValue());
                             }
+
                             if (zeorPos % rowSize > 0 && (fmt & formatBit16[zeorPos - 1]) > 0) {
                                 neighbors.add(zeorPos - 1);
                                 neighbors.add(Direction.LEFT.getValue());
                             }
+
                             if (zeorPos % rowSize < rowSize - 1
                                     && (fmt & formatBit16[zeorPos + 1]) > 0) {
                                 neighbors.add(zeorPos + 1);
                                 neighbors.add(Direction.RIGHT.getValue());
                             }
+
                             if (zeorPos + 4 < puzzleSize && (fmt & formatBit16[zeorPos + 4]) > 0) {
                                 neighbors.add(zeorPos + 4);
                                 neighbors.add(Direction.DOWN.getValue());
@@ -563,19 +574,23 @@ public class PatternDatabase {
 
                         if ((freeMove & formatBit16[zeorPos]) > 0) {
                             ArrayList<Integer> neighbors = new ArrayList<Integer>();
+
                             if (zeorPos - 4 >= 0 && (fmt & formatBit16[zeorPos - 4]) > 0) {
                                 neighbors.add(zeorPos - 4);
                                 neighbors.add(Direction.UP.getValue());
                             }
+
                             if (zeorPos % rowSize > 0 && (fmt & formatBit16[zeorPos - 1]) > 0) {
                                 neighbors.add(zeorPos - 1);
                                 neighbors.add(Direction.LEFT.getValue());
                             }
+
                             if (zeorPos % rowSize < rowSize - 1
                                     && (fmt & formatBit16[zeorPos + 1]) > 0) {
                                 neighbors.add(zeorPos + 1);
                                 neighbors.add(Direction.RIGHT.getValue());
                             }
+
                             if (zeorPos + 4 < puzzleSize && (fmt & formatBit16[zeorPos + 4]) > 0) {
                                 neighbors.add(zeorPos + 4);
                                 neighbors.add(Direction.DOWN.getValue());

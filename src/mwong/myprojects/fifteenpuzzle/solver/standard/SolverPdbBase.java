@@ -340,87 +340,96 @@ public class SolverPdbBase extends AbstractSolver {
 
         // hard code different order to next moves base on the current move
         Direction prevMove = solutionMove[cost];
-        if (prevMove == Direction.RIGHT) {
-            // RIGHT
-            if (orgX < rowSize - 1) {
-                newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
-            }
-            if (nonIdentical) {
-                // UP
-                if (orgY > 0 && isValidCounterClockwise(swirlKey)) {
-                    newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | ccwKey));
-                }
-                // DOWN
-                if (orgY < rowSize - 1 && isValidClockwise(swirlKey)) {
-                    newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | cwKey));
-                }
-            }
-        } else if (prevMove == Direction.DOWN) {
-            // DOWN
-            if (orgY < rowSize - 1) {
-                newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
-            }
-            if (nonIdentical) {
-                // LEFT
-                if (orgX > 0 && isValidClockwise(swirlKey)) {
-                    newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | cwKey));
-                }
+
+        switch (prevMove) {
+            case RIGHT:
                 // RIGHT
-                if (orgX < rowSize - 1 && isValidCounterClockwise(swirlKey)) {
+                if (orgX < rowSize - 1) {
                     newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | ccwKey));
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
                 }
-            }
-        } else if (prevMove == Direction.LEFT) {
-            // LEFT
-            if (orgX > 0) {
-                newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
-            }
-            if (nonIdentical) {
+                if (nonIdentical) {
+                    // UP
+                    if (orgY > 0 && isValidCounterClockwise(swirlKey)) {
+                        newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
+                                costPlus1, limit, orgValReg, orgValSym, orgCopy,
+                                swirlKey << 2 | ccwKey));
+                    }
+                    // DOWN
+                    if (orgY < rowSize - 1 && isValidClockwise(swirlKey)) {
+                        newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
+                                costPlus1, limit, orgValReg, orgValSym, orgCopy,
+                                swirlKey << 2 | cwKey));
+                    }
+                }
+                break;
+            case DOWN:
                 // DOWN
-                if (orgY < rowSize - 1 &&  isValidCounterClockwise(swirlKey)) {
+                if (orgY < rowSize - 1) {
                     newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | ccwKey));
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
                 }
-                // UP
-                if (orgY > 0 && isValidClockwise(swirlKey)) {
-                    newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | cwKey));
+                if (nonIdentical) {
+                    // LEFT
+                    if (orgX > 0 && isValidClockwise(swirlKey)) {
+                        newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
+                                costPlus1, limit, orgValReg, orgValSym, orgCopy,
+                                swirlKey << 2 | cwKey));
+                    }
+                    // RIGHT
+                    if (orgX < rowSize - 1 && isValidCounterClockwise(swirlKey)) {
+                        newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
+                                costPlus1, limit, orgValReg, orgValSym, orgCopy,
+                                swirlKey << 2 | ccwKey));
+                    }
                 }
-            }
-        } else if (prevMove == Direction.UP) {
-            // UP
-            if (orgY > 0) {
-                newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
-                        costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
-            }
-            if (nonIdentical) {
-                // RIGHT
-                if (orgX < rowSize - 1 && isValidClockwise(swirlKey)) {
-                    newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | cwKey));
-                }
+                break;
+            case LEFT:
                 // LEFT
-                if (orgX > 0 && isValidCounterClockwise(swirlKey)) {
+                if (orgX > 0) {
                     newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy,
-                            swirlKey << 2 | ccwKey));
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
                 }
-            }
+                if (nonIdentical) {
+                    // DOWN
+                    if (orgY < rowSize - 1 &&  isValidCounterClockwise(swirlKey)) {
+                        newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
+                                costPlus1, limit, orgValReg, orgValSym, orgCopy,
+                                swirlKey << 2 | ccwKey));
+                    }
+                    // UP
+                    if (orgY > 0 && isValidClockwise(swirlKey)) {
+                        newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
+                                costPlus1, limit, orgValReg, orgValSym, orgCopy,
+                                swirlKey << 2 | cwKey));
+                    }
+                }
+                break;
+            case UP:
+                // UP
+                if (orgY > 0) {
+                    newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
+                }
+                if (nonIdentical) {
+                    // RIGHT
+                    if (orgX < rowSize - 1 && isValidClockwise(swirlKey)) {
+                        newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
+                                costPlus1, limit, orgValReg, orgValSym, orgCopy,
+                                swirlKey << 2 | cwKey));
+                    }
+                    // LEFT
+                    if (orgX > 0 && isValidCounterClockwise(swirlKey)) {
+                        newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
+                                costPlus1, limit, orgValReg, orgValSym, orgCopy,
+                                swirlKey << 2 | ccwKey));
+                    }
+                }
+                break;
+            default:
+                assert false : "Error: recursive DFS switch statement";
         }
+
         return newEstimate;
     }
 

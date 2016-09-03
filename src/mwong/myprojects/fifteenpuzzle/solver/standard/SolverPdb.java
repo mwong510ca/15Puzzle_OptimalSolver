@@ -43,14 +43,19 @@ public class SolverPdb extends SolverPdbEnh2 {
         loadPDElements(presetPattern.getElements());
         inUsePattern = presetPattern;
         inUsePtnArray = presetPattern.getPattern(choice);
-        if (presetPattern == PatternOptions.Pattern_555) {
-            inUseHeuristic = HeuristicOptions.PD555;
-        } else if (presetPattern == PatternOptions.Pattern_663) {
-            inUseHeuristic = HeuristicOptions.PD663;
-        } else if (presetPattern == PatternOptions.Pattern_78) {
-            inUseHeuristic = HeuristicOptions.PD78;
-        } else {
-            System.err.println("SolverPD init error");
+
+        switch (presetPattern) {
+            case Pattern_555:
+                inUseHeuristic = HeuristicOptions.PD555;
+                break;
+            case Pattern_663:
+                inUseHeuristic = HeuristicOptions.PD663;
+                break;
+            case Pattern_78:
+                inUseHeuristic = HeuristicOptions.PD78;
+                break;
+            default:
+                System.err.println("SolverPdb invalid presetPattern " + presetPattern);
         }
     }
 
@@ -111,19 +116,28 @@ public class SolverPdb extends SolverPdbEnh2 {
 
             if (!terminated && estimate < endOfSearch) {
                 int startCounter = idaCount++;
-                if (firstMoveIdx == Direction.RIGHT.getValue()) {
-                    lastDepthSummary[firstMoveIdx] = shiftRight(orgX, orgY, zeroPos, zeroSym,
-                            1, limit, orgValReg, orgValSym, orgCopy, reset);
-                } else if (firstMoveIdx == Direction.DOWN.getValue()) {
-                    lastDepthSummary[firstMoveIdx] = shiftDown(orgX, orgY, zeroPos, zeroSym,
-                            1, limit, orgValReg, orgValSym, orgCopy, reset);
-                } else if (firstMoveIdx == Direction.LEFT.getValue()) {
-                    lastDepthSummary[firstMoveIdx] = shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                            1, limit, orgValReg, orgValSym, orgCopy, reset);
-                } else if (firstMoveIdx == Direction.UP.getValue()) {
-                    lastDepthSummary[firstMoveIdx] = shiftUp(orgX, orgY, zeroPos, zeroSym,
-                            1, limit, orgValReg, orgValSym, orgCopy, reset);
+
+                switch (Direction.values()[firstMoveIdx]) {
+                    case RIGHT:
+                        lastDepthSummary[firstMoveIdx] = shiftRight(orgX, orgY, zeroPos, zeroSym,
+                                1, limit, orgValReg, orgValSym, orgCopy, reset);
+                        break;
+                    case DOWN:
+                        lastDepthSummary[firstMoveIdx] = shiftDown(orgX, orgY, zeroPos, zeroSym,
+                                1, limit, orgValReg, orgValSym, orgCopy, reset);
+                        break;
+                    case LEFT:
+                        lastDepthSummary[firstMoveIdx] = shiftLeft(orgX, orgY, zeroPos, zeroSym,
+                                1, limit, orgValReg, orgValSym, orgCopy, reset);
+                        break;
+                    case UP:
+                        lastDepthSummary[firstMoveIdx] = shiftUp(orgX, orgY, zeroPos, zeroSym,
+                                1, limit, orgValReg, orgValSym, orgCopy, reset);
+                        break;
+                    default:
+                        assert false : "Error: starting order switch statement";
                 }
+
                 lastDepthSummary[firstMoveIdx + rowSize] = idaCount - startCounter;
                 estimate1stMove[firstMoveIdx] = endOfSearch;
             }

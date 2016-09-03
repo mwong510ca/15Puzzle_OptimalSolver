@@ -51,6 +51,7 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
     public SmartSolverPdb(PatternOptions presetPattern, int choice,
             ReferenceAccumulator refAccumulator) {
         super(presetPattern, choice);
+
         if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
             System.out.println("Referece board collection unavailable."
                     + " Resume to the 15 puzzle solver standard version.");
@@ -74,6 +75,7 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
     public SmartSolverPdb(byte[] customPattern, boolean[] elementGroups,
             ReferenceAccumulator refAccumulator) {
         super(customPattern, elementGroups);
+
         if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
             System.out.println("Referece board collection unavailable."
                     + " Resume to the 15 puzzle solver standard version.");
@@ -121,6 +123,7 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
                 solutionMove = record.getPartialMoves();
             }
         }
+
         if (priorityAdvanced != -1) {
             return priorityAdvanced;
         }
@@ -129,7 +132,7 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
         if (priorityAdvanced < refCutoff) {
             return priorityAdvanced;
         }
-        //System.out.println("send to advanced estimate");
+
         priorityAdvanced = extra.advancedEstimate(board, priorityAdvanced, refCutoff,
                 refAccumulator.getActiveMap());
 

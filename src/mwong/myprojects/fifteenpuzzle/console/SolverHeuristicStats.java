@@ -47,11 +47,12 @@ public class SolverHeuristicStats extends AbstractApplication {
     private void menuChangeSolver() {
         printOption('s');
         boolean pending = true;
-        do {
+        while (pending) {
             if (!scanner.hasNextInt()) {
                 scanner.next();
             }
             int option = scanner.nextInt();
+
             switch (option) {
                 case 0:
                     pending = false;
@@ -116,7 +117,7 @@ public class SolverHeuristicStats extends AbstractApplication {
                 default:
                     System.out.println("Enter '1 - 7' for heuristic function, '0' no change");
             }
-        } while (pending);
+        }
 
         inUseHeuristic = solver.getHeuristicOptions();
         solver.messageSwitch(messageOff);
@@ -210,15 +211,18 @@ public class SolverHeuristicStats extends AbstractApplication {
             printOption(solver);
         }
         System.out.println("      a positive integer of number of trials");
+
         while (true) {
             if (scanner.hasNextInt()) {
                 break;
             }
+
             char choice = scanner.next().charAt(0);
             if (choice == 'q') {
                 System.out.println("Goodbye!\n");
                 System.exit(0);
             }
+
             switch (choice) {
                 case 'V': case 'v':
                     if (optionV) {
@@ -266,20 +270,20 @@ public class SolverHeuristicStats extends AbstractApplication {
         solver.printDescription();
         menuMain();
 
-        do {
+        while (true) {
             int lineCount = 20;
             int divisor = 1;
             HashSet<Integer> remainders = new HashSet<Integer>();
             PuzzleDifficultyLevel boardLevel = PuzzleDifficultyLevel.RANDOM;
 
             int trails = 0;
-            do {
+            while (trails <= 0) {
                 if (!scanner.hasNextInt()) {
                     scanner.next();
                 } else {
                     trails = scanner.nextInt();
                 }
-            } while (trails <= 0);
+            }
 
             if (inUseHeuristic == HeuristicOptions.MD
                     || inUseHeuristic == HeuristicOptions.MDLC
@@ -420,6 +424,6 @@ public class SolverHeuristicStats extends AbstractApplication {
             }
 
             menuMain();
-        } while (true);
+        }
     }
 }

@@ -57,6 +57,7 @@ public class SmartSolverPdbWd extends SolverPdbWd {
     public SmartSolverPdbWd(PatternOptions presetPattern, int choice,
             ReferenceAccumulator refAccumulator) {
         super(presetPattern, choice);
+
         if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
             System.out.println("Referece board collection unavailable."
                     + " Resume to the 15 puzzle solver standard version.");
@@ -146,6 +147,7 @@ public class SmartSolverPdbWd extends SolverPdbWd {
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
+
         if (!board.isSolvable()) {
             return -1;
         }
@@ -162,9 +164,11 @@ public class SmartSolverPdbWd extends SolverPdbWd {
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
+
         if (!board.isSolvable()) {
             return -1;
         }
+
         if (!activeSmartSolver) {
             heuristic(board, tagStandard, tagReview);
         }

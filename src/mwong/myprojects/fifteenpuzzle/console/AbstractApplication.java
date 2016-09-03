@@ -56,8 +56,8 @@ public abstract class AbstractApplication {
             }
         }
     }
-    
-    AbstractApplication() {
+
+    protected AbstractApplication() {
         puzzleSize = ApplicationConstants.getPuzzleSize();
         tagLinearConflict = ApplicationConstants.isTagLinearConflict();
         messageOn = ApplicationConstants.isMessageOn();
@@ -247,7 +247,7 @@ public abstract class AbstractApplication {
 
     void changeTimeout(Solver solver, int min, int max) {
         int limit = 0;
-        do {
+        while (limit < min || limit > max) {
             System.out.println("Enter timeout limit in seconds, minimun " + min + " seconds"
                     + " and maximum " + max + " seconds:");
             if (!scanner.hasNextInt()) {
@@ -255,7 +255,7 @@ public abstract class AbstractApplication {
             } else {
                 limit = scanner.nextInt();
             }
-        } while (limit < min || limit > max);
+        }
         timeoutLimit = limit;
         solver.setTimeoutLimit(timeoutLimit);
     }

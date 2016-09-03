@@ -82,6 +82,7 @@ public abstract class AbstractSolver implements Solver {
         reset = Rotation.RST.getValue();
         cwKey = Rotation.CW.getValue();
         ccwKey = Rotation.CCW.getValue();
+
         // initialize default setting
         lastBoard = goalBoard;
         flagMessage = onSwitch;
@@ -250,7 +251,6 @@ public abstract class AbstractSolver implements Solver {
         int limit = -1;
         if (board.isSolvable()) {
             clearHistory();
-
             if (board.isGoal()) {
                 solved = true;
                 terminated = true;
@@ -317,9 +317,8 @@ public abstract class AbstractSolver implements Solver {
             Board board = new Board(initial.getTiles());
             int count = 0;
             Direction dir = Direction.NONE;
-            do {
-                count++;
-                if (count <= steps) {
+            while (count < steps) {
+                if (++count <= steps) {
                     dir = solutionMove[count];
                     if (board == null) {
                         System.out.println(steps + "\t" + Arrays.toString(solutionMove));
@@ -328,7 +327,7 @@ public abstract class AbstractSolver implements Solver {
                     }
                     board = board.shift(dir);
                 }
-            } while (count <= steps);
+            }
             if (!board.isGoal()) {
                 return false;
             }
