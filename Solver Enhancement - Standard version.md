@@ -53,7 +53,9 @@
                 
   I only need one path to moves 6.  At moves 5, I will take 4 clockwise turns and eliminate 6 counterclockwise turns.  Same for moves 7, I will take 4 counterclockwise turns and eliminate 6 clockwise turns. And so on...  To eliminate these re-visited boards:
   * The maximum limit of clockwise turns is 5.
-  * The maximum limit of counterclockwise turns 4. 
+  * The maximum limit of counterclockwise turns 4.
+
+Notes: There are other longer circular paths, but those are too expansive to eliminate them which are not as frequently as the about circular path.
 
 ### 3. Starting order detection:  
   Instead of using the hard code order Right -> Down -> Left -> Up, determine the starting order based on least estimate terminated at previous depth expansion.  It terminated at the same estimate, least nodes generated will go first.  When it hit the solution depth, it increase the possibility to solve the puzzle by the first move instead of loop to the last one.  But sometimes takes longer than the hard cord order.  
