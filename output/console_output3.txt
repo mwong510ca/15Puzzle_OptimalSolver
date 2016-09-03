@@ -1,0 +1,195 @@
+Load data and system update - archived hard board. Please wait.
+
+Compare 7 heuristic functions with standard and advanced version.
+
+Enter 'Q' - quit the program
+      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random
+      16 numbers from 0 to 15 for the puzzle
+
+ 0 11  9 13 
+12 15 10 14 
+ 3  7  6  2 
+ 4  8  5  1 
+		Estimate	Time		Minimum Moves	Nodes generated
+Additive Pattern Database 78 will run until solution found:
+Standard	66		3.779s          80              9788014
+Advanced	80		0.004s          80              3161
+Additive Pattern Database 663 will timeout at 10s:
+Standard	66		Timeout: 10.001s at depth 76	33419661
+Advanced	80		0.108s          80              155661
+Additive Pattern Database 555 will timeout at 10s:
+Standard	66		Skip searching - will not solved in 10s.
+Advanced	80		0.16s           80              282798
+Walking Distance + Manhattan Distance with Linear Conflict will timeout at 10s:
+Standard	66		Skip searching - will not solved in 10s.
+Advanced	80		0.38s           80              773436
+Walking Distance will timeout at 10s:
+Standard	66		Skip searching - will not solved in 10s.
+Advanced	80		0.673s          80              3755647
+Manhattan Distance with Linear Conflict will timeout at 10s:
+Standard	58		Skip searching - will not solved in 10s.
+Advanced	80		0.42s           80              1882802
+Manhattan Distance will timeout at 10s:
+Standard	58		Skip searching - will not solved in 10s.
+Advanced	80		Timeout: 10.001s at depth 80	88246996
+
+Enter 'Q' - quit the program
+      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random
+      16 numbers from 0 to 15 for the puzzle
+
+ 8  9  3 10 
+ 6  4  0  5 
+ 7 13 15 12 
+11  2 14  1 
+		Estimate	Time		Minimum Moves	Nodes generated
+Additive Pattern Database 78 will run until solution found:
+Standard	47		0.03s           55              50405
+Advanced	Same value
+Additive Pattern Database 663 will timeout at 10s:
+Standard	45		0.272s          55              897897
+Advanced	Same value
+Additive Pattern Database 555 will timeout at 10s:
+Standard	41		0.225s          55              656403
+Advanced	Same value
+Walking Distance + Manhattan Distance with Linear Conflict will timeout at 10s:
+Standard	41		0.51s           55              2323192
+Advanced	Same value
+Walking Distance will timeout at 10s:
+Standard	41		0.804s          55              5102748
+Advanced	Same value
+Manhattan Distance with Linear Conflict will timeout at 10s:
+Standard	39		2.221s          55              9061680
+Advanced	Same value
+Manhattan Distance will timeout at 10s:
+Standard	37		6.164s          55              52111053
+Advanced	Same value
+
+Enter 'Q' - quit the program
+      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random
+      16 numbers from 0 to 15 for the puzzle
+
+ 0 10  1 13 
+ 2  9  5 14 
+ 3  7 11 15 
+ 4  8 12  6 
+		Estimate	Time		Minimum Moves	Nodes generated
+Additive Pattern Database 78 will run until solution found:
+Standard	56		0.425s          68              1352458
+Advanced	58		0.434s          68              1352448
+Additive Pattern Database 663 will timeout at 10s:
+Standard	50		Timeout: 10.001s at depth 66	31630164
+Advanced	58		Timeout: 10.001s at depth 66	30765818
+Additive Pattern Database 555 will timeout at 10s:
+Standard	48		Skip searching - will not solved in 10s.
+Advanced	58		Skip searching - will not solved in 10s.
+Walking Distance + Manhattan Distance with Linear Conflict will timeout at 10s:
+Standard	44		Skip searching - will not solved in 10s.
+Advanced	58		Skip searching - will not solved in 10s.
+Walking Distance will timeout at 10s:
+Standard	44		Skip searching - will not solved in 10s.
+Advanced	58		Skip searching - will not solved in 10s.
+Manhattan Distance with Linear Conflict will timeout at 10s:
+Standard	44		Skip searching - will not solved in 10s.
+Advanced	58		Skip searching - will not solved in 10s.
+Manhattan Distance will timeout at 10s:
+Standard	44		Skip searching - will not solved in 10s.
+Advanced	58		Skip searching - will not solved in 10s.
+
+Enter 'Q' - quit the program
+      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random
+      16 numbers from 0 to 15 for the puzzle
+
+13 11 14 10 
+ 9  3  5  8 
+12  2  6  4 
+ 0  1 15  7 
+		Estimate	Time		Minimum Moves	Nodes generated
+Additive Pattern Database 78 will run until solution found:
+Standard	49		0.003s          57              7927
+Advanced	Same value
+Additive Pattern Database 663 will timeout at 10s:
+Standard	43		0.127s          57              270267
+Advanced	Same value
+Additive Pattern Database 555 will timeout at 10s:
+Standard	41		0.149s          57              495682
+Advanced	Same value
+Walking Distance + Manhattan Distance with Linear Conflict will timeout at 10s:
+Standard	39		0.978s          57              4630250
+Advanced	Same value
+Walking Distance will timeout at 10s:
+Standard	37		4.03s           57              30306654
+Advanced	Same value
+Manhattan Distance with Linear Conflict will timeout at 10s:
+Standard	39		1.34s           57              6560195
+Advanced	Same value
+Manhattan Distance will timeout at 10s:
+Standard	35		Timeout: 10.001s at depth 55	87950773
+Advanced	Same value
+
+Enter 'Q' - quit the program
+      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random
+      16 numbers from 0 to 15 for the puzzle
+
+ 7 13  1  4 
+ 5 10  6 12 
+ 2  9 15 14 
+11  0  3  8 
+		Estimate	Time		Minimum Moves	Nodes generated
+Additive Pattern Database 78 will run until solution found:
+Standard	38		0.0s            44              213
+Advanced	Same value
+Additive Pattern Database 663 will timeout at 10s:
+Standard	38		0.001s          44              1590
+Advanced	Same value
+Additive Pattern Database 555 will timeout at 10s:
+Standard	34		0.001s          44              4842
+Advanced	Same value
+Walking Distance + Manhattan Distance with Linear Conflict will timeout at 10s:
+Standard	32		0.008s          44              31721
+Advanced	Same value
+Walking Distance will timeout at 10s:
+Standard	32		0.01s           44              74926
+Advanced	Same value
+Manhattan Distance with Linear Conflict will timeout at 10s:
+Standard	32		0.02s           44              74697
+Advanced	Same value
+Manhattan Distance will timeout at 10s:
+Standard	28		0.055s          44              472159
+Advanced	Same value
+
+Enter 'Q' - quit the program
+      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random
+      16 numbers from 0 to 15 for the puzzle
+
+15  1 12  4 
+ 2  8  5  7 
+ 0  9 13 10 
+ 3  6 11 14 
+		Estimate	Time		Minimum Moves	Nodes generated
+Additive Pattern Database 78 will run until solution found:
+Standard	42		0.001s          48              1285
+Advanced	Same value
+Additive Pattern Database 663 will timeout at 10s:
+Standard	40		0.006s          48              18319
+Advanced	Same value
+Additive Pattern Database 555 will timeout at 10s:
+Standard	38		0.01s           48              39052
+Advanced	Same value
+Walking Distance + Manhattan Distance with Linear Conflict will timeout at 10s:
+Standard	34		0.11s           48              462680
+Advanced	Same value
+Walking Distance will timeout at 10s:
+Standard	34		0.147s          48              928190
+Advanced	Same value
+Manhattan Distance with Linear Conflict will timeout at 10s:
+Standard	34		0.209s          48              909500
+Advanced	Same value
+Manhattan Distance will timeout at 10s:
+Standard	32		0.392s          48              3435300
+Advanced	Same value
+
+Enter 'Q' - quit the program
+      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random
+      16 numbers from 0 to 15 for the puzzle
+Goodbye!
+

@@ -1,0 +1,151 @@
+Load data and system update - archived hard board. Please wait.
+
+Compare 15 puzzle solver enhancement using Additive Pattern Database 78
+
+Enter 'Q' - quit the program
+      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random
+      16 numbers from 0 to 15 for the puzzle
+
+ 0 15  8  3 
+12 11  7  4 
+14 10  6  5 
+ 9 13  2  1 
+Standard estimate : 48		    Advanced estimate : 70
+				    Time	    Nodes
+1. No enhancement :                 117.25s         492357819           
+2. Add symmetry reduction :         58.338s         239416302           
+3. Add circular reduction :         49.032s         177653815           
+4. Add starting order detection :   46.056s         177653827           
+5. Advanced estimate :              0.291s          958508              
+6. Use preset partial solution :    0.261s          958509              
+			Actual number of solution move : 70
+
+Enter 'Q' - quit the program
+      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random
+      16 numbers from 0 to 15 for the puzzle
+
+ 6  5  9 13 
+ 2  1 10 14 
+ 3  7  0 15 
+ 4  8 12 11 
+Standard estimate : 58		    Advanced estimate : 72
+				    Time	    Nodes
+1. No enhancement :                 59.628s         231367077           
+2. Add symmetry reduction :         28.854s         114874953           
+3. Add circular reduction :         23.917s         89470609            
+4. Add starting order detection :   24.978s         89470624            
+5. Advanced estimate :              0.483s          1622519             
+6. Use preset partial solution :    0.063s          216878              
+			Actual number of solution move : 72
+
+Enter 'Q' - quit the program
+      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random
+      16 numbers from 0 to 15 for the puzzle
+
+11  5  9 13 
+ 2  6 10 14 
+ 3  7  0 15 
+ 4  8 12  1 
+Standard estimate : 58		    Advanced estimate : 74
+				    Time	    Nodes
+1. No enhancement :                 14.204s         46383751            
+2. Add symmetry reduction :         7.415s          24447275            
+3. Add circular reduction :         6.3s            20109676            
+4. Add starting order detection :   6.307s          20109693            
+5. Advanced estimate :              1.873s          5675500             
+6. Use preset partial solution :    0.047s          123473              
+			Actual number of solution move : 74
+
+Enter 'Q' - quit the program
+      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random
+      16 numbers from 0 to 15 for the puzzle
+
+ 0 15  8 13 
+12 11  3  7 
+14  9  6  2 
+ 4 10  5  1 
+Standard estimate : 58		    Advanced estimate : 58
+				    Time	    Nodes
+1. No enhancement :                 6.307s          20187376            
+2. Add symmetry reduction :         3.146s          10207716            
+3. Add circular reduction :         2.685s          8436494             
+4. Add starting order detection :   2.688s          8436504             
+5 & 6. Skip - Both estimate are the same.
+			Actual number of solution move : 76
+
+Enter 'Q' - quit the program
+      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random
+      16 numbers from 0 to 15 for the puzzle
+
+ 0 15  8 13 
+12 11  9 10 
+14  3  6  2 
+ 4  7  5  1 
+Standard estimate : 62		    Advanced estimate : 78
+				    Time	    Nodes
+1. No enhancement :                 5.851s          18363209            
+2. Add symmetry reduction :         2.765s          9123607             
+3. Add circular reduction :         2.408s          7693686             
+4. Add starting order detection :   2.432s          7693695             
+5. Advanced estimate :              0.024s          68964               
+6. Use preset partial solution :    0.024s          68965               
+			Actual number of solution move : 78
+
+Enter 'Q' - quit the program
+      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random
+      16 numbers from 0 to 15 for the puzzle
+
+ 0 11  9 13 
+12 15 10 14 
+ 3  7  6  2 
+ 4  8  5  1 
+Standard estimate : 66		    Advanced estimate : 80
+				    Time	    Nodes
+1. No enhancement :                 3.873s          12715201            
+2. Add symmetry reduction :         3.534s          11456863            
+3. Add circular reduction :         3.043s          9785986             
+4. Add starting order detection :   3.005s          9788014             
+5. Advanced estimate :              0.019s          3160                
+6. Use preset partial solution :    0.002s          3161                
+			Actual number of solution move : 80
+
+Enter 'Q' - quit the program
+      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random
+      16 numbers from 0 to 15 for the puzzle
+
+15 12  9 13 
+11 14  0 10 
+ 3  8  6  2 
+ 4  7  5  1 
+Standard estimate : 67		    Advanced estimate : 77
+				    Time	    Nodes
+1. No enhancement :                 0.315s          1050835             
+2. Add symmetry reduction :         0.308s          1047930             
+3. Add circular reduction :         0.298s          929109              
+4. Add starting order detection :   0.227s          713787              
+5. Advanced estimate :              0.049s          88573               
+6. Skip - No preset partial solution.
+			Actual number of solution move : 77
+
+Enter 'Q' - quit the program
+      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random
+      16 numbers from 0 to 15 for the puzzle
+
+ 0 12 13  2 
+10 11  9  6 
+ 3 15 14  5 
+ 4  7  8  1 
+Standard estimate : 60		    Advanced estimate : 60
+				    Time	    Nodes
+1. No enhancement :                 0.035s          102431              
+2. Add symmetry reduction :         0.037s          102431              
+3. Add circular reduction :         0.035s          90898               
+4. Add starting order detection :   0.084s          232886              
+5 & 6. Skip - Both estimate are the same.
+			Actual number of solution move : 68
+
+Enter 'Q' - quit the program
+      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random
+      16 numbers from 0 to 15 for the puzzle
+Goodbye!
+

@@ -1,0 +1,188 @@
+Load data and system update - archived hard board. Please wait.
+
+30 reference board in system.
+Enter 'Q' - quit the program
+      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random
+      16 numbers from 0 to 15 for the puzzle
+
+ 0 15 11  8 
+12 10  7  3 
+14  6  4  2 
+ 9 13  5  1 
+		This is NOT a reference board.
+
+Standard Estimate	50
+ida limit 50	Nodes : 2                0.0s
+ida limit 52	Nodes : 7                0.002s
+ida limit 54	Nodes : 57               0.006s
+ida limit 56	Nodes : 480              0.009s
+ida limit 58	Nodes : 3829             0.023s
+ida limit 60	Nodes : 31248            0.046s
+ida limit 62	Nodes : 240944           0.197s
+ida limit 64	Nodes : 1733024          0.918s
+ida limit 66	Nodes : 11791010         4.207s
+ida limit 68	Nodes : 22593216         10.447s
+		Total : 36393817         Time : 10.447s
+
+System detect the dvanced estimate is the same, added to reference collection after the search.
+31 reference board in system.
+
+System update, please wait.
+Advanced Estimate 	68
+ida limit 68	Nodes : 265809           0.072s
+		Total : 265809           Time : 0.072s
+
+Enter 'Q' - quit the program
+      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random
+      16 numbers from 0 to 15 for the puzzle
+
+ 0 15 11  3 
+12  7  8  4 
+14 10  6  5 
+ 9 13  2  1 
+		This is NOT a reference board.
+
+Standard Estimate	48
+ida limit 48	Nodes : 2                0.0s
+ida limit 50	Nodes : 20               0.001s
+ida limit 52	Nodes : 263              0.002s
+ida limit 54	Nodes : 1967             0.002s
+ida limit 56	Nodes : 12243            0.005s
+ida limit 58	Nodes : 73488            0.024s
+ida limit 60	Nodes : 436163           0.14s
+ida limit 62	Nodes : 2528946          0.824s
+ida limit 64	Nodes : 14555959         4.73s
+ida limit 66	Nodes : 25709207         11.225s
+		Total : 43318258         Time : 11.225s
+
+Advanced Estimate 	64
+ida limit 64	Nodes : 14555959         3.985s
+ida limit 66	Nodes : 25709207         10.123s
+		Total : 40265166         Time : 10.123s
+
+It added to reference collection after the search.
+32 reference board in system.
+
+Estimate change to	66		(Search again)
+ida limit 66	Nodes : 412084           0.118s
+		Total : 412084           Time : 0.118s
+System update, please wait.
+
+Enter 'Q' - quit the program
+      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random
+      16 numbers from 0 to 15 for the puzzle
+
+15 11  0  3 
+12  7  8  4 
+14 10  6  5 
+ 9 13  2  1 
+		This is NOT a reference board.
+
+Standard Estimate	48
+ida limit 48	Nodes : 11               0.0s
+ida limit 50	Nodes : 111              0.0s
+ida limit 52	Nodes : 759              0.001s
+ida limit 54	Nodes : 4762             0.002s
+ida limit 56	Nodes : 26782            0.01s
+ida limit 58	Nodes : 153006           0.048s
+ida limit 60	Nodes : 847251           0.251s
+ida limit 62	Nodes : 4686730          1.444s
+ida limit 64	Nodes : 25891764         8.133s
+ida limit 66	Nodes : 1743818          8.591s
+		Total : 33354994         Time : 8.591s
+
+Advanced Estimate 	66
+ida limit 66	Nodes : 1743818          0.461s
+		Total : 1743818          Time : 0.461s
+
+Enter 'Q' - quit the program
+      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random
+      16 numbers from 0 to 15 for the puzzle
+
+15 11  8  0 
+12  7  4  3 
+14 10  6  5 
+ 9 13  2  1 
+		This is NOT a reference board.
+
+Standard Estimate	51
+ida limit 51	Nodes : 28               0.0s
+ida limit 53	Nodes : 263              0.0s
+ida limit 55	Nodes : 2232             0.001s
+ida limit 57	Nodes : 15080            0.005s
+ida limit 59	Nodes : 93211            0.03s
+ida limit 61	Nodes : 565634           0.186s
+ida limit 63	Nodes : 3355292          1.053s
+ida limit 65	Nodes : 19641840         6.082s
+ida limit 67	Nodes : 69137078         23.209s
+		Total : 92810658         Time : 23.209s
+
+Advanced Estimate 	65
+ida limit 65	Nodes : 19641840         4.817s
+ida limit 67	Nodes : 69137078         22.096s
+		Total : 88778918         Time : 22.096s
+
+It added to reference collection after the search.
+33 reference board in system.
+
+Estimate change to	67		(Search again)
+ida limit 67	Nodes : 1031044          0.286s
+		Total : 1031044          Time : 0.286s
+System update, please wait.
+
+Enter 'Q' - quit the program
+      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random
+      16 numbers from 0 to 15 for the puzzle
+
+15 11  0  3 
+12  7  8  4 
+14 10  6  5 
+ 9 13  2  1 
+		Exists in stored reference collection.
+
+Standard Estimate	48
+ida limit 48	Nodes : 11               0.001s
+ida limit 50	Nodes : 111              0.001s
+ida limit 52	Nodes : 759              0.003s
+ida limit 54	Nodes : 4762             0.007s
+ida limit 56	Nodes : 26782            0.019s
+ida limit 58	Nodes : 153006           0.072s
+ida limit 60	Nodes : 847251           0.337s
+ida limit 62	Nodes : 4686730          1.824s
+ida limit 64	Nodes : 19142273        timeout
+		Timeout: 8.001s at depth 64	24861685
+Advanced Estimate 	66
+ida limit 66	Nodes : 498582           0.137s
+		Total : 498582           Time : 0.137s
+
+Enter 'Q' - quit the program
+      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random
+      16 numbers from 0 to 15 for the puzzle
+
+15  7 11  3 
+ 0 12  8  4 
+14 10  6  5 
+ 9 13  2  1 
+		Exists in stored reference collection.
+
+Standard Estimate	47
+ida limit 47	Nodes : 4                0.0s
+ida limit 49	Nodes : 47               0.001s
+ida limit 51	Nodes : 358              0.001s
+ida limit 53	Nodes : 2204             0.002s
+ida limit 55	Nodes : 12936            0.008s
+ida limit 57	Nodes : 76616            0.033s
+ida limit 59	Nodes : 443121           0.19s
+ida limit 61	Nodes : 2568036          1.049s
+ida limit 63	Nodes : 5532485          2.922s
+		Total : 8635807          Time : 2.922s
+
+Advanced Estimate 	63
+ida limit 63	Nodes : 11360            0.003s
+		Total : 11360            Time : 0.003s
+
+Enter 'Q' - quit the program
+      'E' - Easy | 'M' - Moderate | 'H' - Hard | 'R' - Random
+      16 numbers from 0 to 15 for the puzzle
+Goodbye!
+
