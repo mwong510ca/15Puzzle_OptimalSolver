@@ -7,7 +7,7 @@ I search the information on internet, I found the [Pattern database].  The conce
 Unlike the 8 puzzle, full pattern database for 15 slide puzzle is too large, I have to use additive pattern database.  The most common statically partitioned additive pattern databases for 15 puzzle are 5-5-5, 6-6-3 or 7-8.  Generate 5-5-5 or 6-6-3 patterns are straight forward, but 7-8 pattern is challenge due to memory issue again.  For a group of 8 tiles, there are 518,918,400 (40320 tiles combinations x 12870 group 8 pattern) patterns.  Since [Herbert Kociemba's] can build the 7-8 pattern in c++, I may able to build my version in java.
 
 While I learn about the Walking Distance by Ken'ichiro Takahashi, his technique inspire me to figure out a way to generate the 7-8 pattern with minimum 2GB ram and takes about 2.5 - 3 hours.  First separate the tile and format components, and generate the links in [PatternElement.java].  Then I use these components to generate the patterns in [PatternDatabase.java].  
-Generation time:  [pattern 5-5-5] 15 seconds, [pattern 6-6-3] 2 minutes, [pattern 7-8] 2.5 hours.
+Generation time:  [pattern 5-5-5] 15 seconds, [pattern 6-6-3] 2 minutes, [pattern 7-8] 2.5+ hours (10 mins for pattern 7 and 2.5 hrs for pattern8).
   * Highlight recommended to [download] the pre-generated database files from the cloud storage for pattern 7-8.
 
 ### Enhancement - optimization
