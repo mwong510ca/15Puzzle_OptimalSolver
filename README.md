@@ -8,6 +8,7 @@ Unlike the 8 puzzle, full pattern database for 15 slide puzzle is too large, I h
 
 While I learn about the Walking Distance by Ken'ichiro Takahashi, his technique inspire me to figure out a way to generate the 7-8 pattern with minimum 2GB ram and takes about 2.5 - 3 hours.  First separate the tile and format components, and generate the links in [PatternElement.java].  Then I use these components to generate the patterns in [PatternDatabase.java].  
 Generation time:  [pattern 5-5-5] 15 seconds, [pattern 6-6-3] 2 minutes, [pattern 7-8] 2.5 hours.
+  * Highlight recommended to [download] the pre-generated database files from the cloud storage for pattern 7-8.
 
 ### Enhancement - optimization
 After I finished my 15 puzzle optimal solver, most of the puzzles are solved within a second.  Only a few puzzles still take about 2 minutes to solve. 
@@ -62,8 +63,6 @@ Walking Distance + Manhattan Distance with Linear Conflict (0.63s, 3 timeout at 
 Additive Pattern Database 5-5-5 + Walking Distance         (0.27s)
 Additive Pattern Database 6-6-3 + Walking Distance         (0.14s) 
 Additive Pattern Database 7-8                              (0.0077s)</pre>
-
-Notes:  If you want to try my solver application using static 7-8 pattern, highlight recommended to [download] the pre-generated database files from the cloud storage.
 
 [15 slide puzzle]: https://en.wikipedia.org/wiki/15_puzzle
 [8puzzle]: http://algs4.cs.princeton.edu/24pq/
