@@ -45,9 +45,9 @@ Read [Solver Enhancement - advanced version] for details.
 
 ----
 ###Console applications (screen recordings on youtube)
-option 1 - demo [self learning feature]  
-option 2 - [compare enhancement]  
-option 3 (default) - [compare heuristic functions]  
+option 1 - demo [self learning feature] | text file [sample output 1]  
+option 2 - [compare enhancement] | text file [sample output 2]  
+option 3 (default) - [compare heuristic functions]  | text file [sample output 3]  
 option 4 - [custom pattern]  
 option 5 - [solver with display solution]  
 option 6 - [timeout counter and average time per puzzle]  
@@ -86,3 +86,6 @@ Additive Pattern Database 7-8                              (0.0077s)</pre>
 [custom pattern]: https://youtu.be/sY6JU2ElhdI
 [solver with display solution]: https://youtu.be/3Exp3QT5s_A
 [timeout counter and average time per puzzle]: https://youtu.be/TBsui-_b74A
+[sample output 1]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/console_output1.txt
+[sample output 2]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/console_output2.txt
+[sample output 3]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/console_output3.txt
