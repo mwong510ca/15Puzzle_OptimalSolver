@@ -1,5 +1,7 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
+import java.rmi.RemoteException;
+
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverMd;
@@ -279,10 +281,15 @@ public class SolverHeuristic extends AbstractApplication {
             } else {
                 solutionSummary(solver);
                 // Notes: updateLastSearch is optional.
-                if (refAccumulator.validateSolver(solver)
-                        && ((SmartSolverPdb) solver).isAddedReference()) {
-                    refAccumulator.updateLastSearch(solver);
-                }
+                try {
+					if (refAccumulator.validateSolver(solver)
+					        && ((SmartSolverPdb) solver).isAddedReference()) {
+					    refAccumulator.updateLastSearch(solver);
+					}
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
                 if (solver.moves() > 0) {
                     initial = menuSubSolution(initial);

@@ -4,7 +4,7 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 
 /**
- * Solver is the interface class that has the basic methods of any
+ * SolverStandard is the interface class that has the basic methods of any
  * 15 puzzle solver.
  *
  * @author   Meisze Wong

@@ -1,8 +1,10 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
+import java.rmi.RemoteException;
+
 import mwong.myprojects.fifteenpuzzle.solver.SmartSolverExtra;
 import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
-import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceAccumulator;
+import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceRemote;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverMd;
@@ -24,7 +26,7 @@ public class SmartSolverMd extends SolverMd {
      *
      * @param refAccumulator the given ReferenceAccumulator object
      */
-    public SmartSolverMd(ReferenceAccumulator refAccumulator) {
+    public SmartSolverMd(ReferenceRemote refAccumulator) {
         this(!SolverConstants.isTagLinearConflict(), refAccumulator);
     }
 
@@ -35,16 +37,21 @@ public class SmartSolverMd extends SolverMd {
      * @param lcFlag boolean flag for linear conflict feature
      * @param refAccumulator the given ReferenceAccumulator object
      */
-    public SmartSolverMd(boolean lcFlag, ReferenceAccumulator refAccumulator) {
+    public SmartSolverMd(boolean lcFlag, ReferenceRemote refAccumulator) {
         super(lcFlag);
-        if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
-            System.out.println("Attention: Referece board collection unavailable."
-                    + " Advanced estimate will use standard estimate.");
-        } else {
-            activeSmartSolver = true;
-            extra = new SmartSolverExtra();
-            this.refAccumulator = refAccumulator;
-        }
+        try {
+			if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
+			    System.out.println("Attention: Referece board collection unavailable."
+			            + " Advanced estimate will use standard estimate.");
+			} else {
+			    activeSmartSolver = true;
+			    extra = new SmartSolverExtra();
+			    this.refAccumulator = refAccumulator;
+			}
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     /**
@@ -80,7 +87,12 @@ public class SmartSolverMd extends SolverMd {
             return priorityAdvanced;
         }
 
-        setPriorityAdvanced(board, isSearch);
+        try {
+			setPriorityAdvanced(board, isSearch);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         return priorityAdvanced;
     }
 

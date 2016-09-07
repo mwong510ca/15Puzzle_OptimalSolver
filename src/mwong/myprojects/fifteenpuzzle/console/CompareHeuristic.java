@@ -25,7 +25,7 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
  */
 public class CompareHeuristic extends AbstractApplication {
     private SmartSolverMd solverMd;
-
+    
     private SmartSolverWd solverWd;
     private SmartSolverWdMd solverWdMd;
     private SmartSolverPdbWd solverPdbWd555;
@@ -92,7 +92,7 @@ public class CompareHeuristic extends AbstractApplication {
             if (heuristicStandard == heuristicAdvanced) {
                 System.out.println("Advanced\t" + "Same value");
                 if (!stdSearch) {
-                    advSearch = false;
+                	advSearch = false;
                 }
             } else {
                 System.out.print("Advanced\t" + heuristicAdvanced + "\t\t");
