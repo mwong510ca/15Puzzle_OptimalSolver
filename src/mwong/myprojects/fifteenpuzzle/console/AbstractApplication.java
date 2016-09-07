@@ -1,15 +1,17 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
 import mwong.myprojects.fifteenpuzzle.PropertiesCache;
-import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
 import mwong.myprojects.fifteenpuzzle.solver.Solver;
+import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
 import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
-import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceAccumulator;
+import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceFactory;
+import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceRemote;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleDifficultyLevel;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 /**
@@ -34,7 +36,7 @@ public abstract class AbstractApplication {
     protected final PatternOptions defaultPattern;
 
     protected Scanner scanner;
-    protected ReferenceAccumulator refAccumulator;
+    protected ReferenceRemote refAccumulator;
     protected int timeoutLimit;
     protected boolean flagAdvVersion;
 
@@ -70,9 +72,23 @@ public abstract class AbstractApplication {
         defaultPattern = SolverProperties.getPattern();
 
         scanner = new Scanner(System.in, "UTF-8");
-        refAccumulator = new ReferenceAccumulator();
         timeoutLimit = SolverProperties.getTimeoutLimit();
         flagAdvVersion = tagStandard;
+        
+        try {
+			refAccumulator = (new ReferenceFactory()).getDBServer();
+			System.out.println("server version");
+		} catch (IOException e) {
+			try {
+				refAccumulator = (new ReferenceFactory()).getDBLocal();
+				System.out.println("local version");
+			} catch (IOException e1) {
+				//e1.printStackTrace();
+				System.err.println("error load reference");
+				System.exit(0);
+			}
+		}
+        
     }
 
     public abstract void run();

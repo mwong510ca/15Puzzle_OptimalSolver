@@ -1,9 +1,11 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
+import java.rmi.RemoteException;
+
 import mwong.myprojects.fifteenpuzzle.solver.AdvancedRecord;
 import mwong.myprojects.fifteenpuzzle.solver.SmartSolverExtra;
 import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
-import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceAccumulator;
+import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceRemote;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
@@ -26,7 +28,7 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
      *
      * @param refAccumulator the given ReferenceAccumulator object
      */
-    public SmartSolverPdb(ReferenceAccumulator refAccumulator) {
+    public SmartSolverPdb(ReferenceRemote refAccumulator) {
         this(SolverProperties.getPattern(), refAccumulator);
     }
 
@@ -36,7 +38,7 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
      * @param presetPattern the given preset pattern type
      * @param refAccumulator the given ReferenceAccumulator object
      */
-    public SmartSolverPdb(PatternOptions presetPattern, ReferenceAccumulator refAccumulator) {
+    public SmartSolverPdb(PatternOptions presetPattern, ReferenceRemote refAccumulator) {
         this(presetPattern, 0, refAccumulator);
     }
 
@@ -49,19 +51,24 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
      * @param refAccumulator the given ReferenceAccumulator object
      */
     public SmartSolverPdb(PatternOptions presetPattern, int choice,
-            ReferenceAccumulator refAccumulator) {
+    		ReferenceRemote refAccumulator) {
         super(presetPattern, choice);
 
-        if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
-            System.out.println("Referece board collection unavailable."
-                    + " Resume to the 15 puzzle solver standard version.");
-            extra = null;
-            this.refAccumulator = null;
-        } else {
-            activeSmartSolver = true;
-            extra = new SmartSolverExtra();
-            this.refAccumulator = refAccumulator;
-        }
+        try {
+			if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
+			    System.out.println("Referece board collection unavailable."
+			            + " Resume to the 15 puzzle solver standard version.");
+			    extra = null;
+			    this.refAccumulator = null;
+			} else {
+			    activeSmartSolver = true;
+			    extra = new SmartSolverExtra();
+			    this.refAccumulator = refAccumulator;
+			}
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     /**
@@ -73,19 +80,24 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
      * @param refAccumulator the given ReferenceAccumulator object
      */
     public SmartSolverPdb(byte[] customPattern, boolean[] elementGroups,
-            ReferenceAccumulator refAccumulator) {
+    		ReferenceRemote refAccumulator) {
         super(customPattern, elementGroups);
 
-        if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
-            System.out.println("Referece board collection unavailable."
-                    + " Resume to the 15 puzzle solver standard version.");
-            extra = null;
-            this.refAccumulator = null;
-        } else {
-            activeSmartSolver = true;
-            extra = new SmartSolverExtra();
-            this.refAccumulator = refAccumulator;
-        }
+        try {
+			if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
+			    System.out.println("Referece board collection unavailable."
+			            + " Resume to the 15 puzzle solver standard version.");
+			    extra = null;
+			    this.refAccumulator = null;
+			} else {
+			    activeSmartSolver = true;
+			    extra = new SmartSolverExtra();
+			    this.refAccumulator = refAccumulator;
+			}
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     /**
@@ -95,10 +107,16 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
      * @return boolean value of the given board is a reference board with partial solution.
      */
     public boolean hasPartialSolution(Board board) {
-        AdvancedRecord record = extra.advancedContains(board, tagSearch, refAccumulator);
-        if (record != null && record.hasPartialMoves()) {
-            return true;
-        }
+        AdvancedRecord record;
+		try {
+			record = extra.advancedContains(board, tagSearch, refAccumulator.getActiveMap());
+	        if (record != null && record.hasPartialMoves()) {
+	            return true;
+	        }
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         return false;
     }
 

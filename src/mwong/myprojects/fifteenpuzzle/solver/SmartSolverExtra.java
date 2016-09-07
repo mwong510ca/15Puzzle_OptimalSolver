@@ -1,6 +1,5 @@
 package mwong.myprojects.fifteenpuzzle.solver;
 
-import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceBoard;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceMoves;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
@@ -50,8 +49,7 @@ public class SmartSolverExtra extends SolverMd {
      * @return AdvancedRecord object if the given board is one of the reference board.
      */
     public final AdvancedRecord advancedContains(Board board, boolean inSearch,
-            ReferenceAccumulator refAccumulator) {
-        Map<ReferenceBoard, ReferenceMoves> refMap = refAccumulator.getActiveMap();
+    		Map<ReferenceBoard, ReferenceMoves> refMap) {
         if (refMap == null || refMap.size() == 0) {
             return null;
         }

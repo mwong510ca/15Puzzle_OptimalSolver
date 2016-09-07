@@ -1,7 +1,9 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
+import java.rmi.RemoteException;
+
 import mwong.myprojects.fifteenpuzzle.solver.SmartSolverExtra;
-import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceAccumulator;
+import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceRemote;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverWd;
@@ -23,16 +25,21 @@ public class SmartSolverWd extends SolverWd {
      *
      * @param refAccumulator the given ReferenceAccumulator object
      */
-    public SmartSolverWd(ReferenceAccumulator refAccumulator) {
+    public SmartSolverWd(ReferenceRemote refAccumulator) {
         super();
-        if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
-            System.out.println("Attention: Referece board collection unavailable."
-                    + " Advanced estimate will use standard estimate.");
-        } else {
-            activeSmartSolver = true;
-            extra = new SmartSolverExtra();
-            this.refAccumulator = refAccumulator;
-        }
+        try {
+			if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
+			    System.out.println("Attention: Referece board collection unavailable."
+			            + " Advanced estimate will use standard estimate.");
+			} else {
+			    activeSmartSolver = true;
+			    extra = new SmartSolverExtra();
+			    this.refAccumulator = refAccumulator;
+			}
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     /**
@@ -69,7 +76,12 @@ public class SmartSolverWd extends SolverWd {
             return priorityAdvanced;
         }
 
-        setPriorityAdvanced(board, isSearch);
+        try {
+			setPriorityAdvanced(board, isSearch);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         return priorityAdvanced;
     }
 

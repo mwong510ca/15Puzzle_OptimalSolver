@@ -1,5 +1,7 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
+import java.rmi.RemoteException;
+
 import mwong.myprojects.fifteenpuzzle.solver.Solver;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdbBase;
@@ -112,28 +114,33 @@ public class CompareEnhancement extends AbstractApplication {
                 if (solverAdvanced.isAddedReference()) {
                     heuristicAdvanced = solverAdvanced.heuristicAdvanced(board);
                 }
-                if (heuristicAdvanced > heuristicStandard) {
-                    System.out.printf("%-36s", "5. Advanced estimate : ");
-                    solvePuzzle(solverAdvEst, board);
-                    if (solverAdvanced.hasPartialSolution(board)) {
-                        System.out.printf("%-36s", "6. Use preset partial solution :");
-                        solverAdvanced.versionSwitch(tagAdvanced);
-                        solvePuzzle(solverAdvanced, board);
-                        if (solverAdvEst.isAddedReference()) {
-                            refAccumulator.updateLastSearch(solverAdvEst);
-                        }
-                    } else {
-                        System.out.println("6. Skip - No preset partial solution.");
-                        if (solverAdvanced.isAddedReference()) {
-                            refAccumulator.updateLastSearch(solverAdvEst);
-                        }
-                    }
-                } else {
-                    System.out.println("5 & 6. Skip - Both estimate are the same.");
-                    if (solverAdvanced.isAddedReference()) {
-                        refAccumulator.updateLastSearch(solverAdvEst);
-                    }
-                }
+                try {
+					if (heuristicAdvanced > heuristicStandard) {
+						System.out.printf("%-36s", "5. Advanced estimate : ");
+						solvePuzzle(solverAdvEst, board);
+						if (solverAdvanced.hasPartialSolution(board)) {
+							System.out.printf("%-36s", "6. Use preset partial solution :");
+							solverAdvanced.versionSwitch(tagAdvanced);
+							solvePuzzle(solverAdvanced, board);
+							if (solverAdvEst.isAddedReference()) {
+								refAccumulator.updateLastSearch(solverAdvEst);
+							}
+						} else {
+							System.out.println("6. Skip - No preset partial solution.");
+							if (solverAdvanced.isAddedReference()) {
+								refAccumulator.updateLastSearch(solverAdvEst);
+							}
+						}
+					} else {
+						System.out.println("5 & 6. Skip - Both estimate are the same.");
+						if (solverAdvanced.isAddedReference()) {
+							refAccumulator.updateLastSearch(solverAdvEst);
+                	  		}
+					}
+                } catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             } else {
                 System.out.println("The board is unsolvable, try again!");
             }
