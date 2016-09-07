@@ -24,14 +24,14 @@
          C  E  F 15      It it land on center (5 or 10), it has 4 moves. </pre>  
          
   * If it cannot find a solution by shift right, it cannot find a solution by shift down either.  Same for shift left and shift up pairs.  If it starts from the identical symmetry board, it will reduce the expansion by 50%.  
-  * If it shift to the corner, the search is done.  Such as left shift to position 0:  
+  * If it shift to the corner, the search is done.  Such as left shift to position 0 from position 1:  
     * Right shift to position 1 is the backward move - eliminated.
-    * Down shift to position 4 is the symmetry move of Right shift - eliminated as well.  
-  * If if shift to the center, the search will drop from 3 remaining moves to 1 move.  Such as left shift to position 5:  
+    * Down shift to position 4 is the symmetry move of Right shift - eliminated.  
+  * If if shift to the center, the search will drop from 3 remaining moves to 1 move.  Such as left shift to position 5 from position 6:  
     * Right shift to position 6 is the backward move - eliminated.
-    * Down shift to position 9 is the symmetry move of right shift - eliminated as well.
+    * Down shift to position 9 is the symmetry move of right shift - eliminated.
     * Left shift to position 4 is free - continue.
-    * Up shift to position 1 is the symmetry move of Up shift - eliminated duplicated move.  
+    * Up shift to position 1 is the symmetry move of Up shift - eliminated.  
 
 ### 2. Circular reduction
   While it keep making clockwise(cw) turns or counterclockwise(ccw) turns only, after 12 moves it will back to original stated.  At the 6th moves, both clockwise turns and counterclockwise turns will end at the same state.   
@@ -55,7 +55,7 @@
   * The maximum limit of clockwise turns is 5.
   * The maximum limit of counterclockwise turns 4.
 
-Notes: There are other longer circular paths, but those are too expansive to eliminate them which are not as frequently as the about circular path.
+Notes: There are other longer complex circular paths, but those are too expansive to eliminate.  Those are not appear frequently as the about circular path.
 
 ### 3. Starting order detection:  
   Instead of using the hard code order Right -> Down -> Left -> Up, determine the starting order based on least estimate terminated at previous depth expansion.  It terminated at the same estimate, least nodes generated will go first.  When it hit the solution depth, it increase the possibility to solve the puzzle by the first move instead of loop to the last one.  But sometimes takes longer than the hard cord order.  

@@ -87,14 +87,14 @@ Use a reference board to boost the initial estimate closer to solution moves:
   Even the estimate matched with the solution moves, some board still take over 20 seconds to find the solution.  Such as the 68 moves example board above.  
   While storing these value, there boards has been solved.  In addition to store it's solution moves, it also store the first 8 directions of solution moves.  It will reduce the searching time from 68 limit to 60 limit.  It's good enough to solve the puzzle within a second.  It is not necessary to store the full path.  I stored them as 16 bits short value (2 bits per direction x 8) for each partial solution.
 
-5.  Automatically save the board after search by pattern database 7-8.  ([video])  
-  I set the cutoff to 8 seconds with 5% buffer, which will make all puzzles solve within 8 seconds eventually.  For any puzzle that take more than 8.6 seconds to solve, the system will automatically store this board as reference board.  (A few lines of code added in SmartSolverPdbBase.java idaStar functions)
-  * over 8 seconds using Standard Search, it will compare original estimate and advanced estimate.
+5.  Automatically save the board after solved by pattern database 7-8.  ([video])  
+  I set the cutoff to 8 seconds with 5% buffer, which will make all puzzles solve within 8 seconds eventually.  For any puzzle that take more than 7.6 seconds to solve, the system will automatically store this board as reference board.  (A few lines of code added in SmartSolverPdbBase.java idaStar functions)
+  * Over 8 seconds using Standard Search, it will compare original estimate and advanced estimate.
     If they are the same, store the board.
     If advanced estimate > original estimate, skip.  Unable to determine the runtime for advanced estimate.
-  * over 8 seconds using Advanced Search, always store the board.
+  * Over 8 seconds using Advanced Search, always store the board.
 
-  Each store board contain a set of 4 boards as describe above.  These other 3 boards will store an estimate without solution.  It will wait for next update to complete the full set.  
+  Each store board contain a set of 4 boards as describe above.  These other 3 boards will store an estimate without solution.  It will wait for next system update to complete the full set.  
   <pre>
     Example 1:    Standard estimate: 52    Advanced estimate: same      Actual moves: 68    
                   Search time: 26.4s       
