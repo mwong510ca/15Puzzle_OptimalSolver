@@ -1,4 +1,4 @@
-package mwong.myprojects.fifteenpuzzle.solver.advanced;
+package mwong.myprojects.fifteenpuzzle.solver;
 
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 
@@ -10,7 +10,7 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
-class AdvancedRecord {
+public class AdvancedRecord {
     private byte estimate;
     private Direction[] partialMoves;
     private boolean hasPartialMoves;
@@ -50,7 +50,7 @@ class AdvancedRecord {
      *
      * @return boolean represent record has partial solution
      */
-    final boolean hasPartialMoves() {
+    public final boolean hasPartialMoves() {
         return hasPartialMoves;
     }
 }

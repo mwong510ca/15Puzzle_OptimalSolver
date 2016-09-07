@@ -1,7 +1,7 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
-import mwong.myprojects.fifteenpuzzle.solver.Solver;
+import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
 import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverMd;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
@@ -31,7 +31,7 @@ import java.util.Scanner;
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SolverHeuristicStats extends AbstractApplication {
-    private Solver solver;
+    private SmartSolver solver;
     private HeuristicOptions inUseHeuristic;
 
     /**

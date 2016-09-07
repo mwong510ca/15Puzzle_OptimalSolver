@@ -1,6 +1,7 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
 import mwong.myprojects.fifteenpuzzle.PropertiesCache;
+import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
 import mwong.myprojects.fifteenpuzzle.solver.Solver;
 import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceAccumulator;
@@ -235,7 +236,7 @@ public abstract class AbstractApplication {
         }
     }
 
-    void flipVersion(Solver solver) {
+    void flipVersion(SmartSolver solver) {
         flagAdvVersion = !flagAdvVersion;
         solver.versionSwitch(flagAdvVersion);
         if (flagAdvVersion) {
