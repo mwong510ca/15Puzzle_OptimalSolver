@@ -3,7 +3,7 @@ package mwong.myprojects.fifteenpuzzle.solver;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 
 /**
- * Solver extends SolverStandard Interface as the main interface.  It is the interface class
+ * SmartSolver extends Solver Interface as the main interface.  It is the interface class
  * that extend the standard methods for the advanced version of 15 puzzle solvers.
  *
  * <p>Dependencies : Board.java, SolverStandard.java,

@@ -4,9 +4,6 @@ import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 
-import java.io.Serializable;
-import java.util.Arrays;
-
 /**
  * ReferenceMoves is the data type that stored number of moves or temporary estimate
  * and partial solution associated with ReferenceBoard object for reference collection.
@@ -16,8 +13,7 @@ import java.util.Arrays;
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
-public class ReferenceMoves implements Serializable {
-    private static final long serialVersionUID = 17195273121L;
+public class ReferenceMoves {
     private final byte[] statusBit;
     private final byte statusCompleted;
     private final int numPartialMoves;
@@ -228,15 +224,5 @@ public class ReferenceMoves implements Serializable {
      */
     public byte getEstimate(int lookup) {
         return moves[lookup];
-    }
-
-    @Override
-    public String toString() {
-        String str = Integer.toBinaryString(status) + "\n";
-        for (int i = 0; i < 4; i++) {
-            str += moves[i] + "\t" + initMoves[i] + "\t" 
-                    + Arrays.toString(getInitialMoves(i, !symmetry)) + "\n";
-        }
-        return str;
     }
 }

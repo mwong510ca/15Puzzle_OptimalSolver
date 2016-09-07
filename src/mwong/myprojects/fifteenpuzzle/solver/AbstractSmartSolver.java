@@ -1,17 +1,17 @@
 package mwong.myprojects.fifteenpuzzle.solver;
 
-import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceRemote;
+import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 
-import java.rmi.RemoteException;
 import java.util.Arrays;
 
 /**
- * AbstractSolver is the abstract class extends Solver Interface of 15 puzzle that
- * has the following variables and methods.
+ * AbstractSmartSolver is the abstract class extends AbstraceSolver implements SmartSolver Interface
+ * with additional functions for 15 puzzle optimal solver advanced version.
  *
- * <p>Dependencies : Board.java, Direction.java, Solver.java, Stopwatch.java
+ * <p>Dependencies : AbstractSolver.java, Board.java, Direction.java, ReferenceAccumulator.java
+ *                   SmartSolver.java
  *
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
@@ -31,7 +31,7 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
     // search results
     protected final byte numPartialMoves;
     protected final byte refCutoff;
-    protected ReferenceRemote refAccumulator;
+    protected ReferenceAccumulator refAccumulator;
     protected SmartSolverExtra extra;
 
     protected AbstractSmartSolver() {
@@ -115,8 +115,7 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
 
     // board initial
     protected final void initialize(Board board) {
-    	super.initialize(board);
-        lastBoard = board;
+        super.initialize(board);
         priorityAdvanced = -1;
     }
 
@@ -133,8 +132,8 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
         }
     }
 
-    protected void setPriorityAdvanced(Board board, boolean isSearch) throws RemoteException {
-        AdvancedRecord record = extra.advancedContains(board, isSearch, refAccumulator.getActiveMap());
+    protected void setPriorityAdvanced(Board board, boolean isSearch) {
+        AdvancedRecord record = extra.advancedContains(board, isSearch, refAccumulator);
         if (record != null) {
             priorityAdvanced = record.getEstimate();
             if (record.hasPartialMoves()) {

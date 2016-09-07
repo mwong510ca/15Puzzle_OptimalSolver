@@ -3,7 +3,6 @@ package mwong.myprojects.fifteenpuzzle.solver.ai;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 
 import java.io.IOException;
-import java.io.Serializable;
 
 /**
  * ReferenceBoard is the data type of stored board of reference collection.
@@ -13,8 +12,7 @@ import java.io.Serializable;
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
-public class ReferenceBoard implements Serializable {
-    private static final long serialVersionUID = 17195273121L;
+public class ReferenceBoard {
     private final int puzzleSize;
     private final byte[] referenceLookup;
     private final byte[] referenceGroup;
@@ -223,19 +221,6 @@ public class ReferenceBoard implements Serializable {
             throw new IllegalArgumentException("Invalid group : " + group);
         }
         return rotateTiles;
-    }
-
-    @Override
-    public String toString() {
-        String str = "";
-        for (int i = 0; i < puzzleSize; i++) {
-            str += getTiles()[i] + " ";
-        }
-        str += "\n";
-        for (int i = 0; i < puzzleSize; i++) {
-            str += tilesTransform[i] + " ";
-        }
-        return str;
     }
 }
 
