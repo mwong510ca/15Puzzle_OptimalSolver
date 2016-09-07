@@ -29,7 +29,6 @@ class ApplicationRun {
         }
 
         switch (choice) {
-
             case 1 : app = new DemoSolverPdb78();
                 break;
             case 2 : app = new CompareEnhancement();
@@ -42,7 +41,6 @@ class ApplicationRun {
                 break;
             case 6 : app = new SolverHeuristicStats();
                 break;
-
             default :app = new CompareHeuristic();
         }
 

@@ -20,7 +20,7 @@ public class SolverWdMd extends SolverWd {
     /**
      * Initializes SolverWdMd object.
      */
-    public SolverWdMd() {
+    protected SolverWdMd() {
         super();
         inUseHeuristic = HeuristicOptions.WDMD;
     }

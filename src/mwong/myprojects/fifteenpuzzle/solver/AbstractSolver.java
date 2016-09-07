@@ -24,6 +24,10 @@ public abstract class AbstractSolver implements Solver {
     protected final int defaultTimeoutLimit;
     protected final boolean onSwitch;
     protected final boolean offSwitch;
+    protected final boolean tagStandard;
+    protected final boolean tagAdvanced;
+    protected final boolean tagSearch;
+    protected final boolean tagReview;
     protected final byte[] symmetryPos;
     protected final byte[] symmetryVal;
     protected final Board goalBoard;
@@ -34,6 +38,8 @@ public abstract class AbstractSolver implements Solver {
     // solver setting
     protected boolean flagTimeout;
     protected boolean flagMessage;
+    protected boolean flagAdvancedVersion;
+    protected boolean activeSmartSolver;
     protected int searchTimeoutLimit;
     public HeuristicOptions inUseHeuristic;
     // board related
@@ -44,6 +50,7 @@ public abstract class AbstractSolver implements Solver {
     // search related
     protected Board lastBoard;
     protected byte priorityGoal;
+    protected byte priorityAdvanced;
     protected int[] lastDepthSummary;
     protected Stopwatch stopwatch;
     // search results
@@ -65,6 +72,10 @@ public abstract class AbstractSolver implements Solver {
         defaultTimeoutLimit = SolverProperties.getTimeoutLimit();
         onSwitch = SolverConstants.isOnSwitch();
         offSwitch = !onSwitch;
+        tagAdvanced = SolverConstants.isTagAdvanced();
+        tagStandard = !tagAdvanced;
+        tagSearch = SolverConstants.isTagSearch();
+        tagReview = !tagSearch;
         symmetryPos = SolverConstants.getSymmetryPos();
         symmetryVal = SolverConstants.getSymmetryVal();
         goalBoard = SolverConstants.getGoalBoard();
@@ -76,7 +87,9 @@ public abstract class AbstractSolver implements Solver {
         lastBoard = goalBoard;
         flagMessage = onSwitch;
         flagTimeout = onSwitch;
+        flagAdvancedVersion = tagStandard;
         searchTimeoutLimit = defaultTimeoutLimit;
+        activeSmartSolver = false;
     }
 
     // ----- solver settings -----
@@ -117,6 +130,24 @@ public abstract class AbstractSolver implements Solver {
     @Override
     public final void timeoutSwitch(boolean flag) {
         flagTimeout = flag;
+    }
+
+    /**
+     *  Set the advance search feature with the given flag.
+     *
+     *  @param flag the boolean represent the ON/OFF advanced feature
+     */
+    @Override
+    public boolean versionSwitch(boolean flag) {
+        if (activeSmartSolver) {
+            flagAdvancedVersion = flag;
+            return true;
+        } else {
+            System.out.println("Referece board collection unavailable."
+                + " Advanced search feature will act as standard search.");
+            flagAdvancedVersion = tagStandard;
+            return false;
+        }
     }
 
     /**
@@ -166,14 +197,41 @@ public abstract class AbstractSolver implements Solver {
     }
 
     // board initial
-    protected void initialize(Board board) {
+    protected final void initialize(Board board) {
         lastBoard = board;
         zeroX = board.getZeroX();
         zeroY = board.getZeroY();
         tiles = board.getTiles();
         priorityGoal = 0;
+        priorityAdvanced = -1;
     }
 
+    /**
+     * Returns the byte value of the standard version of the heuristic value of the board.
+     *
+     * @return byte value of the standard version of the heuristic value
+     */
+    @Override
+    public byte heuristicStandard(Board board) {
+        if (board == null) {
+            throw new IllegalArgumentException("Board is null");
+        }
+        if (!board.isSolvable()) {
+            return -1;
+        }
+        return heuristic(board);
+    }
+
+    /**
+     * Returns the byte value of the advanced version of the heuristic value of the board,
+     * if advanced version is unavailable, return standard version instead.
+     *
+     * @return byte value of the advanced version of the heuristic value
+     */
+    @Override
+    public byte heuristicAdvanced(Board board) {
+        return heuristicStandard(board);
+    }
 
     /**
      *  Find the optimal path to goal state if the given board is solvable,
@@ -220,6 +278,19 @@ public abstract class AbstractSolver implements Solver {
                 lastDepthSummary[i] = endOfSearch;
             } else {
                 lastDepthSummary[i + 4] = board.getValidMoves()[i];
+            }
+        }
+    }
+
+    // initialize lastDepthSummary from the given Direction
+    protected final void setLastDepthSummary(Direction dir) {
+        lastDepthSummary = new int[4 * 2];
+        int dirValue = dir.getValue();
+        for (int i = 0; i < 4; i++) {
+            if (i == dirValue) {
+                lastDepthSummary[i + 4] = 1;
+            } else {
+                lastDepthSummary[i] = endOfSearch;
             }
         }
     }

@@ -1,7 +1,7 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
-import mwong.myprojects.fifteenpuzzle.solver.SmartSolverExtra;
+import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
@@ -21,6 +21,10 @@ import mwong.myprojects.fifteenpuzzle.utilities.Stopwatch;
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SmartSolverPdbBase extends SolverPdb {
+    protected final byte numPartialMoves = SolverConstants.getNumPartialMoves();
+    protected final byte refCutoff = SolverConstants.getReferenceCutoff();
+    protected SmartSolverExtra extra;
+    protected ReferenceAccumulator refAccumulator;
     protected Board lastSearchBoard;
     protected boolean addedReference;
 
@@ -49,8 +53,10 @@ public class SmartSolverPdbBase extends SolverPdb {
     public SmartSolverPdbBase(SolverPdb copySolver, ReferenceAccumulator refAccumulator) {
         super(copySolver);
         if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
-            System.out.println("Attention: Referece board collection unavailable."
-                    + " Advanced estimate will use standard estimate.");
+            System.out.println("Referece board collection unavailable."
+                    + " Resume to the 15 puzzle solver standard version.");
+            extra = null;
+            this.refAccumulator = null;
         } else {
             activeSmartSolver = true;
             extra = new SmartSolverExtra();
@@ -105,7 +111,19 @@ public class SmartSolverPdbBase extends SolverPdb {
         }
 
         if (!board.equals(lastBoard) || isSearch) {
-            priorityGoal = super.heuristic(board);
+            initialize(board);
+            byte[] tilesSym = board.getTilesSym();
+
+            // additive pattern database components
+            pdKeys = convert2pd(tiles, tilesSym, szGroup);
+            pdValReg = 0;
+            pdValSym = 0;
+            for (int i = szGroup; i < szGroup * 2; i++) {
+                pdValReg += pdKeys[i];
+                pdValSym += pdKeys[i +  offsetPdSym];
+            }
+
+            priorityGoal = (byte) Math.max(pdValReg, pdValSym);
         }
 
         if (!isAdvanced) {
@@ -114,7 +132,26 @@ public class SmartSolverPdbBase extends SolverPdb {
             return priorityAdvanced;
         }
 
-        setPriorityAdvanced(board, isSearch);
+        AdvancedRecord record = extra.advancedContains(board, isSearch, refAccumulator);
+        if (record != null) {
+            priorityAdvanced = record.getEstimate();
+        }
+
+        if (priorityAdvanced != -1) {
+            return priorityAdvanced;
+        }
+
+        priorityAdvanced = priorityGoal;
+        if (priorityAdvanced < refCutoff) {
+            return priorityAdvanced;
+        }
+
+        priorityAdvanced = extra.advancedEstimate(board, priorityAdvanced, refCutoff,
+                refAccumulator.getActiveMap());
+
+        if ((priorityAdvanced - priorityGoal) % 2 == 1) {
+            priorityAdvanced++;
+        }
         return priorityAdvanced;
     }
 

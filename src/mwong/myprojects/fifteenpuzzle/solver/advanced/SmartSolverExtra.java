@@ -1,5 +1,7 @@
-package mwong.myprojects.fifteenpuzzle.solver;
+package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
+import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
+import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceBoard;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceMoves;
@@ -132,21 +134,12 @@ public class SmartSolverExtra extends SolverMd {
     }
 
     // calculate the advanced estimate from the stored boards, use Manhattan distance only
-    /**
-     * Returns the best estimate of the given reference collection.
-     *
-     * @param board the given board object
-     * @param estimate the current estimate of the given puzzle.
-     * @param refCutoff the given cutoff range from goal state or to reference board.
-     * @param refMap the given reference collection in HashMap.
-     * @return AdvancedRecord object if the given board is one of the reference board.
-     */
     byte advancedEstimate(Board board, byte estimate, int refCutoff,
-            Map<ReferenceBoard, ReferenceMoves> refMap) {
+            Map<ReferenceBoard, ReferenceMoves> advMap) {
         final int rowSize = SolverConstants.getRowSize();
 
         for (Entry<ReferenceBoard, ReferenceMoves> entry
-                : refMap.entrySet()) {
+                : advMap.entrySet()) {
             byte[] transTiles = entry.getKey().transformer(board.getTiles());
             byte[] transTilesSym = PuzzleConstants.tiles2sym(transTiles);
 

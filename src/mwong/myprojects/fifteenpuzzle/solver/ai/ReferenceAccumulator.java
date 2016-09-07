@@ -2,7 +2,7 @@ package mwong.myprojects.fifteenpuzzle.solver.ai;
 
 import mwong.myprojects.fifteenpuzzle.solver.FileProperties;
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
-import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
+import mwong.myprojects.fifteenpuzzle.solver.Solver;
 import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
@@ -259,7 +259,7 @@ public class ReferenceAccumulator {
      * @param inSolver the giver concrete instance of Solver interface.
      * @return boolean value of the given solver is the valid for ReferenceAccumulator
      */
-    public boolean validateSolver(SmartSolver inSolver) {
+    public boolean validateSolver(Solver inSolver) {
         if (inSolver == null) {
             return false;
         }
@@ -277,8 +277,8 @@ public class ReferenceAccumulator {
 
     // verify the given solver is using pattern database 7-8, scan the full
     // collection, if the reference board is not verified, verify it now.
-    void updateData(SmartSolver inSolver) {
-        SmartSolver solver = inSolver;
+    void updateData(Solver inSolver) {
+        Solver solver = inSolver;
         if (!validateSolver(inSolver)) {
             solver = createSolver();
         }
@@ -297,7 +297,7 @@ public class ReferenceAccumulator {
      *
      *  @param inSolver the SolverInterface object in use
      */
-    public void updatePending(SmartSolver inSolver) {
+    public void updatePending(Solver inSolver) {
         if (!validateSolver(inSolver)) {
             return;
         }
@@ -337,13 +337,13 @@ public class ReferenceAccumulator {
      *
      * @param inSolver the SolverInterface object in use
      */
-    public boolean addBoard(SmartSolver inSolver) {
+    public boolean addBoard(Solver inSolver) {
         return addBoard(inSolver, false);
     }
 
     // add a reference board in collection, allow bypass minimum
     // cutoff limit requirement
-    boolean addBoard(SmartSolver inSolver, boolean bypass) {
+    boolean addBoard(Solver inSolver, boolean bypass) {
         if (referenceMap == null) {
             return false;
         }
@@ -446,7 +446,7 @@ public class ReferenceAccumulator {
      * @param inSolver the given SolverIntegerface
      * @return boolean if last search board in activeMap has been verified.
      */
-    public boolean updateLastSearch(SmartSolver inSolver) {
+    public boolean updateLastSearch(Solver inSolver) {
         if (referenceMap == null) {
             return false;
         }

@@ -1,12 +1,12 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
-import mwong.myprojects.fifteenpuzzle.solver.AdvancedRecord;
-import mwong.myprojects.fifteenpuzzle.solver.SmartSolverExtra;
 import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
+
+import java.util.Arrays;
 
 /**
  * SmartSolverPdb extends SmartSolverPdbBase use preset partial solution from the reference
@@ -88,6 +88,60 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
         }
     }
 
+    // overload method to calculate the heuristic value of the given board and conditions
+    @Override
+    protected byte heuristic(Board board, boolean isAdvanced, boolean isSearch) {
+        if (!board.isSolvable()) {
+            return -1;
+        }
+
+        if (!board.equals(lastBoard) || isSearch) {
+            initialize(board);
+            byte[] tilesSym = board.getTilesSym();
+
+            // additive pattern database components
+            pdKeys = convert2pd(tiles, tilesSym, szGroup);
+            pdValReg = 0;
+            pdValSym = 0;
+            for (int i = szGroup; i < szGroup * 2; i++) {
+                pdValReg += pdKeys[i];
+                pdValSym += pdKeys[i +  offsetPdSym];
+            }
+            priorityGoal = (byte) Math.max(pdValReg, pdValSym);
+        }
+
+        if (!isAdvanced) {
+            return priorityGoal;
+        } else if (!isSearch && priorityAdvanced != -1) {
+            return priorityAdvanced;
+        }
+
+        AdvancedRecord record = extra.advancedContains(board, isSearch, refAccumulator);
+        if (record != null) {
+            priorityAdvanced = record.getEstimate();
+            if (record.hasPartialMoves()) {
+                solutionMove = record.getPartialMoves();
+            }
+        }
+
+        if (priorityAdvanced != -1) {
+            return priorityAdvanced;
+        }
+
+        priorityAdvanced = priorityGoal;
+        if (priorityAdvanced < refCutoff) {
+            return priorityAdvanced;
+        }
+
+        priorityAdvanced = extra.advancedEstimate(board, priorityAdvanced, refCutoff,
+                refAccumulator.getActiveMap());
+
+        if ((priorityAdvanced - priorityGoal) % 2 == 1) {
+            priorityAdvanced++;
+        }
+        return priorityAdvanced;
+    }
+
     /**
      * Returns the boolean value of the given board is a reference board with partial solution.
      *
@@ -120,7 +174,15 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
     // using depth first search with exact number of steps of optimal solution
     private void advancedSearch(int limit) {
         Direction[] dupSolution = new Direction[limit + 1];
-        Board board = prepareAdvancedSearch(limit, dupSolution);
+        System.arraycopy(solutionMove, 1, dupSolution, 1, numPartialMoves);
+
+        Board board = new Board(tiles);
+        for (int i = 1; i < numPartialMoves; i++) {
+            board = board.shift(dupSolution[i]);
+            assert board != null : i + "board is null" + Arrays.toString(solutionMove)
+                + (new Board(tiles));
+        }
+        clearHistory();
         heuristic(board, tagStandard, tagSearch);
         setLastDepthSummary(dupSolution[numPartialMoves]);
 
@@ -129,7 +191,22 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
             System.out.print("ida limit " + limit);
         }
         dfsStartingOrder(zeroX, zeroY, limit - numPartialMoves + 1, pdValReg, pdValSym);
-        searchNodeCount = idaCount;
-        afterAdvancedSearch(limit, dupSolution);
+        if (solved) {
+            System.arraycopy(solutionMove, 2, dupSolution, numPartialMoves + 1,
+                    limit - numPartialMoves);
+            solutionMove = dupSolution;
+        }
+        steps = (byte) limit;
+        searchDepth = limit;
+        searchNodeCount += idaCount;
+
+        if (flagMessage) {
+            if (timeout) {
+                System.out.printf("\tNodes : %-15s timeout\n", Integer.toString(idaCount));
+            } else {
+                System.out.printf("\tNodes : %-15s  " + stopwatch.currentTime() + "s\n",
+                        Integer.toString(idaCount));
+            }
+        }
     }
 }

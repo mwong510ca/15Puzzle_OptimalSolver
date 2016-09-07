@@ -1,7 +1,7 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
-import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
+import mwong.myprojects.fifteenpuzzle.solver.Solver;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternConstants;
@@ -23,7 +23,7 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SolverPdbCustomPattern extends AbstractApplication {
-    private SmartSolver solver;
+    private Solver solver;
     private HeuristicOptions inUsePattern;
     private int inUsePatternOption;
 

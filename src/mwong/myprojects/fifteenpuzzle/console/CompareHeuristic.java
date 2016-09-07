@@ -1,6 +1,6 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
-import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
+import mwong.myprojects.fifteenpuzzle.solver.Solver;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverMd;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdbWd;
@@ -25,7 +25,6 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
  */
 public class CompareHeuristic extends AbstractApplication {
     private SmartSolverMd solverMd;
-
     private SmartSolverWd solverWd;
     private SmartSolverWdMd solverWdMd;
     private SmartSolverPdbWd solverPdbWd555;
@@ -61,7 +60,7 @@ public class CompareHeuristic extends AbstractApplication {
 
     //  It take a solver and a 15 puzzle board, display the the process time and number of
     //  nodes generated during the search, time out after 10 seconds.
-    private void solvePuzzle(SmartSolver solver, Board board) {
+    private void solvePuzzle(Solver solver, Board board) {
         System.out.print(solver.getHeuristicOptions().getDescription());
         if (solver.isFlagTimeout()) {
             System.out.println(" will timeout at " + solver.getSearchTimeoutLimit() + "s:");
@@ -91,9 +90,6 @@ public class CompareHeuristic extends AbstractApplication {
             int heuristicAdvanced = solver.heuristicAdvanced(board);
             if (heuristicStandard == heuristicAdvanced) {
                 System.out.println("Advanced\t" + "Same value");
-                if (!stdSearch) {
-                    advSearch = false;
-                }
             } else {
                 System.out.print("Advanced\t" + heuristicAdvanced + "\t\t");
                 if (advSearch) {
@@ -159,7 +155,7 @@ public class CompareHeuristic extends AbstractApplication {
                 solvePuzzle(solverMd, board);
 
                 // Notes: updateLastSearch is optional.
- //               refAccumulator.updateLastSearch(solverPdb78);
+                refAccumulator.updateLastSearch(solverPdb78);
             } else {
                 System.out.println("The board is unsolvable, try again!");
             }

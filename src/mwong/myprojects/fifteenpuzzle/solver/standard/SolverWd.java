@@ -1,6 +1,6 @@
 package mwong.myprojects.fifteenpuzzle.solver.standard;
 
-import mwong.myprojects.fifteenpuzzle.solver.AbstractSmartSolver;
+import mwong.myprojects.fifteenpuzzle.solver.AbstractSolver;
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
@@ -18,7 +18,7 @@ import java.util.HashMap;
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
-public class SolverWd extends AbstractSmartSolver {
+public class SolverWd extends AbstractSolver {
     protected final boolean forward = true;
     protected final boolean backward = !forward;
 
@@ -38,7 +38,7 @@ public class SolverWd extends AbstractSmartSolver {
     /**
      * Initializes SolverWd object.
      */
-    public SolverWd() {
+    protected SolverWd() {
         super();
         inUseHeuristic = HeuristicOptions.WD;
         loadWDComponents();
