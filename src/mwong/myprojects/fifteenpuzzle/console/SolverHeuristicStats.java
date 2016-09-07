@@ -12,7 +12,6 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleDifficultyLevel;
 
-import java.rmi.RemoteException;
 import java.util.HashSet;
 import java.util.Scanner;
 
@@ -420,14 +419,9 @@ public class SolverHeuristicStats extends AbstractApplication {
             }
             System.out.println();
 
-            try {
-				if (refAccumulator.validateSolver(solver)) {
-				    refAccumulator.updatePending(solver);
-				}
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+            if (refAccumulator.validateSolver(solver)) {
+                refAccumulator.updatePending(solver);
+            }
 
             menuMain();
         }

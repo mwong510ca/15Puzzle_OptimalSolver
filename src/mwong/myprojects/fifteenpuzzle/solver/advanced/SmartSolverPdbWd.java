@@ -1,10 +1,8 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
-import java.rmi.RemoteException;
-
 import mwong.myprojects.fifteenpuzzle.solver.SmartSolverExtra;
 import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
-import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceRemote;
+import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
@@ -27,7 +25,7 @@ public class SmartSolverPdbWd extends SolverPdbWd {
      *
      * @param refAccumulator the given ReferenceAccumulator object
      */
-    public SmartSolverPdbWd(ReferenceRemote refAccumulator) {
+    public SmartSolverPdbWd(ReferenceAccumulator refAccumulator) {
         this(SolverProperties.getPattern(), refAccumulator);
     }
 
@@ -37,7 +35,7 @@ public class SmartSolverPdbWd extends SolverPdbWd {
      * @param presetPattern the given preset pattern type
      * @param refAccumulator the given ReferenceAccumulator object
      */
-    public SmartSolverPdbWd(PatternOptions presetPattern, ReferenceRemote refAccumulator) {
+    public SmartSolverPdbWd(PatternOptions presetPattern, ReferenceAccumulator refAccumulator) {
         this(presetPattern, 0, refAccumulator);
     }
 
@@ -50,21 +48,16 @@ public class SmartSolverPdbWd extends SolverPdbWd {
      * @param refAccumulator the given ReferenceAccumulator object
      */
     public SmartSolverPdbWd(PatternOptions presetPattern, int choice,
-    		ReferenceRemote refAccumulator) {
+            ReferenceAccumulator refAccumulator) {
         super(presetPattern, choice);
-        try {
-			if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
-			    System.out.println("Attention: Referece board collection unavailable."
-			            + " Advanced estimate will use standard estimate.");
-			} else {
-			    activeSmartSolver = true;
-			    extra = new SmartSolverExtra();
-			    this.refAccumulator = refAccumulator;
-			}
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
+            System.out.println("Attention: Referece board collection unavailable."
+                    + " Advanced estimate will use standard estimate.");
+        } else {
+            activeSmartSolver = true;
+            extra = new SmartSolverExtra();
+            this.refAccumulator = refAccumulator;
+        }
     }
 
     /**
@@ -105,12 +98,7 @@ public class SmartSolverPdbWd extends SolverPdbWd {
             return priorityAdvanced;
         }
 
-        try {
-			setPriorityAdvanced(board, isSearch);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        setPriorityAdvanced(board, isSearch);
         return priorityAdvanced;
     }
 

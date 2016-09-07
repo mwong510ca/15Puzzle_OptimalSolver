@@ -1,9 +1,7 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
-import java.rmi.RemoteException;
-
 import mwong.myprojects.fifteenpuzzle.solver.SmartSolverExtra;
-import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceRemote;
+import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceAccumulator;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverWdMd;
@@ -25,21 +23,16 @@ public class SmartSolverWdMd extends SolverWdMd {
      *
      * @param refAccumulator the given ReferenceAccumulator object
      */
-    public SmartSolverWdMd(ReferenceRemote refAccumulator) {
+    public SmartSolverWdMd(ReferenceAccumulator refAccumulator) {
         super();
-        try {
-			if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
-			    System.out.println("Attention: Referece board collection unavailable."
-			            + " Advanced estimate will use standard estimate.");
-			} else {
-			    activeSmartSolver = true;
-			    extra = new SmartSolverExtra();
-			    this.refAccumulator = refAccumulator;
-			}
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
+            System.out.println("Attention: Referece board collection unavailable."
+                    + " Advanced estimate will use standard estimate.");
+        } else {
+            activeSmartSolver = true;
+            extra = new SmartSolverExtra();
+            this.refAccumulator = refAccumulator;
+        }
     }
 
     /**
@@ -79,12 +72,7 @@ public class SmartSolverWdMd extends SolverWdMd {
             return priorityAdvanced;
         }
 
-        try {
-			setPriorityAdvanced(board, isSearch);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        setPriorityAdvanced(board, isSearch);
         return priorityAdvanced;
     }
 
