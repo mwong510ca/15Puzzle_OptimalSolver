@@ -1,6 +1,6 @@
 package mwong.myprojects.fifteenpuzzle.solver.standard;
 
-import mwong.myprojects.fifteenpuzzle.solver.AbstractSolver;
+import mwong.myprojects.fifteenpuzzle.solver.AbstractSmartSolver;
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
@@ -17,7 +17,7 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
-public class SolverMd extends AbstractSolver {
+public class SolverMd extends AbstractSmartSolver {
     protected byte[] tilesSym;
     protected boolean flagLinearConflict;
     protected int idaCount;
@@ -25,8 +25,8 @@ public class SolverMd extends AbstractSolver {
     /**
      * Initializes SolverMd object.
      */
-    protected SolverMd() {
-        super();
+    public SolverMd() {
+        this(!SolverConstants.isTagLinearConflict());
     }
 
     /**
@@ -34,7 +34,7 @@ public class SolverMd extends AbstractSolver {
      *
      * @param lcFlag boolean flag for linear conflict feature
      */
-    protected SolverMd(boolean lcFlag) {
+    public SolverMd(boolean lcFlag) {
         super();
         linearConflictSwitch(lcFlag);
     }

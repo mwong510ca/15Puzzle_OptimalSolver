@@ -1,7 +1,7 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
-import mwong.myprojects.fifteenpuzzle.solver.Solver;
+import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
 import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverMd;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
@@ -12,6 +12,7 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleDifficultyLevel;
 
+import java.rmi.RemoteException;
 import java.util.HashSet;
 import java.util.Scanner;
 
@@ -31,7 +32,7 @@ import java.util.Scanner;
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SolverHeuristicStats extends AbstractApplication {
-    private Solver solver;
+    private SmartSolver solver;
     private HeuristicOptions inUseHeuristic;
 
     /**
@@ -419,9 +420,14 @@ public class SolverHeuristicStats extends AbstractApplication {
             }
             System.out.println();
 
-            if (refAccumulator.validateSolver(solver)) {
-                refAccumulator.updatePending(solver);
-            }
+            try {
+				if (refAccumulator.validateSolver(solver)) {
+				    refAccumulator.updatePending(solver);
+				}
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
             menuMain();
         }

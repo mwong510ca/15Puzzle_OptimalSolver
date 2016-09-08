@@ -1,7 +1,9 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
+import java.rmi.RemoteException;
+
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
-import mwong.myprojects.fifteenpuzzle.solver.Solver;
+import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternConstants;
@@ -23,7 +25,7 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SolverPdbCustomPattern extends AbstractApplication {
-    private Solver solver;
+    private SmartSolver solver;
     private HeuristicOptions inUsePattern;
     private int inUsePatternOption;
 
@@ -352,9 +354,14 @@ public class SolverPdbCustomPattern extends AbstractApplication {
                 System.out.println("The board is unsolvable, try again!\n");
             }
             System.out.println();
-            if (refAccumulator.validateSolver(solver)) {
-                refAccumulator.updateLastSearch(solver);
-            }
+            try {
+				if (refAccumulator.validateSolver(solver)) {
+				    refAccumulator.updateLastSearch(solver);
+				}
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
             initial = menuMain();
         }
     }

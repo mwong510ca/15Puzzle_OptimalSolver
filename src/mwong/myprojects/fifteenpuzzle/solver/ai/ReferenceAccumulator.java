@@ -2,7 +2,7 @@ package mwong.myprojects.fifteenpuzzle.solver.ai;
 
 import mwong.myprojects.fifteenpuzzle.solver.FileProperties;
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
-import mwong.myprojects.fifteenpuzzle.solver.Solver;
+import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
 import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
@@ -15,7 +15,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -32,7 +31,7 @@ import java.util.Map.Entry;
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
-public class ReferenceAccumulator {
+public class ReferenceAccumulator implements Reference {
     private final String directory;
     private final String filepath;
     private final String coreSolverClassName;
@@ -59,7 +58,6 @@ public class ReferenceAccumulator {
         onSwitch = SolverConstants.isOnSwitch();
         offSwitch = !onSwitch;
 
-        loadDefault();
         try {
             referenceMap = new HashMap<ReferenceBoard, ReferenceMoves>();
             System.out.println("Load data and system update - archived hard board. "
@@ -70,18 +68,23 @@ public class ReferenceAccumulator {
             reset();
         }
 
-        updateData(createSolver());
-        refreshFile();
+//        updateData(createSolver());
+//        refreshFile();
     }
 
     // load the default set
-    private void loadDefault() {
+    void loadDefault() {
         defaultMap = new HashMap<ReferenceBoard, ReferenceMoves>();
         for (byte[][] preset : ReferenceProperties.getDefaultBoards()) {
             ReferenceBoard advBoard = new ReferenceBoard(new Board(preset[0]));
             ReferenceMoves advMoves = new ReferenceMoves(preset[1][0], preset[1][1]);
             defaultMap.put(advBoard, advMoves);
         }
+    }
+
+    // load the default set
+    void clearDefault() {
+        defaultMap =  null;
     }
 
     // reset to default set
@@ -92,10 +95,12 @@ public class ReferenceAccumulator {
         int cutoffBuffer = ReferenceProperties.getCutoffBuffer();
         cutoffLimit = cutoffSetting * ((100 - cutoffBuffer) / 100.0);
 
+        loadDefault();
         referenceMap = new HashMap<ReferenceBoard, ReferenceMoves>();
         for (Entry<ReferenceBoard, ReferenceMoves> entry : defaultMap.entrySet()) {
             referenceMap.put(entry.getKey(), entry.getValue());
         }
+        clearDefault();
     }
 
     /**
@@ -105,7 +110,7 @@ public class ReferenceAccumulator {
      */
     public final HashMap<ReferenceBoard, ReferenceMoves> getActiveMap() {
         if (referenceMap == null) {
-            return defaultMap;
+            reset();
         }
         return referenceMap;
     }
@@ -173,7 +178,7 @@ public class ReferenceAccumulator {
     }
 
     // create the new file to store the reference boards.
-    private void createFile() {
+    private synchronized void createFile() {
         fileReady = false;
         if (!(new File(directory)).exists()) {
             (new File(directory)).mkdir();
@@ -203,7 +208,7 @@ public class ReferenceAccumulator {
     }
 
     // append a reference board with moves and partial solutions to file.
-    private void add2file(ReferenceBoard advBoard, ReferenceMoves advMoves) {
+    private synchronized void add2file(ReferenceBoard advBoard, ReferenceMoves advMoves) {
         if (!fileReady) {
             createFile();
         }
@@ -239,7 +244,7 @@ public class ReferenceAccumulator {
             System.err.println("System error : write file error.");
         }
     }
-
+/*
     // create and return a SmartSolverPD object.
     SmartSolverPdb createSolver() {
         try {
@@ -252,14 +257,14 @@ public class ReferenceAccumulator {
             return null;
         }
     }
-
+*/
     /**
      * Returns the boolean value of the given solver is the valid for ReferenceAccumulator.
      *
      * @param inSolver the giver concrete instance of Solver interface.
      * @return boolean value of the given solver is the valid for ReferenceAccumulator
      */
-    public boolean validateSolver(Solver inSolver) {
+    public boolean validateSolver(SmartSolver inSolver) {
         if (inSolver == null) {
             return false;
         }
@@ -277,10 +282,11 @@ public class ReferenceAccumulator {
 
     // verify the given solver is using pattern database 7-8, scan the full
     // collection, if the reference board is not verified, verify it now.
-    void updateData(Solver inSolver) {
-        Solver solver = inSolver;
+    void updateData(SmartSolver inSolver) {
+        SmartSolver solver = inSolver;
         if (!validateSolver(inSolver)) {
-            solver = createSolver();
+//            solver = createSolver();
+        	solver = null;
         }
 
         if (solver == null) {
@@ -297,7 +303,7 @@ public class ReferenceAccumulator {
      *
      *  @param inSolver the SolverInterface object in use
      */
-    public void updatePending(Solver inSolver) {
+    public void updatePending(SmartSolver inSolver) {
         if (!validateSolver(inSolver)) {
             return;
         }
@@ -337,13 +343,13 @@ public class ReferenceAccumulator {
      *
      * @param inSolver the SolverInterface object in use
      */
-    public boolean addBoard(Solver inSolver) {
+    public boolean addBoard(SmartSolver inSolver) {
         return addBoard(inSolver, false);
     }
 
     // add a reference board in collection, allow bypass minimum
     // cutoff limit requirement
-    boolean addBoard(Solver inSolver, boolean bypass) {
+    boolean addBoard(SmartSolver inSolver, boolean bypass) {
         if (referenceMap == null) {
             return false;
         }
@@ -446,7 +452,7 @@ public class ReferenceAccumulator {
      * @param inSolver the given SolverIntegerface
      * @return boolean if last search board in activeMap has been verified.
      */
-    public boolean updateLastSearch(Solver inSolver) {
+    public boolean updateLastSearch(SmartSolver inSolver) {
         if (referenceMap == null) {
             return false;
         }
@@ -510,6 +516,9 @@ public class ReferenceAccumulator {
     // remove the given board from reference boards collection if exists, except
     // default reference boards.
     void removeBoard(Board board) {
+    	if (defaultMap == null) {
+    		loadDefault();
+    	}
         ReferenceBoard advBoard = new ReferenceBoard(board);
         if (defaultMap.containsKey(advBoard)) {
             return;
@@ -531,23 +540,11 @@ public class ReferenceAccumulator {
 
     // print all reference boards and it's components.
     void printAllBoards() {
-        int puzzleSize = ReferenceConstants.getPuzzleSize();
+        int count = 1;
         for (Entry<ReferenceBoard, ReferenceMoves> entry : referenceMap.entrySet()) {
-            ReferenceBoard advBoard = entry.getKey();
-            for (int i = 0; i < puzzleSize; i++) {
-                System.out.print(advBoard.getTiles()[i] + " ");
-            }
-            System.out.println();
-
-            for (int i = 0; i < puzzleSize; i++) {
-                System.out.print(advBoard.tilesTransform[i] + " ");
-            }
-            ReferenceMoves advMoves = entry.getValue();
-            System.out.println("\t" + Integer.toBinaryString(advMoves.status));
-            for (int i = 0; i < 4; i++) {
-                System.out.println(advMoves.moves[i] + "\t" + advMoves.initMoves[i]
-                        + "\t" + Arrays.toString(advMoves.getInitialMoves(i, !symmetry)));
-            }
+            System.out.println(count++ + " : ");
+            System.out.println(entry.getKey());
+            System.out.println(entry.getValue());
         }
         System.out.println();
     }
@@ -575,12 +572,8 @@ public class ReferenceAccumulator {
         refreshFile();
     }
 
-    // TODO - RMI : Connection off only
     // save all reference board in a new copy
     void refreshFile() {
-        //System.out.println("Please make sure connection is off to prcessed:");
-        //System.out.println("Enter 'Y' to continue, other to quit.");
-
         createFile();
         for (Entry<ReferenceBoard, ReferenceMoves> entry : referenceMap.entrySet()) {
             add2file(entry.getKey(), entry.getValue());

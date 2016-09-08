@@ -1,7 +1,9 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
+import java.rmi.RemoteException;
+
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
-import mwong.myprojects.fifteenpuzzle.solver.Solver;
+import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverMd;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdbWd;
@@ -25,7 +27,7 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SolverHeuristic extends AbstractApplication {
-    private Solver solver;
+    private SmartSolver solver;
     private HeuristicOptions inUseHeuristic;
 
     /**
@@ -279,10 +281,15 @@ public class SolverHeuristic extends AbstractApplication {
             } else {
                 solutionSummary(solver);
                 // Notes: updateLastSearch is optional.
-                if (refAccumulator.validateSolver(solver)
-                        && ((SmartSolverPdb) solver).isAddedReference()) {
-                    refAccumulator.updateLastSearch(solver);
-                }
+                try {
+					if (refAccumulator.validateSolver(solver)
+					        && ((SmartSolverPdb) solver).isAddedReference()) {
+					    refAccumulator.updateLastSearch(solver);
+					}
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
                 if (solver.moves() > 0) {
                     initial = menuSubSolution(initial);

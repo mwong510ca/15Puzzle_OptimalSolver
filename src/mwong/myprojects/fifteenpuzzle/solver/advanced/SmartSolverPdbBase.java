@@ -1,8 +1,10 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
+import java.rmi.RemoteException;
+
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
-import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
-import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceAccumulator;
+import mwong.myprojects.fifteenpuzzle.solver.SmartSolverExtra;
+import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceRemote;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
@@ -21,10 +23,6 @@ import mwong.myprojects.fifteenpuzzle.utilities.Stopwatch;
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SmartSolverPdbBase extends SolverPdb {
-    protected final byte numPartialMoves = SolverConstants.getNumPartialMoves();
-    protected final byte refCutoff = SolverConstants.getReferenceCutoff();
-    protected SmartSolverExtra extra;
-    protected ReferenceAccumulator refAccumulator;
     protected Board lastSearchBoard;
     protected boolean addedReference;
 
@@ -50,18 +48,21 @@ public class SmartSolverPdbBase extends SolverPdb {
      *
      *  @param copySolver an instance of SolverPdb
      */
-    public SmartSolverPdbBase(SolverPdb copySolver, ReferenceAccumulator refAccumulator) {
+    public SmartSolverPdbBase(SolverPdb copySolver, ReferenceRemote refAccumulator) {
         super(copySolver);
-        if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
-            System.out.println("Referece board collection unavailable."
-                    + " Resume to the 15 puzzle solver standard version.");
-            extra = null;
-            this.refAccumulator = null;
-        } else {
-            activeSmartSolver = true;
-            extra = new SmartSolverExtra();
-            this.refAccumulator = refAccumulator;
-        }
+        try {
+			if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
+			    System.out.println("Attention: Referece board collection unavailable."
+			            + " Advanced estimate will use standard estimate.");
+			} else {
+			    activeSmartSolver = true;
+			    extra = new SmartSolverExtra();
+			    this.refAccumulator = refAccumulator;
+			}
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     /**
@@ -111,19 +112,7 @@ public class SmartSolverPdbBase extends SolverPdb {
         }
 
         if (!board.equals(lastBoard) || isSearch) {
-            initialize(board);
-            byte[] tilesSym = board.getTilesSym();
-
-            // additive pattern database components
-            pdKeys = convert2pd(tiles, tilesSym, szGroup);
-            pdValReg = 0;
-            pdValSym = 0;
-            for (int i = szGroup; i < szGroup * 2; i++) {
-                pdValReg += pdKeys[i];
-                pdValSym += pdKeys[i +  offsetPdSym];
-            }
-
-            priorityGoal = (byte) Math.max(pdValReg, pdValSym);
+            priorityGoal = super.heuristic(board);
         }
 
         if (!isAdvanced) {
@@ -132,26 +121,12 @@ public class SmartSolverPdbBase extends SolverPdb {
             return priorityAdvanced;
         }
 
-        AdvancedRecord record = extra.advancedContains(board, isSearch, refAccumulator);
-        if (record != null) {
-            priorityAdvanced = record.getEstimate();
-        }
-
-        if (priorityAdvanced != -1) {
-            return priorityAdvanced;
-        }
-
-        priorityAdvanced = priorityGoal;
-        if (priorityAdvanced < refCutoff) {
-            return priorityAdvanced;
-        }
-
-        priorityAdvanced = extra.advancedEstimate(board, priorityAdvanced, refCutoff,
-                refAccumulator.getActiveMap());
-
-        if ((priorityAdvanced - priorityGoal) % 2 == 1) {
-            priorityAdvanced++;
-        }
+        try {
+			setPriorityAdvanced(board, isSearch);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         return priorityAdvanced;
     }
 
@@ -251,30 +226,35 @@ public class SmartSolverPdbBase extends SolverPdb {
                 if (solved) {
                     // if currently using pattern database 7-8 and it takes long than cutoff limit
                     // to solve, add the board and solutions to reference boards collection.
-                    if (activeSmartSolver && inUseHeuristic == HeuristicOptions.PD78
-                            && stopwatch.currentTime() >  refAccumulator.getCutoffLimit()) {
-                        // backup original solutions
-                        final Stopwatch backupTime = stopwatch;
-                        final byte backupSteps = steps;
-                        final int backupIdaCount = searchNodeCount;
-                        final Direction[] backupSolution = new Direction[steps + 1];
-                        System.arraycopy(solutionMove, 1, backupSolution, 1, steps);
+                    try {
+						if (activeSmartSolver && inUseHeuristic == HeuristicOptions.PD78
+						        && stopwatch.currentTime() >  refAccumulator.getCutoffLimit()) {
+						    // backup original solutions
+						    final Stopwatch backupTime = stopwatch;
+						    final byte backupSteps = steps;
+						    final int backupIdaCount = searchNodeCount;
+						    final Direction[] backupSolution = new Direction[steps + 1];
+						    System.arraycopy(solutionMove, 1, backupSolution, 1, steps);
 
-                        searchTime = stopwatch.currentTime();
-                        stopwatch = new Stopwatch();
-                        // only update cached advanced priority if using original priority search
-                        // and the initial board has added to the reference boards
-                        if (refAccumulator.addBoard(this)) {
-                            priorityAdvanced = backupSteps;
-                            addedReference = true;
-                        }
+						    searchTime = stopwatch.currentTime();
+						    stopwatch = new Stopwatch();
+						    // only update cached advanced priority if using original priority search
+						    // and the initial board has added to the reference boards
+						    if (refAccumulator.addBoard(this)) {
+						        priorityAdvanced = backupSteps;
+						        addedReference = true;
+						    }
 
-                        // restore original solutions
-                        stopwatch = backupTime;
-                        steps = backupSteps;
-                        searchNodeCount = backupIdaCount;
-                        solutionMove = backupSolution;
-                    }
+						    // restore original solutions
+						    stopwatch = backupTime;
+						    steps = backupSteps;
+						    searchNodeCount = backupIdaCount;
+						    solutionMove = backupSolution;
+						}
+					} catch (RemoteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
                     return;
                 }
             }

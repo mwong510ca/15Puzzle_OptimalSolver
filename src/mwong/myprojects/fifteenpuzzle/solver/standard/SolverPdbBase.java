@@ -1,6 +1,6 @@
 package mwong.myprojects.fifteenpuzzle.solver.standard;
 
-import mwong.myprojects.fifteenpuzzle.solver.AbstractSolver;
+import mwong.myprojects.fifteenpuzzle.solver.AbstractSmartSolver;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternConstants;
@@ -23,7 +23,7 @@ import java.util.HashMap;
  * @author   Meisze Wong
  *           www.linkedin.com/pub/macy-wong/46/550/37b/
  */
-public class SolverPdbBase extends AbstractSolver {
+public class SolverPdbBase extends AbstractSmartSolver {
     private final int offsetReverse = 2;
     private final PatternElementMode mode = PatternElementMode.PUZZLE_SOLVER;
 
