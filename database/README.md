@@ -13,7 +13,7 @@
     The cutoff limit at 8 seconds with 30 default reference boards.
 
 * reference_accumlator.db file - latest collection from my local machine.  
-  The cutoff limit at 6 seconds with 350+ reference boards.
+  The cutoff limit at 6 seconds with 795 reference boards.
 
 Download is optional.  
 The 15 puzzle optimal solver can start without database folder.  
