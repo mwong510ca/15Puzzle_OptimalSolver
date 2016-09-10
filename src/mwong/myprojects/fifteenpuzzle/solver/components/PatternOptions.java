@@ -9,12 +9,12 @@ package mwong.myprojects.fifteenpuzzle.solver.components;
  *
  * <p>Dependencies : PatternConstants.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public enum PatternOptions {
     /**
-     *  Static pattern 555.
+     * Static pattern 555.
      */
     Pattern_555("555",
             new byte [][] {{ 2, 2, 1, 1, 2, 3, 1, 1, 2, 3, 3, 1, 2, 3, 3, 0 },
@@ -27,7 +27,7 @@ public enum PatternOptions {
             new boolean [] {false, false, false, false, false, true, false, false, false}),
 
     /**
-     *  Static pattern 663.
+     * Static pattern 663.
      */
     Pattern_663("663",
             new byte [][] {{ 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 3, 2, 3, 3, 3, 0 },
@@ -40,7 +40,7 @@ public enum PatternOptions {
             new boolean [] {false, false, false, true, false, false, true, false, false}),
 
     /**
-     *  Static and disjoint pattern 78.
+     * Static and disjoint pattern 78.
      */
     Pattern_78("78",
             new byte [][] {{ 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 0 },
@@ -51,7 +51,7 @@ public enum PatternOptions {
                 { 1, 1, 1, 1, 2, 1, 1, 1, 2, 2, 2, 1, 2, 2, 2, 0 }},
             new boolean [] {false, false, false, false, false, false, false, true, true}),
     /**
-     *  User defined custom pattern.
+     * User defined custom pattern.
      */
     Pattern_Custom("Custom", null, null);
 
@@ -69,7 +69,7 @@ public enum PatternOptions {
     }
 
     /**
-     *  Print the string of the default pattern of the preset pattern.
+     * Print the string of the default pattern of the preset pattern.
      */
     public void printDefaults() {
         final  int puzzleSize = PuzzleConstants.getSize();
@@ -93,19 +93,19 @@ public enum PatternOptions {
     }
 
     /**
-     *  Returns the string of the preset pattern type.
+     * Returns the string of the preset pattern type.
      *
-     *  @return string of the preset pattern type
+     * @return string of the preset pattern type
      */
     public String getType() {
         return type;
     }
 
     /**
-     *  Returns the byte array of pattern of given pattern order.
+     * Returns the byte array of pattern of given pattern order.
      *
-     *  @param choice the integer of preset pattern order
-     *  @return the byte array of pattern
+     * @param choice the integer of preset pattern order
+     * @return the byte array of pattern
      */
     public final byte[] getPattern(int choice) {
         if (this.equals(Pattern_Custom)) {
@@ -116,10 +116,10 @@ public enum PatternOptions {
 
 
     /**
-     *  Returns the boolean represent the given pattern order is valid.
+     * Returns the boolean represent the given pattern order is valid.
      *
-     *  @param choice the integer of preset pattern order
-     *  @return boolean represent the given pattern order is valid
+     * @param choice the integer of preset pattern order
+     * @return boolean represent the given pattern order is valid
      */
     public boolean isValidPattern(int choice) {
         if (this.equals(Pattern_Custom)) {
@@ -132,9 +132,9 @@ public enum PatternOptions {
     }
 
     /**
-     *  Returns the boolean array of element groups of the preset pattern.
+     * Returns the boolean array of element groups of the preset pattern.
      *
-     *  @return boolean array of element groups of the preset pattern
+     * @return boolean array of element groups of the preset pattern
      */
     public final boolean[] getElements() {
         if (this.equals(Pattern_Custom)) {
@@ -144,9 +144,9 @@ public enum PatternOptions {
     }
 
     /**
-     *  Returns the string of the preset pattern with all options.
+     * Returns the string of the preset pattern with all options.
      *
-     *  @return string of the preset pattern with all options
+     * @return string of the preset pattern with all options
      */
     @Override
     public String toString() {

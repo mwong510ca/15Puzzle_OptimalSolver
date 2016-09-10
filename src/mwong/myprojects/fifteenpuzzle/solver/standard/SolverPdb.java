@@ -12,31 +12,31 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
  * <p>Dependencies : Direction.java, HeuristicOptions.java, PatternOptions.java,
  *                   SolverPdbEnh2.java, SolverProperties.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SolverPdb extends SolverPdbEnh2 {
     /**
-     *  Initializes SolverPdb object using default preset pattern.
+     * Initializes SolverPdb object using default preset pattern.
      */
     public SolverPdb() {
         this(SolverProperties.getPattern());
     }
 
     /**
-     *  Initializes SolverPdb object using given preset pattern.
+     * Initializes SolverPdb object using given preset pattern.
      *
-     *  @param presetPattern the given preset pattern type
+     * @param presetPattern the given preset pattern type
      */
     public SolverPdb(PatternOptions presetPattern) {
         this(presetPattern, 0);
     }
 
     /**
-     *  Initializes SolverPdb object with choice of given preset pattern.
+     * Initializes SolverPdb object with choice of given preset pattern.
      *
-     *  @param presetPattern the given preset pattern type
-     *  @param choice the number of preset pattern option
+     * @param presetPattern the given preset pattern type
+     * @param choice the number of preset pattern option
      */
     public SolverPdb(PatternOptions presetPattern, int choice) {
         loadPDComponents(presetPattern, choice);
@@ -60,10 +60,10 @@ public class SolverPdb extends SolverPdbEnh2 {
     }
 
     /**
-     *  Initializes SolverPdb object with user defined custom pattern.
+     * Initializes SolverPdb object with user defined custom pattern.
      *
-     *  @param customPattern byte array of user defined custom pattern
-     *  @param elementGroups boolean array of groups reference to given pattern
+     * @param customPattern byte array of user defined custom pattern
+     * @param elementGroups boolean array of groups reference to given pattern
      */
     public SolverPdb(byte[] customPattern, boolean[] elementGroups) {
         customPDComponents(customPattern);
@@ -74,9 +74,9 @@ public class SolverPdb extends SolverPdbEnh2 {
     }
 
     /**
-     *  Initializes SolverPdb object with a given concrete class.
+     * Initializes SolverPdb object with a given concrete class.
      *
-     *  @param copySolver an instance of SolverPdb
+     * @param copySolver an instance of SolverPdb
      */
     protected SolverPdb(SolverPdb copySolver) {
         super(copySolver);
@@ -120,19 +120,19 @@ public class SolverPdb extends SolverPdbEnh2 {
                 switch (Direction.values()[firstMoveIdx]) {
                     case RIGHT:
                         lastDepthSummary[firstMoveIdx] = shiftRight(orgX, orgY, zeroPos, zeroSym,
-                                1, limit, orgValReg, orgValSym, orgCopy, reset);
+                                1, limit, orgValReg, orgValSym, orgCopy, resetKey);
                         break;
                     case DOWN:
                         lastDepthSummary[firstMoveIdx] = shiftDown(orgX, orgY, zeroPos, zeroSym,
-                                1, limit, orgValReg, orgValSym, orgCopy, reset);
+                                1, limit, orgValReg, orgValSym, orgCopy, resetKey);
                         break;
                     case LEFT:
                         lastDepthSummary[firstMoveIdx] = shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                                1, limit, orgValReg, orgValSym, orgCopy, reset);
+                                1, limit, orgValReg, orgValSym, orgCopy, resetKey);
                         break;
                     case UP:
                         lastDepthSummary[firstMoveIdx] = shiftUp(orgX, orgY, zeroPos, zeroSym,
-                                1, limit, orgValReg, orgValSym, orgCopy, reset);
+                                1, limit, orgValReg, orgValSym, orgCopy, resetKey);
                         break;
                     default:
                         assert false : "Error: starting order switch statement";

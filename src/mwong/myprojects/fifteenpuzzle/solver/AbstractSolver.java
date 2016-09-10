@@ -12,8 +12,8 @@ import java.util.Arrays;
  *
  * <p>Dependencies : Board.java, Direction.java, Solver.java, Stopwatch.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public abstract class AbstractSolver implements Solver {
     // constants
@@ -27,7 +27,7 @@ public abstract class AbstractSolver implements Solver {
     protected final byte[] symmetryPos;
     protected final byte[] symmetryVal;
     protected final Board goalBoard;
-    protected final int reset;
+    protected final int resetKey;
     protected final int cwKey;
     protected final int ccwKey;
 
@@ -68,7 +68,7 @@ public abstract class AbstractSolver implements Solver {
         symmetryPos = SolverConstants.getSymmetryPos();
         symmetryVal = SolverConstants.getSymmetryVal();
         goalBoard = SolverConstants.getGoalBoard();
-        reset = Rotation.RST.getValue();
+        resetKey = Rotation.RST.getValue();
         cwKey = Rotation.CW.getValue();
         ccwKey = Rotation.CCW.getValue();
 
@@ -82,9 +82,9 @@ public abstract class AbstractSolver implements Solver {
     // ----- solver settings -----
 
     /**
-     *  Return HeuristicOptions of object instance that implements Solver interface.
+     * Return HeuristicOptions of object instance that implements Solver interface.
      *
-     *  @return HeuristicOptions of solver
+     * @return HeuristicOptions of solver
      */
     @Override
     public final HeuristicOptions getHeuristicOptions() {
@@ -92,17 +92,9 @@ public abstract class AbstractSolver implements Solver {
     }
 
     /**
-     *  Print the solver description.
-     */
-    @Override
-    public void printDescription() {
-        System.out.println("15 puzzle solver using " + inUseHeuristic.getDescription());
-    }
-
-    /**
-     *  Set the message feature with the given flag.
+     * Set the message feature with the given flag.
      *
-     *  @param flag the boolean represent the ON/OFF message feature
+     * @param flag the boolean represent the ON/OFF message feature
      */
     @Override
     public final void messageSwitch(boolean flag) {
@@ -110,9 +102,9 @@ public abstract class AbstractSolver implements Solver {
     }
 
     /**
-     *  Set the timeout feature with the given flag.
+     * Set the timeout feature with the given flag.
      *
-     *  @param flag the boolean represent the ON/OFF timeout feature
+     * @param flag the boolean represent the ON/OFF timeout feature
      */
     @Override
     public final void timeoutSwitch(boolean flag) {
@@ -120,13 +112,23 @@ public abstract class AbstractSolver implements Solver {
     }
 
     /**
-     *  Set the timeout limit with the given value in seconds.
+     * Set the timeout limit with the given value in seconds.
      *
-     *  @param seconds the integer represent the timeout limit in seconds
+     * @param seconds the integer represent the timeout limit in seconds
      */
     @Override
     public final void setTimeoutLimit(int seconds) {
         searchTimeoutLimit = seconds;
+    }
+
+    // ----- solver information lookup -----
+
+    /**
+     * Print the solver description.
+     */
+    @Override
+    public void printDescription() {
+        System.out.println("15 puzzle solver using " + inUseHeuristic.getDescription());
     }
 
     /**
@@ -174,12 +176,11 @@ public abstract class AbstractSolver implements Solver {
         priorityGoal = 0;
     }
 
-
     /**
-     *  Find the optimal path to goal state if the given board is solvable,
-     *  and return the search time in seconds.
+     * Find the optimal path to goal state if the given board is solvable,
+     * and return the search time in seconds.
      *
-     *  @param board the initial puzzle Board object to solve
+     * @param board the initial puzzle Board object to solve
      */
     @Override
     public final void findOptimalPath(Board board) {

@@ -8,13 +8,14 @@ import java.rmi.RemoteException;
 import java.util.Arrays;
 
 /**
- * AbstractSolver is the abstract class extends Solver Interface of 15 puzzle that
- * has the following variables and methods.
+ * AbstractSmartSolver is the abstract class extends AbstractSolver implements SmartSolver
+ * Interface.  It contains all Solver variables and methods with SmartSolver add on features.
  *
- * <p>Dependencies : Board.java, Direction.java, Solver.java, Stopwatch.java
+ * <p>Dependencies : AbstractSolver.java, Board.java, Direction.java, ReferenceRemote.java
+ *                   SmartSolver.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public abstract class AbstractSmartSolver extends AbstractSolver implements SmartSolver {
     // constants
@@ -24,15 +25,14 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
     protected final boolean tagReview;
 
     // solver setting
-    protected boolean flagAdvancedVersion;
-    protected boolean activeSmartSolver;
-    // search related
-    protected byte priorityAdvanced;
-    // search results
     protected final byte numPartialMoves;
     protected final byte refCutoff;
-    protected ReferenceRemote refAccumulator;
+    protected boolean flagAdvancedVersion;
+    protected boolean activeSmartSolver;
+    protected ReferenceRemote refConnection;
     protected SmartSolverExtra extra;
+    // search related
+    protected byte priorityAdvanced;
 
     protected AbstractSmartSolver() {
         // load the constants
@@ -51,13 +51,13 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
         refCutoff = SolverConstants.getReferenceCutoff();
         numPartialMoves = SolverConstants.getNumPartialMoves();
         extra = null;
-        this.refAccumulator = null;
+        this.refConnection = null;
     }
 
-    // ----- solver settings -----
+    // ----- solver information lookup -----
 
     /**
-     *  Print the solver description.
+     * Print the solver description.
      */
     @Override
     public void printDescription() {
@@ -67,9 +67,9 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
     // ----- Add on functions for advanced version, default setting disable feature.
 
     /**
-     *  Set the advance search feature with the given flag.
+     * Set the advance search feature with the given flag.
      *
-     *  @param flag the boolean represent the ON/OFF advanced feature
+     * @param flag the boolean represent the ON/OFF advanced feature
      */
     @Override
     public boolean versionSwitch(boolean flag) {
@@ -115,7 +115,7 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
 
     // board initial
     protected final void initialize(Board board) {
-    	super.initialize(board);
+        super.initialize(board);
         lastBoard = board;
         priorityAdvanced = -1;
     }
@@ -133,8 +133,10 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
         }
     }
 
+    // set priorityAdvanced with given board or type of search
     protected void setPriorityAdvanced(Board board, boolean isSearch) throws RemoteException {
-        AdvancedRecord record = extra.advancedContains(board, isSearch, refAccumulator.getActiveMap());
+        AdvancedRecord record = extra.advancedContains(board, isSearch,
+        		refConnection.getActiveMap());
         if (record != null) {
             priorityAdvanced = record.getEstimate();
             if (record.hasPartialMoves()) {
@@ -152,13 +154,14 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
         }
 
         priorityAdvanced = extra.advancedEstimate(board, priorityAdvanced, refCutoff,
-                refAccumulator.getActiveMap());
+        		refConnection.getActiveMap());
 
         if ((priorityAdvanced - priorityGoal) % 2 == 1) {
             priorityAdvanced++;
         }
     }
 
+    // shift the preset moves and return Board object after the last move.
     protected Board prepareAdvancedSearch(int limit, Direction[] dupSolution) {
         System.arraycopy(solutionMove, 1, dupSolution, 1, numPartialMoves);
         Board board = new Board(tiles);
@@ -171,6 +174,7 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
         return board;
     }
 
+    // update the search results after finished advaned search.
     protected void afterAdvancedSearch(int limit, Direction[] dupSolution) {
         if (solved) {
             System.arraycopy(solutionMove, 2, dupSolution, numPartialMoves + 1,
@@ -189,8 +193,4 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
             }
         }
     }
-
-    // solve the puzzle using interactive deepening A* algorithm
-    protected abstract void idaStar(int limit);
-
 }

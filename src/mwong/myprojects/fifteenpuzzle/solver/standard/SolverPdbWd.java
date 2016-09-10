@@ -31,12 +31,12 @@ import java.util.HashMap;
  * It takes a Board object of the puzzle and solve it with IDA* using combination of
  * Walking Distance and Additive Pattern Database of predefined pattern from PatternOptions.
  *
- * <p>Dependencies : Board.java, Direction.java, HeuristicOptions.java,
+ * <p>Dependencies : Board.java, Direction.java, HeuristicOptions.java, patternConstants.java,
  *                   PatternDatabase.java, PatternElement.java, PatternElementMode.java,
- *                   PatternOptions.java, PatternPreoperties.java, SolverWD.java
+ *                   PatternOptions.java, SolverWD.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SolverPdbWd extends SolverWd {
     private final int offsetReverse = 2;
@@ -67,26 +67,26 @@ public class SolverPdbWd extends SolverWd {
     private int wdKeyIdx;
 
     /**
-     *  Initializes SolverPdbWd object using default preset pattern.
+     * Initializes SolverPdbWd object using default preset pattern.
      */
     public SolverPdbWd() {
         this(SolverProperties.getPattern());
     }
 
     /**
-     *  Initializes SolverPdbWd object with given preset pattern.
+     * Initializes SolverPdbWd object with given preset pattern.
      *
-     *  @param presetPattern the given preset pattern type
+     * @param presetPattern the given preset pattern type
      */
     public SolverPdbWd(PatternOptions presetPattern) {
         this(presetPattern, 0);
     }
 
     /**
-     *  Initializes SolverPdbWd object with choice of given preset pattern.
+     * Initializes SolverPdbWd object with choice of given preset pattern.
      *
-     *  @param presetPattern the given preset pattern type
-     *  @param choice the number of preset pattern option
+     * @param presetPattern the given preset pattern type
+     * @param choice the number of preset pattern option
      */
     public SolverPdbWd(PatternOptions presetPattern, int choice) {
         super();
@@ -146,7 +146,7 @@ public class SolverPdbWd extends SolverWd {
     }
 
     /**
-     *  Print solver description.
+     * Print solver description.
      */
     @Override
     public void printDescription() {
@@ -310,19 +310,19 @@ public class SolverPdbWd extends SolverWd {
                 switch (Direction.values()[firstMoveIdx]) {
                     case RIGHT:
                         lastDepthSummary[firstMoveIdx] = shiftRight(orgX, orgY, zeroPos, zeroSym,
-                                1, limit, orgValReg, orgValSym, orgCopy, reset);
+                                1, limit, orgValReg, orgValSym, orgCopy, resetKey);
                         break;
                     case DOWN:
                         lastDepthSummary[firstMoveIdx] = shiftDown(orgX, orgY, zeroPos, zeroSym,
-                                1, limit, orgValReg, orgValSym, orgCopy, reset);
+                                1, limit, orgValReg, orgValSym, orgCopy, resetKey);
                         break;
                     case LEFT:
                         lastDepthSummary[firstMoveIdx] = shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                                1, limit, orgValReg, orgValSym, orgCopy, reset);
+                                1, limit, orgValReg, orgValSym, orgCopy, resetKey);
                         break;
                     case UP:
                         lastDepthSummary[firstMoveIdx] = shiftUp(orgX, orgY, zeroPos, zeroSym,
-                                1, limit, orgValReg, orgValSym, orgCopy, reset);
+                                1, limit, orgValReg, orgValSym, orgCopy, resetKey);
                         break;
                     default:
                         assert false : "Error: starting order switch statement";
@@ -373,7 +373,7 @@ public class SolverPdbWd extends SolverWd {
                 // RIGHT
                 if (orgX < rowSize - 1) {
                     newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy, resetKey));
                 }
                 if (nonIdentical) {
                     // UP
@@ -394,7 +394,7 @@ public class SolverPdbWd extends SolverWd {
                 // DOWN
                 if (orgY < rowSize - 1) {
                     newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy, resetKey));
                 }
                 if (nonIdentical) {
                     // LEFT
@@ -415,7 +415,7 @@ public class SolverPdbWd extends SolverWd {
                 // LEFT
                 if (orgX > 0) {
                     newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy, resetKey));
                 }
                 if (nonIdentical) {
                     // DOWN
@@ -436,7 +436,7 @@ public class SolverPdbWd extends SolverWd {
                 // UP
                 if (orgY > 0) {
                     newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy, resetKey));
                 }
                 if (nonIdentical) {
                     // RIGHT

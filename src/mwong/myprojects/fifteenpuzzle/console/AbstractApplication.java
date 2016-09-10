@@ -1,8 +1,8 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
 import mwong.myprojects.fifteenpuzzle.PropertiesCache;
-import mwong.myprojects.fifteenpuzzle.solver.Solver;
 import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
+import mwong.myprojects.fifteenpuzzle.solver.Solver;
 import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceFactory;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceRemote;
@@ -20,8 +20,8 @@ import java.util.Scanner;
  *
  * <p>Dependencies : Board.java, Direction.java, Solver.java, Stopwatch.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public abstract class AbstractApplication {
     private static int displayDelay;
@@ -40,6 +40,7 @@ public abstract class AbstractApplication {
     protected int timeoutLimit;
     protected boolean flagAdvVersion;
 
+    // initialize static variable
     static {
         displayDelay = 1000;
         if (PropertiesCache.getInstance().containsKey("solutionDisplayRate")) {
@@ -60,6 +61,7 @@ public abstract class AbstractApplication {
         }
     }
 
+    // initialize all variable settings for any application
     protected AbstractApplication() {
         puzzleSize = ApplicationConstants.getPuzzleSize();
         tagLinearConflict = ApplicationConstants.isTagLinearConflict();
@@ -74,28 +76,24 @@ public abstract class AbstractApplication {
         scanner = new Scanner(System.in, "UTF-8");
         timeoutLimit = SolverProperties.getTimeoutLimit();
         flagAdvVersion = tagStandard;
-        
+
         try {
-			refAccumulator = (new ReferenceFactory()).getDBServer();
-			System.out.println("server version");
-		} catch (IOException e) {
-			try {
-				refAccumulator = (new ReferenceFactory()).getDBLocal();
-				System.out.println("local version");
-			} catch (IOException e1) {
-				//e1.printStackTrace();
-				System.err.println("error load reference");
-				System.exit(0);
-			}
-		}
-        
+            refAccumulator = (new ReferenceFactory()).getReferenceServer();
+            System.out.println("Connect to server succeed. reference collection will keep in sync.\n");
+        } catch (IOException ex) {
+            try {
+                refAccumulator = (new ReferenceFactory()).getReferenceLocal();
+                System.out.println("Connect to server failed.  Resume standalone version, reference collection use local copy.\n");
+            } catch (IOException ex2) {
+                System.err.println("error load reference");
+                System.exit(0);
+            }
+        }
     }
 
     public abstract void run();
 
-    /**
-     * Print the minimum number of moves to the goal state.
-     */
+    // print the minimum number of moves to the goal state.
     void solutionSummary(Solver solver) {
         if (solver.isSearchTimeout()) {
             System.out.println("Search terminated after "
@@ -106,9 +104,7 @@ public abstract class AbstractApplication {
         }
     }
 
-    /**
-     * Print the list of direction of moves to the goal state.
-     */
+    // print the list of direction of moves to the goal state.
     void solutionList(Solver solver) {
         int steps = solver.moves();
         for (int i = 1; i <= steps; i++) {
@@ -120,9 +116,7 @@ public abstract class AbstractApplication {
         System.out.println("\n");
     }
 
-    /**
-     * Print all boards of moves to the goal state.
-     */
+    // print all boards of moves to the goal state.
     void solutionDetail(Board board, Solver solver) {
         int count = 0;
         int steps = solver.moves();
@@ -161,7 +155,8 @@ public abstract class AbstractApplication {
         }
     }
 
-    void printOption(char option) {
+    // print menu options
+    void menuOption(char option) {
         switch (option) {
             case 's':
                 System.out.println("Choose your heuristic functions:");
@@ -197,7 +192,8 @@ public abstract class AbstractApplication {
         }
     }
 
-    void printOption(boolean flagAdvVersion) {
+    // print menu options for switch solver version
+    void menuOption(boolean flagAdvVersion) {
         if (flagAdvVersion) {
             System.out.println("      'V' - change initial heuristic estimate from Advanced "
                     + "to Standard version");
@@ -207,7 +203,8 @@ public abstract class AbstractApplication {
         }
     }
 
-    void printOption(Solver solver) {
+    // print menu options for switch timeout feature on/off
+    void menuOption(Solver solver) {
         if (solver.isFlagTimeout()) {
             System.out.println("      'O' - turn timeout feature off");
         } else {
@@ -215,6 +212,7 @@ public abstract class AbstractApplication {
         }
     }
 
+    // create the Board object with use entry
     Board keyInBoard() {
         byte[] blocks = new byte[puzzleSize];
         boolean [] used = new boolean[puzzleSize];
@@ -238,6 +236,7 @@ public abstract class AbstractApplication {
         return new Board(blocks);
     }
 
+    // create the Board object randomly
     Board createBoard(char choice) {
         switch (choice) {
             case 'E': case 'e':
@@ -252,6 +251,7 @@ public abstract class AbstractApplication {
         }
     }
 
+    // flip the solver version
     void flipVersion(SmartSolver solver) {
         flagAdvVersion = !flagAdvVersion;
         solver.versionSwitch(flagAdvVersion);
@@ -262,6 +262,7 @@ public abstract class AbstractApplication {
         }
     }
 
+    // change the timeout setting
     void changeTimeout(Solver solver, int min, int max) {
         int limit = 0;
         while (limit < min || limit > max) {

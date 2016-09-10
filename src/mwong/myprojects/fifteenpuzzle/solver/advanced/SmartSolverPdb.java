@@ -1,8 +1,5 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
-import java.rmi.RemoteException;
-
-import mwong.myprojects.fifteenpuzzle.solver.AdvancedRecord;
 import mwong.myprojects.fifteenpuzzle.solver.SmartSolverExtra;
 import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceRemote;
@@ -10,17 +7,19 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 
+import java.rmi.RemoteException;
+
 /**
  * SmartSolverPdb extends SmartSolverPdbBase use preset partial solution from the reference
  * collection to boost the search time.  This is the completed advanced version of 15 puzzle
  * optimal solver using pattern database.
  *
  * <p>Dependencies : AdvancedRecord.java, Board.java, Direction.java, PatternOptions.java,
- *                   ReferenceAccumulator.java, SmartSolverExtra.java, SmartSolverPdbBase.java,
+ *                   ReferenceRemote.java, SmartSolverExtra.java, SmartSolverPdbBase.java,
  *                   SolverProperties.java,
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SmartSolverPdb extends SmartSolverPdbBase {
     /**
@@ -36,10 +35,10 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
      * Initializes SmartSolverPdb object using given preset pattern.
      *
      * @param presetPattern the given preset pattern type
-     * @param refAccumulator the given ReferenceAccumulator object
+     * @param refConnection the given ReferenceRemote connection object
      */
-    public SmartSolverPdb(PatternOptions presetPattern, ReferenceRemote refAccumulator) {
-        this(presetPattern, 0, refAccumulator);
+    public SmartSolverPdb(PatternOptions presetPattern, ReferenceRemote refConnection) {
+        this(presetPattern, 0, refConnection);
     }
 
     /**
@@ -48,27 +47,27 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
      *
      * @param presetPattern the given preset pattern type
      * @param choice the number of preset pattern option
-     * @param refAccumulator the given ReferenceAccumulator object
+     * @param refConnection the given ReferenceRemote connection object
      */
     public SmartSolverPdb(PatternOptions presetPattern, int choice,
-    		ReferenceRemote refAccumulator) {
+            ReferenceRemote refConnection) {
         super(presetPattern, choice);
 
         try {
-			if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
-			    System.out.println("Referece board collection unavailable."
-			            + " Resume to the 15 puzzle solver standard version.");
-			    extra = null;
-			    this.refAccumulator = null;
-			} else {
-			    activeSmartSolver = true;
-			    extra = new SmartSolverExtra();
-			    this.refAccumulator = refAccumulator;
-			}
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            if (refConnection == null || refConnection.getActiveMap() == null) {
+                System.out.println("Referece board collection unavailable."
+                        + " Resume to the 15 puzzle solver standard version.");
+                extra = null;
+                this.refConnection = null;
+            } else {
+                activeSmartSolver = true;
+                extra = new SmartSolverExtra();
+                this.refConnection = refConnection;
+            }
+        } catch (RemoteException ex) {
+            System.out.println("Attention: Server connection failed."
+                    + " Advanced estimate will use standard estimate.");
+        }
     }
 
     /**
@@ -77,27 +76,27 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
      *
      * @param customPattern byte array of user defined custom pattern
      * @param elementGroups boolean array of groups reference to given pattern
-     * @param refAccumulator the given ReferenceAccumulator object
+     * @param refConnection the given ReferenceRemote connection object
      */
     public SmartSolverPdb(byte[] customPattern, boolean[] elementGroups,
-    		ReferenceRemote refAccumulator) {
+            ReferenceRemote refConnection) {
         super(customPattern, elementGroups);
 
         try {
-			if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
-			    System.out.println("Referece board collection unavailable."
-			            + " Resume to the 15 puzzle solver standard version.");
-			    extra = null;
-			    this.refAccumulator = null;
-			} else {
-			    activeSmartSolver = true;
-			    extra = new SmartSolverExtra();
-			    this.refAccumulator = refAccumulator;
-			}
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            if (refConnection == null || refConnection.getActiveMap() == null) {
+                System.out.println("Referece board collection unavailable."
+                        + " Resume to the 15 puzzle solver standard version.");
+                extra = null;
+                this.refConnection = null;
+            } else {
+                activeSmartSolver = true;
+                extra = new SmartSolverExtra();
+                this.refConnection = refConnection;
+            }
+        } catch (RemoteException ex) {
+            System.out.println("Attention: Server connection failed."
+                    + " Advanced estimate will use standard estimate.");
+        }
     }
 
     /**
@@ -107,16 +106,12 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
      * @return boolean value of the given board is a reference board with partial solution.
      */
     public boolean hasPartialSolution(Board board) {
-        AdvancedRecord record;
-		try {
-			record = extra.advancedContains(board, tagSearch, refAccumulator.getActiveMap());
-	        if (record != null && record.hasPartialMoves()) {
-	            return true;
-	        }
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        try {
+            return extra.hasPartialSolution(board, refConnection.getActiveMap());
+        } catch (RemoteException ex) {
+            // TODO Auto-generated catch block
+            ex.printStackTrace();
+        }
         return false;
     }
 

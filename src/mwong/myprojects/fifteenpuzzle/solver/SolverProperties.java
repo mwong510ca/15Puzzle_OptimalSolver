@@ -6,10 +6,10 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 /**
  * SolverProperties contains all default setting of the solver.
  *
- * <p>Dependencies : PatternOptions.java
+ * <p>Dependencies : PatternOptions.java, PropertiesCache.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SolverProperties {
     private static PatternOptions defaultPattern;

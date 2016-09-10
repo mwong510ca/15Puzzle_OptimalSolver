@@ -12,16 +12,17 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import java.util.HashMap;
 
 /**
- * SolverPD extends AbstractSolver without enhancement.  It is the 15 puzzle optimal solver.
- * It takes a Board object of the puzzle and solve it with IDA* using Additive Pattern Database.
- * It may use predefined pattern from PatternOptions or a set of user defined custom pattern.
+ * SolverPD extends AbstractSmartSolver without enhancement and SmartSolver feature
+ * disabled.  It is the 15 puzzle optimal solver.  It takes a Board object of the puzzle
+ * and solve it with IDA* using Additive Pattern Database. It may use predefined pattern
+ * from PatternOptions or a set of user defined custom pattern.
  *
- * <p>Dependencies : AbstractSolver.java, Board.java, Direction.java, HeuristicOptions.java,
+ * <p>Dependencies : AbstractSmartSolver.java, Board.java, Direction.java, PatternConstants.java,
  *                   PatternDatabase.java, PatternElement.java, PatternElementMode.java,
- *                   PatternOptions.java, PatternPreoperties.java, SolverProperties.java
+ *                   PatternOptions.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SolverPdbBase extends AbstractSmartSolver {
     private final int offsetReverse = 2;
@@ -144,7 +145,7 @@ public class SolverPdbBase extends AbstractSmartSolver {
     }
 
     /**
-     *  Print solver description with in use pattern.
+     * Print solver description with in use pattern.
      */
     @Override
     public void printDescription() {
@@ -281,19 +282,19 @@ public class SolverPdbBase extends AbstractSmartSolver {
 
         if (orgX < rowSize - 1) {
             shiftRight(orgX, orgY, zeroPos, zeroSym,
-                1, limit, orgValReg, orgValSym, orgCopy, reset);
+                1, limit, orgValReg, orgValSym, orgCopy, resetKey);
         }
         if (orgY < rowSize - 1) {
             shiftDown(orgX, orgY, zeroPos, zeroSym,
-                1, limit, orgValReg, orgValSym, orgCopy, reset);
+                1, limit, orgValReg, orgValSym, orgCopy, resetKey);
         }
         if (orgX > 0) {
             shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                1, limit, orgValReg, orgValSym, orgCopy, reset);
+                1, limit, orgValReg, orgValSym, orgCopy, resetKey);
         }
         if (orgY > 0) {
             shiftUp(orgX, orgY, zeroPos, zeroSym,
-                1, limit, orgValReg, orgValSym, orgCopy, reset);
+                1, limit, orgValReg, orgValSym, orgCopy, resetKey);
         }
     }
 
@@ -346,7 +347,7 @@ public class SolverPdbBase extends AbstractSmartSolver {
                 // RIGHT
                 if (orgX < rowSize - 1) {
                     newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy, resetKey));
                 }
                 if (nonIdentical) {
                     // UP
@@ -367,7 +368,7 @@ public class SolverPdbBase extends AbstractSmartSolver {
                 // DOWN
                 if (orgY < rowSize - 1) {
                     newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy, resetKey));
                 }
                 if (nonIdentical) {
                     // LEFT
@@ -388,7 +389,7 @@ public class SolverPdbBase extends AbstractSmartSolver {
                 // LEFT
                 if (orgX > 0) {
                     newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy, resetKey));
                 }
                 if (nonIdentical) {
                     // DOWN
@@ -409,7 +410,7 @@ public class SolverPdbBase extends AbstractSmartSolver {
                 // UP
                 if (orgY > 0) {
                     newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgValReg, orgValSym, orgCopy, reset));
+                            costPlus1, limit, orgValReg, orgValSym, orgCopy, resetKey));
                 }
                 if (nonIdentical) {
                     // RIGHT
@@ -429,7 +430,6 @@ public class SolverPdbBase extends AbstractSmartSolver {
             default:
                 assert false : "Error: recursive DFS switch statement";
         }
-
         return newEstimate;
     }
 

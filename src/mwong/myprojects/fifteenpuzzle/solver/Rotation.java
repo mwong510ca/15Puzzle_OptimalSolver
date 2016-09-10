@@ -6,8 +6,8 @@ package mwong.myprojects.fifteenpuzzle.solver;
  * <li>{@link #CW}</li>
  * <li>{@link #CCW}</li>
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 enum Rotation {
     /**
@@ -35,9 +35,9 @@ enum Rotation {
     }
 
     /**
-     *  Returns the value of current rotation.
+     * Returns the value of current rotation.
      *
-     *  @return value of current rotation
+     * @return value of current rotation
      */
     int getValue() {
         return val;

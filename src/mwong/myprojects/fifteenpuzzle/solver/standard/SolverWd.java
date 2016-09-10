@@ -9,14 +9,15 @@ import mwong.myprojects.fifteenpuzzle.solver.components.WalkingDistance;
 import java.util.HashMap;
 
 /**
- * SolverWd extends AbstractSolver.  It is the 15 puzzle optimal solver.
- * It takes a Board object of the puzzle and solve it with IDA* using Walking Distance.
+ * SolverWd extends AbstractSmartSolver with SmartSolver feature disabled.  It is the 15
+ * puzzle optimal solver.  It takes a Board object of the puzzle and solve it with IDA* using
+ * Walking Distance.
  *
  * <p>Dependencies : AbstractSolver.java, Board.java, Direction.java, HeuristicOptions.java,
  *                   WalkingDistance.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SolverWd extends AbstractSmartSolver {
     protected final boolean forward = true;
@@ -174,19 +175,19 @@ public class SolverWd extends AbstractSmartSolver {
                 switch (Direction.values()[firstMoveIdx]) {
                     case RIGHT:
                         lastDepthSummary[firstMoveIdx] = shiftRight(orgX, orgY, zeroPos, zeroSym,
-                                1, limit, idxH, idxV, valH, valV, reset);
+                                1, limit, idxH, idxV, valH, valV, resetKey);
                         break;
                     case DOWN:
                         lastDepthSummary[firstMoveIdx] = shiftDown(orgX, orgY, zeroPos, zeroSym,
-                                1, limit, idxH, idxV, valH, valV, reset);
+                                1, limit, idxH, idxV, valH, valV, resetKey);
                         break;
                     case LEFT:
                         lastDepthSummary[firstMoveIdx] = shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                                1, limit, idxH, idxV, valH, valV, reset);
+                                1, limit, idxH, idxV, valH, valV, resetKey);
                         break;
                     case UP:
                         lastDepthSummary[firstMoveIdx] = shiftUp(orgX, orgY, zeroPos, zeroSym,
-                                1, limit, idxH, idxV, valH, valV, reset);
+                                1, limit, idxH, idxV, valH, valV, resetKey);
                         break;
                     default:
                         assert false : "Error: starting order switch statement";
@@ -237,7 +238,7 @@ public class SolverWd extends AbstractSmartSolver {
                 // RIGHT
                 if (orgX < rowSize - 1) {
                     newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, idxH, idxV, valH, valV, reset));
+                            costPlus1, limit, idxH, idxV, valH, valV, resetKey));
                 }
                 if (nonIdentical) {
                     // UP
@@ -256,7 +257,7 @@ public class SolverWd extends AbstractSmartSolver {
                 // DOWN
                 if (orgY < rowSize - 1) {
                     newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, idxH, idxV, valH, valV, reset));
+                            costPlus1, limit, idxH, idxV, valH, valV, resetKey));
                 }
                 if (nonIdentical) {
                     // LEFT
@@ -275,7 +276,7 @@ public class SolverWd extends AbstractSmartSolver {
                 // LEFT
                 if (orgX > 0) {
                     newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, idxH, idxV, valH, valV, reset));
+                            costPlus1, limit, idxH, idxV, valH, valV, resetKey));
                 }
                 if (nonIdentical) {
                     // DOWN
@@ -294,7 +295,7 @@ public class SolverWd extends AbstractSmartSolver {
                 // UP
                 if (orgY > 0) {
                     newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, idxH, idxV, valH, valV, reset));
+                            costPlus1, limit, idxH, idxV, valH, valV, resetKey));
                 }
                 if (nonIdentical) {
                     // RIGHT
@@ -312,7 +313,6 @@ public class SolverWd extends AbstractSmartSolver {
             default:
                 assert false : "Error: recursive DFS switch statement";
         }
-
         return newEstimate;
     }
 

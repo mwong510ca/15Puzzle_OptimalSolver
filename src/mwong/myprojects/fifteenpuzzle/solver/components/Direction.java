@@ -8,32 +8,32 @@ package mwong.myprojects.fifteenpuzzle.solver.components;
  * <li>{@link #UP}</li>
  * <li>{@link #NONE}</li>
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public enum Direction {
     /**
-     *  Direction Right.
+     * Direction Right.
      */
     RIGHT(0),
 
     /**
-     *  Direction Down.
+     * Direction Down.
      */
     DOWN(1),
 
     /**
-     *  Direction Left.
+     * Direction Left.
      */
     LEFT(2),
 
     /**
-     *  Direction Up.
+     * Direction Up.
      */
     UP(3),
 
     /**
-     *  Direction None.
+     * Direction None.
      */
     NONE(-1);
 
@@ -47,18 +47,18 @@ public enum Direction {
     }
 
     /**
-     *  Returns the value of current direction.
+     * Returns the value of current direction.
      *
-     *  @return value of current direction
+     * @return value of current direction
      */
     public int getValue() {
         return val;
     }
 
     /**
-     *  Returns the opposite direction of current direction.
+     * Returns the opposite direction of current direction.
      *
-     *  @return direction is the opposite of current direction
+     * @return direction is the opposite of current direction
      */
     public Direction oppositeDirection() {
         switch (this) {
@@ -71,9 +71,9 @@ public enum Direction {
     }
 
     /**
-     *  Returns the symmetry direction of current direction.
+     * Returns the symmetry direction of current direction.
      *
-     *  @return direction is the symmetry of current direction
+     * @return direction is the symmetry of current direction
      */
     public Direction symmetryDirection() {
         switch (this) {

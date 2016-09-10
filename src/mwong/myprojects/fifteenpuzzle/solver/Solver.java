@@ -7,8 +7,10 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
  * SolverStandard is the interface class that has the basic methods of any
  * 15 puzzle solver.
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * <p>Dependencies : Board.java, Direction.java
+ *
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public interface Solver {
     // ----- solver setting -----

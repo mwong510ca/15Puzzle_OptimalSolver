@@ -7,28 +7,28 @@ package mwong.myprojects.fifteenpuzzle.solver.components;
  * <li>{@link #HARD}</li>
  * <li>{@link #RANDOM}</li>
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 
 public enum PuzzleDifficultyLevel {
     /**
-     *  Difficult level easy.
+     * Difficult level easy.
      */
     EASY,
 
     /**
-     *  Difficult level moderate.
+     * Difficult level moderate.
      */
     MODERATE,
 
     /**
-     *  Difficult level hard.
+     * Difficult level hard.
      */
     HARD,
 
     /**
-     *  Difficult level random.
+     * Difficult level random.
      */
     RANDOM;
 }

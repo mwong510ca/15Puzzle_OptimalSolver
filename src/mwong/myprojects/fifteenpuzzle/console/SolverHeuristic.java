@@ -1,7 +1,5 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
-import java.rmi.RemoteException;
-
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverMd;
@@ -12,19 +10,22 @@ import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverWdMd;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 
+import java.rmi.RemoteException;
+
 /**
- * SolverHeuristic is the console application extends AbstractApplication.  User can select his/her
+ * SolverHeuristic is the console application extends AbstractApplication.  User can select the
  * choice of heuristic function and version.  It takes a 16 numbers or choice of random board.
  * It display the process time and number of nodes generated at each depth.  It will timeout
- * after 10 seconds, except pattern database 78.
+ * after timeout setting (in resources/config.properties or default is 10 seconds), except pattern
+ * database 78.
  *
  * <p>Dependencies : AbstractApplication.java, Board.java, PatternOptions.java,
- *                   HeuristicOptions.java, Solver.java, SmartSolverMd.java,
+ *                   HeuristicOptions.java, SmartSolver.java, SmartSolverMd.java,
  *                   SmartSolverPdb.java, SmartSolverPdbWd.java, SmartSolverWd.java,
  *                   SmartSolverWdMd.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SolverHeuristic extends AbstractApplication {
     private SmartSolver solver;
@@ -42,7 +43,7 @@ public class SolverHeuristic extends AbstractApplication {
 
     // display the solver options and change it with the user's choice
     private Board menuChangeSolver() {
-        printOption('s');
+        menuOption('s');
         boolean pending = true;
         while (pending) {
             if (!scanner.hasNextInt()) {
@@ -125,12 +126,12 @@ public class SolverHeuristic extends AbstractApplication {
         return menuSub();
     }
 
-    // display a list of options
+    // display a list of main menu options
     private Board menuMain() {
-        printOption('q');
-        printOption('c');
-        printOption(flagAdvVersion);
-        printOption('b');
+        menuOption('q');
+        menuOption('c');
+        menuOption(flagAdvVersion);
+        menuOption('b');
 
         while (true) {
             if (scanner.hasNextInt()) {
@@ -152,10 +153,10 @@ public class SolverHeuristic extends AbstractApplication {
         }
     }
 
-    // display a list of options
+    // display a menu to create a board object
     private Board menuCreateBoard() {
-        printOption('q');
-        printOption('b');
+        menuOption('q');
+        menuOption('b');
 
         while (true) {
             if (scanner.hasNextInt()) {
@@ -171,11 +172,11 @@ public class SolverHeuristic extends AbstractApplication {
         }
     }
 
-    // display a list of options after user change the solver
+    // display a list of options after user changed the solver
     private Board menuSub() {
-        printOption('q');
-        printOption(flagAdvVersion);
-        printOption('b');
+        menuOption('q');
+        menuOption(flagAdvVersion);
+        menuOption('b');
 
         while (true) {
             if (scanner.hasNextInt()) {
@@ -198,11 +199,11 @@ public class SolverHeuristic extends AbstractApplication {
 
     // display a list of options after the puzzle has solved
     private Board menuSubSolution(Board initial) {
-        printOption('q');
-        printOption('m');
-        printOption('c');
-        printOption(flagAdvVersion);
-        printOption('b');
+        menuOption('q');
+        menuOption('m');
+        menuOption('c');
+        menuOption(flagAdvVersion);
+        menuOption('b');
 
         while (true) {
             if (scanner.hasNextInt()) {
@@ -225,6 +226,7 @@ public class SolverHeuristic extends AbstractApplication {
         }
     }
 
+    // create a board object after the user pick an option from the menu
     private Board action(char choice, Board initial) {
         switch (choice) {
             case 'L': case 'l':
@@ -282,14 +284,15 @@ public class SolverHeuristic extends AbstractApplication {
                 solutionSummary(solver);
                 // Notes: updateLastSearch is optional.
                 try {
-					if (refAccumulator.validateSolver(solver)
-					        && ((SmartSolverPdb) solver).isAddedReference()) {
-					    refAccumulator.updateLastSearch(solver);
-					}
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+                    if (solver.getClass().getSimpleName().equals("SmartSolverPdb")
+                            && solver.getHeuristicOptions() == HeuristicOptions.PD78
+                            && ((SmartSolverPdb) solver).isAddedReference()) {
+                        refAccumulator.updateLastSearch(solver);
+                    }
+                } catch (RemoteException ex) {
+                    // TODO Auto-generated catch block
+                    ex.printStackTrace();
+                }
 
                 if (solver.moves() > 0) {
                     initial = menuSubSolution(initial);

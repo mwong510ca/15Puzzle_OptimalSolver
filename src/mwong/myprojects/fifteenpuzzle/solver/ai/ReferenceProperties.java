@@ -5,8 +5,10 @@ import mwong.myprojects.fifteenpuzzle.PropertiesCache;
 /**
  * ReferenceProperties contains the default values of the ReferenceAccumulator.
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * <p>Dependencies : PropertiesCache.java
+ *
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class ReferenceProperties {
     //ReferenceAccumulator

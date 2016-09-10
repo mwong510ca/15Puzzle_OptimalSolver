@@ -11,8 +11,8 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
  *
  * <p>Dependencies : Board.java, Direction.java, HeuristicOptions.java, SolverWD.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SolverWdMd extends SolverWd {
     protected byte mdlcValue;
@@ -158,19 +158,19 @@ public class SolverWdMd extends SolverWd {
                 switch (Direction.values()[firstMoveIdx]) {
                     case RIGHT:
                         lastDepthSummary[firstMoveIdx] = shiftRight(orgX, orgY, zeroPos, zeroSym,
-                                1, limit, orgMDLC, idxH, idxV, valH, valV, reset);
+                                1, limit, orgMDLC, idxH, idxV, valH, valV, resetKey);
                         break;
                     case DOWN:
                         lastDepthSummary[firstMoveIdx] = shiftDown(orgX, orgY, zeroPos, zeroSym,
-                                1, limit, orgMDLC, idxH, idxV, valH, valV, reset);
+                                1, limit, orgMDLC, idxH, idxV, valH, valV, resetKey);
                         break;
                     case LEFT:
                         lastDepthSummary[firstMoveIdx] = shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                                1, limit, orgMDLC, idxH, idxV, valH, valV, reset);
+                                1, limit, orgMDLC, idxH, idxV, valH, valV, resetKey);
                         break;
                     case UP:
                         lastDepthSummary[firstMoveIdx] = shiftUp(orgX, orgY, zeroPos, zeroSym,
-                                1, limit, orgMDLC, idxH, idxV, valH, valV, reset);
+                                1, limit, orgMDLC, idxH, idxV, valH, valV, resetKey);
                         break;
                     default:
                         assert false : "Error: starting order switch statement";
@@ -221,7 +221,7 @@ public class SolverWdMd extends SolverWd {
                 // RIGHT
                 if (orgX < rowSize - 1) {
                     newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV, reset));
+                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV, resetKey));
                 }
                 if (nonIdentical) {
                     // UP
@@ -242,7 +242,7 @@ public class SolverWdMd extends SolverWd {
                 // DOWN
                 if (orgY < rowSize - 1) {
                     newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV, reset));
+                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV, resetKey));
                 }
                 if (nonIdentical) {
                     // LEFT
@@ -263,7 +263,7 @@ public class SolverWdMd extends SolverWd {
                 // LEFT
                 if (orgX > 0) {
                     newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV, reset));
+                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV, resetKey));
                 }
                 if (nonIdentical) {
                     // DOWN
@@ -284,7 +284,7 @@ public class SolverWdMd extends SolverWd {
                 // UP
                 if (orgY > 0) {
                     newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV, reset));
+                            costPlus1, limit, orgMDLC, idxH, idxV, valH, valV, resetKey));
                 }
                 if (nonIdentical) {
                     // RIGHT

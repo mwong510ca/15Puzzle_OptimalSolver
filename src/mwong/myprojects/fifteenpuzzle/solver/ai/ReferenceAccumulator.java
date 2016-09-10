@@ -15,21 +15,23 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 /**
- * ReferenceBoard is the data type of stored board of reference collection.
- * It analysis each board's actual number of moves, first 8 moves to goal state,
- * and a conversion set for reverse estimate (use reference board as goal state).
+ * ReferenceAccumulator implements Reference interface of the reference collections.
+ * It has full features of load the storage, add or remove a board, change setting,
+ * reset the collection, etc.
  *
  * <p>Dependencies : Board.java, Direction.java, FileProperties.java, HeuristicOptions.java,
- *                   PatternOptions.java, ReferenceBoard.java, ReferenceConstants.java,
- *                   ReferenceMoves.java, ReferenceProperties.java, SmartSolverPD.java, Solver.java
+ *                   PatternOptions.java, Reference.java, ReferenceBoard.java,
+ *                   ReferenceConstants.java, ReferenceMoves.java, ReferenceProperties.java,
+ *                   SmartSolver.java, SmartSolverpdb.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class ReferenceAccumulator implements Reference {
     private final String directory;
@@ -47,7 +49,8 @@ public class ReferenceAccumulator implements Reference {
     private boolean fileReady = false;
 
     /**
-     * Initializes ReferenceBoard object.  Load the stored boards from file or use default set.
+     * Initializes ReferenceAccumulator object.  Load the stored collection from file.
+     * Use default setting if not available.
      */
     public ReferenceAccumulator() {
         directory = FileProperties.getDirectory();
@@ -68,8 +71,8 @@ public class ReferenceAccumulator implements Reference {
             reset();
         }
 
-//        updateData(createSolver());
-//        refreshFile();
+        updateData(createSolver());
+        refreshFile();
     }
 
     // load the default set
@@ -82,12 +85,12 @@ public class ReferenceAccumulator implements Reference {
         }
     }
 
-    // load the default set
+    // clear the default set
     void clearDefault() {
         defaultMap =  null;
     }
 
-    // reset to default set
+    // reset to default setting
     void reset() {
         cutoffSetting = ReferenceProperties.getDefaultCutoffLimit();
         System.out.println("Default setting : cutoff archive limit - "
@@ -133,7 +136,7 @@ public class ReferenceAccumulator implements Reference {
         return cutoffLimit;
     }
 
-    // load the reference boards from file
+    // load the reference collection from file
     private void loadFile() throws IOException {
         FileInputStream fin = new FileInputStream(filepath);
         FileChannel inChannel = fin.getChannel();
@@ -177,7 +180,7 @@ public class ReferenceAccumulator implements Reference {
         fileReady = true;
     }
 
-    // create the new file to store the reference boards.
+    // create the new file for storing the reference collection.
     private synchronized void createFile() {
         fileReady = false;
         if (!(new File(directory)).exists()) {
@@ -244,27 +247,28 @@ public class ReferenceAccumulator implements Reference {
             System.err.println("System error : write file error.");
         }
     }
-/*
+
     // create and return a SmartSolverPD object.
     SmartSolverPdb createSolver() {
         try {
-            SmartSolverPdb solver = new SmartSolverPdb(PatternOptions.Pattern_78, this);
+            SmartSolverPdb solver = new SmartSolverPdb(PatternOptions.Pattern_78,
+                    new ReferenceAdapter(this));
             solver.messageSwitch(offSwitch);
             solver.timeoutSwitch(offSwitch);
             solver.versionSwitch(onSwitch);
             return solver;
-        } catch (OutOfMemoryError ex) {
+        } catch (OutOfMemoryError | RemoteException ex) {
             return null;
         }
     }
-*/
+
     /**
      * Returns the boolean value of the given solver is the valid for ReferenceAccumulator.
      *
      * @param inSolver the giver concrete instance of Solver interface.
      * @return boolean value of the given solver is the valid for ReferenceAccumulator
      */
-    public boolean validateSolver(SmartSolver inSolver) {
+    boolean validateSolver(SmartSolver inSolver) {
         if (inSolver == null) {
             return false;
         }
@@ -285,29 +289,26 @@ public class ReferenceAccumulator implements Reference {
     void updateData(SmartSolver inSolver) {
         SmartSolver solver = inSolver;
         if (!validateSolver(inSolver)) {
-//            solver = createSolver();
-        	solver = null;
+            solver = createSolver();
         }
 
         if (solver == null) {
             System.out.println("System update failed - not enough memory.");
             return;
         }
-
         updateAll((SmartSolverPdb) solver);
     }
 
     /**
-     *  Verify the given solver is using pattern database 7-8, scan the full
-     *  collection, if the reference board is not verified, verify it now.
+     * Verify the given solver is using pattern database 7-8, scan the full
+     * collection, if the reference board is not verified, verify it now.
      *
-     *  @param inSolver the SolverInterface object in use
+     * @param inSolver the SolverInterface object in use
      */
     public void updatePending(SmartSolver inSolver) {
         if (!validateSolver(inSolver)) {
             return;
         }
-
         updateAll((SmartSolverPdb) inSolver);
     }
 
@@ -516,9 +517,9 @@ public class ReferenceAccumulator implements Reference {
     // remove the given board from reference boards collection if exists, except
     // default reference boards.
     void removeBoard(Board board) {
-    	if (defaultMap == null) {
-    		loadDefault();
-    	}
+        if (defaultMap == null) {
+            loadDefault();
+        }
         ReferenceBoard advBoard = new ReferenceBoard(board);
         if (defaultMap.containsKey(advBoard)) {
             return;

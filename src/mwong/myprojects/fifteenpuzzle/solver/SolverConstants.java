@@ -7,10 +7,10 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleConstants;
 /**
  * SolverConstants contains all constant variables for any solver.
  *
- * <p>Dependencies : Board.java, PuzzleConstants.java
+ * <p>Dependencies : Board.java, PuzzleConstants.java, ReferenceConstants.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SolverConstants {
     private static final byte PUZZLE_SIZE = PuzzleConstants.getSize();

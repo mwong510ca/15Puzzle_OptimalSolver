@@ -12,8 +12,8 @@ import java.util.HashMap;
  *
  * <p>Dependencies : SmartSolver.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public interface ReferenceRemote extends Remote {
     /**
@@ -36,8 +36,6 @@ public interface ReferenceRemote extends Remote {
      * @return double of cutoff limit
      */
     double getCutoffLimit() throws RemoteException;
-
-    boolean validateSolver(SmartSolver inSolver)  throws RemoteException;
 
     /**
      *  Verify the given solver is using pattern database 7-8, scan the full

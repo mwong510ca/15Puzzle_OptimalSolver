@@ -5,8 +5,8 @@ import java.util.Scanner;
 /**
  * An immutable data type Stopwatch with start, stop and reset features
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class Stopwatch {
     private long startTime;
@@ -61,9 +61,9 @@ public class Stopwatch {
     }
 
     /**
-     *  Returns the current time of stop watch.
+     * Returns the current time of stop watch.
      *
-     *  @return current time of stop watch in second
+     * @return current time of stop watch in second
      */
     public double currentTime() {
         if (active) {
@@ -74,9 +74,9 @@ public class Stopwatch {
     }
 
     /**
-     *  Returns the boolean represent the active state of stop watch.
+     * Returns the boolean represent the active state of stop watch.
      *
-     *  @return boolean represent the active state of stop watch
+     * @return boolean represent the active state of stop watch
      */
     protected boolean status() {
         return active;

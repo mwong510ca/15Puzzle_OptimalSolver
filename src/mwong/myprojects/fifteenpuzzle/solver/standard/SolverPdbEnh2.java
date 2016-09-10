@@ -5,8 +5,8 @@ package mwong.myprojects.fifteenpuzzle.solver.standard;
  *
  * <p>Dependencies : SolverPdbEnh1.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SolverPdbEnh2 extends SolverPdbEnh1 {
     /**
@@ -18,7 +18,7 @@ public class SolverPdbEnh2 extends SolverPdbEnh1 {
      * Initializes SolverPdbEnh2 object with a given standard version SolverPdb instance,
      * the concrete class of SolverPdbEnh2.
      *
-     *  @param copySolver an instance of SolverPdb
+     * @param copySolver an instance of SolverPdb
      */
     public SolverPdbEnh2(SolverPdb copySolver) {
         super(copySolver);

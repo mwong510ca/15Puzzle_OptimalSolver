@@ -8,8 +8,8 @@ import java.util.Set;
 /**
  * PropertiesCache load all custom setting from resources/config.properties file.
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class PropertiesCache {
     private final String filepath = "resources/config.properties";

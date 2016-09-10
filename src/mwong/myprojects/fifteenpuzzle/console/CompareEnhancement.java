@@ -1,7 +1,5 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
-import java.rmi.RemoteException;
-
 import mwong.myprojects.fifteenpuzzle.solver.Solver;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdbBase;
@@ -10,6 +8,8 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdbBase;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdbEnh1;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdbEnh2;
+
+import java.rmi.RemoteException;
 
 /**
  * CompareEnhancement is the console application extends AbstractApplication. It takes a
@@ -22,8 +22,8 @@ import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdbEnh2;
  *                   SmartSolverPdb.java, SmartSolverPdbBase.java, SolverPdbBase.java,
  *                   SolverPdbEnh1.java, SolverPdbEnh2.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class CompareEnhancement extends AbstractApplication {
     private SolverPdbBase solverNoEnh;
@@ -60,8 +60,8 @@ public class CompareEnhancement extends AbstractApplication {
         solverNoEnh.timeoutSwitch(timeoutOff);
     }
 
-    //  It take a solver and a 15 puzzle board, display the the process time and number of
-    //  nodes generated during the search.
+    // It take a solver and a 15 puzzle board, display the the process time and number of
+    // nodes generated during the search.
     private void solvePuzzle(Solver solver, Board board) {
         solver.findOptimalPath(board);
         System.out.printf("%-15s %-20s\n", solver.searchTime() + "s", solver.searchNodeCount());
@@ -74,8 +74,8 @@ public class CompareEnhancement extends AbstractApplication {
         System.out.println("Compare 15 puzzle solver enhancement using "
                 + solverAdvanced.getHeuristicOptions().getDescription() + "\n");
         while (true) {
-            printOption('q');
-            printOption('b');
+            menuOption('q');
+            menuOption('b');
             Board board = null;
             while (true) {
                 if (scanner.hasNextInt()) {
@@ -115,32 +115,32 @@ public class CompareEnhancement extends AbstractApplication {
                     heuristicAdvanced = solverAdvanced.heuristicAdvanced(board);
                 }
                 try {
-					if (heuristicAdvanced > heuristicStandard) {
-						System.out.printf("%-36s", "5. Advanced estimate : ");
-						solvePuzzle(solverAdvEst, board);
-						if (solverAdvanced.hasPartialSolution(board)) {
-							System.out.printf("%-36s", "6. Use preset partial solution :");
-							solverAdvanced.versionSwitch(tagAdvanced);
-							solvePuzzle(solverAdvanced, board);
-							if (solverAdvEst.isAddedReference()) {
-								refAccumulator.updateLastSearch(solverAdvEst);
-							}
-						} else {
-							System.out.println("6. Skip - No preset partial solution.");
-							if (solverAdvanced.isAddedReference()) {
-								refAccumulator.updateLastSearch(solverAdvEst);
-							}
-						}
-					} else {
-						System.out.println("5 & 6. Skip - Both estimate are the same.");
-						if (solverAdvanced.isAddedReference()) {
-							refAccumulator.updateLastSearch(solverAdvEst);
-                	  		}
-					}
-                } catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+                    if (heuristicAdvanced > heuristicStandard) {
+                        System.out.printf("%-36s", "5. Advanced estimate : ");
+                        solvePuzzle(solverAdvEst, board);
+                        if (solverAdvanced.hasPartialSolution(board)) {
+                            System.out.printf("%-36s", "6. Use preset partial solution :");
+                            solverAdvanced.versionSwitch(tagAdvanced);
+                            solvePuzzle(solverAdvanced, board);
+                            if (solverAdvEst.isAddedReference()) {
+                                refAccumulator.updateLastSearch(solverAdvEst);
+                            }
+                        } else {
+                            System.out.println("6. Skip - No preset partial solution.");
+                            if (solverAdvanced.isAddedReference()) {
+                                refAccumulator.updateLastSearch(solverAdvEst);
+                            }
+                        }
+                    } else {
+                        System.out.println("5 & 6. Skip - Both estimate are the same.");
+                        if (solverAdvanced.isAddedReference()) {
+                            refAccumulator.updateLastSearch(solverAdvEst);
+                        }
+                    }
+                } catch (RemoteException ex) {
+                    // TODO Auto-generated catch block
+                    ex.printStackTrace();
+                }
             } else {
                 System.out.println("The board is unsolvable, try again!");
             }

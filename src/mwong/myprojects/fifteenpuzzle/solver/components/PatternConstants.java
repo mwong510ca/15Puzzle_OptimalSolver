@@ -4,8 +4,8 @@ package mwong.myprojects.fifteenpuzzle.solver.components;
  * PatternConstants contains all constant variables for Pattern Database
  * group size 2 to 8.
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class PatternConstants {
     // Remarks - key size : group of 3 = 3! = 6, group of 6 = 6! = 120

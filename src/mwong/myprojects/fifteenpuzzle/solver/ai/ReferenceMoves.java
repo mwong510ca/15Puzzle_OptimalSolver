@@ -11,10 +11,10 @@ import java.util.Arrays;
  * ReferenceMoves is the data type that stored number of moves or temporary estimate
  * and partial solution associated with ReferenceBoard object for reference collection.
  *
- * <p>Dependencies : Board.java, ReferenceConstants.java
+ * <p>Dependencies : Board.java, Direction.java, ReferenceConstants.java, SmartSolverPdb.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class ReferenceMoves implements Serializable {
     private static final long serialVersionUID = 17195273121L;
@@ -234,7 +234,7 @@ public class ReferenceMoves implements Serializable {
     public String toString() {
         String str = Integer.toBinaryString(status) + "\n";
         for (int i = 0; i < 4; i++) {
-            str += moves[i] + "\t" + initMoves[i] + "\t" 
+            str += moves[i] + "\t" + initMoves[i] + "\t"
                     + Arrays.toString(getInitialMoves(i, !symmetry)) + "\n";
         }
         return str;

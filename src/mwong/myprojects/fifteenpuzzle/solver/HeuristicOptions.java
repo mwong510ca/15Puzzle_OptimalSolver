@@ -10,8 +10,8 @@ package mwong.myprojects.fifteenpuzzle.solver;
  *  <li>{@link #PD78}</li>
  *  <li>{@link #PDCustom}</li>
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public enum HeuristicOptions {
     /**
@@ -61,9 +61,9 @@ public enum HeuristicOptions {
     }
 
     /**
-     *  Return heuristic function description.
+     * Return heuristic function description.
      *
-     *  @return heuristic function description
+     * @return heuristic function description
      */
     public String getDescription() {
         return description;

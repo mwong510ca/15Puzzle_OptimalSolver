@@ -9,23 +9,25 @@ import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverWdMd;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 
+import java.rmi.RemoteException;
+
 /**
  * CompareHeuristic is the console application extends AbstractApplication. It takes a
  * 16 numbers or choice of random board.  It will go through each heuristic function from
  * fastest to slowest.  It display the process time and number of nodes generated during
- * the search.  If it timeout after 10 seconds, except pattern database 78.  The remaining
- * heuristic function will display the estimate only.
+ * the search.  If it timeout after timeout setting (in resources/config.properties or
+ * default is 10 seconds) except pattern database 78.  The remaining heuristic function
+ * will display the estimate only.
  *
- * <p>Dependencies : AbstractApplication.java, Board.java, PatternOptions.java, Solver.java
+ * <p>Dependencies : AbstractApplication.java, Board.java, PatternOptions.java, SmartSolver.java
  *                   SmartSolverMd.java, SmartSolverPdb.java, SmartSolverPdbWd.java,
  *                   SmartSolverWd.java, SmartSolverWdMd.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class CompareHeuristic extends AbstractApplication {
     private SmartSolverMd solverMd;
-    
     private SmartSolverWd solverWd;
     private SmartSolverWdMd solverWdMd;
     private SmartSolverPdbWd solverPdbWd555;
@@ -59,8 +61,9 @@ public class CompareHeuristic extends AbstractApplication {
         solverPdb78.messageSwitch(messageOff);
     }
 
-    //  It take a solver and a 15 puzzle board, display the the process time and number of
-    //  nodes generated during the search, time out after 10 seconds.
+    // It take a solver and a 15 puzzle board, display the the process time and number of
+    // nodes generated with standard version.  If advanced estimate is difference, also display
+    // advanced search.  It will time out after 10 seconds if timeout feature is on.
     private void solvePuzzle(SmartSolver solver, Board board) {
         System.out.print(solver.getHeuristicOptions().getDescription());
         if (solver.isFlagTimeout()) {
@@ -92,7 +95,7 @@ public class CompareHeuristic extends AbstractApplication {
             if (heuristicStandard == heuristicAdvanced) {
                 System.out.println("Advanced\t" + "Same value");
                 if (!stdSearch) {
-                	advSearch = false;
+                    advSearch = false;
                 }
             } else {
                 System.out.print("Advanced\t" + heuristicAdvanced + "\t\t");
@@ -121,8 +124,8 @@ public class CompareHeuristic extends AbstractApplication {
         System.out.println("Compare 7 heuristic functions with standard and advanced version.\n");
 
         while (true) {
-            printOption('q');
-            printOption('b');
+            menuOption('q');
+            menuOption('b');
 
             Board board = null;
             while (true) {
@@ -159,7 +162,12 @@ public class CompareHeuristic extends AbstractApplication {
                 solvePuzzle(solverMd, board);
 
                 // Notes: updateLastSearch is optional.
- //               refAccumulator.updateLastSearch(solverPdb78);
+                try {
+                    refAccumulator.updateLastSearch(solverPdb78);
+                } catch (RemoteException ex) {
+                    // TODO Auto-generated catch block
+                    ex.printStackTrace();
+                }
             } else {
                 System.out.println("The board is unsolvable, try again!");
             }

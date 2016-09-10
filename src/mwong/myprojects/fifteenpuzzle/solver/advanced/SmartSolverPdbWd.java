@@ -1,7 +1,5 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
-import java.rmi.RemoteException;
-
 import mwong.myprojects.fifteenpuzzle.solver.SmartSolverExtra;
 import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceRemote;
@@ -10,35 +8,37 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdbWd;
 
+import java.rmi.RemoteException;
+
 /**
  * SmartSolverPdbWd extends SolverPdbWd.  The advanced version extend the standard solver
  * using the reference boards collection to boost the initial estimate.
  *
- * <p>Dependencies : AdvancedRecord.java, Board.java, Direction.java, PatternOptions.java,
- *                   ReferenceAccumulator.java, SmartSolverConstants.java, SmartSolverExtra.java,
+ * <p>Dependencies : Board.java, Direction.java, PatternOptions.java,
+ *                   ReferenceRemote.java, SmartSolverConstants.java, SmartSolverExtra.java,
  *                   SolverPdbWd.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SmartSolverPdbWd extends SolverPdbWd {
     /**
      * Initializes SmartSolverPdbWd object using default preset pattern.
      *
-     * @param refAccumulator the given ReferenceAccumulator object
+     * @param refConnection the given ReferenceRemote connection object
      */
-    public SmartSolverPdbWd(ReferenceRemote refAccumulator) {
-        this(SolverProperties.getPattern(), refAccumulator);
+    public SmartSolverPdbWd(ReferenceRemote refConnection) {
+        this(SolverProperties.getPattern(), refConnection);
     }
 
     /**
      * Initializes SmartSolverPdbWd object with given preset pattern.
      *
      * @param presetPattern the given preset pattern type
-     * @param refAccumulator the given ReferenceAccumulator object
+     * @param refConnection the given ReferenceRemote connection object
      */
-    public SmartSolverPdbWd(PatternOptions presetPattern, ReferenceRemote refAccumulator) {
-        this(presetPattern, 0, refAccumulator);
+    public SmartSolverPdbWd(PatternOptions presetPattern, ReferenceRemote refConnection) {
+        this(presetPattern, 0, refConnection);
     }
 
     /**
@@ -47,28 +47,28 @@ public class SmartSolverPdbWd extends SolverPdbWd {
      *
      * @param presetPattern the given preset pattern type
      * @param choice the given preset pattern option
-     * @param refAccumulator the given ReferenceAccumulator object
+     * @param refConnection the given ReferenceRemote connection object
      */
     public SmartSolverPdbWd(PatternOptions presetPattern, int choice,
-    		ReferenceRemote refAccumulator) {
+            ReferenceRemote refConnection) {
         super(presetPattern, choice);
         try {
-			if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
-			    System.out.println("Attention: Referece board collection unavailable."
-			            + " Advanced estimate will use standard estimate.");
-			} else {
-			    activeSmartSolver = true;
-			    extra = new SmartSolverExtra();
-			    this.refAccumulator = refAccumulator;
-			}
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            if (refConnection == null || refConnection.getActiveMap() == null) {
+                System.out.println("Attention: Referece board collection unavailable."
+                        + " Advanced estimate will use standard estimate.");
+            } else {
+                activeSmartSolver = true;
+                extra = new SmartSolverExtra();
+                this.refConnection = refConnection;
+            }
+        } catch (RemoteException ex) {
+            System.out.println("Attention: Server connection failed."
+                    + " Advanced estimate will use standard estimate.");
+        }
     }
 
     /**
-     *  Print solver description.
+     * Print solver description.
      */
     @Override
     public void printDescription() {
@@ -106,11 +106,11 @@ public class SmartSolverPdbWd extends SolverPdbWd {
         }
 
         try {
-			setPriorityAdvanced(board, isSearch);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            setPriorityAdvanced(board, isSearch);
+        } catch (RemoteException ex) {
+            // TODO Auto-generated catch block
+            ex.printStackTrace();
+        }
         return priorityAdvanced;
     }
 

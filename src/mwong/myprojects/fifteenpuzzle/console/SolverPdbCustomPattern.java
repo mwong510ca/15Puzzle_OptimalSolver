@@ -1,13 +1,12 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
-import java.rmi.RemoteException;
-
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
-import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternConstants;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
+
+import java.rmi.RemoteException;
 
 /**
  * SolverPdbCustomPattern is the console application extends AbstractApplication allow user to
@@ -16,16 +15,15 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
  * number of nodes generated.  The solver will timeout after timeout limit include
  * pattern database 78.
  *
- * <p>Dependencies : AbstractApplication.java, Board.java, PatternOptions.java,
- *                   HeuristicOptions.java, Solver.java, SmartSolverMd.java,
- *                   SmartSolverPdb.java, SmartSolverPdbWd.java, SmartSolverWd.java,
- *                   SmartSolverWdMd.java
+ * <p>Dependencies : AbstractApplication.java, Board.java, HeuristicOptions.java,
+ *                   PatternConstants.java, PatternOptions.java, SmartSolver.java,
+ *                   SmartSolverPdb.javabb
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SolverPdbCustomPattern extends AbstractApplication {
-    private SmartSolver solver;
+    private SmartSolverPdb solverPdb;
     private HeuristicOptions inUsePattern;
     private int inUsePatternOption;
 
@@ -34,8 +32,8 @@ public class SolverPdbCustomPattern extends AbstractApplication {
      */
     public SolverPdbCustomPattern() {
         super();
-        solver = new SmartSolverPdb(defaultPattern, refAccumulator);
-        inUsePattern = solver.getHeuristicOptions();
+        solverPdb = new SmartSolverPdb(defaultPattern, refAccumulator);
+        inUsePattern = solverPdb.getHeuristicOptions();
         inUsePatternOption = 0;
     }
 
@@ -74,7 +72,7 @@ public class SolverPdbCustomPattern extends AbstractApplication {
                     }
 
                     if (inUsePattern != HeuristicOptions.PD555 || inUsePatternOption != choice) {
-                        solver = new SmartSolverPdb(PatternOptions.Pattern_555, choice,
+                        solverPdb = new SmartSolverPdb(PatternOptions.Pattern_555, choice,
                                 refAccumulator);
                         inUsePattern = HeuristicOptions.PD555;
                         inUsePatternOption = choice;
@@ -96,7 +94,7 @@ public class SolverPdbCustomPattern extends AbstractApplication {
                     }
 
                     if (inUsePattern != HeuristicOptions.PD663 || inUsePatternOption != choice) {
-                        solver = new SmartSolverPdb(PatternOptions.Pattern_663, choice,
+                        solverPdb = new SmartSolverPdb(PatternOptions.Pattern_663, choice,
                                 refAccumulator);
                         inUsePattern = HeuristicOptions.PD663;
                         inUsePatternOption = choice;
@@ -121,7 +119,7 @@ public class SolverPdbCustomPattern extends AbstractApplication {
                     } while (!PatternOptions.Pattern_78.isValidPattern(choice));
 
                     if (inUsePattern != HeuristicOptions.PD78 || inUsePatternOption != choice) {
-                        solver = new SmartSolverPdb(PatternOptions.Pattern_78, choice,
+                        solverPdb = new SmartSolverPdb(PatternOptions.Pattern_78, choice,
                                 refAccumulator);
                         inUsePattern = HeuristicOptions.PD78;
                         inUsePatternOption = choice;
@@ -176,8 +174,8 @@ public class SolverPdbCustomPattern extends AbstractApplication {
                         boolean [] elementGroups = pattern2elementGroups(pattern, 7);
 
                         if (elementGroups != null) {
-                            solver = null;
-                            solver = new SmartSolverPdb(pattern, elementGroups, refAccumulator);
+                            solverPdb = null;
+                            solverPdb = new SmartSolverPdb(pattern, elementGroups, refAccumulator);
                             inUsePattern = HeuristicOptions.PDCustom;
                             inUsePatternOption = -1;
                             pending = false;
@@ -201,9 +199,9 @@ public class SolverPdbCustomPattern extends AbstractApplication {
         }
 
         if (option > 0 && option < 5) {
-            solver.versionSwitch(flagAdvVersion);
-            solver.setTimeoutLimit(timeoutLimit);
-            solver.printDescription();
+            solverPdb.versionSwitch(flagAdvVersion);
+            solverPdb.setTimeoutLimit(timeoutLimit);
+            solverPdb.printDescription();
         }
         return menuSub(true, true);
     }
@@ -239,11 +237,11 @@ public class SolverPdbCustomPattern extends AbstractApplication {
 
     // display a list of options in main menu
     private Board menuMain() {
-        printOption('q');
-        printOption('c');
-        printOption(flagAdvVersion);
-        printOption('t');
-        printOption('b');
+        menuOption('q');
+        menuOption('c');
+        menuOption(flagAdvVersion);
+        menuOption('t');
+        menuOption('b');
 
         while (true) {
             if (scanner.hasNextInt()) {
@@ -263,19 +261,20 @@ public class SolverPdbCustomPattern extends AbstractApplication {
         }
     }
 
+    // create a board object after the user pick an option from the menu
     private Board action(char choice, boolean optionV, boolean optionT) {
         switch (choice) {
             case 'C': case 'c':
                 return menuChangeSolver();
             case 'V': case 'v':
                 if (optionV) {
-                    flipVersion(solver);
+                    flipVersion(solverPdb);
                     return menuSub(false, optionT);
                 }
                 return null;
             case 'T': case 't':
                 if (optionT) {
-                    changeTimeout(solver, 3, 300);
+                    changeTimeout(solverPdb, 3, 300);
                     return menuSub(optionV, false);
                 }
                 return null;
@@ -287,14 +286,14 @@ public class SolverPdbCustomPattern extends AbstractApplication {
 
     // display a list of options after user change the solver
     private Board menuSub(boolean optionV, boolean optionT) {
-        printOption('q');
+        menuOption('q');
         if (optionV) {
-            printOption(flagAdvVersion);
+            menuOption(flagAdvVersion);
         }
         if (optionT) {
-            printOption('t');
+            menuOption('t');
         }
-        printOption('b');
+        menuOption('b');
 
         while (true) {
             if (scanner.hasNextInt()) {
@@ -327,41 +326,41 @@ public class SolverPdbCustomPattern extends AbstractApplication {
         System.out.println("Allow user to try on more preset patterns"
                 + " or enter a user defined custom pattern.\n");
 
-        solver.versionSwitch(flagAdvVersion);
-        solver.setTimeoutLimit(timeoutLimit);
-        solver.printDescription();
+        solverPdb.versionSwitch(flagAdvVersion);
+        solverPdb.setTimeoutLimit(timeoutLimit);
+        solverPdb.printDescription();
 
         Board initial = menuMain();
 
         while (true) {
-            System.out.print(solver.getHeuristicOptions().getDescription());
+            System.out.print(solverPdb.getHeuristicOptions().getDescription());
             if (flagAdvVersion) {
                 System.out.print(" (Advanced version) ");
             } else {
                 System.out.print(" (Standard version) ");
             }
-            System.out.println("will timeout at " + solver.getSearchTimeoutLimit() + "s:");
+            System.out.println("will timeout at " + solverPdb.getSearchTimeoutLimit() + "s:");
             System.out.println(initial);
 
             if (initial.isSolvable()) {
-                solver.findOptimalPath(initial);
-                if (solver.isSearchTimeout()) {
+                solverPdb.findOptimalPath(initial);
+                if (solverPdb.isSearchTimeout()) {
                     System.out.println("Search terminated after " + timeoutLimit + "s.");
                 } else {
-                    System.out.println("Minimum number of moves = " + solver.moves());
+                    System.out.println("Minimum number of moves = " + solverPdb.moves());
                 }
             } else {
                 System.out.println("The board is unsolvable, try again!\n");
             }
             System.out.println();
             try {
-				if (refAccumulator.validateSolver(solver)) {
-				    refAccumulator.updateLastSearch(solver);
-				}
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+                if (solverPdb.isAddedReference()) {
+                    refAccumulator.updateLastSearch(solverPdb);
+                }
+            } catch (RemoteException ex) {
+                // TODO Auto-generated catch block
+                ex.printStackTrace();
+            }
             initial = menuMain();
         }
     }

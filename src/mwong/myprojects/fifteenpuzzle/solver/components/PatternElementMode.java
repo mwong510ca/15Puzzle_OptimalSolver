@@ -5,8 +5,8 @@ package mwong.myprojects.fifteenpuzzle.solver.components;
  * <li>{@link #GENERATOR}</li>
  * <li>{@link #PUZZLE_SOLVER}</li>
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public enum PatternElementMode {
     /**

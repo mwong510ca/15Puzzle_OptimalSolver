@@ -5,8 +5,8 @@ package mwong.myprojects.fifteenpuzzle.solver.standard;
  *
  * <p>Dependencies : SolverPdbBase.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SolverPdbEnh1 extends SolverPdbBase {
     /**
@@ -37,19 +37,19 @@ public class SolverPdbEnh1 extends SolverPdbBase {
         System.arraycopy(pdKeys, 0, orgCopy, 0, szPdKeys);
         if (orgX < rowSize - 1 && lastDepthSummary[4] > 0) {
             shiftRight(orgX, orgY, zeroPos, zeroSym,
-                1, limit, orgValReg, orgValSym, orgCopy, reset);
+                1, limit, orgValReg, orgValSym, orgCopy, resetKey);
         }
         if (orgY < rowSize - 1 && lastDepthSummary[5] > 0) {
             shiftDown(orgX, orgY, zeroPos, zeroSym,
-                1, limit, orgValReg, orgValSym, orgCopy, reset);
+                1, limit, orgValReg, orgValSym, orgCopy, resetKey);
         }
         if (orgX > 0 && lastDepthSummary[6] > 0) {
             shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                1, limit, orgValReg, orgValSym, orgCopy, reset);
+                1, limit, orgValReg, orgValSym, orgCopy, resetKey);
         }
         if (orgY > 0 && lastDepthSummary[7] > 0) {
             shiftUp(orgX, orgY, zeroPos, zeroSym,
-                1, limit, orgValReg, orgValSym, orgCopy, reset);
+                1, limit, orgValReg, orgValSym, orgCopy, resetKey);
         }
     }
 

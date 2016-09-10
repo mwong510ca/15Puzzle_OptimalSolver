@@ -3,8 +3,8 @@ package mwong.myprojects.fifteenpuzzle.solver.components;
 /**
  * PuzzlePrepertiess contains the preset hard boards of 15 puzzle.
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class PuzzleProperties {
     // initializes hard boards to be use to generate random board

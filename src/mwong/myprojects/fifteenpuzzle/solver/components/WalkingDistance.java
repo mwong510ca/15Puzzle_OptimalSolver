@@ -19,8 +19,8 @@ import java.util.Map.Entry;
  *
  * <p>Dependencies : FileProperties.java, PuzzleConstants.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class WalkingDistance {
     private final int rowSize;

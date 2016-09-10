@@ -5,13 +5,13 @@ import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
 import java.util.HashMap;
 
 /**
- * Reference is the interface of stored board of reference collection 
+ * Reference is the interface of stored board of reference collection
  * for 15 puzzle optimal solver advanced version.
  *
  * <p>Dependencies : SmartSolver.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public interface Reference {
     /**
@@ -28,8 +28,6 @@ public interface Reference {
      */
     int getCutoffSetting();
 
-    boolean validateSolver(SmartSolver inSolver);
-
     /**
      * Returns a double of cutoff limit (minus buffer setting).
      *
@@ -38,10 +36,10 @@ public interface Reference {
     double getCutoffLimit();
 
     /**
-     *  Verify the given solver is using pattern database 7-8, scan the full
-     *  collection, if the reference board is not verified, verify it now.
+     * Verify the given solver is using pattern database 7-8, scan the full
+     * collection, if the reference board is not verified, verify it now.
      *
-     *  @param inSolver the SolverInterface object in use
+     * @param inSolver the SolverInterface object in use
      */
     void updatePending(SmartSolver inSolver);
 

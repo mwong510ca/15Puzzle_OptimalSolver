@@ -3,8 +3,8 @@ package mwong.myprojects.fifteenpuzzle.solver.components;
 /**
  * PuzzleConstants contains all constant variables of 15 puzzle.
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class PuzzleConstants {
     private static final byte SIZE = 16;

@@ -8,6 +8,12 @@ import mwong.myprojects.fifteenpuzzle.console.SolverHeuristic;
 import mwong.myprojects.fifteenpuzzle.console.SolverHeuristicStats;
 import mwong.myprojects.fifteenpuzzle.console.SolverPdbCustomPattern;
 
+/**
+ * ApplicationRun is the main console application of the 15 puzzle optimal solver.
+ *
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 class ApplicationRun {
     /**
      * The main method takes the choice of console application of 15 puzzle solver.
@@ -18,18 +24,17 @@ class ApplicationRun {
      * Option 5: User choice of preset pattern database or user defined custom pattern.
      * Option 6: Run a number trails, display the average solved time and number of puzzles
      *           has been timeout.
-     *
+     * Default : use option 3, Compare all 7 heuristic functions.
      * @param args standard argument main function
      */
     public static void main(String[] args) {
         AbstractApplication app = null;
-        int choice = 0;
+        int choice = 3;
         if (args.length > 0 && args[0].matches("\\d+")) {
             choice = Integer.parseInt(args[0]);
         }
 
         switch (choice) {
-
             case 1 : app = new DemoSolverPdb78();
                 break;
             case 2 : app = new CompareEnhancement();
@@ -42,10 +47,8 @@ class ApplicationRun {
                 break;
             case 6 : app = new SolverHeuristicStats();
                 break;
-
             default :app = new CompareHeuristic();
         }
-
         app.run();
     }
 }

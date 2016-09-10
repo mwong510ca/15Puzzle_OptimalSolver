@@ -24,8 +24,8 @@ import java.util.HashMap;
  * <p>Remarks: group size of 8 takes 2.5-3 hours and require at least 2 gigabytes
  *            -Xms2g
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class PatternDatabase {
     private static final PatternOptions defaultPattern = PatternOptions.Pattern_663;
@@ -661,36 +661,36 @@ public class PatternDatabase {
     }
 
     /**
-     *  Returns the byte array of pattern group size.
+     * Returns the byte array of pattern group size.
      *
-     *  @return  byte array of pattern group size
+     * @return  byte array of pattern group size
      */
     public final byte[] getPatternGroups() {
         return patternGroups;
     }
 
     /**
-     *  Returns the byte array of conversion set of tile values to detached element keys.
+     * Returns the byte array of conversion set of tile values to detached element keys.
      *
-     *  @return byte array of conversion set of tile values to detached element keys
+     * @return byte array of conversion set of tile values to detached element keys
      */
     public final byte[] getVal2ptnKey() {
         return val2ptnKey;
     }
 
     /**
-     *  Returns the byte array of conversion set of tile values to pattern order.
+     * Returns the byte array of conversion set of tile values to pattern order.
      *
-     *  @return byte array of conversion set of tile values to pattern order
+     * @return byte array of conversion set of tile values to pattern order
      */
     public final byte[] getVal2ptnOrder() {
         return val2ptnOrder;
     }
 
     /**
-     *  Returns the conversion set of tile values to pattern group of additive pattern.
+     * Returns the conversion set of tile values to pattern group of additive pattern.
      *
-     *  @return a integer array of conversion set of tile values to element keys
+     * @return a integer array of conversion set of tile values to element keys
      */
     public final byte[][] getPatternSet() {
         return patterns;

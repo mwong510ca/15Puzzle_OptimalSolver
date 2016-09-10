@@ -21,8 +21,8 @@ import java.util.TreeSet;
  *
  * <p>Dependencies : FileProperties.java, PuzzleConstants.java, PuzzleConstants.java, Stopwatch.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class PatternElement {
     private final int puzzleSize;
@@ -41,7 +41,7 @@ public class PatternElement {
     // for each group : key size x number of keys x 6 shift max (3 left, 3 right)
     private int[][] rotateKeyByPos;
     // store 2 values ( rotate | next format index)
-    //  for each group : format size x number of keys x 4 direction of moves
+    // for each group : format size x number of keys x 4 direction of moves
     private int[][][] linkFormatCombo;
     private int[][] linkFormatMove;
 

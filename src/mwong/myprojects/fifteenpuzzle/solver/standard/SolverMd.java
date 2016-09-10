@@ -7,15 +7,15 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 
 /**
- * SolverMd extends AbstractSolver.  It is the 15 puzzle optimal solver.
- * It takes a Board object of the puzzle and solve it with IDA* using Manhattan
- * distance with linear conflict option.
+ * SolverMd extends AbstractSmartSolver with SmartSolver feature disabled.  It is
+ * the 15 puzzle optimal solver.  It takes a Board object of the puzzle and solve it
+ * with IDA* using Manhattan distance with linear conflict option.
  *
- * <p>Dependencies : AbstractSolver.java, Board.java, Direction.java,
+ * <p>Dependencies : AbstractSmartSolver.java, Board.java, Direction.java,
  *                   HeuristicOptions.java, PuzzleProperties.java SolverConstants.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SolverMd extends AbstractSmartSolver {
     protected byte[] tilesSym;
@@ -180,19 +180,19 @@ public class SolverMd extends AbstractSmartSolver {
                 switch (Direction.values()[firstMoveIdx]) {
                     case RIGHT:
                         lastDepthSummary[firstMoveIdx] = shiftRight(orgX, orgY, zeroPos, zeroSym,
-                                1, limit, orgPrio, reset);
+                                1, limit, orgPrio, resetKey);
                         break;
                     case DOWN:
                         lastDepthSummary[firstMoveIdx] = shiftDown(orgX, orgY, zeroPos, zeroSym,
-                                1, limit, orgPrio, reset);
+                                1, limit, orgPrio, resetKey);
                         break;
                     case LEFT:
                         lastDepthSummary[firstMoveIdx] = shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                                1, limit, orgPrio, reset);
+                                1, limit, orgPrio, resetKey);
                         break;
                     case UP:
                         lastDepthSummary[firstMoveIdx] = shiftUp(orgX, orgY, zeroPos, zeroSym,
-                                1, limit, orgPrio, reset);
+                                1, limit, orgPrio, resetKey);
                         break;
                     default:
                         assert false : "Error: starting order switch statement";
@@ -245,7 +245,7 @@ public class SolverMd extends AbstractSmartSolver {
                 // RIGHT
                 if (orgX < rowSize - 1) {
                     newEstimate = Math.min(newEstimate, shiftRight(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgPrio, reset));
+                            costPlus1, limit, orgPrio, resetKey));
                 }
                 if (nonIdentical) {
                     // UP
@@ -264,7 +264,7 @@ public class SolverMd extends AbstractSmartSolver {
                 // DOWN
                 if (orgY < rowSize - 1) {
                     newEstimate = Math.min(newEstimate, shiftDown(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgPrio, reset));
+                            costPlus1, limit, orgPrio, resetKey));
                 }
                 if (nonIdentical) {
                     // LEFT
@@ -283,7 +283,7 @@ public class SolverMd extends AbstractSmartSolver {
                 // LEFT
                 if (orgX > 0) {
                     newEstimate = Math.min(newEstimate, shiftLeft(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgPrio, reset));
+                            costPlus1, limit, orgPrio, resetKey));
                 }
                 if (nonIdentical) {
                     // DOWN
@@ -302,7 +302,7 @@ public class SolverMd extends AbstractSmartSolver {
                 // UP
                 if (orgY > 0) {
                     newEstimate = Math.min(newEstimate, shiftUp(orgX, orgY, zeroPos, zeroSym,
-                            costPlus1, limit, orgPrio, reset));
+                            costPlus1, limit, orgPrio, resetKey));
                 }
                 if (nonIdentical) {
                     // RIGHT

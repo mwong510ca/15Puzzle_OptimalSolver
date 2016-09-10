@@ -7,25 +7,27 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 
 /**
- * ReferenceBoard is the data type of stored board of reference collection.
- * It analysis each board's actual number of moves, first 8 moves to goal state,
- * and a conversion set for reverse estimate (use reference board as goal state).
+ * ReferenceAdapter implements ReferenceRemote interface.  This class applied adapter pattern on
+ * the ReferenceAccumulator.class.  It will be called by the ReferenceFactory.class to determine
+ * the local or remote connection.  It provides the same functionality ad ReferenceAccumulator.class
+ * with any type of connections.
  *
- * <p>Dependencies : Board.java, Direction.java, FileProperties.java, HeuristicOptions.java,
- *                   PatternOptions.java, ReferenceBoard.java, ReferenceConstants.java,
- *                   ReferenceMoves.java, ReferenceProperties.java, SmartSolverPD.java, Solver.java
+ * <p>Dependencies : ReferenceAccumulator.java, ReferenceBaord.java, ReferenceMoves.java,
+ *                   referenceRemote.java, SmartSolver.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class ReferenceAdapter extends UnicastRemoteObject implements ReferenceRemote {
     private static final long serialVersionUID = 17195273121L;
     private Reference refObject;
 
+    // initialize the ReferenceAdapter object
     public ReferenceAdapter() throws RemoteException {
         refObject = new ReferenceAccumulator();
     }
 
+    // initialize the ReferenceAdapter object with the given ReferenceAccumulator object
     public ReferenceAdapter(ReferenceAccumulator refAccumulator) throws RemoteException {
         refObject = refAccumulator;
     }
@@ -58,10 +60,10 @@ public class ReferenceAdapter extends UnicastRemoteObject implements ReferenceRe
     }
 
     /**
-     *  Verify the given solver is using pattern database 7-8, scan the full
-     *  collection, if the reference board is not verified, verify it now.
+     * Verify the given solver is using pattern database 7-8, scan the full
+     * collection, if the reference board is not verified, verify it now.
      *
-     *  @param inSolver the SolverInterface object in use
+     * @param inSolver the SolverInterface object in use
      */
     public void updatePending(SmartSolver inSolver) throws RemoteException {
         refObject.updatePending(inSolver);
@@ -87,10 +89,5 @@ public class ReferenceAdapter extends UnicastRemoteObject implements ReferenceRe
      */
     public boolean updateLastSearch(SmartSolver inSolver) throws RemoteException {
         return refObject.updateLastSearch(inSolver);
-    }
-
-    @Override
-    public boolean validateSolver(SmartSolver inSolver) throws RemoteException {
-        return refObject.validateSolver(inSolver);
     }
 }

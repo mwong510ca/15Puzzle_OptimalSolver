@@ -1,49 +1,49 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
-import java.rmi.RemoteException;
-
 import mwong.myprojects.fifteenpuzzle.solver.SmartSolverExtra;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceRemote;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverWd;
 
+import java.rmi.RemoteException;
+
 /**
  * SmartSolverWd extends SolverWd.  The advanced version extend the standard solver
  * using the reference boards collection to boost the initial estimate.
  *
- * <p>Dependencies : AdvancedRecord.java, Board.java, Direction.java, ReferenceAccumulator.java,
+ * <p>Dependencies : Board.java, Direction.java, ReferenceRemote.java,
  *                   SmartSolverConstants.java, SmartSolverExtra.java, SolverWd.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SmartSolverWd extends SolverWd {
     /**
      * Initializes SmartSolverWd object.  If refAccumlator is null or empty,
      * it will act as standard version.
      *
-     * @param refAccumulator the given ReferenceAccumulator object
+     * @param refConnection the given ReferenceRemote connection object
      */
-    public SmartSolverWd(ReferenceRemote refAccumulator) {
+    public SmartSolverWd(ReferenceRemote refConnection) {
         super();
         try {
-			if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
-			    System.out.println("Attention: Referece board collection unavailable."
-			            + " Advanced estimate will use standard estimate.");
-			} else {
-			    activeSmartSolver = true;
-			    extra = new SmartSolverExtra();
-			    this.refAccumulator = refAccumulator;
-			}
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            if (refConnection == null || refConnection.getActiveMap() == null) {
+                System.out.println("Attention: Referece board collection unavailable."
+                        + " Advanced estimate will use standard estimate.");
+            } else {
+                activeSmartSolver = true;
+                extra = new SmartSolverExtra();
+                this.refConnection = refConnection;
+            }
+        } catch (RemoteException ex) {
+            System.out.println("Attention: Server connection failed."
+                    + " Advanced estimate will use standard estimate.");
+        }
     }
 
     /**
-     *  Print solver description.
+     * Print solver description.
      */
     @Override
     public void printDescription() {
@@ -77,11 +77,11 @@ public class SmartSolverWd extends SolverWd {
         }
 
         try {
-			setPriorityAdvanced(board, isSearch);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            setPriorityAdvanced(board, isSearch);
+        } catch (RemoteException ex) {
+            // TODO Auto-generated catch block
+            ex.printStackTrace();
+        }
         return priorityAdvanced;
     }
 

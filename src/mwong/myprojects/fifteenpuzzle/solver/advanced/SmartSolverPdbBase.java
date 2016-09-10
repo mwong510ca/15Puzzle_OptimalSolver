@@ -1,7 +1,5 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
-import java.rmi.RemoteException;
-
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.SmartSolverExtra;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceRemote;
@@ -11,16 +9,18 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdb;
 import mwong.myprojects.fifteenpuzzle.utilities.Stopwatch;
 
+import java.rmi.RemoteException;
+
 /**
  * SmartSolverPdbBase extends SolverPdb.  It extends the standard solver using the reference
  * boards collection to boost the initial estimate only, without using partial preset solution.
  *
- * <p>Dependencies : AdvancedRecord.java, Board.java, Direction.java, HeuristicOptions.java,
- *                   PatternOptions.java, ReferenceAccumulator.java, SmartSolverConstants.java,
- *                   SmartSolverExtra.java, SolverPdb.java, SolverProperties.java, Stopwatch.java
+ * <p>Dependencies : Board.java, Direction.java, HeuristicOptions.java,
+ *                   PatternOptions.java, ReferenceRemote.java, SmartSolverExtra.java,
+ *                   SolverPdb.java, Stopwatch.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SmartSolverPdbBase extends SolverPdb {
     protected Board lastSearchBoard;
@@ -44,25 +44,26 @@ public class SmartSolverPdbBase extends SolverPdb {
     }
 
     /**
-     *  Initializes SolverPdb object with a given concrete class.
+     * Initializes SolverPdb object with a given concrete class.
      *
-     *  @param copySolver an instance of SolverPdb
+     * @param copySolver an instance of SolverPdb
+     * @param refConnection the given ReferenceRemote connection object
      */
-    public SmartSolverPdbBase(SolverPdb copySolver, ReferenceRemote refAccumulator) {
+    public SmartSolverPdbBase(SolverPdb copySolver, ReferenceRemote refConnection) {
         super(copySolver);
         try {
-			if (refAccumulator == null || refAccumulator.getActiveMap() == null) {
-			    System.out.println("Attention: Referece board collection unavailable."
-			            + " Advanced estimate will use standard estimate.");
-			} else {
-			    activeSmartSolver = true;
-			    extra = new SmartSolverExtra();
-			    this.refAccumulator = refAccumulator;
-			}
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            if (refConnection == null || refConnection.getActiveMap() == null) {
+                System.out.println("Attention: Referece board collection unavailable."
+                        + " Advanced estimate will use standard estimate.");
+            } else {
+                activeSmartSolver = true;
+                extra = new SmartSolverExtra();
+                this.refConnection = refConnection;
+            }
+        } catch (RemoteException ex) {
+            System.out.println("Attention: Server connection failed."
+                    + " Advanced estimate will use standard estimate.");
+        }
     }
 
     /**
@@ -122,11 +123,11 @@ public class SmartSolverPdbBase extends SolverPdb {
         }
 
         try {
-			setPriorityAdvanced(board, isSearch);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            setPriorityAdvanced(board, isSearch);
+        } catch (RemoteException ex) {
+            // TODO Auto-generated catch block
+            ex.printStackTrace();
+        }
         return priorityAdvanced;
     }
 
@@ -227,34 +228,33 @@ public class SmartSolverPdbBase extends SolverPdb {
                     // if currently using pattern database 7-8 and it takes long than cutoff limit
                     // to solve, add the board and solutions to reference boards collection.
                     try {
-						if (activeSmartSolver && inUseHeuristic == HeuristicOptions.PD78
-						        && stopwatch.currentTime() >  refAccumulator.getCutoffLimit()) {
-						    // backup original solutions
-						    final Stopwatch backupTime = stopwatch;
-						    final byte backupSteps = steps;
-						    final int backupIdaCount = searchNodeCount;
-						    final Direction[] backupSolution = new Direction[steps + 1];
-						    System.arraycopy(solutionMove, 1, backupSolution, 1, steps);
+                        if (activeSmartSolver && inUseHeuristic == HeuristicOptions.PD78
+                                && stopwatch.currentTime() >  refConnection.getCutoffLimit()) {
+                            // backup original solutions
+                            final Stopwatch backupTime = stopwatch;
+                            final byte backupSteps = steps;
+                            final int backupIdaCount = searchNodeCount;
+                            final Direction[] backupSolution = new Direction[steps + 1];
+                            System.arraycopy(solutionMove, 1, backupSolution, 1, steps);
 
-						    searchTime = stopwatch.currentTime();
-						    stopwatch = new Stopwatch();
-						    // only update cached advanced priority if using original priority search
-						    // and the initial board has added to the reference boards
-						    if (refAccumulator.addBoard(this)) {
-						        priorityAdvanced = backupSteps;
-						        addedReference = true;
-						    }
+                            searchTime = stopwatch.currentTime();
+                            stopwatch = new Stopwatch();
+                            // update cached advanced priority if added to the reference collection
+                            if (refConnection.addBoard(this)) {
+                                priorityAdvanced = backupSteps;
+                                addedReference = true;
+                            }
 
-						    // restore original solutions
-						    stopwatch = backupTime;
-						    steps = backupSteps;
-						    searchNodeCount = backupIdaCount;
-						    solutionMove = backupSolution;
-						}
-					} catch (RemoteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+                            // restore original solutions
+                            stopwatch = backupTime;
+                            steps = backupSteps;
+                            searchNodeCount = backupIdaCount;
+                            solutionMove = backupSolution;
+                        }
+                    } catch (RemoteException ex) {
+                        // TODO Auto-generated catch block
+                        ex.printStackTrace();
+                    }
                     return;
                 }
             }
@@ -301,6 +301,11 @@ public class SmartSolverPdbBase extends SolverPdb {
         return lastSearchBoard;
     }
 
+    /**
+     * Returns the boolean value of last search has added the board in reference collection.
+     *
+     * @return board object of last search has added the board in reference collection
+     */
     public final boolean isAddedReference() {
         return addedReference;
     }

@@ -7,8 +7,8 @@ import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
  *
  * <p>Dependencies : SolverConstants.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class ApplicationConstants {
     private static final boolean TAG_LINEAR_CONFLICT = SolverConstants.isTagLinearConflict();

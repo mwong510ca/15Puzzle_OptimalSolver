@@ -7,8 +7,8 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleConstants;
 /**
  * ReferenceConstants contains all constant variables of reference collection.
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class ReferenceConstants {
     private static final String CORE_SOLVER_CLASS_NAME = SmartSolverPdb.class.getSimpleName();

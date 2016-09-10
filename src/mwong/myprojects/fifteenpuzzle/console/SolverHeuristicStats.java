@@ -23,13 +23,13 @@ import java.util.Scanner;
  * Only pattern database 7-8 has an option to turn timeout feature off. It will display the total
  * process time, number of timeout boards, and average time of boards with solution.
  *
- * <p>Dependencies : AbstractApplication.java, Board.java, PatternOptions.java,
- *                   HeuristicOptions.java, PuzzleDifficultyLevel.java, SmartSolverMd.java,
- *                   SmartSolverPdb.java, SmartSolverPdbWd.java, SmartSolverWd.java,
- *                   SmartSolverWdMd.java, Solver.java, SolverConstants.java
+ * <p>Dependencies : AbstractApplication.java, Board.java, HeuristicOptions.java,
+ *                   PatternOptions.java, PuzzleDifficultyLevel.java, SmartSolver.java
+ *                   SmartSolverMd.java, SmartSolverPdb.java, SmartSolverPdbWd.java,
+ *                   SmartSolverWd.java, SmartSolverWdMd.java, SolverConstants.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SolverHeuristicStats extends AbstractApplication {
     private SmartSolver solver;
@@ -46,7 +46,7 @@ public class SolverHeuristicStats extends AbstractApplication {
 
     // display the solver options and change it with the user's choice
     private void menuChangeSolver() {
-        printOption('s');
+        menuOption('s');
         boolean pending = true;
         while (pending) {
             if (!scanner.hasNextInt()) {
@@ -127,30 +127,30 @@ public class SolverHeuristicStats extends AbstractApplication {
         solver.printDescription();
         boolean optionT = false;
         if (solver.isFlagTimeout()) {
-            printOption('t');
+            menuOption('t');
             optionT = true;
         }
         boolean optionO = false;
         if (inUseHeuristic == HeuristicOptions.PD78) {
-            printOption(solver);
+            menuOption(solver);
             optionO = true;
         }
         menuSub(true, optionT, optionO);
     }
 
-    // display a list of options
+    // display a list of main menu options
     private void menuMain() {
-        printOption('q');
-        printOption('c');
-        printOption(flagAdvVersion);
+        menuOption('q');
+        menuOption('c');
+        menuOption(flagAdvVersion);
         boolean optionT = false;
         if (solver.isFlagTimeout()) {
-            printOption('t');
+            menuOption('t');
             optionT = true;
         }
         boolean optionO = false;
         if (solver.isFlagTimeout() && inUseHeuristic == HeuristicOptions.PD78) {
-            printOption(solver);
+            menuOption(solver);
             optionO = true;
         }
         System.out.println("      a positive integer of number of trials");
@@ -201,15 +201,15 @@ public class SolverHeuristicStats extends AbstractApplication {
 
     // display a list of options after user change the solver
     private void menuSub(boolean optionV, boolean optionT, boolean optionO) {
-        printOption('q');
+        menuOption('q');
         if (optionV) {
-            printOption(flagAdvVersion);
+            menuOption(flagAdvVersion);
         }
         if (optionT) {
-            printOption('t');
+            menuOption('t');
         }
         if (optionO) {
-            printOption(solver);
+            menuOption(solver);
         }
         System.out.println("      a positive integer of number of trials");
 
@@ -385,7 +385,6 @@ public class SolverHeuristicStats extends AbstractApplication {
             for (int i = 1; i <= trails; i++) {
                 Board board = new Board(boardLevel);
                 if (i % lineCount == 1) {
-                    //System.out.print("\n" + totalSearchTime + "s :");
                     System.out.printf("\n%1.2fs : ", totalSearchTime);
                 }
 
@@ -421,14 +420,11 @@ public class SolverHeuristicStats extends AbstractApplication {
             System.out.println();
 
             try {
-				if (refAccumulator.validateSolver(solver)) {
-				    refAccumulator.updatePending(solver);
-				}
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+                refAccumulator.updatePending(solver);
+            } catch (RemoteException ex) {
+                // TODO Auto-generated catch block
+                ex.printStackTrace();
+            }
             menuMain();
         }
     }

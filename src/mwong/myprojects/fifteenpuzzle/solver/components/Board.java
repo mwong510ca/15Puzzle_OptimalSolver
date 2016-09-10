@@ -10,8 +10,8 @@ import java.util.Random;
  *
  * <p>Dependencies : PuzzleConstants.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class Board {
     private static final byte SIZE = PuzzleConstants.getSize();

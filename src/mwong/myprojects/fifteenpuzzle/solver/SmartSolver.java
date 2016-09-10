@@ -8,15 +8,15 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Board;
  *
  * <p>Dependencies : Board.java, SolverStandard.java,
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public interface SmartSolver extends Solver {
     // ----- solver setting -----
     /**
-     *  Set the advanced version with the given flag.
+     * Set the advanced version with the given flag.
      *
-     *  @param flag the boolean represent the active status of in use solver version
+     * @param flag the boolean represent the active status of in use solver version
      */
     boolean versionSwitch(boolean flag);
 

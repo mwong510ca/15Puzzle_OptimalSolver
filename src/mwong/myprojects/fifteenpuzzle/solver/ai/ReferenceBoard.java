@@ -10,8 +10,8 @@ import java.io.Serializable;
  *
  * <p>Dependencies : Board.java, ReferenceConstants.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class ReferenceBoard implements Serializable {
     private static final long serialVersionUID = 17195273121L;

@@ -17,14 +17,21 @@ import java.util.Map.Entry;
  * It use Manhattan distance to calculate the advanced estimate from the collection
  * of reference boards.
  *
- * <p>Dependencies : Board.java, Direction.java, HeuristicOptions.java, PuzzleConstants.java,
- *                   ReferenceAccumulator.java ReferenceBoard.java, ReferenceMoves.java,
- *                   SolverConstants.java, SolverMD.java, Stopwatch.java
+ * <p>Dependencies : Board.java, Direction.java, PuzzleConstants.java, ReferenceBoard.java,
+ *                   ReferenceMoves.java, SolverMD.java, Stopwatch.java
  *
- * @author   Meisze Wong
- *           www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SmartSolverExtra extends SolverMd {
+    private boolean symmetry;
+    private int numPartialMoves;
+
+    public SmartSolverExtra() {
+        symmetry = SolverConstants.isSymmetry();
+        numPartialMoves = SolverConstants.getNumPartialMoves();
+    }
+
     /**
      * Print solver description.
      */
@@ -45,11 +52,11 @@ public class SmartSolverExtra extends SolverMd {
      *
      * @param board the given board object
      * @param inSearch the boolean value represent the usage for search or review.
-     * @param refAccumulator the given reference collection object to use.
+     * @param refMap the given reference collection in HashMap.
      * @return AdvancedRecord object if the given board is one of the reference board.
      */
     public final AdvancedRecord advancedContains(Board board, boolean inSearch,
-    		Map<ReferenceBoard, ReferenceMoves> refMap) {
+            Map<ReferenceBoard, ReferenceMoves> refMap) {
         if (refMap == null || refMap.size() == 0) {
             return null;
         }
@@ -65,9 +72,6 @@ public class SmartSolverExtra extends SolverMd {
         }
 
         if (refMap.containsKey(checkBoard)) {
-            boolean symmetry = SolverConstants.isSymmetry();
-            int numPartialMoves = SolverConstants.getNumPartialMoves();
-
             ReferenceMoves advMoves = refMap.get(checkBoard);
             final byte steps = advMoves.getEstimate(lookupKey);
 
@@ -89,9 +93,6 @@ public class SmartSolverExtra extends SolverMd {
             }
             return new AdvancedRecord(steps);
         } else if (refMap.containsKey(checkBoardSym)) {
-            boolean symmetry = SolverConstants.isSymmetry();
-            int numPartialMoves = SolverConstants.getNumPartialMoves();
-
             ReferenceMoves advMoves = refMap.get(checkBoardSym);
             if (lookupKey == 1) {
                 lookupKey = 3;
@@ -114,6 +115,52 @@ public class SmartSolverExtra extends SolverMd {
         return null;
     }
 
+    /**
+     * Returns the boolean value if the given board is one of the reference board with
+     * partial solutions stored.
+     *
+     * @param board the given board object
+     * @param refMap the given reference collection in HashMap.
+     * @return boolean value if the given board is a reference board with partial solutions
+     *         stored in reference collection.
+     */
+    public final boolean hasPartialSolution(Board board, Map<ReferenceBoard,
+            ReferenceMoves> refMap) {
+        if (refMap == null || refMap.size() == 0) {
+            return false;
+        }
+
+        byte lookupKey = SolverConstants.getReferenceLookup(board.getZero1d());
+        int group = SolverConstants.getReferenceGroup(board.getZero1d());
+
+        ReferenceBoard checkBoard = new ReferenceBoard(board);
+        ReferenceBoard checkBoardSym = null;
+
+        if (group == 0 || group == 2) {
+            checkBoardSym = new ReferenceBoard(new Board(board.getTilesSym()));
+        }
+
+        if (refMap.containsKey(checkBoard)) {
+            ReferenceMoves advMoves = refMap.get(checkBoard);
+            if (advMoves.hasInitialMoves(lookupKey)) {
+                return true;
+            }
+            return false;
+        } else if (refMap.containsKey(checkBoardSym)) {
+            ReferenceMoves advMoves = refMap.get(checkBoardSym);
+            if (lookupKey == 1) {
+                lookupKey = 3;
+            } else if (lookupKey == 3) {
+                lookupKey = 1;
+            }
+            if (advMoves.hasInitialMoves(lookupKey)) {
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
     // assertion tool : check all partial solution are the valid of the given board
     private boolean checkVaildMoves(Board initial, Direction[] partialMoves, int numPartialMoves) {
         if (initial == null) {
@@ -129,7 +176,6 @@ public class SmartSolverExtra extends SolverMd {
         return true;
     }
 
-    // calculate the advanced estimate from the stored boards, use Manhattan distance only
     /**
      * Returns the best estimate of the given reference collection.
      *
