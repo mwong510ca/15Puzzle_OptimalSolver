@@ -1,5 +1,6 @@
 package mwong.myprojects.fifteenpuzzle.solver.components;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -13,7 +14,8 @@ import java.util.Random;
  * @author Meisze Wong
  *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
-public class Board {
+public class Board implements Serializable {
+    private static final long serialVersionUID = 17195273121L;
     private static final byte SIZE = PuzzleConstants.getSize();
     private static final byte ROW_SIZE = PuzzleConstants.getRowSize();
     private static final int GOAL_KEY1 = PuzzleConstants.getGoalKey1();

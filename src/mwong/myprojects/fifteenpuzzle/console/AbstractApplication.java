@@ -12,6 +12,7 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleDifficultyLevel;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.Scanner;
 
 /**
@@ -36,7 +37,7 @@ public abstract class AbstractApplication {
     protected final PatternOptions defaultPattern;
 
     protected Scanner scanner;
-    protected ReferenceRemote refAccumulator;
+    protected ReferenceRemote refConnection;
     protected int timeoutLimit;
     protected boolean flagAdvVersion;
 
@@ -76,21 +77,31 @@ public abstract class AbstractApplication {
         scanner = new Scanner(System.in, "UTF-8");
         timeoutLimit = SolverProperties.getTimeoutLimit();
         flagAdvVersion = tagStandard;
-
         try {
-            refAccumulator = (new ReferenceFactory()).getReferenceServer();
-            System.out.println("Connect to server succeed. reference collection will keep in sync.\n");
+			loadReferenceConnection();
+		} catch (IOException ex) {
+            System.err.println("System error, application TERMINATED.");
+            System.err.println("Unable to connect reference collection in both remote and local connections.");
+            ex.printStackTrace();
+            System.exit(0);
+		}
+    }
+
+    void loadReferenceConnection() throws IOException {
+    	try {
+            refConnection = (new ReferenceFactory()).getReferenceServer();
+            System.out.println("Connect to server SUCCEED.\nReference collection will keep in sync.\n");
         } catch (IOException ex) {
             try {
-                refAccumulator = (new ReferenceFactory()).getReferenceLocal();
-                System.out.println("Connect to server failed.  Resume standalone version, reference collection use local copy.\n");
+                refConnection = (new ReferenceFactory()).getReferenceLocal();
+                System.out.println("Connect to server FAILED.\nResume standalone version, reference collection use local copy.\n");
             } catch (IOException ex2) {
-                System.err.println("error load reference");
-                System.exit(0);
+            	refConnection = null;
+            	throw new RemoteException(ex2.toString());
             }
         }
     }
-
+    
     public abstract void run();
 
     // print the minimum number of moves to the goal state.

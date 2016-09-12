@@ -10,6 +10,7 @@ import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverWdMd;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
@@ -30,15 +31,17 @@ import java.rmi.RemoteException;
 public class SolverHeuristic extends AbstractApplication {
     private SmartSolver solver;
     private HeuristicOptions inUseHeuristic;
+    private boolean activeAdvancedVersion;
 
     /**
      * Initial SolverHeuristic object.
      */
     public SolverHeuristic() {
         super();
-        solver = new SmartSolverPdbWd(defaultPattern, refAccumulator);
+        solver = new SmartSolverPdbWd(defaultPattern, refConnection);
         inUseHeuristic = solver.getHeuristicOptions();
         solver.versionSwitch(flagAdvVersion);
+        activeAdvancedVersion = true;
     }
 
     // display the solver options and change it with the user's choice
@@ -58,7 +61,7 @@ public class SolverHeuristic extends AbstractApplication {
                     break;
                 case 1:
                     if (inUseHeuristic != HeuristicOptions.MD) {
-                        solver = new SmartSolverMd(refAccumulator);
+                        solver = new SmartSolverMd(refConnection);
                     } else {
                         System.out.println("No Change, currently in use.");
                     }
@@ -66,7 +69,7 @@ public class SolverHeuristic extends AbstractApplication {
                     break;
                 case 2:
                     if (inUseHeuristic != HeuristicOptions.MDLC) {
-                        solver = new SmartSolverMd(tagLinearConflict, refAccumulator);
+                        solver = new SmartSolverMd(tagLinearConflict, refConnection);
                     } else {
                         System.out.println("No Change, currently in use.");
                     }
@@ -74,7 +77,7 @@ public class SolverHeuristic extends AbstractApplication {
                     break;
                 case 3:
                     if (inUseHeuristic != HeuristicOptions.WD) {
-                        solver = new SmartSolverWd(refAccumulator);
+                        solver = new SmartSolverWd(refConnection);
                     } else {
                         System.out.println("No Change, currently in use.");
                     }
@@ -82,7 +85,7 @@ public class SolverHeuristic extends AbstractApplication {
                     break;
                 case 4:
                     if (inUseHeuristic != HeuristicOptions.WDMD) {
-                        solver = new SmartSolverWdMd(refAccumulator);
+                        solver = new SmartSolverWdMd(refConnection);
                     } else {
                         System.out.println("No Change, currently in use.");
                     }
@@ -90,7 +93,7 @@ public class SolverHeuristic extends AbstractApplication {
                     break;
                 case 5:
                     if (inUseHeuristic != HeuristicOptions.PD555) {
-                        solver = new SmartSolverPdbWd(PatternOptions.Pattern_555, refAccumulator);
+                        solver = new SmartSolverPdbWd(PatternOptions.Pattern_555, refConnection);
                     } else {
                         System.out.println("No Change, currently in use.");
                     }
@@ -98,7 +101,7 @@ public class SolverHeuristic extends AbstractApplication {
                     break;
                 case 6:
                     if (inUseHeuristic != HeuristicOptions.PD663) {
-                        solver = new SmartSolverPdbWd(PatternOptions.Pattern_663, refAccumulator);
+                        solver = new SmartSolverPdbWd(PatternOptions.Pattern_663, refConnection);
                     } else {
                         System.out.println("No Change, currently in use.");
                     }
@@ -106,7 +109,7 @@ public class SolverHeuristic extends AbstractApplication {
                     break;
                 case 7:
                     if (inUseHeuristic != HeuristicOptions.PD78) {
-                        solver = new SmartSolverPdb(PatternOptions.Pattern_78, refAccumulator);
+                        solver = new SmartSolverPdb(PatternOptions.Pattern_78, refConnection);
                     } else {
                         System.out.println("No Change, currently in use.");
                     }
@@ -118,7 +121,11 @@ public class SolverHeuristic extends AbstractApplication {
         }
 
         inUseHeuristic = solver.getHeuristicOptions();
-        solver.versionSwitch(flagAdvVersion);
+        if (activeAdvancedVersion) {
+        	solver.versionSwitch(flagAdvVersion);
+        } else {        
+        	solver.disableAdvancedVersion();
+        }
         solver.printDescription();
         if (inUseHeuristic == HeuristicOptions.PD78) {
             solver.timeoutSwitch(timeoutOff);
@@ -254,7 +261,7 @@ public class SolverHeuristic extends AbstractApplication {
         solver.messageSwitch(messageOn);
         solver.versionSwitch(flagAdvVersion);
 
-        Board initial = menuMain();
+        Board board = menuMain();
         while (true) {
             System.out.print(solver.getHeuristicOptions().getDescription());
             if (flagAdvVersion) {
@@ -269,17 +276,17 @@ public class SolverHeuristic extends AbstractApplication {
                 System.out.println("will run until solution found:");
             }
 
-            System.out.println(initial);
-            if (!initial.isSolvable()) {
+            System.out.println(board);
+            if (!board.isSolvable()) {
                 System.out.println("The board is unsolvable, try again!\n");
-                initial = menuMain();
+                board = menuMain();
                 continue;
             }
 
-            solver.findOptimalPath(initial);
+            solver.findOptimalPath(board);
             if (solver.isSearchTimeout()) {
                 System.out.println("Search terminated after " + timeoutLimit + "s.\n");
-                initial = menuMain();
+                board = menuMain();
             } else {
                 solutionSummary(solver);
                 // Notes: updateLastSearch is optional.
@@ -287,18 +294,24 @@ public class SolverHeuristic extends AbstractApplication {
                     if (solver.getClass().getSimpleName().equals("SmartSolverPdb")
                             && solver.getHeuristicOptions() == HeuristicOptions.PD78
                             && ((SmartSolverPdb) solver).isAddedReference()) {
-                        refAccumulator.updateLastSearch(solver);
+                        refConnection.updateLastSearch(board, solver);
                     }
                 } catch (RemoteException ex) {
-                    // TODO Auto-generated catch block
-                    ex.printStackTrace();
+                	try {
+                		System.out.println("Counnection lost: " + ex);
+                    	System.out.println("Reference connection may not in sync.");
+                    	loadReferenceConnection();
+                    	solver.setReferenceConnection(refConnection);
+					} catch (IOException e) {
+						activeAdvancedVersion = false;
+					}
                 }
 
                 if (solver.moves() > 0) {
-                    initial = menuSubSolution(initial);
+                    board = menuSubSolution(board);
                 } else {
                     // search has timeout after 10 seconds.
-                    initial = menuMain();
+                    board = menuMain();
                 }
             }
         }

@@ -23,7 +23,7 @@ public class ReferenceServerProperties {
         }
 
         if (PropertiesCache.getInstance().containsKey("remoteHost")) {
-            remoteHost = PropertiesCache.getInstance().getProperty("remoteServiceName");
+            remoteHost = PropertiesCache.getInstance().getProperty("remoteHost");
         }
 
         if (PropertiesCache.getInstance().containsKey("remotePort")) {

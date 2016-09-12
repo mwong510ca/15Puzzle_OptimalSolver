@@ -1,9 +1,10 @@
 package mwong.myprojects.fifteenpuzzle.solver.ai;
 
 import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
+import mwong.myprojects.fifteenpuzzle.solver.components.Board;
+import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 
 /**
@@ -18,8 +19,7 @@ import java.util.HashMap;
  * @author Meisze Wong
  *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
-public class ReferenceAdapter extends UnicastRemoteObject implements ReferenceRemote {
-    private static final long serialVersionUID = 17195273121L;
+public class ReferenceAdapter implements ReferenceRemote {
     private Reference refObject;
 
     // initialize the ReferenceAdapter object
@@ -65,6 +65,16 @@ public class ReferenceAdapter extends UnicastRemoteObject implements ReferenceRe
      *
      * @param inSolver the SolverInterface object in use
      */
+    public void updatePending() throws RemoteException {
+    	refObject.updatePending();
+    }
+
+    /**
+     * Verify the given solver is using pattern database 7-8, scan the full
+     * collection, if the reference board is not verified, verify it now.
+     *
+     * @param inSolver the SolverInterface object in use
+     */
     public void updatePending(SmartSolver inSolver) throws RemoteException {
         refObject.updatePending(inSolver);
     }
@@ -77,7 +87,29 @@ public class ReferenceAdapter extends UnicastRemoteObject implements ReferenceRe
      * @param inSolver the SolverInterface object in use
      */
     public boolean addBoard(SmartSolver inSolver) throws RemoteException {
-        return refObject.addBoard(inSolver);
+    	return refObject.addBoard(inSolver);
+    }
+
+    /**
+     * If the given solver using pattern database 7-8, and it takes
+     * over the cutoff limit solve the puzzle with advanced estimate;
+     * add to reference boards collection.
+     *
+     * @param inSolver the SolverInterface object in use
+     */
+    public boolean addBoard(Board board, byte steps, Direction[] solution) throws RemoteException {
+    	return refObject.addBoard(board, steps, solution);
+    }
+
+    /**
+     * If the given solver using pattern database 7-8, and it takes
+     * over the cutoff limit solve the puzzle with advanced estimate;
+     * add to reference boards collection.
+     *
+     * @param inSolver the SolverInterface object in use
+     */
+    public boolean addBoard(Board board, byte steps, Direction[] solution, SmartSolver inSolver) throws RemoteException {
+		return addBoard(inSolver);
     }
 
     /**
@@ -88,6 +120,26 @@ public class ReferenceAdapter extends UnicastRemoteObject implements ReferenceRe
      * @return boolean if last search board in activeMap has been verified.
      */
     public boolean updateLastSearch(SmartSolver inSolver) throws RemoteException {
-        return refObject.updateLastSearch(inSolver);
+    	return refObject.updateLastSearch(inSolver);
+    }
+    /**
+     * If the solver is SolverPD object and last search board in activeMap
+     * that need to verify; verify the full set and return true.
+     *
+     * @param inSolver the given SolverIntegerface
+     * @return boolean if last search board in activeMap has been verified.
+     */
+    public boolean updateLastSearch(Board board) throws RemoteException {
+    	return refObject.updateLastSearch(board);
+    }
+    /**
+     * If the solver is SolverPD object and last search board in activeMap
+     * that need to verify; verify the full set and return true.
+     *
+     * @param inSolver the given SolverIntegerface
+     * @return boolean if last search board in activeMap has been verified.
+     */
+    public boolean updateLastSearch(Board board, SmartSolver inSolver) throws RemoteException {
+        return updateLastSearch(inSolver);
     }
 }
