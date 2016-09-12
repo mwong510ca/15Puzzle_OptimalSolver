@@ -9,7 +9,6 @@ import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdbBase;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdbEnh1;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdbEnh2;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
@@ -39,11 +38,11 @@ public class CompareEnhancement extends AbstractApplication {
     public CompareEnhancement() {
         super();
 
-        solverAdvanced = new SmartSolverPdb(PatternOptions.Pattern_78, refConnection);
+        solverAdvanced = new SmartSolverPdb(PatternOptions.Pattern_78, refAccumulator);
         solverAdvanced.messageSwitch(messageOff);
         solverAdvanced.timeoutSwitch(timeoutOff);
 
-        solverAdvEst = new SmartSolverPdbBase(solverAdvanced, refConnection);
+        solverAdvEst = new SmartSolverPdbBase(solverAdvanced, refAccumulator);
         solverAdvEst.messageSwitch(messageOff);
         solverAdvEst.timeoutSwitch(timeoutOff);
         solverAdvEst.versionSwitch(tagAdvanced);
@@ -124,31 +123,23 @@ public class CompareEnhancement extends AbstractApplication {
                             solverAdvanced.versionSwitch(tagAdvanced);
                             solvePuzzle(solverAdvanced, board);
                             if (solverAdvEst.isAddedReference()) {
-                                refConnection.updateLastSearch(board, solverAdvEst);
+                                refAccumulator.updateLastSearch(solverAdvEst);
                             }
                         } else {
                             System.out.println("6. Skip - No preset partial solution.");
                             if (solverAdvanced.isAddedReference()) {
-                                refConnection.updateLastSearch(board, solverAdvEst);
+                                refAccumulator.updateLastSearch(solverAdvEst);
                             }
                         }
                     } else {
                         System.out.println("5 & 6. Skip - Both estimate are the same.");
                         if (solverAdvanced.isAddedReference()) {
-                            refConnection.updateLastSearch(board, solverAdvEst);
+                            refAccumulator.updateLastSearch(solverAdvEst);
                         }
                     }
                 } catch (RemoteException ex) {
-                	try {
-                		System.out.println("Counnection lost: " + ex);
-                    	System.out.println("Reference connection may not in sync.");
-                    	loadReferenceConnection();
-                    	solverAdvanced.setReferenceConnection(refConnection);
-                    	solverAdvEst.setReferenceConnection(refConnection);
-					} catch (IOException e) {
-						solverAdvanced.disableAdvancedVersion();;
-                    	solverAdvEst.disableAdvancedVersion();;
-					}
+                    // TODO Auto-generated catch block
+                    ex.printStackTrace();
                 }
             } else {
                 System.out.println("The board is unsolvable, try again!");

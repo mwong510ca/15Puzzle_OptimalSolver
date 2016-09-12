@@ -30,7 +30,8 @@ public class ReferenceFactory {
     /**
      * A network Reference connection will be returned.
      */
-    public ReferenceRemote getReferenceServer() throws RemoteException, IOException {
+    public ReferenceRemote getReferenceServer()
+            throws RemoteException, IOException {
         String rmiServiceName = ReferenceServerProperties.getRemoteServiceName();
         String rmiHost = ReferenceServerProperties.getRemoteHost();
         int rmiPort = ReferenceServerProperties.getRemotePort();

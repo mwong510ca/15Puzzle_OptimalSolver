@@ -6,7 +6,6 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternConstants;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
@@ -33,7 +32,7 @@ public class SolverPdbCustomPattern extends AbstractApplication {
      */
     public SolverPdbCustomPattern() {
         super();
-        solverPdb = new SmartSolverPdb(defaultPattern, refConnection);
+        solverPdb = new SmartSolverPdb(defaultPattern, refAccumulator);
         inUsePattern = solverPdb.getHeuristicOptions();
         inUsePatternOption = 0;
     }
@@ -74,7 +73,7 @@ public class SolverPdbCustomPattern extends AbstractApplication {
 
                     if (inUsePattern != HeuristicOptions.PD555 || inUsePatternOption != choice) {
                         solverPdb = new SmartSolverPdb(PatternOptions.Pattern_555, choice,
-                                refConnection);
+                                refAccumulator);
                         inUsePattern = HeuristicOptions.PD555;
                         inUsePatternOption = choice;
                     } else {
@@ -96,7 +95,7 @@ public class SolverPdbCustomPattern extends AbstractApplication {
 
                     if (inUsePattern != HeuristicOptions.PD663 || inUsePatternOption != choice) {
                         solverPdb = new SmartSolverPdb(PatternOptions.Pattern_663, choice,
-                                refConnection);
+                                refAccumulator);
                         inUsePattern = HeuristicOptions.PD663;
                         inUsePatternOption = choice;
                     } else {
@@ -121,7 +120,7 @@ public class SolverPdbCustomPattern extends AbstractApplication {
 
                     if (inUsePattern != HeuristicOptions.PD78 || inUsePatternOption != choice) {
                         solverPdb = new SmartSolverPdb(PatternOptions.Pattern_78, choice,
-                                refConnection);
+                                refAccumulator);
                         inUsePattern = HeuristicOptions.PD78;
                         inUsePatternOption = choice;
                     } else {
@@ -176,7 +175,7 @@ public class SolverPdbCustomPattern extends AbstractApplication {
 
                         if (elementGroups != null) {
                             solverPdb = null;
-                            solverPdb = new SmartSolverPdb(pattern, elementGroups, refConnection);
+                            solverPdb = new SmartSolverPdb(pattern, elementGroups, refAccumulator);
                             inUsePattern = HeuristicOptions.PDCustom;
                             inUsePatternOption = -1;
                             pending = false;
@@ -331,7 +330,7 @@ public class SolverPdbCustomPattern extends AbstractApplication {
         solverPdb.setTimeoutLimit(timeoutLimit);
         solverPdb.printDescription();
 
-        Board board = menuMain();
+        Board initial = menuMain();
 
         while (true) {
             System.out.print(solverPdb.getHeuristicOptions().getDescription());
@@ -341,10 +340,10 @@ public class SolverPdbCustomPattern extends AbstractApplication {
                 System.out.print(" (Standard version) ");
             }
             System.out.println("will timeout at " + solverPdb.getSearchTimeoutLimit() + "s:");
-            System.out.println(board);
+            System.out.println(initial);
 
-            if (board.isSolvable()) {
-                solverPdb.findOptimalPath(board);
+            if (initial.isSolvable()) {
+                solverPdb.findOptimalPath(initial);
                 if (solverPdb.isSearchTimeout()) {
                     System.out.println("Search terminated after " + timeoutLimit + "s.");
                 } else {
@@ -356,19 +355,13 @@ public class SolverPdbCustomPattern extends AbstractApplication {
             System.out.println();
             try {
                 if (solverPdb.isAddedReference()) {
-                    refConnection.updateLastSearch(board, solverPdb);
+                    refAccumulator.updateLastSearch(solverPdb);
                 }
             } catch (RemoteException ex) {
-            	try {
-            		System.out.println("Counnection lost: " + ex);
-                	System.out.println("Reference connection may not in sync.");
-                	loadReferenceConnection();
-                	solverPdb.setReferenceConnection(refConnection);
-				} catch (IOException e) {
-					solverPdb.disableAdvancedVersion();
-				}
+                // TODO Auto-generated catch block
+                ex.printStackTrace();
             }
-            board = menuMain();
+            initial = menuMain();
         }
     }
 }

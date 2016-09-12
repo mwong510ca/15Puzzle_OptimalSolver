@@ -23,14 +23,15 @@ import java.rmi.RemoteException;
  *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SmartSolverPdbBase extends SolverPdb {
-    
-	protected Board lastSearchBoard;
+    protected Board lastSearchBoard;
     protected boolean addedReference;
 
     /**
      * Default constructor.
      */
-    SmartSolverPdbBase() {}
+    SmartSolverPdbBase() {
+        super();
+    }
 
     // Initializes SmartSolverPdbBase object with choice of given preset pattern.
     SmartSolverPdbBase(PatternOptions presetPattern, int choice) {
@@ -125,8 +126,7 @@ public class SmartSolverPdbBase extends SolverPdb {
             setPriorityAdvanced(board, isSearch);
         } catch (RemoteException ex) {
             // TODO Auto-generated catch block
-            //ex.printStackTrace();
-        	return priorityGoal;
+            ex.printStackTrace();
         }
         return priorityAdvanced;
     }
@@ -228,37 +228,32 @@ public class SmartSolverPdbBase extends SolverPdb {
                     // if currently using pattern database 7-8 and it takes long than cutoff limit
                     // to solve, add the board and solutions to reference boards collection.
                     try {
-                    	if (activeSmartSolver && inUseHeuristic == HeuristicOptions.PD78
+                        if (activeSmartSolver && inUseHeuristic == HeuristicOptions.PD78
                                 && stopwatch.currentTime() >  refConnection.getCutoffLimit()) {
-                    		
-                    		if (flagAdvancedVersion ||
-                    				(heuristicStandard(lastBoard) == heuristicAdvanced(lastBoard))) {
-                                // backup original solutions
-                                final Stopwatch backupTime = stopwatch;
-                                final byte backupSteps = steps;
-                                final int backupIdaCount = searchNodeCount;
-                                final Direction[] backupSolution = new Direction[steps + 1];
-                                System.arraycopy(solutionMove, 1, backupSolution, 1, steps);
+                            // backup original solutions
+                            final Stopwatch backupTime = stopwatch;
+                            final byte backupSteps = steps;
+                            final int backupIdaCount = searchNodeCount;
+                            final Direction[] backupSolution = new Direction[steps + 1];
+                            System.arraycopy(solutionMove, 1, backupSolution, 1, steps);
 
-                                searchTime = stopwatch.currentTime();
-                                stopwatch = new Stopwatch();
-                                // update cached advanced priority if added to the reference collection
-                                addedReference = refConnection.addBoard(lastBoard, steps, solutionMove, this);
-                                if (addedReference) {
-                                	priorityAdvanced = backupSteps;
-                                }
+                            searchTime = stopwatch.currentTime();
+                            stopwatch = new Stopwatch();
+                            // update cached advanced priority if added to the reference collection
+                            if (refConnection.addBoard(this)) {
+                                priorityAdvanced = backupSteps;
+                                addedReference = true;
+                            }
 
-                                // restore original solutions
-                                stopwatch = backupTime;
-                                steps = backupSteps;
-                                searchNodeCount = backupIdaCount;
-                                solutionMove = backupSolution;
-                    		}
+                            // restore original solutions
+                            stopwatch = backupTime;
+                            steps = backupSteps;
+                            searchNodeCount = backupIdaCount;
+                            solutionMove = backupSolution;
                         }
                     } catch (RemoteException ex) {
-                    	System.out.println("Network connection lost: " + ex);
                         // TODO Auto-generated catch block
-                        //ex.printStackTrace();
+                        ex.printStackTrace();
                     }
                     return;
                 }

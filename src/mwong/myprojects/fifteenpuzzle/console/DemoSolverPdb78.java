@@ -5,7 +5,6 @@ import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
@@ -32,7 +31,13 @@ public class DemoSolverPdb78 extends AbstractApplication {
      */
     public DemoSolverPdb78() {
         super();
-        solverPdb78 = new SmartSolverPdb(PatternOptions.Pattern_78, refConnection);
+        solverPdb78 = new SmartSolverPdb(PatternOptions.Pattern_78, refAccumulator);
+        try {
+            solverPdb78.setTimeoutLimit(refAccumulator.getCutoffSetting());
+        } catch (RemoteException ex) {
+            // TODO Auto-generated catch block=
+            ex.printStackTrace();
+        }
         solverPdb78.timeoutSwitch(timeoutOff);
         extra = new SmartSolverExtra();
     }
@@ -42,7 +47,7 @@ public class DemoSolverPdb78 extends AbstractApplication {
     // searching time has improved.
     private void solvePuzzle(Board board) {
         try {
-            if (extra.advancedContains(board, false, refConnection.getActiveMap()) == null) {
+            if (extra.advancedContains(board, false, refAccumulator.getActiveMap()) == null) {
                 System.out.println("\t\tThis is NOT a reference board.\n");
             } else {
                 System.out.println("\t\tExists in stored reference collection.\n");
@@ -64,9 +69,9 @@ public class DemoSolverPdb78 extends AbstractApplication {
             if (solverPdb78.isAddedReference()) {
                 System.out.println("System detect the dvanced estimate is the same, added to"
                         + " reference collection after the search.");
-                System.out.println(refConnection.getActiveMap().size()
+                System.out.println(refAccumulator.getActiveMap().size()
                         + " reference board in system.\n");
-                refConnection.updateLastSearch(solverPdb78);
+                refAccumulator.updateLastSearch(solverPdb78);
             }
 
             solverPdb78.timeoutSwitch(timeoutOff);
@@ -75,14 +80,13 @@ public class DemoSolverPdb78 extends AbstractApplication {
             if (heuristicStandard == heuristicAdvanced) {
                 System.out.println("Advanced Estimate\t" + "Same value");
             } else {
-            	boolean justAdded = solverPdb78.isAddedReference();
-            	System.out.println("Advanced Estimate \t" + heuristicAdvanced);
+                System.out.println("Advanced Estimate \t" + heuristicAdvanced);
                 solverPdb78.findOptimalPath(board);
                 System.out.printf("\t\tTotal : %-15s  Time : "
                         + solverPdb78.searchTime() + "s\n", solverPdb78.searchNodeCount());
-                if (justAdded != solverPdb78.isAddedReference()) {
+                if (solverPdb78.isAddedReference()) {
                     System.out.println("\nIt added to reference collection after the search.");
-                    System.out.println(refConnection.getActiveMap().size()
+                    System.out.println(refAccumulator.getActiveMap().size()
                             + " reference board in system.\n");
                     heuristicAdvanced = solverPdb78.heuristicAdvanced(board);
                     System.out.println("Estimate change to\t" + heuristicAdvanced
@@ -90,20 +94,12 @@ public class DemoSolverPdb78 extends AbstractApplication {
                     solverPdb78.findOptimalPath(board);
                     System.out.printf("\t\tTotal : %-15s  Time : "
                             + solverPdb78.searchTime() + "s\n", solverPdb78.searchNodeCount());
-                }
-                if (justAdded) {
-                	refConnection.updateLastSearch(board, solverPdb78);                	
+                    refAccumulator.updateLastSearch(solverPdb78);
                 }
             }
         } catch (RemoteException ex) {
-        	try {
-        		System.out.println("Counnection lost: " + ex);
-            	System.out.println("Reference connection may not in sync.");
-            	loadReferenceConnection();
-            	solverPdb78.setReferenceConnection(refConnection);
-			} catch (IOException e) {
-				solverPdb78.disableAdvancedVersion();
-			}
+            // TODO Auto-generated catch block
+            ex.printStackTrace();
         }
     }
 
@@ -112,11 +108,11 @@ public class DemoSolverPdb78 extends AbstractApplication {
      */
     public void run() {
         try {
-            System.out.println(refConnection.getActiveMap().size()
+            System.out.println(refAccumulator.getActiveMap().size()
                     + " reference boards in system.");
         } catch (RemoteException ex) {
+            // TODO Auto-generated catch block
             ex.printStackTrace();
-            System.exit(0);
         }
         while (true) {
             menuOption('q');

@@ -1,8 +1,6 @@
 package mwong.myprojects.fifteenpuzzle.solver.ai;
 
 import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
-import mwong.myprojects.fifteenpuzzle.solver.components.Board;
-import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 
 import java.util.HashMap;
 
@@ -43,14 +41,6 @@ public interface Reference {
      *
      * @param inSolver the SolverInterface object in use
      */
-    void updatePending();
-
-    /**
-     * Verify the given solver is using pattern database 7-8, scan the full
-     * collection, if the reference board is not verified, verify it now.
-     *
-     * @param inSolver the SolverInterface object in use
-     */
     void updatePending(SmartSolver inSolver);
 
     /**
@@ -63,24 +53,6 @@ public interface Reference {
     boolean addBoard(SmartSolver inSolver);
 
     /**
-     * If the given solver using pattern database 7-8, and it takes
-     * over the cutoff limit solve the puzzle with advanced estimate;
-     * add to reference boards collection.
-     *
-     * @param inSolver the SolverInterface object in use
-     */
-    boolean addBoard(Board board, byte steps, Direction[] solution);
-
-    /**
-     * If the given solver using pattern database 7-8, and it takes
-     * over the cutoff limit solve the puzzle with advanced estimate;
-     * add to reference boards collection.
-     *
-     * @param inSolver the SolverInterface object in use
-     */
-    boolean addBoard(Board board, byte steps, Direction[] solution, SmartSolver inSolver);
-
-    /**
      * If the solver is SolverPD object and last search board in activeMap
      * that need to verify; verify the full set and return true.
      *
@@ -88,20 +60,4 @@ public interface Reference {
      * @return boolean if last search board in activeMap has been verified.
      */
     boolean updateLastSearch(SmartSolver inSolver);
-    /**
-     * If the solver is SolverPD object and last search board in activeMap
-     * that need to verify; verify the full set and return true.
-     *
-     * @param inSolver the given SolverIntegerface
-     * @return boolean if last search board in activeMap has been verified.
-     */
-    boolean updateLastSearch(Board board);
-    /**
-     * If the solver is SolverPD object and last search board in activeMap
-     * that need to verify; verify the full set and return true.
-     *
-     * @param inSolver the given SolverIntegerface
-     * @return boolean if last search board in activeMap has been verified.
-     */
-    boolean updateLastSearch(Board board, SmartSolver inSolver);
 }

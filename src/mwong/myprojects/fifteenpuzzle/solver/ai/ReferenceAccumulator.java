@@ -47,7 +47,6 @@ public class ReferenceAccumulator implements Reference {
     private int cutoffSetting;
     private double cutoffLimit;
     private boolean fileReady = false;
-    private SmartSolverPdb localSolver = null;
 
     /**
      * Initializes ReferenceAccumulator object.  Load the stored collection from file.
@@ -187,6 +186,7 @@ public class ReferenceAccumulator implements Reference {
         if (!(new File(directory)).exists()) {
             (new File(directory)).mkdir();
         }
+
         if ((new File(filepath)).exists()) {
             (new File(filepath)).delete();
         }
@@ -272,12 +272,15 @@ public class ReferenceAccumulator implements Reference {
         if (inSolver == null) {
             return false;
         }
+
         if (!inSolver.getClass().getSimpleName().equals(coreSolverClassName)) {
-        	return false;
-        }        
+            return false;
+        }
+
         if (inSolver.getHeuristicOptions() != coreHeuristic) {
             return false;
         }
+
         return true;
     }
 
@@ -307,22 +310,6 @@ public class ReferenceAccumulator implements Reference {
             return;
         }
         updateAll((SmartSolverPdb) inSolver);
-    }
-
-    /**
-     * Verify the given solver is using pattern database 7-8, scan the full
-     * collection, if the reference board is not verified, verify it now.
-     *
-     * @param inSolver the SolverInterface object in use
-     */
-    public void updatePending() {
-        if (localSolver == null) {
-            localSolver = createSolver();
-        }
-        if (localSolver == null) {
-        	return;
-        }
-        updateAll(localSolver);
     }
 
     // scan the full collection, if the reference board is not verified, verify it now.
@@ -367,13 +354,15 @@ public class ReferenceAccumulator implements Reference {
         if (referenceMap == null) {
             return false;
         }
+
         if (!validateSolver(inSolver)) {
             return false;
         }
+
         if (!bypass && inSolver.searchTime() < getCutoffLimit()) {
             return false;
         }
-        
+
         SmartSolverPdb solverPdb78 = (SmartSolverPdb) inSolver;
         Board board = solverPdb78.lastSearchBoard();
         Direction[] solution = solverPdb78.solution().clone();
@@ -457,67 +446,6 @@ public class ReferenceAccumulator implements Reference {
         return true;
     }
 
-    @Override
-    public boolean addBoard(Board board, byte steps, Direction[] solution) {
-    	if (referenceMap == null) {
-            return false;
-        }
-    	if (localSolver == null) {
-            localSolver = createSolver();
-        }
-        if (localSolver == null) {
-        	return false;
-        }
-                
-        ReferenceBoard advBoard = new ReferenceBoard(board);
-        byte lookup = ReferenceConstants.getReferenceLookup(board.getZero1d());
-        int group = ReferenceConstants.getReferenceGroup(board.getZero1d());
-
-        if (referenceMap.containsKey(advBoard)) {
-            ReferenceMoves advMoves = referenceMap.get(advBoard);
-            if (group == 3) {
-                advMoves.updateSolution(lookup, steps, solution, symmetry);
-            } else {
-                advMoves.updateSolution(lookup, steps, solution, !symmetry);
-            }
-            add2file(advBoard, advMoves);
-            return true;
-        }
-
-        ReferenceBoard advBoardSym = null;
-        if (group == 0 || group == 2) {
-            advBoardSym = new ReferenceBoard(new Board(board.getTilesSym()));
-        }
-
-        if (referenceMap.containsKey(advBoardSym)) {
-            ReferenceMoves advMoves = referenceMap.get(advBoardSym);
-            if (lookup == 1) {
-                lookup = 3;
-            } else if (lookup == 3) {
-                lookup = 1;
-            }
-            advMoves.updateSolution(lookup, steps, solution, symmetry);
-            add2file(advBoardSym, advMoves);
-            return true;
-        }
-
-        ReferenceMoves advMoves = new ReferenceMoves(board.getZero1d(), steps);
-        if (group == 3) {
-            advMoves.updateSolution(lookup, steps, solution, symmetry);
-        } else {
-            advMoves.updateSolution(lookup, steps, solution, !symmetry);
-        }
-        referenceMap.put(advBoard, advMoves);
-        add2file(advBoard, advMoves);
-        return true;
-    }
-
-    @Override
-    public boolean addBoard(Board board, byte steps, Direction[] solution, SmartSolver inSolver) {
-    	// do nothing, should not be called
-        return false;
-    }
-    
     /**
      * If the solver is SolverPD object and last search board in activeMap
      * that need to verify; verify the full set and return true.
@@ -585,53 +513,7 @@ public class ReferenceAccumulator implements Reference {
         inSolver.timeoutSwitch(backupTimeoutFlag);
         return false;
     }
-    
-    public boolean updateLastSearch(Board board) {
-        if (referenceMap == null) {
-            return false;
-        }
-    	if (localSolver == null) {
-            localSolver = createSolver();
-        }
-        if (localSolver == null) {
-        	return false;
-        }
 
-        ReferenceBoard advBoard = new ReferenceBoard(board);
-        int group = ReferenceConstants.getReferenceGroup(board.getZero1d());
-
-        if (referenceMap.containsKey(advBoard)) {
-            ReferenceMoves advMoves = referenceMap.get(advBoard);
-            if (!advMoves.isCompleted()) {
-                System.out.println("System update, please wait.");
-                advMoves.updateSolutions(advBoard, localSolver);
-                add2file(advBoard, advMoves);
-            }
-            return true;
-        }
-
-        ReferenceBoard advBoardSym = null;
-        if (group == 0 || group == 2) {
-            advBoardSym = new ReferenceBoard(new Board(board.getTilesSym()));
-        }
-
-        if (referenceMap.containsKey(advBoardSym)) {
-            ReferenceMoves advMoves = referenceMap.get(advBoardSym);
-            if (!advMoves.isCompleted()) {
-                System.out.println("System update, please wait.");
-                advMoves.updateSolutions(advBoardSym, localSolver);
-                add2file(advBoardSym, advMoves);
-            }
-            return true;
-        }
-        return false;    	
-    }
-        
-    public boolean updateLastSearch(Board board, SmartSolver inSolver) {
-    	// do nothing, should not be called
-        return false;    	
-    }
-    	    
     // remove the given board from reference boards collection if exists, except
     // default reference boards.
     void removeBoard(Board board) {

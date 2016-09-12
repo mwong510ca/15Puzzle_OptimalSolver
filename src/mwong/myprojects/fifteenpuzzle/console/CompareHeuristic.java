@@ -9,7 +9,6 @@ import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverWdMd;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
@@ -42,22 +41,22 @@ public class CompareHeuristic extends AbstractApplication {
      */
     public CompareHeuristic() {
         super();
-        solverMd = new SmartSolverMd(refConnection);
+        solverMd = new SmartSolverMd(refAccumulator);
         solverMd.messageSwitch(messageOff);
 
-        solverWd = new SmartSolverWd(refConnection);
+        solverWd = new SmartSolverWd(refAccumulator);
         solverWd.messageSwitch(messageOff);
 
-        solverWdMd = new SmartSolverWdMd(refConnection);
+        solverWdMd = new SmartSolverWdMd(refAccumulator);
         solverWdMd.messageSwitch(messageOff);
 
-        solverPdbWd555 = new SmartSolverPdbWd(PatternOptions.Pattern_555, refConnection);
+        solverPdbWd555 = new SmartSolverPdbWd(PatternOptions.Pattern_555, refAccumulator);
         solverPdbWd555.messageSwitch(messageOff);
 
-        solverPdbWd663 = new SmartSolverPdbWd(PatternOptions.Pattern_663, refConnection);
+        solverPdbWd663 = new SmartSolverPdbWd(PatternOptions.Pattern_663, refAccumulator);
         solverPdbWd663.messageSwitch(messageOff);
 
-        solverPdb78 = new SmartSolverPdb(PatternOptions.Pattern_78, refConnection);
+        solverPdb78 = new SmartSolverPdb(PatternOptions.Pattern_78, refAccumulator);
         solverPdb78.timeoutSwitch(timeoutOff);
         solverPdb78.messageSwitch(messageOff);
     }
@@ -164,26 +163,10 @@ public class CompareHeuristic extends AbstractApplication {
 
                 // Notes: updateLastSearch is optional.
                 try {
-                    refConnection.updateLastSearch(board, solverPdb78);
+                    refAccumulator.updateLastSearch(solverPdb78);
                 } catch (RemoteException ex) {
-                	try {
-    					System.out.println("Counnection lost: " + ex);
-    					System.out.println("Reference connection may not in sync.");
-                		loadReferenceConnection();
-                		solverMd.setReferenceConnection(refConnection);
-                		solverWd.setReferenceConnection(refConnection);
-                		solverWdMd.setReferenceConnection(refConnection);
-                		solverPdbWd555.setReferenceConnection(refConnection);
-                		solverPdbWd663.setReferenceConnection(refConnection);
-                		solverPdb78.setReferenceConnection(refConnection);
-                	} catch (IOException e) {
-                		solverMd.disableAdvancedVersion();
-                		solverWd.disableAdvancedVersion();
-                		solverWdMd.disableAdvancedVersion();
-                		solverPdbWd555.disableAdvancedVersion();
-                		solverPdbWd663.disableAdvancedVersion();
-                		solverPdb78.disableAdvancedVersion();
-					}
+                    // TODO Auto-generated catch block
+                    ex.printStackTrace();
                 }
             } else {
                 System.out.println("The board is unsolvable, try again!");
