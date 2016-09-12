@@ -1,5 +1,6 @@
 package mwong.myprojects.fifteenpuzzle.solver;
 
+import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceRemote;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 
 /**
@@ -20,6 +21,20 @@ public interface SmartSolver extends Solver {
      */
     boolean versionSwitch(boolean flag);
 
+    /**
+     * Set the ReferenceRemote connection with the given connection.
+     *
+     * @param set the ReferenceRemote connection with the given connection
+     */
+    void setReferenceConnection(ReferenceRemote refConnection);
+    
+    /**
+     * Disable advanced version, cannot resume.
+     *
+     * @param disable advanced version.
+     */
+    void disableAdvancedVersion();
+    
     // ----- heuristic -----
     /**
      * Returns the original heuristic value of the given board.

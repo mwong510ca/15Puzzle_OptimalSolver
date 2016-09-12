@@ -85,6 +85,33 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
     }
 
     /**
+     * Set the advance search feature with the given flag.
+     *
+     * @param flag the boolean represent the ON/OFF advanced feature
+     */
+    @Override
+    public void setReferenceConnection(ReferenceRemote refConnection) {
+    	if (activeSmartSolver) {
+            this.refConnection = refConnection;
+    	} else {
+    		this.refConnection = null;
+    		flagAdvancedVersion = tagStandard;
+    	}
+    }
+    
+    /**
+     * Set the advance search feature with the given flag.
+     *
+     * @param flag the boolean represent the ON/OFF advanced feature
+     */
+    @Override
+    public void disableAdvancedVersion() {
+    	activeSmartSolver = false;
+    	flagAdvancedVersion = tagStandard;
+    	this.refConnection = null;
+    }
+    
+    /**
      * Returns the byte value of the standard version of the heuristic value of the board.
      *
      * @return byte value of the standard version of the heuristic value

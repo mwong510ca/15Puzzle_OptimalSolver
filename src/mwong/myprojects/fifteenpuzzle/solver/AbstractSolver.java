@@ -35,7 +35,7 @@ public abstract class AbstractSolver implements Solver {
     protected boolean flagTimeout;
     protected boolean flagMessage;
     protected int searchTimeoutLimit;
-    public HeuristicOptions inUseHeuristic;
+    protected HeuristicOptions inUseHeuristic;
     // board related
     protected byte[] tiles;
     protected int zeroX;

@@ -1,6 +1,8 @@
 package mwong.myprojects.fifteenpuzzle.solver.ai;
 
 import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
+import mwong.myprojects.fifteenpuzzle.solver.components.Board;
+import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -43,6 +45,14 @@ public interface ReferenceRemote extends Remote {
      *
      *  @param inSolver the SolverInterface object in use
      */
+    void updatePending() throws RemoteException;
+
+    /**
+     *  Verify the given solver is using pattern database 7-8, scan the full
+     *  collection, if the reference board is not verified, verify it now.
+     *
+     *  @param inSolver the SolverInterface object in use
+     */
     void updatePending(SmartSolver inSolver) throws RemoteException;
 
     /**
@@ -55,6 +65,24 @@ public interface ReferenceRemote extends Remote {
     public boolean addBoard(SmartSolver inSolver) throws RemoteException;
 
     /**
+     * If the given solver using pattern database 7-8, and it takes
+     * over the cutoff limit solve the puzzle with advanced estimate;
+     * add to reference boards collection.
+     *
+     * @param inSolver the SolverInterface object in use
+     */
+    public boolean addBoard(Board board, byte steps, Direction[] solution) throws RemoteException;
+
+    /**
+     * If the given solver using pattern database 7-8, and it takes
+     * over the cutoff limit solve the puzzle with advanced estimate;
+     * add to reference boards collection.
+     *
+     * @param inSolver the SolverInterface object in use
+     */
+    public boolean addBoard(Board board, byte steps, Direction[] solution, SmartSolver inSolver) throws RemoteException;
+
+    /**
      * If the solver is SolverPD object and last search board in activeMap
      * that need to verify; verify the full set and return true.
      *
@@ -62,4 +90,21 @@ public interface ReferenceRemote extends Remote {
      * @return boolean if last search board in activeMap has been verified.
      */
     public boolean updateLastSearch(SmartSolver inSolver) throws RemoteException;
+
+    /**
+     * If the solver is SolverPD object and last search board in activeMap
+     * that need to verify; verify the full set and return true.
+     *
+     * @param inSolver the given SolverIntegerface
+     * @return boolean if last search board in activeMap has been verified.
+     */
+    public boolean updateLastSearch(Board board) throws RemoteException;
+    /**
+     * If the solver is SolverPD object and last search board in activeMap
+     * that need to verify; verify the full set and return true.
+     *
+     * @param inSolver the given SolverIntegerface
+     * @return boolean if last search board in activeMap has been verified.
+     */
+    public boolean updateLastSearch(Board board, SmartSolver inSolver) throws RemoteException;
 }

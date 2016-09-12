@@ -7,6 +7,7 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 
 /**
@@ -21,8 +22,10 @@ import java.rmi.RemoteException;
  * @author Meisze Wong
  *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
-public class SmartSolverPdb extends SmartSolverPdbBase {
-    /**
+public class SmartSolverPdb extends SmartSolverPdbBase implements Serializable {
+    private static final long serialVersionUID = 17195273121L;
+    
+	/**
      * Initializes SmartSolverPdb object using default preset pattern.
      *
      * @param refAccumulator the given ReferenceAccumulator object
@@ -52,7 +55,6 @@ public class SmartSolverPdb extends SmartSolverPdbBase {
     public SmartSolverPdb(PatternOptions presetPattern, int choice,
             ReferenceRemote refConnection) {
         super(presetPattern, choice);
-
         try {
             if (refConnection == null || refConnection.getActiveMap() == null) {
                 System.out.println("Referece board collection unavailable."
