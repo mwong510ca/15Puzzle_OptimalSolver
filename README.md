@@ -44,6 +44,13 @@ Now the solver has the self learning feature.   When it accumulate enough refere
 Read [Solver Enhancement - advanced version] for details.
 
 ----
+###Connection options
+Support standalone application and multiusers application.
+* Standalone - reference collection will be stored in a local file.  If user started multiple applications on the same machine.  Reference collection will not be in sync.
+* RMI support multiuser application - Mulitple applications will access the same reference collection instance and storage through RMI service.  If connection is lost, it will resume to standalone connection without terminate the application.  
+
+###GUI (Coming soon!)
+
 ###Console applications (screen recordings on youtube)
 option 1 - demo [self learning feature] | text file [sample output 1]  
 option 2 - [compare enhancement] | text file [sample output 2]  
