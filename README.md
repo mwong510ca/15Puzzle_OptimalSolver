@@ -19,7 +19,7 @@ After I finished my 15 puzzle optimal solver, most of the puzzles are solved wit
              9 13  2  1     4  8 12 11     4  8 12  1 	  4 10  5  1     4  7  5  1     4  8  5  1
 Estimate:            48             58             58             58             62             66
 Moves:               70             72             74             76             78             80
-Time:            111.4s          56.6s          13.7s           5.8s           5.7s           3.es
+Time:            111.4s          56.6s          13.7s           5.8s           5.7s           3.5s
 Nodes:        492357819      231367077       46383751       20187376       18363209       12715201
 </pre>
 I analysis the behavior of 15 puzzle and my solver.  I added [symmetry reduction (Section 4)] and circular reduction to speed up the process. It improve the process time from 2 mintue to 45 seconds.
@@ -45,9 +45,14 @@ Read [Solver Enhancement - advanced version] for details.
 
 ----
 ###Connection options
-Support standalone application and multiusers application.
+Support standalone application and multi-users application.
 * Standalone - reference collection will be stored in a local file.  If user started multiple applications on the same machine.  Reference collection will not be in sync.
 * RMI support multiuser application - Mulitple applications will access the same reference collection instance and storage through RMI service.  If connection is lost, it will resume to standalone connection without terminate the application.  
+
+Console applications may detect the server connection lost, restore in standalone or standard version temporary.  When conection is back, it will switch back to remote connection automatically.  
+
+Reference collection administrator allow to change cutoff limit, reset and restore to default setting, refresh the file etc.  Changing the setting is not allow during the server is running.  
+Same for the remote server, it cannnot start the server during the administrator is using.  
 
 ###GUI (Coming soon!)
 
@@ -61,15 +66,15 @@ option 6 - [timeout counter and average time per puzzle]
 Notes: runtime takes a little longer due to screen recording.
 
 Heuristic Functions - 7 heuristic functions to choose from:  
-Average search time of 100 random board with Standard version 
+Average search time of 250 random board with Standard version 
 <pre>
-Manhattan Distance                                         (1.33s, 18 timeout at 10s)
-Manhattan Distance with Linear Conflict                    (1.01s, 5 timeout at 10s)
-Walking Distance                                           (0.81s, 7 timeout at 10s)
-Walking Distance + Manhattan Distance with Linear Conflict (0.63s, 3 timeout at 10s)
-Additive Pattern Database 5-5-5 + Walking Distance         (0.27s)
-Additive Pattern Database 6-6-3 + Walking Distance         (0.14s) 
-Additive Pattern Database 7-8                              (0.0077s)</pre>
+Manhattan Distance                                         (1.57s, exclude 42 timeout at 10s)
+Manhattan Distance with Linear Conflict                    (1.07s, exclude 14 timeout at 10s)
+Walking Distance                                           (0.95s, exclude 10 timeout at 10s)
+Walking Distance + Manhattan Distance with Linear Conflict (0.68s, exclude  5 timeout at 10s)
+Additive Pattern Database 5-5-5 + Walking Distance         (0.28s)
+Additive Pattern Database 6-6-3 + Walking Distance         (0.15s) 
+Additive Pattern Database 7-8                              (0.0082s)</pre>
 
 [15 slide puzzle]: https://en.wikipedia.org/wiki/15_puzzle
 [8puzzle]: http://algs4.cs.princeton.edu/24pq/
