@@ -66,7 +66,7 @@ option 6 - [timeout counter and average time per puzzle]
 Notes: runtime takes a little longer due to screen recording.
 
 Heuristic Functions - 7 heuristic functions to choose from:  
-Average search time of 250 random board with Standard version 
+Average search time of 250 random boards with Standard version 
 <pre>
 Manhattan Distance                                         (1.57s, exclude 42 timeout at 10s)
 Manhattan Distance with Linear Conflict                    (1.07s, exclude 14 timeout at 10s)
@@ -74,7 +74,12 @@ Walking Distance                                           (0.95s, exclude 10 ti
 Walking Distance + Manhattan Distance with Linear Conflict (0.68s, exclude  5 timeout at 10s)
 Additive Pattern Database 5-5-5 + Walking Distance         (0.28s)
 Additive Pattern Database 6-6-3 + Walking Distance         (0.15s) 
-Additive Pattern Database 7-8                              (0.0082s)</pre>
+Additive Pattern Database 7-8                              (0.0082s)
+                 (5000 random boards)     standard version (0.0057s)
+                                          advanced version (0.0057s)
+             (250 random hard boards      standard version (0.73s, exclude  6 timeout at 10s)
+              Manhattan distance 40+)     advanced version (0.29s)
+</pre>
 
 [15 slide puzzle]: https://en.wikipedia.org/wiki/15_puzzle
 [8puzzle]: http://algs4.cs.princeton.edu/24pq/
