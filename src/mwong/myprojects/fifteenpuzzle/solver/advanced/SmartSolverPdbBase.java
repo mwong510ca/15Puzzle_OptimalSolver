@@ -23,8 +23,7 @@ import java.rmi.RemoteException;
  *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class SmartSolverPdbBase extends SolverPdb {
-    
-	protected Board lastSearchBoard;
+    protected Board lastSearchBoard;
     protected boolean addedReference;
 
     /**
@@ -60,7 +59,7 @@ public class SmartSolverPdbBase extends SolverPdb {
                 this.refConnection = refConnection;
             }
         } catch (RemoteException ex) {
-            System.out.println("Attention: Server connection failed."
+            System.err.println("Attention: Server connection failed."
                     + " Advanced estimate will use standard estimate.");
         }
     }
@@ -81,7 +80,7 @@ public class SmartSolverPdbBase extends SolverPdb {
      * @param board the initial puzzle Board object to solve
      * @param estimate the given initial limit to solve the puzzle
      */
-    public void findOptimalPath(Board board, byte estimate) {
+    public void findOptimalPath(Board board, byte estimate) throws RemoteException {
         if (board.isSolvable()) {
             clearHistory();
             stopwatch = new Stopwatch();
@@ -101,12 +100,13 @@ public class SmartSolverPdbBase extends SolverPdb {
      * @return byte value of the heuristic value of the given board
      */
     @Override
-    public byte heuristic(Board board) {
+    public byte heuristic(Board board) throws RemoteException {
         return heuristic(board, flagAdvancedVersion, tagSearch);
     }
 
     // overload method to calculate the heuristic value of the given board and conditions
-    protected byte heuristic(Board board, boolean isAdvanced, boolean isSearch) {
+    protected byte heuristic(Board board, boolean isAdvanced, boolean isSearch)
+            throws RemoteException {
         if (!board.isSolvable()) {
             return -1;
         }
@@ -121,13 +121,7 @@ public class SmartSolverPdbBase extends SolverPdb {
             return priorityAdvanced;
         }
 
-        try {
-            setPriorityAdvanced(board, isSearch);
-        } catch (RemoteException ex) {
-            // TODO Auto-generated catch block
-            //ex.printStackTrace();
-        	return priorityGoal;
-        }
+        setPriorityAdvanced(board, isSearch);
         return priorityAdvanced;
     }
 
@@ -137,7 +131,7 @@ public class SmartSolverPdbBase extends SolverPdb {
      * @return byte value of the original heuristic value of the given board
      */
     @Override
-    public byte heuristicStandard(Board board) {
+    public byte heuristicStandard(Board board) throws RemoteException {
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
@@ -154,7 +148,7 @@ public class SmartSolverPdbBase extends SolverPdb {
      * @return byte value of the advanced heuristic value of the given board
      */
     @Override
-    public byte heuristicAdvanced(Board board) {
+    public byte heuristicAdvanced(Board board) throws RemoteException {
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
@@ -170,7 +164,7 @@ public class SmartSolverPdbBase extends SolverPdb {
     }
 
     // solve the puzzle using interactive deepening A* algorithm
-    protected void idaStar(int limit) {
+    protected void idaStar(int limit) throws RemoteException {
         if (inUsePattern == PatternOptions.Pattern_78) {
             lastSearchBoard = new Board(tiles);
         }
@@ -227,38 +221,33 @@ public class SmartSolverPdbBase extends SolverPdb {
                 if (solved) {
                     // if currently using pattern database 7-8 and it takes long than cutoff limit
                     // to solve, add the board and solutions to reference boards collection.
-                    try {
-                    	if (activeSmartSolver && inUseHeuristic == HeuristicOptions.PD78
-                                && stopwatch.currentTime() >  refConnection.getCutoffLimit()) {
-                    		
-                    		if (flagAdvancedVersion ||
-                    				(heuristicStandard(lastBoard) == heuristicAdvanced(lastBoard))) {
-                                // backup original solutions
-                                final Stopwatch backupTime = stopwatch;
-                                final byte backupSteps = steps;
-                                final int backupIdaCount = searchNodeCount;
-                                final Direction[] backupSolution = new Direction[steps + 1];
-                                System.arraycopy(solutionMove, 1, backupSolution, 1, steps);
+                    if (activeSmartSolver && inUseHeuristic == HeuristicOptions.PD78
+                            && stopwatch.currentTime() >  refConnection.getCutoffLimit()) {
 
-                                searchTime = stopwatch.currentTime();
-                                stopwatch = new Stopwatch();
-                                // update cached advanced priority if added to the reference collection
-                                addedReference = refConnection.addBoard(lastBoard, steps, solutionMove, this);
-                                if (addedReference) {
-                                	priorityAdvanced = backupSteps;
-                                }
+                        if (flagAdvancedVersion
+                                || (heuristicStandard(lastBoard) == heuristicAdvanced(lastBoard))) {
+                            // backup original solutions
+                            final Stopwatch backupTime = stopwatch;
+                            final byte backupSteps = steps;
+                            final int backupIdaCount = searchNodeCount;
+                            final Direction[] backupSolution = new Direction[steps + 1];
+                            System.arraycopy(solutionMove, 1, backupSolution, 1, steps);
 
-                                // restore original solutions
-                                stopwatch = backupTime;
-                                steps = backupSteps;
-                                searchNodeCount = backupIdaCount;
-                                solutionMove = backupSolution;
-                    		}
+                            searchTime = stopwatch.currentTime();
+                            stopwatch = new Stopwatch();
+                            // update cached advanced priority if added to the reference collection
+                            addedReference
+                                    = refConnection.addBoard(lastBoard, steps, solutionMove, this);
+                            if (addedReference) {
+                                priorityAdvanced = backupSteps;
+                            }
+
+                            // restore original solutions
+                            stopwatch = backupTime;
+                            steps = backupSteps;
+                            searchNodeCount = backupIdaCount;
+                            solutionMove = backupSolution;
                         }
-                    } catch (RemoteException ex) {
-                    	System.out.println("Network connection lost: " + ex);
-                        // TODO Auto-generated catch block
-                        //ex.printStackTrace();
                     }
                     return;
                 }

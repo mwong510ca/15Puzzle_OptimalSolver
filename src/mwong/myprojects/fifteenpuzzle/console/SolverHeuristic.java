@@ -10,7 +10,6 @@ import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverWdMd;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
@@ -31,7 +30,6 @@ import java.rmi.RemoteException;
 public class SolverHeuristic extends AbstractApplication {
     private SmartSolver solver;
     private HeuristicOptions inUseHeuristic;
-    private boolean activeAdvancedVersion;
 
     /**
      * Initial SolverHeuristic object.
@@ -41,7 +39,12 @@ public class SolverHeuristic extends AbstractApplication {
         solver = new SmartSolverPdbWd(defaultPattern, refConnection);
         inUseHeuristic = solver.getHeuristicOptions();
         solver.versionSwitch(flagAdvVersion);
-        activeAdvancedVersion = true;
+        setSolverVersion();
+    }
+
+    private void setSolverVersion() {
+        solver.setReferenceConnection(refConnection);
+        printConnectionType();
     }
 
     // display the solver options and change it with the user's choice
@@ -121,11 +124,8 @@ public class SolverHeuristic extends AbstractApplication {
         }
 
         inUseHeuristic = solver.getHeuristicOptions();
-        if (activeAdvancedVersion) {
-        	solver.versionSwitch(flagAdvVersion);
-        } else {        
-        	solver.disableAdvancedVersion();
-        }
+        solver.versionSwitch(flagAdvVersion);
+        solver.setReferenceConnection(refConnection);
         solver.printDescription();
         if (inUseHeuristic == HeuristicOptions.PD78) {
             solver.timeoutSwitch(timeoutOff);
@@ -283,28 +283,38 @@ public class SolverHeuristic extends AbstractApplication {
                 continue;
             }
 
-            solver.findOptimalPath(board);
+            if (flagAdvVersion) {
+                if (!testConnection()) {
+                    setSolverVersion();
+                }
+            }
+
+            try {
+                solver.findOptimalPath(board);
+            } catch (RemoteException ex) {
+                System.err.println("Counnection lost: " + ex);
+                loadReferenceConnection();
+                setSolverVersion();
+                System.err.println("Try again:");
+                continue;
+            }
+
             if (solver.isSearchTimeout()) {
                 System.out.println("Search terminated after " + timeoutLimit + "s.\n");
                 board = menuMain();
             } else {
                 solutionSummary(solver);
                 // Notes: updateLastSearch is optional.
-                try {
-                    if (solver.getClass().getSimpleName().equals("SmartSolverPdb")
-                            && solver.getHeuristicOptions() == HeuristicOptions.PD78
-                            && ((SmartSolverPdb) solver).isAddedReference()) {
+                if (solver.getClass().getSimpleName().equals("SmartSolverPdb")
+                        && solver.getHeuristicOptions() == HeuristicOptions.PD78
+                        && ((SmartSolverPdb) solver).isAddedReference()) {
+                    try {
                         refConnection.updateLastSearch(board, solver);
+                    } catch (RemoteException ex) {
+                        System.err.println("Counnection lost: " + ex);
+                        loadReferenceConnection();
+                        setSolverVersion();
                     }
-                } catch (RemoteException ex) {
-                	try {
-                		System.out.println("Counnection lost: " + ex);
-                    	System.out.println("Reference connection may not in sync.");
-                    	loadReferenceConnection();
-                    	solver.setReferenceConnection(refConnection);
-					} catch (IOException e) {
-						activeAdvancedVersion = false;
-					}
                 }
 
                 if (solver.moves() > 0) {

@@ -24,8 +24,8 @@ import java.rmi.RemoteException;
  */
 public class SmartSolverPdb extends SmartSolverPdbBase implements Serializable {
     private static final long serialVersionUID = 17195273121L;
-    
-	/**
+
+    /**
      * Initializes SmartSolverPdb object using default preset pattern.
      *
      * @param refAccumulator the given ReferenceAccumulator object
@@ -96,7 +96,7 @@ public class SmartSolverPdb extends SmartSolverPdbBase implements Serializable {
                 this.refConnection = refConnection;
             }
         } catch (RemoteException ex) {
-            System.out.println("Attention: Server connection failed."
+            System.err.println("Attention: Server connection failed."
                     + " Advanced estimate will use standard estimate.");
         }
     }
@@ -107,18 +107,12 @@ public class SmartSolverPdb extends SmartSolverPdbBase implements Serializable {
      * @param board the given Board object
      * @return boolean value of the given board is a reference board with partial solution.
      */
-    public boolean hasPartialSolution(Board board) {
-        try {
-            return extra.hasPartialSolution(board, refConnection.getActiveMap());
-        } catch (RemoteException ex) {
-            // TODO Auto-generated catch block
-            ex.printStackTrace();
-        }
-        return false;
+    public boolean hasPartialSolution(Board board) throws RemoteException {
+        return extra.hasPartialSolution(board, refConnection.getActiveMap());
     }
 
     // solve the puzzle using interactive deepening A* algorithm
-    protected void idaStar(int limit) {
+    protected void idaStar(int limit) throws RemoteException {
         if (inUsePattern == PatternOptions.Pattern_78) {
             lastSearchBoard = new Board(tiles);
         }
@@ -133,7 +127,7 @@ public class SmartSolverPdb extends SmartSolverPdbBase implements Serializable {
 
     // skip the first 8 moves from stored record then solve the remaining puzzle
     // using depth first search with exact number of steps of optimal solution
-    private void advancedSearch(int limit) {
+    private void advancedSearch(int limit) throws RemoteException {
         Direction[] dupSolution = new Direction[limit + 1];
         Board board = prepareAdvancedSearch(limit, dupSolution);
         heuristic(board, tagStandard, tagSearch);

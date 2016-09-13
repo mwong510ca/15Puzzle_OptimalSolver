@@ -3,6 +3,8 @@ package mwong.myprojects.fifteenpuzzle.solver;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 
+import java.rmi.RemoteException;
+
 /**
  * SolverStandard is the interface class that has the basic methods of any
  * 15 puzzle solver.
@@ -68,14 +70,14 @@ public interface Solver {
      * @param board the initial puzzle Board object to solve
      * @return byte value of the heuristic value of the given board
      */
-    byte heuristic(Board board);
+    byte heuristic(Board board) throws RemoteException;
 
     /**
      * Find the optimal path to goal state if the given board is solvable.
      *
      * @param board the initial puzzle Board object to solve
      */
-    void findOptimalPath(Board board);
+    void findOptimalPath(Board board) throws RemoteException;
 
     // ----- search results -----
 

@@ -3,6 +3,8 @@ package mwong.myprojects.fifteenpuzzle.solver;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceRemote;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 
+import java.rmi.RemoteException;
+
 /**
  * Solver extends SolverStandard Interface as the main interface.  It is the interface class
  * that extend the standard methods for the advanced version of 15 puzzle solvers.
@@ -24,29 +26,22 @@ public interface SmartSolver extends Solver {
     /**
      * Set the ReferenceRemote connection with the given connection.
      *
-     * @param set the ReferenceRemote connection with the given connection
+     * @param refConnection set the ReferenceRemote connection with the given connection
      */
     void setReferenceConnection(ReferenceRemote refConnection);
-    
-    /**
-     * Disable advanced version, cannot resume.
-     *
-     * @param disable advanced version.
-     */
-    void disableAdvancedVersion();
-    
+
     // ----- heuristic -----
     /**
      * Returns the original heuristic value of the given board.
      *
      * @return byte value of the original heuristic value of the given board
      */
-    byte heuristicStandard(Board board);
+    byte heuristicStandard(Board board) throws RemoteException;
 
     /**
      * Returns the advanced heuristic value of the given board.
      *
      * @return byte value of the advanced heuristic value of the given board
      */
-    byte heuristicAdvanced(Board board);
+    byte heuristicAdvanced(Board board) throws RemoteException;
 }

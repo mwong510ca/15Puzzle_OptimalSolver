@@ -1,6 +1,6 @@
 package mwong.myprojects.fifteenpuzzle.solver.ai;
 
-import mwong.myprojects.fifteenpuzzle.server.ReferenceServerProperties;
+import mwong.myprojects.fifteenpuzzle.PropertiesRemote;
 
 import java.io.IOException;
 import java.rmi.Naming;
@@ -31,9 +31,12 @@ public class ReferenceFactory {
      * A network Reference connection will be returned.
      */
     public ReferenceRemote getReferenceServer() throws RemoteException, IOException {
-        String rmiServiceName = ReferenceServerProperties.getRemoteServiceName();
-        String rmiHost = ReferenceServerProperties.getRemoteHost();
-        int rmiPort = ReferenceServerProperties.getRemotePort();
+        String rmiServiceName
+                = PropertiesRemote.getInstance().getProperty("remoteServiceName");
+        String rmiHost
+                = PropertiesRemote.getInstance().getProperty("remoteHost");
+        int rmiPort 
+                = Integer.parseInt(PropertiesRemote.getInstance().getProperty("remotePort"));
         String lookupString = "rmi://" + rmiHost + ":" + rmiPort + "/" + rmiServiceName;
 
         try {

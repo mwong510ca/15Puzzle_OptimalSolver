@@ -6,7 +6,6 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternConstants;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
@@ -36,6 +35,12 @@ public class SolverPdbCustomPattern extends AbstractApplication {
         solverPdb = new SmartSolverPdb(defaultPattern, refConnection);
         inUsePattern = solverPdb.getHeuristicOptions();
         inUsePatternOption = 0;
+        setSolverVersion();
+    }
+
+    private void setSolverVersion() {
+        solverPdb.setReferenceConnection(refConnection);
+        printConnectionType();
     }
 
     // display the more choice of each additive pattern and allow user to
@@ -203,6 +208,9 @@ public class SolverPdbCustomPattern extends AbstractApplication {
             solverPdb.versionSwitch(flagAdvVersion);
             solverPdb.setTimeoutLimit(timeoutLimit);
             solverPdb.printDescription();
+            if (flagAdvVersion) {
+                solverPdb.setReferenceConnection(refConnection);
+            }
         }
         return menuSub(true, true);
     }
@@ -344,7 +352,19 @@ public class SolverPdbCustomPattern extends AbstractApplication {
             System.out.println(board);
 
             if (board.isSolvable()) {
-                solverPdb.findOptimalPath(board);
+                if (!testConnection()) {
+                    setSolverVersion();
+                }
+
+                try {
+                    solverPdb.findOptimalPath(board);
+                } catch (RemoteException ex) {
+                    System.err.println("Counnection lost: " + ex);
+                    loadReferenceConnection();
+                    setSolverVersion();
+                    System.err.println("Try again:");
+                    continue;
+                }
                 if (solverPdb.isSearchTimeout()) {
                     System.out.println("Search terminated after " + timeoutLimit + "s.");
                 } else {
@@ -359,14 +379,9 @@ public class SolverPdbCustomPattern extends AbstractApplication {
                     refConnection.updateLastSearch(board, solverPdb);
                 }
             } catch (RemoteException ex) {
-            	try {
-            		System.out.println("Counnection lost: " + ex);
-                	System.out.println("Reference connection may not in sync.");
-                	loadReferenceConnection();
-                	solverPdb.setReferenceConnection(refConnection);
-				} catch (IOException e) {
-					solverPdb.disableAdvancedVersion();
-				}
+                System.out.println("Counnection lost: " + ex);
+                loadReferenceConnection();
+                setSolverVersion();
             }
             board = menuMain();
         }

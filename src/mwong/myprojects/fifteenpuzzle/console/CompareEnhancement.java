@@ -9,7 +9,6 @@ import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdbBase;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdbEnh1;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdbEnh2;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
@@ -59,13 +58,27 @@ public class CompareEnhancement extends AbstractApplication {
         solverNoEnh = new SolverPdbBase(solverAdvanced);
         solverNoEnh.messageSwitch(messageOff);
         solverNoEnh.timeoutSwitch(timeoutOff);
+        setSolverVersion();
+    }
+
+    private void setSolverVersion() {
+        solverAdvanced.setReferenceConnection(refConnection);
+        solverAdvEst.setReferenceConnection(refConnection);
+        printConnectionType();
     }
 
     // It take a solver and a 15 puzzle board, display the the process time and number of
     // nodes generated during the search.
     private void solvePuzzle(Solver solver, Board board) {
-        solver.findOptimalPath(board);
-        System.out.printf("%-15s %-20s\n", solver.searchTime() + "s", solver.searchNodeCount());
+        try {
+            solver.findOptimalPath(board);
+            System.out.printf("%-15s %-20s\n", solver.searchTime() + "s", solver.searchNodeCount());
+        } catch (RemoteException ex) {
+            System.out.println("Counnection lost: " + ex);
+            loadReferenceConnection();
+            setSolverVersion();
+            solvePuzzle(solver, board);
+        }
     }
 
     /**
@@ -97,8 +110,22 @@ public class CompareEnhancement extends AbstractApplication {
 
             System.out.print("\n" + board);
             if (board.isSolvable()) {
-                int heuristicStandard = solverAdvanced.heuristicStandard(board);
-                int heuristicAdvanced = solverAdvanced.heuristicAdvanced(board);
+                if (!testConnection()) {
+                    setSolverVersion();
+                }
+
+                int heuristicStandard;
+                int heuristicAdvanced;
+                try {
+                    heuristicStandard = solverAdvanced.heuristicStandard(board);
+                    heuristicAdvanced = solverAdvanced.heuristicAdvanced(board);
+                } catch (RemoteException ex) {
+                    System.out.println("Counnection lost: " + ex);
+                    loadReferenceConnection();
+                    setSolverVersion();
+                    System.out.println("Try again");
+                    continue;
+                }
                 System.out.print("Standard estimate : " + heuristicStandard + "\t\t");
                 System.out.println("    Advanced estimate : " + heuristicAdvanced);
                 System.out.println("\t\t\t\t    Time\t    Nodes");
@@ -113,12 +140,20 @@ public class CompareEnhancement extends AbstractApplication {
                 solverAdvanced.versionSwitch(tagStandard);
                 solvePuzzle(solverAdvanced, board);
                 if (solverAdvanced.isAddedReference()) {
-                    heuristicAdvanced = solverAdvanced.heuristicAdvanced(board);
+                    try {
+                        heuristicAdvanced = solverAdvanced.heuristicAdvanced(board);
+                    } catch (RemoteException ex) {
+                        System.out.println("Counnection lost: " + ex);
+                        loadReferenceConnection();
+                        setSolverVersion();
+                        heuristicAdvanced = heuristicStandard;
+                    }
                 }
-                try {
-                    if (heuristicAdvanced > heuristicStandard) {
-                        System.out.printf("%-36s", "5. Advanced estimate : ");
-                        solvePuzzle(solverAdvEst, board);
+
+                if (heuristicAdvanced > heuristicStandard) {
+                    System.out.printf("%-36s", "5. Advanced estimate : ");
+                    solvePuzzle(solverAdvEst, board);
+                    try {
                         if (solverAdvanced.hasPartialSolution(board)) {
                             System.out.printf("%-36s", "6. Use preset partial solution :");
                             solverAdvanced.versionSwitch(tagAdvanced);
@@ -132,23 +167,22 @@ public class CompareEnhancement extends AbstractApplication {
                                 refConnection.updateLastSearch(board, solverAdvEst);
                             }
                         }
-                    } else {
-                        System.out.println("5 & 6. Skip - Both estimate are the same.");
-                        if (solverAdvanced.isAddedReference()) {
+                    } catch (RemoteException ex) {
+                        System.out.println("Counnection lost: " + ex);
+                        loadReferenceConnection();
+                        setSolverVersion();
+                    }
+                } else {
+                    System.out.println("5 & 6. Skip - Both estimate are the same.");
+                    if (solverAdvanced.isAddedReference()) {
+                        try {
                             refConnection.updateLastSearch(board, solverAdvEst);
+                        } catch (RemoteException ex) {
+                            System.out.println("Counnection lost: " + ex);
+                            loadReferenceConnection();
+                            setSolverVersion();
                         }
                     }
-                } catch (RemoteException ex) {
-                	try {
-                		System.out.println("Counnection lost: " + ex);
-                    	System.out.println("Reference connection may not in sync.");
-                    	loadReferenceConnection();
-                    	solverAdvanced.setReferenceConnection(refConnection);
-                    	solverAdvEst.setReferenceConnection(refConnection);
-					} catch (IOException e) {
-						solverAdvanced.disableAdvancedVersion();;
-                    	solverAdvEst.disableAdvancedVersion();;
-					}
                 }
             } else {
                 System.out.println("The board is unsolvable, try again!");

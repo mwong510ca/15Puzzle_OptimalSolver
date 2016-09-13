@@ -63,10 +63,10 @@ public class ReferenceAdapter implements ReferenceRemote {
      * Verify the given solver is using pattern database 7-8, scan the full
      * collection, if the reference board is not verified, verify it now.
      *
-     * @param inSolver the SolverInterface object in use
+     * @throws RemoteException throw exception when connection lost
      */
     public void updatePending() throws RemoteException {
-    	refObject.updatePending();
+        refObject.updatePending();
     }
 
     /**
@@ -74,6 +74,7 @@ public class ReferenceAdapter implements ReferenceRemote {
      * collection, if the reference board is not verified, verify it now.
      *
      * @param inSolver the SolverInterface object in use
+     * @throws RemoteException throw exception when connection lost
      */
     public void updatePending(SmartSolver inSolver) throws RemoteException {
         refObject.updatePending(inSolver);
@@ -85,9 +86,10 @@ public class ReferenceAdapter implements ReferenceRemote {
      * add to reference boards collection.
      *
      * @param inSolver the SolverInterface object in use
+     * @throws RemoteException throw exception when connection lost
      */
     public boolean addBoard(SmartSolver inSolver) throws RemoteException {
-    	return refObject.addBoard(inSolver);
+        return refObject.addBoard(inSolver);
     }
 
     /**
@@ -95,10 +97,12 @@ public class ReferenceAdapter implements ReferenceRemote {
      * over the cutoff limit solve the puzzle with advanced estimate;
      * add to reference boards collection.
      *
-     * @param inSolver the SolverInterface object in use
+     * @param board the given board object
+     * @param steps the byte value of number of moves
+     * @param solution the Direction array of moves
      */
     public boolean addBoard(Board board, byte steps, Direction[] solution) throws RemoteException {
-    	return refObject.addBoard(board, steps, solution);
+        return refObject.addBoard(board, steps, solution);
     }
 
     /**
@@ -106,10 +110,14 @@ public class ReferenceAdapter implements ReferenceRemote {
      * over the cutoff limit solve the puzzle with advanced estimate;
      * add to reference boards collection.
      *
+     * @param board the given board object
+     * @param steps the byte value of number of moves
+     * @param solution the Direction array of moves
      * @param inSolver the SolverInterface object in use
      */
-    public boolean addBoard(Board board, byte steps, Direction[] solution, SmartSolver inSolver) throws RemoteException {
-		return addBoard(inSolver);
+    public boolean addBoard(Board board, byte steps, Direction[] solution, SmartSolver inSolver)
+            throws RemoteException {
+        return addBoard(inSolver);
     }
 
     /**
@@ -118,26 +126,32 @@ public class ReferenceAdapter implements ReferenceRemote {
      *
      * @param inSolver the given SolverIntegerface
      * @return boolean if last search board in activeMap has been verified.
+     * @throws RemoteException throw exception when connection lost
      */
     public boolean updateLastSearch(SmartSolver inSolver) throws RemoteException {
-    	return refObject.updateLastSearch(inSolver);
+        return refObject.updateLastSearch(inSolver);
     }
+
     /**
      * If the solver is SolverPD object and last search board in activeMap
      * that need to verify; verify the full set and return true.
      *
-     * @param inSolver the given SolverIntegerface
+     * @param board the given Board object
      * @return boolean if last search board in activeMap has been verified.
+     * @throws RemoteException throw exception when connection lost
      */
     public boolean updateLastSearch(Board board) throws RemoteException {
-    	return refObject.updateLastSearch(board);
+        return refObject.updateLastSearch(board);
     }
+
     /**
      * If the solver is SolverPD object and last search board in activeMap
      * that need to verify; verify the full set and return true.
      *
+     * @param board the given Board object
      * @param inSolver the given SolverIntegerface
      * @return boolean if last search board in activeMap has been verified.
+     * @throws RemoteException throw exception when connection lost
      */
     public boolean updateLastSearch(Board board, SmartSolver inSolver) throws RemoteException {
         return updateLastSearch(inSolver);

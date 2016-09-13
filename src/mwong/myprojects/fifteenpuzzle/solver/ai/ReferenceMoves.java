@@ -5,6 +5,7 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.util.Arrays;
 
 /**
@@ -91,7 +92,7 @@ public class ReferenceMoves implements Serializable {
 
     // update a full set of moves and partial solutions with a given reference board
     // and a SmartSolverPD object
-    void updateSolutions(ReferenceBoard advBoard, SmartSolverPdb solver) {
+    void updateSolutions(ReferenceBoard advBoard, SmartSolverPdb solver) throws RemoteException {
         assert solver != null : "SmartSolverPD is null";
         byte group = advBoard.group;
         byte[] blocks = advBoard.getTiles();

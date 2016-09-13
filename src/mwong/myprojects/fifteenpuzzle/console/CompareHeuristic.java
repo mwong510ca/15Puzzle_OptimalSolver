@@ -9,7 +9,6 @@ import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverWdMd;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
@@ -60,6 +59,17 @@ public class CompareHeuristic extends AbstractApplication {
         solverPdb78 = new SmartSolverPdb(PatternOptions.Pattern_78, refConnection);
         solverPdb78.timeoutSwitch(timeoutOff);
         solverPdb78.messageSwitch(messageOff);
+        setSolverVersion();
+    }
+
+    private void setSolverVersion() {
+        solverPdb78.setReferenceConnection(refConnection);
+        solverPdbWd663.setReferenceConnection(refConnection);
+        solverPdbWd555.setReferenceConnection(refConnection);
+        solverWdMd.setReferenceConnection(refConnection);
+        solverWd.setReferenceConnection(refConnection);
+        solverMd.setReferenceConnection(refConnection);
+        printConnectionType();
     }
 
     // It take a solver and a 15 puzzle board, display the the process time and number of
@@ -74,11 +84,31 @@ public class CompareHeuristic extends AbstractApplication {
         }
 
         solver.versionSwitch(tagStandard);
-        int heuristicStandard = solver.heuristicStandard(board);
+        int heuristicStandard;
+        try {
+            heuristicStandard = solver.heuristicStandard(board);
+        } catch (RemoteException ex) {
+            System.out.println("Counnection lost: " + ex);
+            loadReferenceConnection();
+            setSolverVersion();
+            System.out.println("Try again");
+            solvePuzzle(solver, board);
+            return;
+        }
 
         System.out.print("Standard\t" + heuristicStandard + "\t\t");
         if (stdSearch) {
-            solver.findOptimalPath(board);
+            try {
+                solver.findOptimalPath(board);
+            } catch (RemoteException ex) {
+                System.out.println("Counnection lost: " + ex);
+                loadReferenceConnection();
+                setSolverVersion();
+                System.out.println("Try again");
+                solvePuzzle(solver, board);
+                return;
+            }
+
             if (solver.isSearchTimeout()) {
                 System.out.println("Timeout: " + solver.searchTime() + "s at depth "
                         + solver.searchTerminateAtDepth() + "\t" + solver.searchNodeCount());
@@ -92,7 +122,15 @@ public class CompareHeuristic extends AbstractApplication {
         }
 
         if (solver.versionSwitch(tagAdvanced)) {
-            int heuristicAdvanced = solver.heuristicAdvanced(board);
+            int heuristicAdvanced;
+            try {
+                heuristicAdvanced = solver.heuristicAdvanced(board);
+            } catch (RemoteException ex) {
+                System.out.println("Counnection lost: " + ex);
+                loadReferenceConnection();
+                setSolverVersion();
+                heuristicAdvanced = heuristicStandard;
+            }
             if (heuristicStandard == heuristicAdvanced) {
                 System.out.println("Advanced\t" + "Same value");
                 if (!stdSearch) {
@@ -101,7 +139,16 @@ public class CompareHeuristic extends AbstractApplication {
             } else {
                 System.out.print("Advanced\t" + heuristicAdvanced + "\t\t");
                 if (advSearch) {
-                    solver.findOptimalPath(board);
+                    try {
+                        solver.findOptimalPath(board);
+                    } catch (RemoteException ex) {
+                        System.out.println("Counnection lost: " + ex);
+                        loadReferenceConnection();
+                        setSolverVersion();
+                        System.out.println("Try again");
+                        return;
+                    }
+
                     if (solver.isSearchTimeout()) {
                         System.out.println("Timeout: " + solver.searchTime() + "s at depth "
                                 + solver.searchTerminateAtDepth() + "\t"
@@ -148,6 +195,10 @@ public class CompareHeuristic extends AbstractApplication {
 
             System.out.print("\n" + board);
             if (board.isSolvable()) {
+                if (!testConnection()) {
+                    setSolverVersion();
+                }
+
                 System.out.println("\t\tEstimate\tTime\t\tMinimum Moves\tNodes generated");
 
                 stdSearch = true;
@@ -166,24 +217,9 @@ public class CompareHeuristic extends AbstractApplication {
                 try {
                     refConnection.updateLastSearch(board, solverPdb78);
                 } catch (RemoteException ex) {
-                	try {
-    					System.out.println("Counnection lost: " + ex);
-    					System.out.println("Reference connection may not in sync.");
-                		loadReferenceConnection();
-                		solverMd.setReferenceConnection(refConnection);
-                		solverWd.setReferenceConnection(refConnection);
-                		solverWdMd.setReferenceConnection(refConnection);
-                		solverPdbWd555.setReferenceConnection(refConnection);
-                		solverPdbWd663.setReferenceConnection(refConnection);
-                		solverPdb78.setReferenceConnection(refConnection);
-                	} catch (IOException e) {
-                		solverMd.disableAdvancedVersion();
-                		solverWd.disableAdvancedVersion();
-                		solverWdMd.disableAdvancedVersion();
-                		solverPdbWd555.disableAdvancedVersion();
-                		solverPdbWd663.disableAdvancedVersion();
-                		solverPdb78.disableAdvancedVersion();
-					}
+                    System.out.println("Counnection lost: " + ex);
+                    loadReferenceConnection();
+                    setSolverVersion();
                 }
             } else {
                 System.out.println("The board is unsolvable, try again!");

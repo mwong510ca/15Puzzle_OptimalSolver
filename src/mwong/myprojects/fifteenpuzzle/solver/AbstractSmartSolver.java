@@ -85,39 +85,30 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
     }
 
     /**
-     * Set the advance search feature with the given flag.
+     * Set the ReferenceRemote connection with the given connection.
      *
-     * @param flag the boolean represent the ON/OFF advanced feature
+     * @param refConnection set the ReferenceRemote connection with the given connection
      */
     @Override
     public void setReferenceConnection(ReferenceRemote refConnection) {
-    	if (activeSmartSolver) {
+        if (refConnection != null) {
+            activeSmartSolver = true;
+            flagAdvancedVersion = tagAdvanced;
             this.refConnection = refConnection;
-    	} else {
-    		this.refConnection = null;
-    		flagAdvancedVersion = tagStandard;
-    	}
+        } else {
+            activeSmartSolver = false;
+            flagAdvancedVersion = tagStandard;
+            this.refConnection = null;
+        }
     }
-    
-    /**
-     * Set the advance search feature with the given flag.
-     *
-     * @param flag the boolean represent the ON/OFF advanced feature
-     */
-    @Override
-    public void disableAdvancedVersion() {
-    	activeSmartSolver = false;
-    	flagAdvancedVersion = tagStandard;
-    	this.refConnection = null;
-    }
-    
+
     /**
      * Returns the byte value of the standard version of the heuristic value of the board.
      *
      * @return byte value of the standard version of the heuristic value
      */
     @Override
-    public byte heuristicStandard(Board board) {
+    public byte heuristicStandard(Board board) throws RemoteException {
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
@@ -134,7 +125,7 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
      * @return byte value of the advanced version of the heuristic value
      */
     @Override
-    public byte heuristicAdvanced(Board board) {
+    public byte heuristicAdvanced(Board board) throws RemoteException {
         return heuristicStandard(board);
     }
 
@@ -163,7 +154,7 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
     // set priorityAdvanced with given board or type of search
     protected void setPriorityAdvanced(Board board, boolean isSearch) throws RemoteException {
         AdvancedRecord record = extra.advancedContains(board, isSearch,
-        		refConnection.getActiveMap());
+                refConnection.getActiveMap());
         if (record != null) {
             priorityAdvanced = record.getEstimate();
             if (record.hasPartialMoves()) {
@@ -181,7 +172,7 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
         }
 
         priorityAdvanced = extra.advancedEstimate(board, priorityAdvanced, refCutoff,
-        		refConnection.getActiveMap());
+                refConnection.getActiveMap());
 
         if ((priorityAdvanced - priorityGoal) % 2 == 1) {
             priorityAdvanced++;

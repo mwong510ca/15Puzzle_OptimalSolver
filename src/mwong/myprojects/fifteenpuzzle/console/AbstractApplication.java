@@ -12,7 +12,6 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleDifficultyLevel;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.Scanner;
 
 /**
@@ -36,6 +35,7 @@ public abstract class AbstractApplication {
     protected final boolean tagStandard;
     protected final PatternOptions defaultPattern;
 
+    private ReferenceConnectionType connectionType;
     protected Scanner scanner;
     protected ReferenceRemote refConnection;
     protected int timeoutLimit;
@@ -77,31 +77,43 @@ public abstract class AbstractApplication {
         scanner = new Scanner(System.in, "UTF-8");
         timeoutLimit = SolverProperties.getTimeoutLimit();
         flagAdvVersion = tagStandard;
-        try {
-			loadReferenceConnection();
-		} catch (IOException ex) {
-            System.err.println("System error, application TERMINATED.");
-            System.err.println("Unable to connect reference collection in both remote and local connections.");
-            ex.printStackTrace();
-            System.exit(0);
-		}
+        loadReferenceConnection();
     }
 
-    void loadReferenceConnection() throws IOException {
-    	try {
+    void loadReferenceConnection() {
+        try {
             refConnection = (new ReferenceFactory()).getReferenceServer();
-            System.out.println("Connect to server SUCCEED.\nReference collection will keep in sync.\n");
+            connectionType = ReferenceConnectionType.RemoteServer;
         } catch (IOException ex) {
             try {
                 refConnection = (new ReferenceFactory()).getReferenceLocal();
-                System.out.println("Connect to server FAILED.\nResume standalone version, reference collection use local copy.\n");
+                connectionType = ReferenceConnectionType.Standalone;
             } catch (IOException ex2) {
-            	refConnection = null;
-            	throw new RemoteException(ex2.toString());
+                refConnection = null;
+                connectionType = ReferenceConnectionType.Disabled;
             }
         }
     }
-    
+
+    protected final ReferenceConnectionType getConnectionType() {
+        return connectionType;
+    }
+
+    protected final void printConnectionType() {
+        System.out.println(connectionType);
+    }
+
+    boolean testConnection() {
+        ReferenceConnectionType currentType = connectionType;
+        loadReferenceConnection();
+        if (connectionType == currentType) {
+            return true;
+        } else {
+            System.out.println("Reference connection has changed.");
+            return false;
+        }
+    }
+
     public abstract void run();
 
     // print the minimum number of moves to the goal state.

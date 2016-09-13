@@ -37,7 +37,7 @@ public class SmartSolverWdMd extends SolverWdMd {
                 this.refConnection = refConnection;
             }
         } catch (RemoteException ex) {
-            System.out.println("Attention: Server connection failed."
+            System.err.println("Attention: Server connection failed."
                     + " Advanced estimate will use standard estimate.");
         }
     }
@@ -57,12 +57,13 @@ public class SmartSolverWdMd extends SolverWdMd {
      * @return byte value of the heuristic value of the given board
      */
     @Override
-    public byte heuristic(Board board) {
+    public byte heuristic(Board board) throws RemoteException {
         return heuristic(board, flagAdvancedVersion, tagSearch);
     }
 
     // overload method to calculate the heuristic value of the given board and conditions
-    private byte heuristic(Board board, boolean isAdvanced, boolean isSearch) {
+    private byte heuristic(Board board, boolean isAdvanced, boolean isSearch)
+            throws RemoteException {
         if (!board.isSolvable()) {
             return -1;
         }
@@ -79,12 +80,7 @@ public class SmartSolverWdMd extends SolverWdMd {
             return priorityAdvanced;
         }
 
-        try {
-            setPriorityAdvanced(board, isSearch);
-        } catch (RemoteException ex) {
-            // TODO Auto-generated catch block
-            ex.printStackTrace();
-        }
+        setPriorityAdvanced(board, isSearch);
         return priorityAdvanced;
     }
 
@@ -94,7 +90,7 @@ public class SmartSolverWdMd extends SolverWdMd {
      * @return byte value of the original heuristic value of the given board
      */
     @Override
-    public byte heuristicStandard(Board board) {
+    public byte heuristicStandard(Board board) throws RemoteException {
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
@@ -110,7 +106,7 @@ public class SmartSolverWdMd extends SolverWdMd {
      * @return byte value of the advanced heuristic value of the given board
      */
     @Override
-    public byte heuristicAdvanced(Board board) {
+    public byte heuristicAdvanced(Board board) throws RemoteException {
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
@@ -135,7 +131,7 @@ public class SmartSolverWdMd extends SolverWdMd {
     }
 
     // solve the puzzle using interactive deepening A* algorithm
-    protected void idaStar(int limit) {
+    protected void idaStar(int limit) throws RemoteException {
         if (solutionMove[1] != null) {
             advancedSearch(limit);
             return;
@@ -173,7 +169,7 @@ public class SmartSolverWdMd extends SolverWdMd {
 
     // skip the first 8 moves from stored record then solve the remaining puzzle
     // using depth first search with exact number of steps of optimal solution
-    private void advancedSearch(int limit) {
+    private void advancedSearch(int limit) throws RemoteException {
         Direction[] dupSolution = new Direction[limit + 1];
         Board board = prepareAdvancedSearch(limit, dupSolution);
         heuristic(board, tagStandard, tagSearch);

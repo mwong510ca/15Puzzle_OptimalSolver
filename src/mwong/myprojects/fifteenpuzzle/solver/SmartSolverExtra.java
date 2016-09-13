@@ -8,6 +8,7 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleConstants;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverMd;
 import mwong.myprojects.fifteenpuzzle.utilities.Stopwatch;
 
+import java.rmi.RemoteException;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -186,7 +187,7 @@ public class SmartSolverExtra extends SolverMd {
      * @return AdvancedRecord object if the given board is one of the reference board.
      */
     byte advancedEstimate(Board board, byte estimate, int refCutoff,
-            Map<ReferenceBoard, ReferenceMoves> refMap) {
+            Map<ReferenceBoard, ReferenceMoves> refMap) throws RemoteException {
         final int rowSize = SolverConstants.getRowSize();
 
         for (Entry<ReferenceBoard, ReferenceMoves> entry
@@ -236,7 +237,8 @@ public class SmartSolverExtra extends SolverMd {
     }
 
     // returns the boolean value represent the given board is solve in the given range.
-    private boolean advancedDistance(Board board, int lowerLimit, int upperLimit) {
+    private boolean advancedDistance(Board board, int lowerLimit, int upperLimit)
+            throws RemoteException {
         clearHistory();
         heuristic(board);
         setLastDepthSummary(board);

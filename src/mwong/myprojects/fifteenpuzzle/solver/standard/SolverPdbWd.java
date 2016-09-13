@@ -24,6 +24,7 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PatternElement;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternElementMode;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 
+import java.rmi.RemoteException;
 import java.util.HashMap;
 
 /**
@@ -177,9 +178,10 @@ public class SolverPdbWd extends SolverWd {
      *
      * @param board the initial puzzle Board object to solve
      * @return byte value of the heuristic value of the given board
+     * @throws RemoteException throw exception when connection lost
      */
     @Override
-    public byte heuristic(Board board) {
+    public byte heuristic(Board board) throws RemoteException {
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
@@ -247,7 +249,7 @@ public class SolverPdbWd extends SolverWd {
     }
 
     // solve the puzzle using interactive deepening A* algorithm
-    protected void idaStar(int limit) {
+    protected void idaStar(int limit) throws RemoteException {
         while (limit <= maxMoves) {
             idaCount = 0;
             if (flagMessage) {

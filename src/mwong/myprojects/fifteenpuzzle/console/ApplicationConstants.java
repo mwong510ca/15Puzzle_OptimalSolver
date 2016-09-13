@@ -11,11 +11,21 @@ import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
  *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class ApplicationConstants {
+    private static final boolean TAG_REMOTE = true;
     private static final boolean TAG_LINEAR_CONFLICT = SolverConstants.isTagLinearConflict();
     private static final boolean TAG_ADVANCED = SolverConstants.isTagAdvanced();
     private static final boolean TIMEOUT_ON = SolverConstants.isOnSwitch();
     private static final boolean MESSAGE_ON = SolverConstants.isOnSwitch();
     private static final byte PUZZLE_SIZE = SolverConstants.getPuzzleSize();
+
+    /**
+     * Returns the boolean value of the remote connection in use.
+     *
+     * @return boolean value of remote connection version in use
+     */
+    static final boolean isTagRemote() {
+        return TAG_REMOTE;
+    }
 
     /**
      * Returns the boolean value of the LinearConflict in use.

@@ -5,7 +5,6 @@ import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
@@ -35,6 +34,12 @@ public class DemoSolverPdb78 extends AbstractApplication {
         solverPdb78 = new SmartSolverPdb(PatternOptions.Pattern_78, refConnection);
         solverPdb78.timeoutSwitch(timeoutOff);
         extra = new SmartSolverExtra();
+        setSolverVersion();
+    }
+
+    private void setSolverVersion() {
+        solverPdb78.setReferenceConnection(refConnection);
+        printConnectionType();
     }
 
     // It take a solver and a 15 puzzle board with pattern database 78 standard version.
@@ -75,8 +80,8 @@ public class DemoSolverPdb78 extends AbstractApplication {
             if (heuristicStandard == heuristicAdvanced) {
                 System.out.println("Advanced Estimate\t" + "Same value");
             } else {
-            	boolean justAdded = solverPdb78.isAddedReference();
-            	System.out.println("Advanced Estimate \t" + heuristicAdvanced);
+                final boolean justAdded = solverPdb78.isAddedReference();
+                System.out.println("Advanced Estimate \t" + heuristicAdvanced);
                 solverPdb78.findOptimalPath(board);
                 System.out.printf("\t\tTotal : %-15s  Time : "
                         + solverPdb78.searchTime() + "s\n", solverPdb78.searchNodeCount());
@@ -92,18 +97,15 @@ public class DemoSolverPdb78 extends AbstractApplication {
                             + solverPdb78.searchTime() + "s\n", solverPdb78.searchNodeCount());
                 }
                 if (justAdded) {
-                	refConnection.updateLastSearch(board, solverPdb78);                	
+                    refConnection.updateLastSearch(board, solverPdb78);
                 }
             }
         } catch (RemoteException ex) {
-        	try {
-        		System.out.println("Counnection lost: " + ex);
-            	System.out.println("Reference connection may not in sync.");
-            	loadReferenceConnection();
-            	solverPdb78.setReferenceConnection(refConnection);
-			} catch (IOException e) {
-				solverPdb78.disableAdvancedVersion();
-			}
+            System.err.println("Counnection lost: " + ex);
+            loadReferenceConnection();
+            setSolverVersion();
+            System.err.println("Try again:");
+            solvePuzzle(board);
         }
     }
 
@@ -142,6 +144,9 @@ public class DemoSolverPdb78 extends AbstractApplication {
 
             System.out.print("\n" + board);
             if (board.isSolvable()) {
+                if (!testConnection()) {
+                    setSolverVersion();
+                }
                 solvePuzzle(board);
             } else {
                 System.out.println("The board is unsolvable, try again!");

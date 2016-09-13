@@ -52,8 +52,9 @@ public class ReferenceAccumulator implements Reference {
     /**
      * Initializes ReferenceAccumulator object.  Load the stored collection from file.
      * Use default setting if not available.
+     * @throws RemoteException throw exception when connection lost
      */
-    public ReferenceAccumulator() {
+    public ReferenceAccumulator() throws RemoteException {
         directory = FileProperties.getDirectory();
         filepath = FileProperties.getFilepathReference();
         coreSolverClassName = ReferenceConstants.getCoreSolverClassName();
@@ -64,10 +65,7 @@ public class ReferenceAccumulator implements Reference {
 
         try {
             referenceMap = new HashMap<ReferenceBoard, ReferenceMoves>();
-            System.out.println("Load data and system update - archived hard board. "
-                    + "Please wait.");
             loadFile();
-            System.out.println();
         } catch (IOException ex) {
             reset();
         }
@@ -273,8 +271,8 @@ public class ReferenceAccumulator implements Reference {
             return false;
         }
         if (!inSolver.getClass().getSimpleName().equals(coreSolverClassName)) {
-        	return false;
-        }        
+            return false;
+        }
         if (inSolver.getHeuristicOptions() != coreHeuristic) {
             return false;
         }
@@ -283,14 +281,13 @@ public class ReferenceAccumulator implements Reference {
 
     // verify the given solver is using pattern database 7-8, scan the full
     // collection, if the reference board is not verified, verify it now.
-    void updateData(SmartSolver inSolver) {
+    void updateData(SmartSolver inSolver) throws RemoteException {
         SmartSolver solver = inSolver;
         if (!validateSolver(inSolver)) {
             solver = createSolver();
         }
 
         if (solver == null) {
-            System.out.println("System update failed - not enough memory.");
             return;
         }
         updateAll((SmartSolverPdb) solver);
@@ -301,8 +298,9 @@ public class ReferenceAccumulator implements Reference {
      * collection, if the reference board is not verified, verify it now.
      *
      * @param inSolver the SolverInterface object in use
+     * @throws RemoteException throw exception when connection lost
      */
-    public void updatePending(SmartSolver inSolver) {
+    public void updatePending(SmartSolver inSolver) throws RemoteException {
         if (!validateSolver(inSolver)) {
             return;
         }
@@ -313,20 +311,20 @@ public class ReferenceAccumulator implements Reference {
      * Verify the given solver is using pattern database 7-8, scan the full
      * collection, if the reference board is not verified, verify it now.
      *
-     * @param inSolver the SolverInterface object in use
+     * @throws RemoteException throw exception when connection lost
      */
-    public void updatePending() {
+    public void updatePending() throws RemoteException {
         if (localSolver == null) {
             localSolver = createSolver();
         }
         if (localSolver == null) {
-        	return;
+            return;
         }
         updateAll(localSolver);
     }
 
     // scan the full collection, if the reference board is not verified, verify it now.
-    private void updateAll(SmartSolverPdb solverPdb78) {
+    private void updateAll(SmartSolverPdb solverPdb78) throws RemoteException {
         assert solverPdb78 instanceof SmartSolverPdb : "updateAll without SmartSolverPD object";
         final boolean backupAdvPriority = solverPdb78.getInUseVersionFlag();
         final boolean backupMessageFlag = solverPdb78.getMessageFlag();
@@ -356,14 +354,15 @@ public class ReferenceAccumulator implements Reference {
      * add to reference boards collection.
      *
      * @param inSolver the SolverInterface object in use
+     * @throws RemoteException throw exception when connection lost
      */
-    public boolean addBoard(SmartSolver inSolver) {
+    public boolean addBoard(SmartSolver inSolver) throws RemoteException {
         return addBoard(inSolver, false);
     }
 
     // add a reference board in collection, allow bypass minimum
     // cutoff limit requirement
-    boolean addBoard(SmartSolver inSolver, boolean bypass) {
+    boolean addBoard(SmartSolver inSolver, boolean bypass) throws RemoteException {
         if (referenceMap == null) {
             return false;
         }
@@ -373,7 +372,7 @@ public class ReferenceAccumulator implements Reference {
         if (!bypass && inSolver.searchTime() < getCutoffLimit()) {
             return false;
         }
-        
+
         SmartSolverPdb solverPdb78 = (SmartSolverPdb) inSolver;
         Board board = solverPdb78.lastSearchBoard();
         Direction[] solution = solverPdb78.solution().clone();
@@ -457,18 +456,27 @@ public class ReferenceAccumulator implements Reference {
         return true;
     }
 
+    /**
+     * If the given solver using pattern database 7-8, and it takes
+     * over the cutoff limit solve the puzzle with advanced estimate;
+     * add to reference boards collection.
+     *
+     * @param board the given board object
+     * @param steps the byte value of number of moves
+     * @param solution the Direction array of moves
+     */
     @Override
     public boolean addBoard(Board board, byte steps, Direction[] solution) {
-    	if (referenceMap == null) {
+        if (referenceMap == null) {
             return false;
         }
-    	if (localSolver == null) {
+        if (localSolver == null) {
             localSolver = createSolver();
         }
         if (localSolver == null) {
-        	return false;
+            return false;
         }
-                
+
         ReferenceBoard advBoard = new ReferenceBoard(board);
         byte lookup = ReferenceConstants.getReferenceLookup(board.getZero1d());
         int group = ReferenceConstants.getReferenceGroup(board.getZero1d());
@@ -514,18 +522,19 @@ public class ReferenceAccumulator implements Reference {
 
     @Override
     public boolean addBoard(Board board, byte steps, Direction[] solution, SmartSolver inSolver) {
-    	// do nothing, should not be called
+        // do nothing, should not be called
         return false;
     }
-    
+
     /**
      * If the solver is SolverPD object and last search board in activeMap
      * that need to verify; verify the full set and return true.
      *
      * @param inSolver the given SolverIntegerface
      * @return boolean if last search board in activeMap has been verified.
+     * @throws RemoteException throw exception when connection lost
      */
-    public boolean updateLastSearch(SmartSolver inSolver) {
+    public boolean updateLastSearch(SmartSolver inSolver) throws RemoteException {
         if (referenceMap == null) {
             return false;
         }
@@ -585,16 +594,24 @@ public class ReferenceAccumulator implements Reference {
         inSolver.timeoutSwitch(backupTimeoutFlag);
         return false;
     }
-    
-    public boolean updateLastSearch(Board board) {
+
+    /**
+     * If the solver is SolverPD object and last search board in activeMap
+     * that need to verify; verify the full set and return true.
+     *
+     * @param board the given Board object
+     * @return boolean if last search board in activeMap has been verified.
+     * @throws RemoteException throw exception when connection lost
+     */
+    public boolean updateLastSearch(Board board) throws RemoteException {
         if (referenceMap == null) {
             return false;
         }
-    	if (localSolver == null) {
+        if (localSolver == null) {
             localSolver = createSolver();
         }
         if (localSolver == null) {
-        	return false;
+            return false;
         }
 
         ReferenceBoard advBoard = new ReferenceBoard(board);
@@ -624,14 +641,14 @@ public class ReferenceAccumulator implements Reference {
             }
             return true;
         }
-        return false;    	
+        return false;
     }
-        
+
     public boolean updateLastSearch(Board board, SmartSolver inSolver) {
-    	// do nothing, should not be called
-        return false;    	
+        // do nothing, should not be called
+        return false;
     }
-    	    
+
     // remove the given board from reference boards collection if exists, except
     // default reference boards.
     void removeBoard(Board board) {

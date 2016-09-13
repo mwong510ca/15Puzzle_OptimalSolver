@@ -6,6 +6,8 @@ import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 
+import java.rmi.RemoteException;
+
 /**
  * SolverMd extends AbstractSmartSolver with SmartSolver feature disabled.  It is
  * the 15 puzzle optimal solver.  It takes a Board object of the puzzle and solve it
@@ -60,9 +62,10 @@ public class SolverMd extends AbstractSmartSolver {
      *
      * @param board the initial puzzle Board object to solve
      * @return byte value of the heuristic value of the given board
+     * @throws RemoteException throw exception when connection lost
      */
     @Override
-    public byte heuristic(Board board) {
+    public byte heuristic(Board board) throws RemoteException {
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
@@ -119,7 +122,7 @@ public class SolverMd extends AbstractSmartSolver {
     }
 
     // solve the puzzle using interactive deepening A* algorithm
-    protected void idaStar(int limit) {
+    protected void idaStar(int limit) throws RemoteException {
         while (limit <= maxMoves) {
             idaCount = 0;
             if (flagMessage) {
