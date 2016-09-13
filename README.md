@@ -1,12 +1,12 @@
 ### Preface
-I finished the programming assignment of [8puzzle] by Princeton University on Coursera.  It use priority queue to implement [A* algorithm] with Manhattan distance .  But it is not able to solve all boards of [15 slide puzzle] due to out of memory.  So I try to build an optimal solver for 15 puzzle.
+I finished the programming assignment of [8puzzle] by Princeton University on Coursera.  It use priority queue to implement [A* algorithm] with Manhattan distance .  But it is not able to solve all boards of [15 slide puzzle] due to out of memory.  It can solve the puzzle about 50 steps.  I try to build an optimal solver for 15 puzzle.
 
 ### 15 puzzle optimal solver using additive pattern database 7-8
-I search the information on internet, I found the [Pattern database].  The concept is clear, but I can't figure out how transfer to a program.  I also found the [Walking Distance by Ken'ichiro Takahashi], so I try that first.  I read his codes and write my version in java.  It improve my 15 puzzle solver, but it can solve up to 70 moves in reasonable time.  So I go back to the pattern database.  
+I search the information on internet.  [Iterative deepening A*] takes less memory because it did not stored the nodes.  I try it and it can solve the puzzle about 60 steps.  [Walking Distance by Ken'ichiro Takahashi] is more efficient than Manhattan distance.  I replaced it and it can solve the puzzle about 70 steps.  [Pattern database] seems the best solution and the concept is clear.  
 
-Unlike the 8 puzzle, full pattern database for 15 slide puzzle is too large, I have to use additive pattern database.  The most common statically partitioned additive pattern databases for 15 puzzle are 5-5-5, 6-6-3 or 7-8.  Generate 5-5-5 or 6-6-3 patterns are straight forward, but 7-8 pattern is challenge due to memory issue again.  For a group of 8 tiles, there are 518,918,400 (40320 tiles combinations x 12870 group 8 pattern) patterns.  Since [Herbert Kociemba's windows program] can build the 7-8 pattern in c++, I may able to build my version in java.
+Unlike the 8 puzzle, full pattern database for 15 slide puzzle is too large, I have to use additive pattern database.  The most common statically partitioned additive pattern databases for 15 puzzle are 5-5-5, 6-6-3 or 7-8.  Generate 5-5-5 or 6-6-3 patterns are straight forward, but 7-8 pattern is challenge due to memory issue.  For a group of 8 tiles, there are 518,918,400 (40320 tiles combinations x 12870 group 8 pattern) patterns.  Since [Herbert Kociemba's windows program] can build the 7-8 pattern in c++, I decide to build a java version.
 
-While I learn about the Walking Distance by Ken'ichiro Takahashi, his technique inspire me to figure out a way to generate the 7-8 pattern with minimum 2GB ram and takes about 2.5 - 3 hours.  First separate the tile and format components, and generate the links in [PatternElement.java].  Then I use these components to generate the patterns in [PatternDatabase.java].  
+While I learn the technique of Walking Distance by Ken'ichiro Takahashi, I figure out a way to generate the 7-8 pattern with minimum 2GB ram and takes about 2.5 - 3 hours.  First separate the tile and format components, and generate the links in [PatternElement.java].  Then I use these components to generate the patterns in [PatternDatabase.java].  
 Generation time:  [pattern 5-5-5] 15 seconds, [pattern 6-6-3] 2 minutes, [pattern 7-8] 2.5+ hours (10 mins for group 7 and 2.5 hrs for group 8).
   * Highlight recommended to [download] the pre-generated database files from the cloud storage for pattern 7-8.
 
@@ -32,6 +32,7 @@ Time:             44.2s          22.4s           5.9s           2.5s           2
 Nodes:        177653815       89470609       20109676        8436494        7693686        9785986
 </pre>
 I also added starting ordering detection to increase the possibility to solve first move depth increment.  The starting order may vary each depth instead of hard coded the fixed order such as Right -> Down -> Left -> Up.  
+
 Read [Solver Enhancement - standard version] for details.  
 
 ### Enhancement - [self learning feature]
@@ -84,6 +85,7 @@ Additive Pattern Database 7-8                              (0.0082s)
 [15 slide puzzle]: https://en.wikipedia.org/wiki/15_puzzle
 [8puzzle]: http://algs4.cs.princeton.edu/24pq/
 [A* algorithm]: https://en.wikipedia.org/wiki/A*_search_algorithm
+[Iterative deepening A*]: https://en.wikipedia.org/wiki/Iterative_deepening_A*
 [interactive deepening A*]: https://en.wikipedia.org/wiki/Iterative_deepening_A*
 [Pattern database]: https://www.aaai.org/Papers/JAIR/Vol22/JAIR-2209.pdf
 [symmetry reduction (Section 4)]: https://heuristicswiki.wikispaces.com/file/view/Searching+with+pattern+database.pdf
