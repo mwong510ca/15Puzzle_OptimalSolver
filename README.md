@@ -2,13 +2,16 @@
 I finished the programming assignment of [8puzzle] by Princeton University on Coursera.  It use priority queue to implement [A* algorithm] with Manhattan distance .  But it is not able to solve all boards of [15 slide puzzle] due to out of memory.  It can solve the puzzle about 50 steps.  I try to build an optimal solver for 15 puzzle.
 
 ### 15 puzzle optimal solver using additive pattern database 7-8
-I search the information on internet.  [Iterative deepening A*] takes less memory because it did not stored the nodes.  I try it and it can solve the puzzle about 60 steps.  [Walking Distance by Ken'ichiro Takahashi] is more efficient than Manhattan distance.  I replaced it and it can solve the puzzle about 70 steps.  [Pattern database] seems the best solution and the concept is clear.  
+I search the information on internet.  IDA* ([Iterative deepening A*]) takes less memory because it did not stored the nodes.  I try it and it can solve the puzzle about 60 steps.  [Walking Distance by Ken'ichiro Takahashi] is more efficient than Manhattan distance.  I replaced it and it can solve the puzzle about 70 steps.  [Pattern database] seems the best solution and the concept is clear.  
 
-Unlike the 8 puzzle, full pattern database for 15 slide puzzle is too large, I have to use additive pattern database.  The most common statically partitioned additive pattern databases for 15 puzzle are 5-5-5, 6-6-3 or 7-8.  Generate 5-5-5 or 6-6-3 patterns are straight forward, but 7-8 pattern is challenge due to memory issue.  For a group of 8 tiles, there are 518,918,400 (40320 tiles combinations x 12870 group 8 pattern) patterns.  Since [Herbert Kociemba's windows program] can build the 7-8 pattern in c++, I decide to build a java version.
+Unlike the 8 puzzle, full pattern database for 15 slide puzzle is too large, I have to use additive pattern database.  The most common statically partitioned additive pattern databases for 15 puzzle are 5-5-5, 6-6-3 or 7-8.  Generate 5-5-5 or 6-6-3 patterns are straight forward, but 7-8 pattern is challenge due to memory issue.  For a group of 8 tiles, there are 518,918,400 (40320 tiles combinations x 12870 group 8 pattern) patterns.  Since [Herbert Kociemba's windows program] can build the 7-8 pattern using c++, I decide to build a java version.
 
-While I learn the technique of Walking Distance by Ken'ichiro Takahashi, I figure out a way to generate the 7-8 pattern with minimum 2GB ram and takes about 2.5 - 3 hours.  First separate the tile and format components, and generate the links in [PatternElement.java].  Then I use these components to generate the patterns in [PatternDatabase.java].  
-Generation time:  [pattern 5-5-5] 15 seconds, [pattern 6-6-3] 2 minutes, [pattern 7-8] 2.5+ hours (10 mins for group 7 and 2.5 hrs for group 8).
-  * Highlight recommended to [download] the pre-generated database files from the cloud storage for pattern 7-8.
+While I learn the technique of Walking Distance by Ken'ichiro Takahashi, I figure out a way to generate the 7-8 pattern with minimum 2GB ram and takes about 2.5 - 3 hours.  First separate the tile and format components, and generate the links in [PatternElement.java].  Then I use these components to generate the patterns in [PatternDatabase.java].  Generation time:  
+  * [pattern 5-5-5] 15 seconds
+  * [pattern 6-6-3] 2 minutes
+  * [pattern 7-8] 2.5+ hours (10 mins for group 7 and 2.5 hrs for group 8)
+
+Highlight recommended to [download] the pre-generated database files from the cloud storage for pattern 7-8.
 
 ### Enhancement - optimization
 After I finished my 15 puzzle optimal solver, most of the puzzles are solved within a second.  Only a few puzzles still take up to 2 minutes to solve. 
@@ -36,7 +39,7 @@ I also added starting ordering detection to increase the possibility to solve fi
 Read [Solver Enhancement - standard version] for details.  
 
 ### Enhancement - [self learning feature]
-45 seconds seems pretty good, but I still not satisfy with it.  The maximum estimate is 68 and the maximum moves is 80, so the [interactive deepening A*] has to loop through all nodes that will not have solution before it reach the solution depth.  If I can boost the estimate to the solution depth, it will drop the search time dramatically.   
+45 seconds seems pretty good, but I still not satisfy with it.  The maximum estimate is 68 and the maximum moves is 80, so the IDA* has to loop through all nodes that will not have solution before it reach the solution depth.  If I can boost the estimate to the solution depth, it will drop the search time dramatically.   
 
 I started with 17 known 80 moves puzzles as reference boards to boost the estimate over 68.  It works but still missed a lot.  I applied the same concept to any puzzle that takes over 8 seconds to solve, the solver with pattern database 7-8 will automatically stored it as reference board.  Also stored first 8 solution moves to boost the search time within a second.  
 
@@ -47,13 +50,16 @@ Read [Solver Enhancement - advanced version] for details.
 ----
 ###Connection options
 Support standalone application and multi-users application.
-* Standalone - reference collection will be stored in a local file.  If user started multiple applications on the same machine.  Reference collection will not be in sync.
-* RMI support multiuser application - Mulitple applications will access the same reference collection instance and storage through RMI service.  If connection is lost, it will resume to standalone connection without terminate the application.  
+* Standalone for single use on local machine - reference collection will be stored in a local file.  If user started multiple applications on the same machine.  Reference collection will not be in sync.
+* Remote server using RMI (Remote Method Invocation) support multiusers application - Mulitple applications will access the same reference collection instance and storage through RMI service.  If connection is lost, it will resume to standalone connection without terminate the application.  
 
 Console applications may detect the server connection lost, restore in standalone or standard version temporary.  When conection is back, it will switch back to remote connection automatically.  
 
-Reference collection administrator allow to change cutoff limit, reset and restore to default setting, refresh the file etc.  Changing the setting is not allow during the server is running.  
-Same for the remote server, it cannnot start the server during the administrator is using.  
+Reference collection administrator allow to change the settings, such as:  
+  cutoff limit, reset and restore to default setting, system update and refresh the data file etc...  
+Changing the setting is not allow during the remote server is running.  
+
+Same for the remote server, it cannnot start the remote service during the administrator is using.  
 
 ###GUI (Coming soon!)
 
@@ -86,7 +92,6 @@ Additive Pattern Database 7-8                              (0.0082s)
 [8puzzle]: http://algs4.cs.princeton.edu/24pq/
 [A* algorithm]: https://en.wikipedia.org/wiki/A*_search_algorithm
 [Iterative deepening A*]: https://en.wikipedia.org/wiki/Iterative_deepening_A*
-[interactive deepening A*]: https://en.wikipedia.org/wiki/Iterative_deepening_A*
 [Pattern database]: https://www.aaai.org/Papers/JAIR/Vol22/JAIR-2209.pdf
 [symmetry reduction (Section 4)]: https://heuristicswiki.wikispaces.com/file/view/Searching+with+pattern+database.pdf
 [Herbert Kociemba's windows program]: http://kociemba.org/fifteen/fifteensolver.html
