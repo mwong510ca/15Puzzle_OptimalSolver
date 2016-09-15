@@ -12,6 +12,8 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleDifficultyLevel;
 
+import java.rmi.RemoteException;
+
 //import java.rmi.RemoteException;
 
 import java.util.HashSet;
@@ -438,15 +440,18 @@ public class SolverHeuristicStats extends AbstractApplication {
             }
             System.out.println();
 
-            /*
-            try {
-                refConnection.updatePending(solver);
-            } catch (RemoteException ex) {
-                System.err.println("Counnection lost: " + ex);
-                loadReferenceConnection();
-                setSolverVersion();
+            if (flagAdvVersion && inUseHeuristic == HeuristicOptions.PD78) {
+                if (testConnection()) {
+                    try {
+                        refConnection.updatePending(solver);
+                    } catch (RemoteException ex) {
+                        System.err.println(solver.getClass().getSimpleName()
+                                + " - Connection lost, unable to add reference boards.");
+                    }
+                } else {
+                    setSolverVersion();
+                }
             }
-            */
             menuMain();
         }
     }

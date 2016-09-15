@@ -179,39 +179,15 @@ public class ReferenceAccumulator implements Reference {
         fileReady = true;
     }
 
-    // create the new file for storing the reference collection.
-    private synchronized void createFile() {
-        fileReady = false;
-        if (!(new File(directory)).exists()) {
-            (new File(directory)).mkdir();
-        }
-        if ((new File(filepath)).exists()) {
-            (new File(filepath)).delete();
-        }
-
-        FileOutputStream fout;
-        FileChannel outChannel;
-        ByteBuffer buffer;
-
-        try {
-            fout = new FileOutputStream(filepath);
-            outChannel = fout.getChannel();
-            buffer = ByteBuffer.allocateDirect(8);
-            buffer.putInt(cutoffSetting);
-            buffer.flip();
-            outChannel.write(buffer);
-            outChannel.close();
-            fout.close();
-            fileReady = true;
-        } catch (IOException ex) {
-            System.err.println("System error : unable to save file.");
-        }
-    }
-
     // append a reference board with moves and partial solutions to file.
     private synchronized void add2file(ReferenceBoard advBoard, ReferenceMoves advMoves) {
         if (!fileReady) {
-            createFile();
+            System.err.println("System error : file system is not ready.");
+            return;
+        }
+        if (!(new File(filepath)).exists()) {
+            System.err.println("System error : " + filepath + " is missing.");
+            return;
         }
 
         FileOutputStream fout;
@@ -242,7 +218,47 @@ public class ReferenceAccumulator implements Reference {
             outChannel.close();
             fout.close();
         } catch (IOException ex) {
-            System.err.println("System error : write file error.");
+            System.err.println("System error : write file error - " + filepath);
+        }
+    }
+
+    // append a reference board with moves and partial solutions to file.
+    private synchronized void add2file(ReferenceBoard advBoard, ReferenceMoves advMoves,
+            String tempFile) {
+        if (!(new File(tempFile)).exists()) {
+            System.err.println("System error : " + tempFile + " is missing.");
+            return;
+        }
+
+        FileOutputStream fout;
+        FileChannel outChannel;
+        try {
+            fout = new FileOutputStream(tempFile, true);
+            outChannel = fout.getChannel();
+
+            ByteBuffer buffer = ByteBuffer.allocateDirect(34);
+            long key = 0L;
+            for (int val : advBoard.tilesTransform) {
+                key <<= 4;
+                key |= val;
+            }
+            buffer.putLong(key);                        //  8
+            buffer.put(advBoard.group);                 //  1
+            buffer.putInt(advBoard.hash1);              //  4
+            buffer.putInt(advBoard.hash2);              //  4
+            buffer.putInt(advBoard.hashcode);           //  4
+            buffer.put(advMoves.moves);                 //  4
+            for (short move : advMoves.initMoves) {     //  8 (2x4)
+                buffer.putShort(move);
+            }
+            buffer.put(advMoves.status);                //  1
+            buffer.flip();
+            outChannel.write(buffer);
+
+            outChannel.close();
+            fout.close();
+        } catch (IOException ex) {
+            System.err.println("System error : write file error - " + tempFile);
         }
     }
 
@@ -708,11 +724,50 @@ public class ReferenceAccumulator implements Reference {
         refreshFile();
     }
 
-    // save all reference board in a new copy
-    void refreshFile() {
-        createFile();
-        for (Entry<ReferenceBoard, ReferenceMoves> entry : referenceMap.entrySet()) {
-            add2file(entry.getKey(), entry.getValue());
+    // create the new file for storing the reference collection.
+    private String createFile() {
+        if (!(new File(directory)).exists()) {
+            (new File(directory)).mkdir();
         }
+        int count = 0;
+        String tempFile = filepath + "temp" + count;
+        while ((new File(tempFile)).exists()) {
+            tempFile = filepath + "temp" + (++count);
+        }
+
+        FileOutputStream fout;
+        FileChannel outChannel;
+        ByteBuffer buffer;
+
+        try {
+            fout = new FileOutputStream(tempFile);
+            outChannel = fout.getChannel();
+            buffer = ByteBuffer.allocateDirect(8);
+            buffer.putInt(cutoffSetting);
+            buffer.flip();
+            outChannel.write(buffer);
+            outChannel.close();
+            fout.close();
+            return tempFile;
+        } catch (IOException ex) {
+            System.err.println("System error : unable to save file.");
+            return null;
+        }
+    }
+
+    // save all reference board in a new copy
+    synchronized void refreshFile() {
+        String tempFile = createFile();
+        if (tempFile == null) {
+            return;
+        }
+
+        for (Entry<ReferenceBoard, ReferenceMoves> entry : referenceMap.entrySet()) {
+            add2file(entry.getKey(), entry.getValue(), tempFile);
+        }
+
+        fileReady = false;
+        (new File(tempFile)).renameTo(new File(filepath));
+        fileReady = true;
     }
 }
