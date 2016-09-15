@@ -12,7 +12,8 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleDifficultyLevel;
 
-import java.rmi.RemoteException;
+//import java.rmi.RemoteException;
+
 import java.util.HashSet;
 import java.util.Scanner;
 
@@ -47,7 +48,7 @@ public class SolverHeuristicStats extends AbstractApplication {
 
     private void setSolverVersion() {
         solver.setReferenceConnection(refConnection);
-        printConnectionType();
+        printConnection();
     }
 
     // display the solver options and change it with the user's choice
@@ -400,16 +401,13 @@ public class SolverHeuristicStats extends AbstractApplication {
                 if (i % lineCount == 1) {
                     System.out.printf("\n%1.2fs : ", totalSearchTime);
                 }
+                if (flagAdvVersion) {
+                    if (!testConnection()) {
+                        setSolverVersion();
+                    }
+                }
+                solver.findOptimalPath(board);
 
-                try {
-					solver.findOptimalPath(board);
-				} catch (RemoteException ex) {
-					System.out.println("Counnection lost: " + ex);
-	                loadReferenceConnection();
-	                setSolverVersion();
-	                i--;
-	                continue;
-				}
                 totalSearchTime += solver.searchTime();
                 if (solver.isSearchTimeout()) {
                     timeoutCounter++;
@@ -440,13 +438,15 @@ public class SolverHeuristicStats extends AbstractApplication {
             }
             System.out.println();
 
+            /*
             try {
                 refConnection.updatePending(solver);
             } catch (RemoteException ex) {
-                System.out.println("Counnection lost: " + ex);
+                System.err.println("Counnection lost: " + ex);
                 loadReferenceConnection();
                 setSolverVersion();
             }
+            */
             menuMain();
         }
     }

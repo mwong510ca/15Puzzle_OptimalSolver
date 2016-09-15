@@ -6,7 +6,6 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.WalkingDistance;
 
-import java.rmi.RemoteException;
 import java.util.HashMap;
 
 /**
@@ -43,17 +42,17 @@ public class SolverWd extends AbstractSmartSolver {
     public SolverWd() {
         super();
         inUseHeuristic = HeuristicOptions.WD;
-        loadWDComponents();
+        loadWdComponents();
     }
 
     // load the walking distance components from the data file
     // if data file not exists, generate a new set
-    private void loadWDComponents() {
-        WalkingDistance wd15 = new WalkingDistance();
-        wdRowKeys = wd15.getRowKeys();
-        wdPtnKeys = wd15.getPtnKeys();
-        wdPattern = wd15.getPattern();
-        wdPtnLink = wd15.getPtnLink();
+    private void loadWdComponents() {
+        WalkingDistance wd = new WalkingDistance();
+        wdRowKeys = wd.getRowKeys();
+        wdPtnKeys = wd.getPtnKeys();
+        wdPattern = wd.getPattern();
+        wdPtnLink = wd.getPtnLink();
     }
 
     /**
@@ -61,10 +60,9 @@ public class SolverWd extends AbstractSmartSolver {
      *
      * @param board the initial puzzle Board object to solve
      * @return byte value of the heuristic value of the given board
-     * @throws RemoteException throw exception when connection lost
      */
     @Override
-    public byte heuristic(Board board) throws RemoteException {
+    public byte heuristic(Board board) {
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
@@ -104,7 +102,7 @@ public class SolverWd extends AbstractSmartSolver {
     }
 
     // solve the puzzle using interactive deepening A* algorithm
-    protected void idaStar(int limit) throws RemoteException {
+    protected void idaStar(int limit) {
         while (limit <= maxMoves) {
             idaCount = 0;
             if (flagMessage) {
@@ -232,9 +230,8 @@ public class SolverWd extends AbstractSmartSolver {
             }
         }
 
-        // hard code different order to next moves base on the current move
         Direction prevMove = solutionMove[cost];
-
+        // hard code order of next moves base on the current move
         switch (prevMove) {
             case RIGHT:
                 // RIGHT

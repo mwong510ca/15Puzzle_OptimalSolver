@@ -64,21 +64,14 @@ public class CompareEnhancement extends AbstractApplication {
     private void setSolverVersion() {
         solverAdvanced.setReferenceConnection(refConnection);
         solverAdvEst.setReferenceConnection(refConnection);
-        printConnectionType();
+        printConnection();
     }
 
     // It take a solver and a 15 puzzle board, display the the process time and number of
     // nodes generated during the search.
     private void solvePuzzle(Solver solver, Board board) {
-        try {
-            solver.findOptimalPath(board);
-            System.out.printf("%-15s %-20s\n", solver.searchTime() + "s", solver.searchNodeCount());
-        } catch (RemoteException ex) {
-            System.out.println("Counnection lost: " + ex);
-            loadReferenceConnection();
-            setSolverVersion();
-            solvePuzzle(solver, board);
-        }
+        solver.findOptimalPath(board);
+        System.out.printf("%-15s %-20s\n", solver.searchTime() + "s", solver.searchNodeCount());
     }
 
     /**
@@ -108,24 +101,16 @@ public class CompareEnhancement extends AbstractApplication {
                 System.out.println("Please enter 'Q', 'E', 'M', 'H', 'R' or 16 numbers (0 - 15):");
             }
 
-            System.out.print("\n" + board);
-            if (board.isSolvable()) {
-                if (!testConnection()) {
-                    setSolverVersion();
-                }
+            if (!testConnection()) {
+                setSolverVersion();
+            } else {
+                System.out.println();
+            }
+            System.out.print(board);
 
-                int heuristicStandard;
-                int heuristicAdvanced;
-                try {
-                    heuristicStandard = solverAdvanced.heuristicStandard(board);
-                    heuristicAdvanced = solverAdvanced.heuristicAdvanced(board);
-                } catch (RemoteException ex) {
-                    System.out.println("Counnection lost: " + ex);
-                    loadReferenceConnection();
-                    setSolverVersion();
-                    System.out.println("Try again");
-                    continue;
-                }
+            if (board.isSolvable()) {
+                int heuristicStandard = solverAdvanced.heuristicStandard(board);
+                int heuristicAdvanced = solverAdvanced.heuristicAdvanced(board);
                 System.out.print("Standard estimate : " + heuristicStandard + "\t\t");
                 System.out.println("    Advanced estimate : " + heuristicAdvanced);
                 System.out.println("\t\t\t\t    Time\t    Nodes");
@@ -136,18 +121,15 @@ public class CompareEnhancement extends AbstractApplication {
                 solvePuzzle(solverEnh1, board);
                 System.out.printf("%-36s", "3. Add circular reduction : ");
                 solvePuzzle(solverEnh2, board);
+
+                if (!testConnection()) {
+                    setSolverVersion();
+                }
                 System.out.printf("%-36s", "4. Add starting order detection : ");
                 solverAdvanced.versionSwitch(tagStandard);
                 solvePuzzle(solverAdvanced, board);
                 if (solverAdvanced.isAddedReference()) {
-                    try {
-                        heuristicAdvanced = solverAdvanced.heuristicAdvanced(board);
-                    } catch (RemoteException ex) {
-                        System.out.println("Counnection lost: " + ex);
-                        loadReferenceConnection();
-                        setSolverVersion();
-                        heuristicAdvanced = heuristicStandard;
-                    }
+                    heuristicAdvanced = solverAdvanced.heuristicAdvanced(board);
                 }
 
                 if (heuristicAdvanced > heuristicStandard) {
@@ -168,7 +150,7 @@ public class CompareEnhancement extends AbstractApplication {
                             }
                         }
                     } catch (RemoteException ex) {
-                        System.out.println("Counnection lost: " + ex);
+                        System.err.println("Counnection lost: " + ex);
                         loadReferenceConnection();
                         setSolverVersion();
                     }
@@ -178,7 +160,7 @@ public class CompareEnhancement extends AbstractApplication {
                         try {
                             refConnection.updateLastSearch(board, solverAdvEst);
                         } catch (RemoteException ex) {
-                            System.out.println("Counnection lost: " + ex);
+                            System.err.println("Counnection lost: " + ex);
                             loadReferenceConnection();
                             setSolverVersion();
                         }

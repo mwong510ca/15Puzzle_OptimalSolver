@@ -39,8 +39,8 @@ public class SolverPdb extends SolverPdbEnh2 {
      * @param choice the number of preset pattern option
      */
     public SolverPdb(PatternOptions presetPattern, int choice) {
-        loadPDComponents(presetPattern, choice);
-        loadPDElements(presetPattern.getElements());
+        loadPdbComponents(presetPattern, choice);
+        loadPdbElements(presetPattern.getElements());
         inUsePattern = presetPattern;
         inUsePtnArray = presetPattern.getPattern(choice);
 
@@ -66,8 +66,8 @@ public class SolverPdb extends SolverPdbEnh2 {
      * @param elementGroups boolean array of groups reference to given pattern
      */
     public SolverPdb(byte[] customPattern, boolean[] elementGroups) {
-        customPDComponents(customPattern);
-        loadPDElements(elementGroups);
+        customPdbComponents(customPattern);
+        loadPdbElements(elementGroups);
         inUsePattern = PatternOptions.Pattern_Custom;
         inUsePtnArray = customPattern;
         inUseHeuristic = HeuristicOptions.PDCustom;

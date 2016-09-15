@@ -39,7 +39,7 @@ public class DemoSolverPdb78 extends AbstractApplication {
 
     private void setSolverVersion() {
         solverPdb78.setReferenceConnection(refConnection);
-        printConnectionType();
+        printConnection();
     }
 
     // It take a solver and a 15 puzzle board with pattern database 78 standard version.
@@ -104,7 +104,7 @@ public class DemoSolverPdb78 extends AbstractApplication {
             System.err.println("Counnection lost: " + ex);
             loadReferenceConnection();
             setSolverVersion();
-            System.err.println("Try again:");
+            System.out.println("Try again:");
             solvePuzzle(board);
         }
     }
@@ -117,7 +117,7 @@ public class DemoSolverPdb78 extends AbstractApplication {
             System.out.println(refConnection.getActiveMap().size()
                     + " reference boards in system.");
         } catch (RemoteException ex) {
-            ex.printStackTrace();
+            System.err.println("Counnection lost: " + ex);
             System.exit(0);
         }
         while (true) {
@@ -142,11 +142,14 @@ public class DemoSolverPdb78 extends AbstractApplication {
                 System.out.println("Please enter 'Q', 'E', 'M', 'H', 'R' or 16 numbers (0 - 15):");
             }
 
-            System.out.print("\n" + board);
+            if (!testConnection()) {
+                setSolverVersion();
+            } else {
+                System.out.println();
+            }
+            System.out.print(board);
+
             if (board.isSolvable()) {
-                if (!testConnection()) {
-                    setSolverVersion();
-                }
                 solvePuzzle(board);
             } else {
                 System.out.println("The board is unsolvable, try again!");

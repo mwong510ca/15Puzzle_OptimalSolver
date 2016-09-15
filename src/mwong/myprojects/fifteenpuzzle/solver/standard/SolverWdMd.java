@@ -4,8 +4,6 @@ import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 
-import java.rmi.RemoteException;
-
 /**
  * SolverWdMd extends SolverWd.  It is the 15 puzzle optimal solver.
  * It takes a Board object of the puzzle and solve it with IDA* using combination of
@@ -35,7 +33,7 @@ public class SolverWdMd extends SolverWd {
      * @throws RemoteException throw exception when connection lost
      */
     @Override
-    public byte heuristic(Board board) throws RemoteException {
+    public byte heuristic(Board board) {
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
@@ -98,7 +96,7 @@ public class SolverWdMd extends SolverWd {
     }
 
     // solve the puzzle using interactive deepening A* algorithm
-    protected void idaStar(int limit) throws RemoteException {
+    protected void idaStar(int limit) {
         while (limit <= maxMoves) {
             idaCount = 0;
             if (flagMessage) {
@@ -216,9 +214,8 @@ public class SolverWdMd extends SolverWd {
             }
         }
 
-        // hard code different order to next moves base on the current move
         Direction prevMove = solutionMove[cost];
-
+        // hard code order of next moves base on the current move
         switch (prevMove) {
             case RIGHT:
                 // RIGHT

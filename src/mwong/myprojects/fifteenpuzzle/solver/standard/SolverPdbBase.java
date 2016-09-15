@@ -9,11 +9,10 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PatternElement;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternElementMode;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 
-import java.rmi.RemoteException;
 import java.util.HashMap;
 
 /**
- * SolverPD extends AbstractSmartSolver without enhancement and SmartSolver feature
+ * SolverPdbBase extends AbstractSmartSolver without enhancement and SmartSolver feature
  * disabled.  It is the 15 puzzle optimal solver.  It takes a Board object of the puzzle
  * and solve it with IDA* using Additive Pattern Database. It may use predefined pattern
  * from PatternOptions or a set of user defined custom pattern.
@@ -96,16 +95,16 @@ public class SolverPdbBase extends AbstractSmartSolver {
     // load preset additive pattern database from a data file, if file not exists
     // generate a new set.  Estimate takes 15s for 555 pattern, 2 minutes for 663 pattern,
     // 2.5 - 3 hours for 78 pattern also require minimum 2gigabytes memory -Xms2g.
-    protected void loadPDComponents(PatternOptions presetPattern, int choice) {
-        PatternDatabase pd15 = new PatternDatabase(presetPattern, choice);
-        patternGroups = pd15.getPatternGroups();
+    protected void loadPdbComponents(PatternOptions presetPattern, int choice) {
+        PatternDatabase pdb = new PatternDatabase(presetPattern, choice);
+        patternGroups = pdb.getPatternGroups();
         patternFormatSize = new int[patternGroups.length];
         for (int i = 0; i < patternGroups.length; i++) {
             patternFormatSize[i] = PatternConstants.getFormatSize()[patternGroups[i]];
         }
-        patternSet = pd15.getPatternSet();
-        val2ptnKey = pd15.getVal2ptnKey();
-        val2ptnOrder = pd15.getVal2ptnOrder();
+        patternSet = pdb.getPatternSet();
+        val2ptnKey = pdb.getVal2ptnKey();
+        val2ptnOrder = pdb.getVal2ptnOrder();
         szGroup = patternGroups.length;
         szPdKeys = szGroup * 4;
         offsetPdSym = szGroup * 2;
@@ -113,16 +112,16 @@ public class SolverPdbBase extends AbstractSmartSolver {
 
     // generate the additive pattern database components with give user defined
     // custom pattern
-    protected void customPDComponents(byte[] customPattern) {
-        PatternDatabase pd15 = new PatternDatabase(customPattern);
-        patternGroups = pd15.getPatternGroups();
+    protected void customPdbComponents(byte[] customPattern) {
+        PatternDatabase pdb = new PatternDatabase(customPattern);
+        patternGroups = pdb.getPatternGroups();
         patternFormatSize = new int[patternGroups.length];
         for (int i = 0; i < patternGroups.length; i++) {
             patternFormatSize[i] = PatternConstants.getFormatSize()[patternGroups[i]];
         }
-        patternSet = pd15.getPatternSet();
-        val2ptnKey = pd15.getVal2ptnKey();
-        val2ptnOrder = pd15.getVal2ptnOrder();
+        patternSet = pdb.getPatternSet();
+        val2ptnKey = pdb.getVal2ptnKey();
+        val2ptnOrder = pdb.getVal2ptnOrder();
         szGroup = patternGroups.length;
         szPdKeys = szGroup * 4;
         offsetPdSym = szGroup * 2;
@@ -130,17 +129,17 @@ public class SolverPdbBase extends AbstractSmartSolver {
 
     // load detected pattern key and format from a data file, if file not exists,
     // generate a new set
-    protected void loadPDElements(boolean[] elementGroups) {
-        PatternElement pd15e = new PatternElement(elementGroups, mode);
-        keys = pd15e.getKeys();
-        formats = pd15e.getFormats();
+    protected void loadPdbElements(boolean[] elementGroups) {
+        PatternElement element = new PatternElement(elementGroups, mode);
+        keys = element.getKeys();
+        formats = element.getFormats();
         linkFormatMove = new int[szGroup][];
         rotateKeysByPos = new int[szGroup][];
         maxShiftX2 = new int[szGroup];
         for (int i = 0; i < szGroup; i++) {
             int group = patternGroups[i];
-            linkFormatMove[i] = pd15e.getLinkFormatMoveSet(group);
-            rotateKeysByPos[i] = pd15e.getKeyShiftSet(group);
+            linkFormatMove[i] = element.getLinkFormatMoveSet(group);
+            rotateKeysByPos[i] = element.getKeyShiftSet(group);
             maxShiftX2[i] = PatternConstants.getMaxShiftX2()[group];
         }
     }
@@ -177,10 +176,9 @@ public class SolverPdbBase extends AbstractSmartSolver {
      *
      * @param board the initial puzzle Board object to solve
      * @return byte value of the heuristic value of the given board
-     * @throws RemoteException throw exception when connection lost
      */
     @Override
-    public byte heuristic(Board board) throws RemoteException {
+    public byte heuristic(Board board) {
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
@@ -243,7 +241,7 @@ public class SolverPdbBase extends AbstractSmartSolver {
     }
 
     // solve the puzzle using interactive deepening A* algorithm
-    protected void idaStar(int limit) throws RemoteException {
+    protected void idaStar(int limit) {
         // start searching for solution
         while (limit <= maxMoves) {
             idaCount = 0;
@@ -341,9 +339,8 @@ public class SolverPdbBase extends AbstractSmartSolver {
 
         boolean nonIdentical = !isIdenticalSymmetry(zeroPos, zeroSym);
 
-        // hard code different order to next moves base on the current move
         Direction prevMove = solutionMove[cost];
-
+        // hard code order of next moves base on the current move
         switch (prevMove) {
             case RIGHT:
                 // RIGHT

@@ -6,8 +6,6 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.rmi.Naming;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.Arrays;
@@ -20,7 +18,7 @@ import java.util.Scanner;
 public class ReferenceAdministrator {
     private static Scanner scanner;
 
-	private enum Action {
+    private enum Action {
         // Add a board without checking the total time to solve
         AddAlways,
         // Add a board if it takes more than preset limit to solve
@@ -47,22 +45,16 @@ public class ReferenceAdministrator {
     }
 
     private static void disableService() throws RemoteException, IOException {
-    	int remotePort = ReferenceServerProperties.getRemotePort();
+        int remotePort = ReferenceServerProperties.getRemotePort();
         if (available(remotePort)) {
-            String remoteHost = ReferenceServerProperties.getRemoteHost();
-            String remoteServiceName = ReferenceServerProperties.getRemoteServiceName() + "Disable";
-            String lookupStr = "rmi://" + remoteHost + ":" + remotePort + "/" + remoteServiceName;
-
-            DummyObject reserve = new DummyObject();
             LocateRegistry.createRegistry(remotePort);
-            Naming.rebind(lookupStr, (Remote) reserve);
         } else {
             System.out.println("Reference collection currently in use, cannot change setting.\n"
                     + "Please stop the server and try again.");
             System.exit(0);
         }
     }
-    
+
     /**
      * A console application to manage the advanced accumulator storage.
      * It allow to view the summary, print all board, change cutoff limit,
@@ -71,7 +63,7 @@ public class ReferenceAdministrator {
      * @param args standard argument main function
      */
     public static void main(String[] args) throws RemoteException, IOException {
-    	disableService();
+        disableService();
 
         ReferenceAccumulator advAccumulator = new ReferenceAccumulator();
         advAccumulator.printStatus();

@@ -44,7 +44,7 @@ public class SolverHeuristic extends AbstractApplication {
 
     private void setSolverVersion() {
         solver.setReferenceConnection(refConnection);
-        printConnectionType();
+        printConnection();
     }
 
     // display the solver options and change it with the user's choice
@@ -263,6 +263,10 @@ public class SolverHeuristic extends AbstractApplication {
 
         Board board = menuMain();
         while (true) {
+            if (!testConnection()) {
+                setSolverVersion();
+            }
+
             System.out.print(solver.getHeuristicOptions().getDescription());
             if (flagAdvVersion) {
                 System.out.print(" (Advanced version) ");
@@ -283,21 +287,7 @@ public class SolverHeuristic extends AbstractApplication {
                 continue;
             }
 
-            if (flagAdvVersion) {
-                if (!testConnection()) {
-                    setSolverVersion();
-                }
-            }
-
-            try {
-                solver.findOptimalPath(board);
-            } catch (RemoteException ex) {
-                System.err.println("Counnection lost: " + ex);
-                loadReferenceConnection();
-                setSolverVersion();
-                System.err.println("Try again:");
-                continue;
-            }
+            solver.findOptimalPath(board);
 
             if (solver.isSearchTimeout()) {
                 System.out.println("Search terminated after " + timeoutLimit + "s.\n");

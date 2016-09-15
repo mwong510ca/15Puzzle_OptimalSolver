@@ -40,7 +40,7 @@ public class SolverPdbCustomPattern extends AbstractApplication {
 
     private void setSolverVersion() {
         solverPdb.setReferenceConnection(refConnection);
-        printConnectionType();
+        printConnection();
     }
 
     // display the more choice of each additive pattern and allow user to
@@ -342,6 +342,10 @@ public class SolverPdbCustomPattern extends AbstractApplication {
         Board board = menuMain();
 
         while (true) {
+            if (!testConnection()) {
+                setSolverVersion();
+            }
+
             System.out.print(solverPdb.getHeuristicOptions().getDescription());
             if (flagAdvVersion) {
                 System.out.print(" (Advanced version) ");
@@ -352,19 +356,8 @@ public class SolverPdbCustomPattern extends AbstractApplication {
             System.out.println(board);
 
             if (board.isSolvable()) {
-                if (!testConnection()) {
-                    setSolverVersion();
-                }
+                solverPdb.findOptimalPath(board);
 
-                try {
-                    solverPdb.findOptimalPath(board);
-                } catch (RemoteException ex) {
-                    System.err.println("Counnection lost: " + ex);
-                    loadReferenceConnection();
-                    setSolverVersion();
-                    System.err.println("Try again:");
-                    continue;
-                }
                 if (solverPdb.isSearchTimeout()) {
                     System.out.println("Search terminated after " + timeoutLimit + "s.");
                 } else {
@@ -379,7 +372,7 @@ public class SolverPdbCustomPattern extends AbstractApplication {
                     refConnection.updateLastSearch(board, solverPdb);
                 }
             } catch (RemoteException ex) {
-                System.out.println("Counnection lost: " + ex);
+                System.err.println("Counnection lost: " + ex);
                 loadReferenceConnection();
                 setSolverVersion();
             }

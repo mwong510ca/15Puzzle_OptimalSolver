@@ -77,8 +77,6 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
             flagAdvancedVersion = flag;
             return true;
         } else {
-            System.out.println("Referece board collection unavailable."
-                + " Advanced search feature will act as standard search.");
             flagAdvancedVersion = tagStandard;
             return false;
         }
@@ -108,7 +106,7 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
      * @return byte value of the standard version of the heuristic value
      */
     @Override
-    public byte heuristicStandard(Board board) throws RemoteException {
+    public byte heuristicStandard(Board board) {
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
@@ -125,7 +123,7 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
      * @return byte value of the advanced version of the heuristic value
      */
     @Override
-    public byte heuristicAdvanced(Board board) throws RemoteException {
+    public byte heuristicAdvanced(Board board) {
         return heuristicStandard(board);
     }
 
@@ -152,9 +150,26 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
     }
 
     // set priorityAdvanced with given board or type of search
-    protected void setPriorityAdvanced(Board board, boolean isSearch) throws RemoteException {
-        AdvancedRecord record = extra.advancedContains(board, isSearch,
-                refConnection.getActiveMap());
+    protected void setPriorityAdvanced(Board board, boolean isSearch) {
+        if (!activeSmartSolver) {
+            priorityAdvanced = priorityGoal;
+            return;
+        }
+
+        AdvancedRecord record = null;
+        try {
+            record = extra.advancedContains(board, isSearch,
+                    refConnection.getActiveMap());
+        } catch (RemoteException ex) {
+            System.err.println("\n" + this.getClass().getSimpleName() + " - Connection lost."
+                    + "  Remaining process resume to standard version.");
+            activeSmartSolver = false;
+            flagAdvancedVersion = tagStandard;
+            this.refConnection = null;
+            priorityAdvanced = priorityGoal;
+            return;
+        }
+
         if (record != null) {
             priorityAdvanced = record.getEstimate();
             if (record.hasPartialMoves()) {
@@ -171,8 +186,18 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
             return;
         }
 
-        priorityAdvanced = extra.advancedEstimate(board, priorityAdvanced, refCutoff,
-                refConnection.getActiveMap());
+        try {
+            priorityAdvanced = extra.advancedEstimate(board, priorityAdvanced, refCutoff,
+                    refConnection.getActiveMap());
+        } catch (RemoteException ex) {
+            System.err.println("\n" + this.getClass().getSimpleName() + " - Connection lost."
+                    + "  Remaining process resume to standard version.");
+            activeSmartSolver = false;
+            flagAdvancedVersion = tagStandard;
+            this.refConnection = null;
+            priorityAdvanced = priorityGoal;
+            return;
+        }
 
         if ((priorityAdvanced - priorityGoal) % 2 == 1) {
             priorityAdvanced++;

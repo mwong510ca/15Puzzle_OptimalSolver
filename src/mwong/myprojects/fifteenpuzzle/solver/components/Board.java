@@ -147,6 +147,9 @@ public class Board implements Serializable {
     }
 
     // generate a solvable random board with a given difficulty level
+    // EASY - Manhattan distance < 25
+    // MODERATE - Manhattan distance between 20 to 45
+    // HARD - Manhattan distance > 40
     private void generateBoard(PuzzleDifficultyLevel level) {
         if (level == PuzzleDifficultyLevel.MODERATE) {
             int estimate = 0;

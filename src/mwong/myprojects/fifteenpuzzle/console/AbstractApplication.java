@@ -99,8 +99,8 @@ public abstract class AbstractApplication {
         return connectionType;
     }
 
-    protected final void printConnectionType() {
-        System.out.println(connectionType);
+    protected final void printConnection() {
+        System.out.println(connectionType + "\n");
     }
 
     boolean testConnection() {
@@ -109,7 +109,7 @@ public abstract class AbstractApplication {
         if (connectionType == currentType) {
             return true;
         } else {
-            System.out.println("Reference connection has changed.");
+            System.out.println("\nReference connection has changed.");
             return false;
         }
     }

@@ -4,7 +4,6 @@ import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.utilities.Stopwatch;
 
-import java.rmi.RemoteException;
 import java.util.Arrays;
 
 /**
@@ -184,7 +183,7 @@ public abstract class AbstractSolver implements Solver {
      * @param board the initial puzzle Board object to solve
      */
     @Override
-    public final void findOptimalPath(Board board) throws RemoteException {
+    public final void findOptimalPath(Board board) {
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
@@ -227,7 +226,7 @@ public abstract class AbstractSolver implements Solver {
     }
 
     // solve the puzzle using interactive deepening A* algorithm
-    protected abstract void idaStar(int limit) throws RemoteException;
+    protected abstract void idaStar(int limit);
 
     // maximum allow 5 continues clockwise turn.
     protected boolean isValidClockwise(int swirlKey) {

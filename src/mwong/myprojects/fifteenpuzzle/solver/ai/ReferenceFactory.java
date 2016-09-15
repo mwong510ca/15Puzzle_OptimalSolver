@@ -35,7 +35,7 @@ public class ReferenceFactory {
                 = PropertiesRemote.getInstance().getProperty("remoteServiceName");
         String rmiHost
                 = PropertiesRemote.getInstance().getProperty("remoteHost");
-        int rmiPort 
+        int rmiPort
                 = Integer.parseInt(PropertiesRemote.getInstance().getProperty("remotePort"));
         String lookupString = "rmi://" + rmiHost + ":" + rmiPort + "/" + rmiServiceName;
 

@@ -59,8 +59,10 @@ public class SmartSolverPdbBase extends SolverPdb {
                 this.refConnection = refConnection;
             }
         } catch (RemoteException ex) {
-            System.err.println("Attention: Server connection failed."
-                    + " Advanced estimate will use standard estimate.");
+            System.err.println(this.getClass().getSimpleName()
+                    + " - Attention: Server connection failed. Resume to standard version.\n");
+            flagAdvancedVersion = tagStandard;
+            activeSmartSolver = false;
         }
     }
 
@@ -100,13 +102,12 @@ public class SmartSolverPdbBase extends SolverPdb {
      * @return byte value of the heuristic value of the given board
      */
     @Override
-    public byte heuristic(Board board) throws RemoteException {
+    public byte heuristic(Board board) {
         return heuristic(board, flagAdvancedVersion, tagSearch);
     }
 
     // overload method to calculate the heuristic value of the given board and conditions
-    protected byte heuristic(Board board, boolean isAdvanced, boolean isSearch)
-            throws RemoteException {
+    protected byte heuristic(Board board, boolean isAdvanced, boolean isSearch) {
         if (!board.isSolvable()) {
             return -1;
         }
@@ -131,7 +132,7 @@ public class SmartSolverPdbBase extends SolverPdb {
      * @return byte value of the original heuristic value of the given board
      */
     @Override
-    public byte heuristicStandard(Board board) throws RemoteException {
+    public byte heuristicStandard(Board board) {
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
@@ -148,7 +149,7 @@ public class SmartSolverPdbBase extends SolverPdb {
      * @return byte value of the advanced heuristic value of the given board
      */
     @Override
-    public byte heuristicAdvanced(Board board) throws RemoteException {
+    public byte heuristicAdvanced(Board board) {
         if (board == null) {
             throw new IllegalArgumentException("Board is null");
         }
@@ -164,7 +165,7 @@ public class SmartSolverPdbBase extends SolverPdb {
     }
 
     // solve the puzzle using interactive deepening A* algorithm
-    protected void idaStar(int limit) throws RemoteException {
+    protected void idaStar(int limit) {
         if (inUsePattern == PatternOptions.Pattern_78) {
             lastSearchBoard = new Board(tiles);
         }
@@ -221,33 +222,51 @@ public class SmartSolverPdbBase extends SolverPdb {
                 if (solved) {
                     // if currently using pattern database 7-8 and it takes long than cutoff limit
                     // to solve, add the board and solutions to reference boards collection.
-                    if (activeSmartSolver && inUseHeuristic == HeuristicOptions.PD78
-                            && stopwatch.currentTime() >  refConnection.getCutoffLimit()) {
+                    try {
+                        if (activeSmartSolver && inUseHeuristic == HeuristicOptions.PD78
+                                && stopwatch.currentTime() > refConnection.getCutoffLimit()) {
 
-                        if (flagAdvancedVersion
-                                || (heuristicStandard(lastBoard) == heuristicAdvanced(lastBoard))) {
-                            // backup original solutions
-                            final Stopwatch backupTime = stopwatch;
-                            final byte backupSteps = steps;
-                            final int backupIdaCount = searchNodeCount;
-                            final Direction[] backupSolution = new Direction[steps + 1];
-                            System.arraycopy(solutionMove, 1, backupSolution, 1, steps);
+                            if (flagAdvancedVersion || (heuristicStandard(lastBoard)
+                                    == heuristicAdvanced(lastBoard))) {
+                                // backup original solutions
+                                final Stopwatch backupTime = stopwatch;
+                                final byte backupSteps = steps;
+                                final int backupIdaCount = searchNodeCount;
+                                final Direction[] backupSolution = new Direction[steps + 1];
+                                System.arraycopy(solutionMove, 1, backupSolution, 1, steps);
 
-                            searchTime = stopwatch.currentTime();
-                            stopwatch = new Stopwatch();
-                            // update cached advanced priority if added to the reference collection
-                            addedReference
-                                    = refConnection.addBoard(lastBoard, steps, solutionMove, this);
-                            if (addedReference) {
-                                priorityAdvanced = backupSteps;
+                                searchTime = stopwatch.currentTime();
+                                stopwatch = new Stopwatch();
+                                // update cached advanced priority if added to reference collection
+                                try {
+                                    addedReference = refConnection.addBoard(
+                                            lastBoard, steps, solutionMove, this);
+                                    if (addedReference) {
+                                        priorityAdvanced = backupSteps;
+                                    }
+                                } catch (RemoteException ex) {
+                                    System.err.println("\n" + this.getClass().getSimpleName()
+                                            + " - Remote connection lost."
+                                            + "  Remaining process resume to standard version.\n");
+                                    this.activeSmartSolver = false;
+                                    this.flagAdvancedVersion = tagStandard;
+                                    this.refConnection = null;
+                                } finally {
+                                    // restore original solutions
+                                    stopwatch = backupTime;
+                                    steps = backupSteps;
+                                    searchNodeCount = backupIdaCount;
+                                    solutionMove = backupSolution;
+                                }
                             }
-
-                            // restore original solutions
-                            stopwatch = backupTime;
-                            steps = backupSteps;
-                            searchNodeCount = backupIdaCount;
-                            solutionMove = backupSolution;
                         }
+                    } catch (RemoteException ex) {
+                        System.err.println("\n" + this.getClass().getSimpleName()
+                                + " - Remote connection lost."
+                                + "  Remaining process resume to standard version.\n");
+                        this.activeSmartSolver = false;
+                        this.flagAdvancedVersion = tagStandard;
+                        this.refConnection = null;
                     }
                     return;
                 }

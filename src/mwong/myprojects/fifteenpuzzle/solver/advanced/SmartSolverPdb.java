@@ -67,8 +67,10 @@ public class SmartSolverPdb extends SmartSolverPdbBase implements Serializable {
                 this.refConnection = refConnection;
             }
         } catch (RemoteException ex) {
-            System.out.println("Attention: Server connection failed."
-                    + " Advanced estimate will use standard estimate.");
+            System.err.println(this.getClass().getSimpleName()
+                    + " - Attention: Server connection failed. Resume to standard version.\n");
+            flagAdvancedVersion = tagStandard;
+            activeSmartSolver = false;
         }
     }
 
@@ -96,8 +98,10 @@ public class SmartSolverPdb extends SmartSolverPdbBase implements Serializable {
                 this.refConnection = refConnection;
             }
         } catch (RemoteException ex) {
-            System.err.println("Attention: Server connection failed."
-                    + " Advanced estimate will use standard estimate.");
+            System.err.println(this.getClass().getSimpleName()
+                    + " - Attention: Server connection failed. Resume to standard version.\n");
+            flagAdvancedVersion = tagStandard;
+            activeSmartSolver = false;
         }
     }
 
@@ -107,12 +111,25 @@ public class SmartSolverPdb extends SmartSolverPdbBase implements Serializable {
      * @param board the given Board object
      * @return boolean value of the given board is a reference board with partial solution.
      */
-    public boolean hasPartialSolution(Board board) throws RemoteException {
-        return extra.hasPartialSolution(board, refConnection.getActiveMap());
+    public boolean hasPartialSolution(Board board) {
+        if (!activeSmartSolver) {
+            return false;
+        }
+
+        try {
+            return extra.hasPartialSolution(board, refConnection.getActiveMap());
+        } catch (RemoteException ex) {
+            System.err.println("\n" + this.getClass().getSimpleName()
+                    + " - Remote connection lost."
+                    + "  Remaining process resume to standard version.\n");
+            flagAdvancedVersion = tagStandard;
+            activeSmartSolver = false;
+            return false;
+        }
     }
 
     // solve the puzzle using interactive deepening A* algorithm
-    protected void idaStar(int limit) throws RemoteException {
+    protected void idaStar(int limit) {
         if (inUsePattern == PatternOptions.Pattern_78) {
             lastSearchBoard = new Board(tiles);
         }
@@ -127,7 +144,7 @@ public class SmartSolverPdb extends SmartSolverPdbBase implements Serializable {
 
     // skip the first 8 moves from stored record then solve the remaining puzzle
     // using depth first search with exact number of steps of optimal solution
-    private void advancedSearch(int limit) throws RemoteException {
+    private void advancedSearch(int limit) {
         Direction[] dupSolution = new Direction[limit + 1];
         Board board = prepareAdvancedSearch(limit, dupSolution);
         heuristic(board, tagStandard, tagSearch);
