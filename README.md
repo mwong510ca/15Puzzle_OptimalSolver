@@ -61,7 +61,8 @@ Changing the setting is not allow during the remote server is running.
 
 Same for the remote server, it cannnot start the remote service during the administrator is using.  
 
-###GUI (Coming soon!)
+###GUI ([preview])
+Not final version, still make minor adjustments.
 
 ###Console applications (screen recordings on youtube)
 option 1 - demo [self learning feature] | text file [sample output 1]  
@@ -88,6 +89,7 @@ Additive Pattern Database 7-8                              (0.0082s)
               Manhattan distance 40+)     advanced version (0.29s)
 </pre>
 
+[preview]: https://youtu.be/UYdDNI7agmw
 [15 slide puzzle]: https://en.wikipedia.org/wiki/15_puzzle
 [8puzzle]: http://algs4.cs.princeton.edu/24pq/
 [A* algorithm]: https://en.wikipedia.org/wiki/A*_search_algorithm
