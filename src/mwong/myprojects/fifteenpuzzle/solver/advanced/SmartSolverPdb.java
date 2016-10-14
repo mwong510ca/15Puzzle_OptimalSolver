@@ -135,6 +135,7 @@ public class SmartSolverPdb extends SmartSolverPdbBase implements Serializable {
         }
         addedReference = false;
 
+        searchCountBase = 0;
         if (solutionMove[1] != null) {
             advancedSearch(limit);
             return;

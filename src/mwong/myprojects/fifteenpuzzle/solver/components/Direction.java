@@ -63,10 +63,10 @@ public enum Direction {
     public Direction oppositeDirection() {
         switch (this) {
             case RIGHT : return LEFT;
-            case DOWN : return UP;
-            case LEFT : return RIGHT;
-            case UP : return DOWN;
-            default : return NONE;
+            case DOWN  : return UP;
+            case LEFT  : return RIGHT;
+            case UP    : return DOWN;
+            default    : return NONE;
         }
     }
 
@@ -78,10 +78,21 @@ public enum Direction {
     public Direction symmetryDirection() {
         switch (this) {
             case RIGHT : return DOWN;
-            case DOWN : return RIGHT;
-            case LEFT : return UP;
-            case UP : return LEFT;
-            default : return NONE;
+            case DOWN  : return RIGHT;
+            case LEFT  : return UP;
+            case UP    : return LEFT;
+            default    : return NONE;
+        }
+    }
+
+    @Override
+    public String toString() {
+        switch (this) {
+            case RIGHT : return "RIGHT";
+            case DOWN  : return "DOWN ";
+            case LEFT  : return "LEFT ";
+            case UP    : return "UP   ";
+            default    : return "NONE ";
         }
     }
 }

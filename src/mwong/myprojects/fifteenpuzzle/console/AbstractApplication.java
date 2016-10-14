@@ -83,14 +83,14 @@ public abstract class AbstractApplication {
     void loadReferenceConnection() {
         try {
             refConnection = (new ReferenceFactory()).getReferenceServer();
-            connectionType = ReferenceConnectionType.RemoteServer;
+            connectionType = ReferenceConnectionType.REMOTESERVER;
         } catch (IOException ex) {
             try {
                 refConnection = (new ReferenceFactory()).getReferenceLocal();
-                connectionType = ReferenceConnectionType.Standalone;
+                connectionType = ReferenceConnectionType.STANDALONE;
             } catch (IOException ex2) {
                 refConnection = null;
-                connectionType = ReferenceConnectionType.Disabled;
+                connectionType = ReferenceConnectionType.DISABLED;
             }
         }
     }
@@ -129,14 +129,7 @@ public abstract class AbstractApplication {
 
     // print the list of direction of moves to the goal state.
     void solutionList(Solver solver) {
-        int steps = solver.moves();
-        for (int i = 1; i <= steps; i++) {
-            System.out.printf("%2s : %-5s ", Integer.toString(i), solver.solution()[i]);
-            if (i % 10 == 0 && steps > i) {
-                System.out.println();
-            }
-        }
-        System.out.println("\n");
+        System.out.println(solver.solutionString());
     }
 
     // print all boards of moves to the goal state.

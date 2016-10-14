@@ -234,6 +234,7 @@ public class SolverPdbWd extends SolverWd {
 
     // solve the puzzle using interactive deepening A* algorithm
     protected void idaStar(int limit) {
+        searchCountBase = 0;
         while (limit <= maxMoves) {
             idaCount = 0;
             if (flagMessage) {
@@ -241,8 +242,8 @@ public class SolverPdbWd extends SolverWd {
             }
 
             dfsStartingOrder(zeroX, zeroY, limit, regVal, symVal);
-            searchDepth = limit;
-            searchNodeCount += idaCount;
+            searchCountBase += idaCount;
+            searchNodeCount = searchCountBase;
 
             if (timeout) {
                 if (flagMessage) {
@@ -265,6 +266,7 @@ public class SolverPdbWd extends SolverWd {
     // recursive depth first search until it reach the goal state or timeout, the least estimate and
     // node counts will be use to determine the starting order of next search
     protected void dfsStartingOrder(int orgX, int orgY, int limit, int orgValReg, int orgValSym) {
+        searchDepth = limit;
         int zeroPos = orgY * rowSize + orgX;
         int zeroSym = symmetryPos[zeroPos];
         int[] orgCopy = new int[szPdWdKeys];
@@ -451,6 +453,8 @@ public class SolverPdbWd extends SolverWd {
         if (terminated) {
             return endOfSearch;
         }
+        searchNodeCount = searchCountBase + idaCount;
+        searchTime = stopwatch.currentTime();
         int nextPos = zeroPos + 1;
         int value = tiles[nextPos];
         int newIdx = getWDPtnIdx(pdwdKeys[wdKeyIdx + 1], (value - 1) % rowSize, forward);

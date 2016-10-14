@@ -35,6 +35,7 @@ public class SolverWd extends AbstractSmartSolver {
     protected int wdIdxH;
     protected int wdIdxV;
     protected int idaCount;
+    protected int searchCountBase;
 
     /**
      * Initializes SolverWd object.
@@ -103,14 +104,15 @@ public class SolverWd extends AbstractSmartSolver {
 
     // solve the puzzle using interactive deepening A* algorithm
     protected void idaStar(int limit) {
+        searchCountBase = 0;
         while (limit <= maxMoves) {
             idaCount = 0;
             if (flagMessage) {
                 System.out.print("ida limit " + limit);
             }
             dfsStartingOrder(zeroX, zeroY, limit, wdIdxH, wdIdxV, wdValueH, wdValueV);
-            searchDepth = limit;
-            searchNodeCount += idaCount;
+            searchCountBase += idaCount;
+            searchNodeCount = searchCountBase;
 
             if (timeout) {
                 if (flagMessage) {
@@ -145,6 +147,7 @@ public class SolverWd extends AbstractSmartSolver {
     // node counts will be use to determine the starting order of next search
     protected void dfsStartingOrder(int orgX, int orgY, int limit, int idxH, int idxV,
             int valH, int valV) {
+        searchDepth = limit;
         int zeroPos = orgY * rowSize + orgX;
         int zeroSym = symmetryPos[zeroPos];
         int [] estimate1stMove = new int[rowSize * 2];
@@ -321,6 +324,8 @@ public class SolverWd extends AbstractSmartSolver {
         if (terminated) {
             return endOfSearch;
         }
+        searchNodeCount = searchCountBase + idaCount;
+        searchTime = stopwatch.currentTime();
         int nextPos = zeroPos + 1;
         byte value = tiles[nextPos];
         int newIdx = getWDPtnIdx(idxV, (value - 1) % rowSize, forward);

@@ -133,6 +133,7 @@ public class SmartSolverMd extends SolverMd {
     // solve the puzzle using interactive deepening A* algorithm
     @Override
     protected void idaStar(int limit) {
+        searchCountBase = 0;
         if (solutionMove[1] != null) {
             advancedSearch(limit);
             return;
@@ -152,7 +153,6 @@ public class SmartSolverMd extends SolverMd {
                 idaCount = 0;
                 dfsStartingOrder(zeroX, zeroY, initLimit, priorityGoal);
                 initLimit += 2;
-
                 boolean overload = false;
                 for (int i = rowSize; i < rowSize * 2; i++) {
                     if (lastDepthSummary[i] > 10000) {

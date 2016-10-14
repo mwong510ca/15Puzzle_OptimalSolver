@@ -53,6 +53,7 @@ public class SolverPdbBase extends AbstractSmartSolver {
     protected byte pdValReg = 0;
     protected byte pdValSym = 0;
     protected int idaCount;
+    protected int searchCountBase;
 
     /**
      * Default constructor.
@@ -243,14 +244,15 @@ public class SolverPdbBase extends AbstractSmartSolver {
     // solve the puzzle using interactive deepening A* algorithm
     protected void idaStar(int limit) {
         // start searching for solution
+        searchCountBase = 0;
         while (limit <= maxMoves) {
             idaCount = 0;
             if (flagMessage) {
                 System.out.print("ida limit " + limit);
             }
             dfsStartingOrder(zeroX, zeroY, limit, pdValReg, pdValSym);
-            searchDepth = limit;
-            searchNodeCount += idaCount;
+            searchCountBase += idaCount;
+            searchNodeCount = searchCountBase;
 
             if (timeout) {
                 if (flagMessage) {
@@ -275,6 +277,7 @@ public class SolverPdbBase extends AbstractSmartSolver {
     // hard coded order Right -> Down -> Left -> Up
     protected void dfsStartingOrder(int orgX, int orgY, int limit, int orgValReg,
             int orgValSym) {
+        searchDepth = limit;
         int zeroPos = orgY * rowSize + orgX;
         int zeroSym = symmetryPos[zeroPos];
         int[] orgCopy = new int[szPdKeys];
@@ -438,6 +441,8 @@ public class SolverPdbBase extends AbstractSmartSolver {
         if (terminated) {
             return endOfSearch;
         }
+        searchNodeCount = searchCountBase + idaCount;
+        searchTime = stopwatch.currentTime();
         int nextPos = zeroPos + 1;
         int value = tiles[nextPos];
         int ptnReg = val2ptnOrder[value];

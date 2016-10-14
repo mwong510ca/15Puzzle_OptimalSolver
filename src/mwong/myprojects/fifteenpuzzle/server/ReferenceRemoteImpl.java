@@ -14,6 +14,12 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 
+/**
+ * ReferenceRemoteImpl implements the remote connection with referenceAdapter object.
+ *
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public class ReferenceRemoteImpl extends UnicastRemoteObject implements ReferenceRemote {
     private static final long serialVersionUID = 17195273121L;
     private static ReferenceRemote refObject;

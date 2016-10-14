@@ -38,6 +38,7 @@ public class DemoSolverPdb78 extends AbstractApplication {
     }
 
     private void setSolverVersion() {
+        loadReferenceConnection();
         solverPdb78.setReferenceConnection(refConnection);
         printConnection();
     }
@@ -60,7 +61,7 @@ public class DemoSolverPdb78 extends AbstractApplication {
             solverPdb78.findOptimalPath(board);
             if (solverPdb78.isSearchTimeout()) {
                 System.out.println("\t\tTimeout: " + solverPdb78.searchTime() + "s at depth "
-                        + solverPdb78.searchTerminateAtDepth() + "\t"
+                        + solverPdb78.searchDepth() + "\t"
                         + solverPdb78.searchNodeCount());
             } else {
                 System.out.printf("\t\tTotal : %-15s  Time : "

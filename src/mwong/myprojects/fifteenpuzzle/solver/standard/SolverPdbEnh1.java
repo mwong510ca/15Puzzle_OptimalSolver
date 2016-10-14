@@ -31,6 +31,7 @@ public class SolverPdbEnh1 extends SolverPdbBase {
     @Override
     protected void dfsStartingOrder(int orgX, int orgY, int limit, int orgValReg,
             int orgValSym) {
+        searchDepth = limit;
         int zeroPos = orgY * rowSize + orgX;
         int zeroSym = symmetryPos[zeroPos];
         int[] orgCopy = new int[szPdKeys];

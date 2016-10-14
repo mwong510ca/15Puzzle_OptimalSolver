@@ -96,7 +96,7 @@ public class CompareHeuristic extends AbstractApplication {
 
             if (solver.isSearchTimeout()) {
                 System.out.println("Timeout: " + solver.searchTime() + "s at depth "
-                        + solver.searchTerminateAtDepth() + "\t" + solver.searchNodeCount());
+                        + solver.searchDepth() + "\t" + solver.searchNodeCount());
                 stdSearch = false;
             } else {
                 System.out.printf("%-15s %-15s " + solver.searchNodeCount() + "\n",
@@ -124,7 +124,7 @@ public class CompareHeuristic extends AbstractApplication {
 
                     if (solver.isSearchTimeout()) {
                         System.out.println("Timeout: " + solver.searchTime() + "s at depth "
-                                + solver.searchTerminateAtDepth() + "\t"
+                                + solver.searchDepth() + "\t"
                                 + solver.searchNodeCount());
                         advSearch = false;
                     } else {

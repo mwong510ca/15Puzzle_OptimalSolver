@@ -45,7 +45,7 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
         lastBoard = goalBoard;
         flagMessage = onSwitch;
         flagTimeout = onSwitch;
-        flagAdvancedVersion = tagStandard;
+        flagAdvancedVersion = tagAdvanced;
         searchTimeoutLimit = defaultTimeoutLimit;
         activeSmartSolver = false;
         refCutoff = SolverConstants.getReferenceCutoff();
@@ -225,7 +225,6 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
             solutionMove = dupSolution;
         }
         steps = (byte) limit;
-        searchDepth = limit;
 
         if (flagMessage) {
             if (timeout) {

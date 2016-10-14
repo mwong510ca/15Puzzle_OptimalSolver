@@ -91,7 +91,7 @@ public interface Solver {
      *
      * @return integer value of search depth when the search terminated
      */
-    int searchTerminateAtDepth();
+    int searchDepth();
 
     /**
      * Returns the integer value of total number of nodes generated during the search.
@@ -120,4 +120,18 @@ public interface Solver {
      * @return array of Directions of each move to the goal state
      */
     Direction[] solution();
+
+    /**
+     * Returns the String Directions of each move to the goal state.
+     *
+     * @return String of Directions of each move to the goal state
+     */
+    String solutionString();
+
+    /**
+     * Returns the String Directions of each move to the goal state.
+     *
+     * @return String of Directions of each move to the goal state
+     */
+    String solutionQtString();
 }

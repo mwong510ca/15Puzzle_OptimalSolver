@@ -159,6 +159,7 @@ public abstract class AbstractSolver implements Solver {
         solved = false;
         timeout = false;
         terminated = false;
+        searchTime = 0.0;
         searchDepth = 0;
         searchNodeCount = 0;
         lastDepthSummary = new int [4 * 2];
@@ -287,7 +288,7 @@ public abstract class AbstractSolver implements Solver {
      * @return integer value of search depth when the search terminated
      */
     @Override
-    public final int searchTerminateAtDepth() {
+    public final int searchDepth() {
         if (!isSolvable) {
             return -1;
         }
@@ -347,5 +348,54 @@ public abstract class AbstractSolver implements Solver {
             return null;
         }
         return solutionMove;
+    }
+
+    /**
+     * Returns the String of Directions of each move to the goal state.
+     *
+     * @return String of Directions of each move to the goal state
+     */
+    @Override
+    public final String solutionString() {
+        if (!isSolvable) {
+            return "Insolvable puzzle, no solution.";
+        }
+        if (timeout) {
+            return "Search timeout, no solution.";
+        }
+        String str = "";
+        for (int i = 1; i <= steps; i++) {
+            if (i < 10) {
+                str += " ";
+            }
+            str += i + " : " + solutionMove[i] + " ";
+            if (i % 10 == 0 && steps > i) {
+                str += "\n";
+            }
+        }
+        return str + "\n";
+    }
+
+    /**
+     * Returns the String of Directions of each move to the goal state.
+     *
+     * @return String of Directions of each move to the goal state
+     */
+    @Override
+    public final String solutionQtString() {
+        if (!isSolvable) {
+            return "Insolvable puzzle, no solution.";
+        }
+        if (timeout) {
+            return "Search timeout, no solution.";
+        }
+        String str = "";
+        for (int i = 1; i <= steps; i++) {
+            if (i < 10) {
+                str += " ";
+            }
+            str += i + ":" + solutionMove[i].toString().charAt(0) + " ";
+        }
+        return str + "\n";
     }
 }

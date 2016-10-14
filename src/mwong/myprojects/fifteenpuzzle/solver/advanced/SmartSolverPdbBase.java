@@ -1,10 +1,8 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
-import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.SmartSolverExtra;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceRemote;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
-import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdb;
 import mwong.myprojects.fifteenpuzzle.utilities.Stopwatch;
@@ -171,6 +169,7 @@ public class SmartSolverPdbBase extends SolverPdb {
         }
         addedReference = false;
 
+        searchCountBase = 0;
         int countDir = 0;
         for (int i = 0; i < rowSize; i++) {
             if (lastDepthSummary[i + rowSize] > 0) {
@@ -199,80 +198,7 @@ public class SmartSolverPdbBase extends SolverPdb {
             }
         }
 
-        // start searching for solution
-        while (limit <= maxMoves) {
-            idaCount = 0;
-            if (flagMessage) {
-                System.out.print("ida limit " + limit);
-            }
-            dfsStartingOrder(zeroX, zeroY, limit, pdValReg, pdValSym);
-            searchDepth = limit;
-            searchNodeCount += idaCount;
-
-            if (timeout) {
-                if (flagMessage) {
-                    System.out.printf("\tNodes : %-15s timeout\n", Integer.toString(idaCount));
-                }
-                return;
-            } else {
-                if (flagMessage) {
-                    System.out.printf("\tNodes : %-15s  " + stopwatch.currentTime() + "s\n",
-                            Integer.toString(idaCount));
-                }
-                if (solved) {
-                    // if currently using pattern database 7-8 and it takes long than cutoff limit
-                    // to solve, add the board and solutions to reference boards collection.
-                    try {
-                        if (activeSmartSolver && inUseHeuristic == HeuristicOptions.PD78
-                                && stopwatch.currentTime() > refConnection.getCutoffLimit()) {
-
-                            if (flagAdvancedVersion || (heuristicStandard(lastBoard)
-                                    == heuristicAdvanced(lastBoard))) {
-                                // backup original solutions
-                                final Stopwatch backupTime = stopwatch;
-                                final byte backupSteps = steps;
-                                final int backupIdaCount = searchNodeCount;
-                                final Direction[] backupSolution = new Direction[steps + 1];
-                                System.arraycopy(solutionMove, 1, backupSolution, 1, steps);
-
-                                searchTime = stopwatch.currentTime();
-                                stopwatch = new Stopwatch();
-                                // update cached advanced priority if added to reference collection
-                                try {
-                                    addedReference = refConnection.addBoard(
-                                            lastBoard, steps, solutionMove, this);
-                                    if (addedReference) {
-                                        priorityAdvanced = backupSteps;
-                                    }
-                                } catch (RemoteException ex) {
-                                    System.err.println("\n" + this.getClass().getSimpleName()
-                                            + " - Remote connection lost."
-                                            + "  Remaining process resume to standard version.\n");
-                                    this.activeSmartSolver = false;
-                                    this.flagAdvancedVersion = tagStandard;
-                                    this.refConnection = null;
-                                } finally {
-                                    // restore original solutions
-                                    stopwatch = backupTime;
-                                    steps = backupSteps;
-                                    searchNodeCount = backupIdaCount;
-                                    solutionMove = backupSolution;
-                                }
-                            }
-                        }
-                    } catch (RemoteException ex) {
-                        System.err.println("\n" + this.getClass().getSimpleName()
-                                + " - Remote connection lost."
-                                + "  Remaining process resume to standard version.\n");
-                        this.activeSmartSolver = false;
-                        this.flagAdvancedVersion = tagStandard;
-                        this.refConnection = null;
-                    }
-                    return;
-                }
-            }
-            limit += 2;
-        }
+        super.idaStar(limit);
     }
 
     /**

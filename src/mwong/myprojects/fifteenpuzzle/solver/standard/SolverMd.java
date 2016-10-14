@@ -21,6 +21,7 @@ public class SolverMd extends AbstractSmartSolver {
     protected byte[] tilesSym;
     protected boolean flagLinearConflict;
     protected int idaCount;
+    protected int searchCountBase;
 
     /**
      * Initializes SolverMd object.
@@ -120,14 +121,15 @@ public class SolverMd extends AbstractSmartSolver {
 
     // solve the puzzle using interactive deepening A* algorithm
     protected void idaStar(int limit) {
+        searchCountBase = 0;
         while (limit <= maxMoves) {
             idaCount = 0;
             if (flagMessage) {
                 System.out.print("ida limit " + limit);
             }
             dfsStartingOrder(zeroX, zeroY, limit, priorityGoal);
-            searchDepth = limit;
-            searchNodeCount += idaCount;
+            searchCountBase += idaCount;
+            searchNodeCount = searchCountBase;
 
             if (timeout) {
                 if (flagMessage) {
@@ -150,6 +152,7 @@ public class SolverMd extends AbstractSmartSolver {
     // recursive depth first search until it reach the goal state or timeout, the least estimate and
     // node counts will be use to determine the starting order of next search
     protected void dfsStartingOrder(int orgX, int orgY, int limit, int orgPrio) {
+        searchDepth = limit;
         int zeroPos = orgY * rowSize + orgX;
         int zeroSym = symmetryPos[zeroPos];
         int [] estimate1stMove = new int[4 * 2];
@@ -328,6 +331,8 @@ public class SolverMd extends AbstractSmartSolver {
         if (terminated) {
             return endOfSearch;
         }
+        searchNodeCount = searchCountBase + idaCount;
+        searchTime = stopwatch.currentTime();
         byte value = tilesSym[zeroSym + rowSize];
         byte valuePos = (byte) (value - 1);
         int priority = orgPrio - 1;

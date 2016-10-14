@@ -8,9 +8,11 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.server.ExportException;
 
 /**
- * DBRemoteServer creates a data server connection for the Data using RMI.
+ * ReferenceRemoteServer starts the remote connection server.
+ *
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
-
 public class ReferenceRemoteServer {
     /**
      * Create a reference server service using the specific port number and

@@ -1,21 +1,32 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
+/**
+ * ReferenceConnectionType that can be used.
+ * <li>{@link #RIGHT}</li>
+ * <li>{@link #DOWN}</li>
+ * <li>{@link #LEFT}</li>
+ * <li>{@link #UP}</li>
+ * <li>{@link #NONE}</li>
+ *
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public enum ReferenceConnectionType {
-    RemoteServer,
-    Standalone,
-    Disabled;
+    REMOTESERVER,
+    STANDALONE,
+    DISABLED;
 
     @Override
     public String toString() {
         String str = "";
         switch (this) {
-            case RemoteServer:
+            case REMOTESERVER:
                 str = "Remote connection SUCCEED. Reference collection in sync.";
                 break;
-            case Standalone:
+            case STANDALONE:
                 str = "Remote connection FAILED. Standalone advanced version in use.";
                 break;
-            case Disabled:
+            case DISABLED:
                 str = "Unable to connect reference collection, resume standard version.";
                 break;
             default:

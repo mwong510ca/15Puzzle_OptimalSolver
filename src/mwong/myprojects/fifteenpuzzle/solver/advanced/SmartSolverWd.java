@@ -119,6 +119,7 @@ public class SmartSolverWd extends SolverWd {
 
     // solve the puzzle using interactive deepening A* algorithm
     protected void idaStar(int limit) {
+        searchCountBase = 0;
         if (solutionMove[1] != null) {
             advancedSearch(limit);
             return;

@@ -97,15 +97,15 @@ public class SolverWdMd extends SolverWd {
 
     // solve the puzzle using interactive deepening A* algorithm
     protected void idaStar(int limit) {
+        searchCountBase = 0;
         while (limit <= maxMoves) {
             idaCount = 0;
             if (flagMessage) {
                 System.out.print("ida limit " + limit);
             }
             dfsStartingOrder(zeroX, zeroY, limit, mdlcValue, wdIdxH, wdIdxV, wdValueH, wdValueV);
-
-            searchDepth = limit;
-            searchNodeCount += idaCount;
+            searchCountBase += idaCount;
+            searchNodeCount = searchCountBase;
 
             if (timeout) {
                 if (flagMessage) {
@@ -129,6 +129,7 @@ public class SolverWdMd extends SolverWd {
     // node counts will be use to determine the starting order of next search
     protected void dfsStartingOrder(int orgX, int orgY, int limit, int orgMDLC, int idxH, int idxV,
             int valH, int valV) {
+        searchDepth = limit;
         int zeroPos = orgY * rowSize + orgX;
         int zeroSym = symmetryPos[zeroPos];
         int [] estimate1stMove = new int[4 * 2];
@@ -313,6 +314,8 @@ public class SolverWdMd extends SolverWd {
         if (terminated) {
             return endOfSearch;
         }
+        searchNodeCount = searchCountBase + idaCount;
+        searchTime = stopwatch.currentTime();
         int newEstimate = Math.max(valH + valV, orgMDLC);
         int newWdIdx = getWDPtnIdx(idxV, (tiles[zeroPos + 1] - 1) % rowSize, forward);
         int newWdVal = getWDValue(newWdIdx);

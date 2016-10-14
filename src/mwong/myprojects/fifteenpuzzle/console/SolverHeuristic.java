@@ -38,7 +38,6 @@ public class SolverHeuristic extends AbstractApplication {
         super();
         solver = new SmartSolverPdbWd(defaultPattern, refConnection);
         inUseHeuristic = solver.getHeuristicOptions();
-        solver.versionSwitch(flagAdvVersion);
         setSolverVersion();
     }
 
@@ -308,9 +307,11 @@ public class SolverHeuristic extends AbstractApplication {
                 }
 
                 if (solver.moves() > 0) {
+                    System.out.println("A");
                     board = menuSubSolution(board);
                 } else {
                     // search has timeout after 10 seconds.
+                    System.out.println("B");
                     board = menuMain();
                 }
             }

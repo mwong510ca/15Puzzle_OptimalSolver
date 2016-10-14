@@ -88,6 +88,7 @@ public class SolverPdb extends SolverPdbEnh2 {
     // estimate and node counts will be use to determine the starting order of next search
     protected void dfsStartingOrder(int orgX, int orgY, int limit, int orgValReg,
             int orgValSym) {
+        searchDepth = limit;
         int zeroPos = orgY * rowSize + orgX;
         int zeroSym = symmetryPos[zeroPos];
         int[] orgCopy = new int[szPdKeys];

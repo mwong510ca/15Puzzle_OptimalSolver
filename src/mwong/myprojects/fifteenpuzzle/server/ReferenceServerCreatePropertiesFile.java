@@ -5,6 +5,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * ReferenceServerCreatePropertiesFile save the server properties file for client connection.
+ *
+ * @author Meisze Wong
+ *         www.linkedin.com/pub/macy-wong/46/550/37b/
+ */
 public class ReferenceServerCreatePropertiesFile {
     /**
      * Main function start the remote server.

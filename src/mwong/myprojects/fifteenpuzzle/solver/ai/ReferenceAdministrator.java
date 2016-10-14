@@ -12,6 +12,9 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 /**
+ * ReferenceAdministrator is the administrative tool to change reference collection setting,
+ * or reset to default values.
+ * 
  * @author Meisze Wong
  *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */

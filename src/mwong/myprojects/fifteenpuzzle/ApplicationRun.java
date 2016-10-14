@@ -20,8 +20,8 @@ class ApplicationRun {
      * Option 1: Demo version of pattern database 7-8 with monitor reference collection.
      * Option 2: Compare each enhancement added on pattern database 7-8 solver.
      * Option 3: Compare all 7 heuristic functions.
-     * Option 4: User choice of heuristic functions, with option to display the solution.
-     * Option 5: User choice of preset pattern database or user defined custom pattern.
+     * Option 4: User choice of preset pattern database or user defined custom pattern.
+     * Option 5: User choice of heuristic functions, with option to display the solution.
      * Option 6: Run a number trails, display the average solved time and number of puzzles
      *           has been timeout.
      * Default : use option 3, Compare all 7 heuristic functions.
