@@ -197,10 +197,7 @@ public class SmartSolverPdbBase extends SolverPdb {
                 }
             }
         }
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/master
         super.idaStar(limit);
     }
 
