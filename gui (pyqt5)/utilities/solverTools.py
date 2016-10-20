@@ -2,22 +2,26 @@ import time
 from PyQt5.QtCore import pyqtSignal, QThread
 from PyQt5.QtGui import QPixmap
 
-class SearchStart(QThread):
-    def __init__(self, board, solver):
-        super(SearchStart, self).__init__()
-        self._isRunning = True
+class SearchEngine(QThread):
+    def __init__(self):
+        super(SearchEngine, self).__init__()
+        self._isRunning = False
+        self._board = None
+        self._solver = None
+
+    def setProperties(self, board, solver):
+        self._isRunning = False
         self._board = board
         self._solver = solver
 
     def run(self):
         if not self._isRunning:
-            self._isRunning = Ture
+            self._isRunning = True
         self._solver.findOptimalPath(self._board)
 
         while not self._solver.isSearchTimeout() and self._solver.moves() == -1:
             time.sleep(1)
             continue
-
         self._isRunning = False
 
 class SearchStatus(QThread):
@@ -60,26 +64,40 @@ class SearchStatus(QThread):
     pic13 = pyqtSignal(QPixmap)
     pic14 = pyqtSignal(QPixmap)
     pic15 = pyqtSignal(QPixmap)
+    searchTimeout = pyqtSignal(bool)
 
-    def __init__(self, thread, original, zero, use_image, image_list, image_panda):
+    def __init__(self, image_panda):
         super(SearchStatus, self).__init__()
-        self._isRunning = True
-        self._thread = thread
-        self._solver = thread._solver
+        self._isRunning = False
+        self._search = None
+        self._solver = None
+        self._tiles = None
+        self._zero = None
+        self._use_image = None
+        self._image_list = None
+        self._image_panda = image_panda
+
+    def setProperties(self, search, original, zero, use_image, image_list, speed):
+        self._isRunning = False
+        self._search = search
+        self._solver = search._solver
         self._tiles = []
         for tile in original:
             self._tiles.append(tile)
         self._zero = zero
         self._use_image = use_image
         self._image_list = image_list
-        self._image_panda = image_panda
+        self._speed = speed / 1000.0
 
     def run(self):
+        self.widgetInaccessable.emit(True)
+        self.widgetAccessable.emit(False)
+        self.widgetAccessablePanda.emit(False)
+        
         if not self._isRunning:
-            self._isRunning = Ture
+            self._isRunning = True
 
-        estTime = 0
-        while self._thread._isRunning:
+        while self._search._isRunning:
             self._time = "Time: " + str(self._solver.searchTime()) + "s"
             self._nodes = "Nodes: " + str(self._solver.searchNodeCount())        
             self._depth = "Depth: " + str(self._solver.searchDepth())
@@ -87,13 +105,13 @@ class SearchStatus(QThread):
             self.statusNodes.emit(self._nodes)
             self.statusResult.emit(self._depth)
             time.sleep(0.1)
-            estTime += 1
 
         self._time = "Time: " + str(self._solver.searchTime()) + "s"
         self._nodes = "Nodes: " + str(self._solver.searchNodeCount())        
         self.statusTime.emit(self._time)
         self.statusNodes.emit(self._nodes)
         if self._solver.isSearchTimeout():
+            self.searchTimeout.emit(True)
             self.statusResult.emit("Result: timeout")
         else:
             steps = self._solver.moves()
@@ -121,7 +139,7 @@ class SearchStatus(QThread):
                     pos -= 4
                 else:
                     print("ERROR " + str(directions))
-                self.statusMoves.emit(movesString + "\nSteps " + str(idx + 1) + " : " + strDirection)
+                self.statusMoves.emit(movesString + "\nStep " + str(idx + 1) + " : " + strDirection)
                 val = self._tiles[pos]
 
                 if self._use_image:
@@ -260,12 +278,12 @@ class SearchStatus(QThread):
                 self._tiles[pos0] = val
                 self._tiles[pos] = 0
                 self._zero = pos
-                time.sleep(0.7)
+                time.sleep(self._speed)
 
         if self._use_image:
             self.pic15.emit(QPixmap(self._image_list[0]))        
         
-        time.sleep(1)
+        time.sleep(0.5)
         self.widgetInaccessable.emit(False)
         self.widgetAccessable.emit(True)
         self.widgetAccessablePanda.emit(self._image_panda)
