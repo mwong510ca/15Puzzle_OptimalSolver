@@ -19,5 +19,4 @@ Download is optional.
 The 15 puzzle optimal solver can start without database folder.  
 All of these files will generated automatically from the application, and saved a copy for re-use.
 
-
 [download]: https://my.pcloud.com/publink/show?code=kZSoaLZgNeLhO2eu0RQcu9D2aXeOFgtioUV
