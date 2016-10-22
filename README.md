@@ -61,7 +61,7 @@ Changing the setting is not allow during the remote server is running.
 
 Same for the remote server, it cannnot start the remote service during the administrator is using.  
 
-###GUI 2 in 1 15 puzzle game and solver ([youtube demo])
+###GUI - 15 puzzle game and solver 2 in 1 ([youtube demo])
 My gui application written in pyqt5 version 5.6.  It access my java modules using py4j.  The python program will start and close the java gateway server by itself.  It can play with numbers or any image in the local folder.  The player can solve the puzzle, the program will count the total time.  Or let the program search for solution.  Once solution found, it will playback the moves automatically.  
 [View source code]  
 
@@ -90,7 +90,7 @@ Additive Pattern Database 7-8                              (0.0082s)
               Manhattan distance 40+)     advanced version (0.29s)
 </pre>
 
-[View source code]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/gui%20(pyqt5)/README.md
+[View source code]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/tree/master/gui%20(pyqt5)
 [youtube demo]: https://youtu.be/yswhj-ZHta4
 [15 slide puzzle]: https://en.wikipedia.org/wiki/15_puzzle
 [8puzzle]: http://algs4.cs.princeton.edu/24pq/
