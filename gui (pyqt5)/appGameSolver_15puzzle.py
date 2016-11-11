@@ -6,6 +6,7 @@ import os
 import math
 import time
 import subprocess
+import socket
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFrame, QMessageBox, \
@@ -19,6 +20,7 @@ from utilities.gameStopwatch import Stopwatch
 from utilities.solverTools import SearchEngine
 from utilities.solverTools import SearchStatus
 from py4j.java_gateway import JavaGateway
+from py4j.java_gateway import GatewayClient
 
 # Globals
 IMG_FOLDER_NAME = "images"
@@ -709,14 +711,27 @@ class GameSolver15Puzzle(QMainWindow, MainWindow):
                     QMessageBox.Close, QMessageBox.Close)
 
 if __name__ == "__main__":
+    host = '127.0.0.1'
+    port_number = 25334
+    while port_number < 25335:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.bind(('', 0))
+        port_number = s.getsockname()[1]
+        s.close()   
+    try:
+        subprocess.Popen(['java', '-jar', 'FifteenPuzzleGateway.jar', str(port_number)])
+        time.sleep(4)
+    except:
+        sys.exit()
+
+    gateway = JavaGateway(GatewayClient(address=host, port=port_number))    
     app = QApplication(sys.argv)
-    subprocess.Popen(['java', '-jar', 'FifteenPuzzleGateway.jar'])
-    time.sleep(3)
-    gateway = JavaGateway()
-    time.sleep(0.5)
     window = GameSolver15Puzzle(gateway)
     window.show()
     while app.exec_() > 0:
         time.sleep(1)   
     gateway.shutdown() 
     sys.exit()
+    
+
+
