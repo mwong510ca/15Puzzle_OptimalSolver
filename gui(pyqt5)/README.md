@@ -6,7 +6,7 @@ Requirement :
 * Python 3.5
 * PIL or Pillow for Python 3.5
 * PyQt 5.6 or 5.7 (may not work on older versions)
-* download and replace the database folder (optional)  
+* download and replace the database folder 
 
 Click appGameSolver_15puzzle.py to start the application.
 
