@@ -41,7 +41,7 @@ and puzzle solver.  [View Source Code]
             keys:       0-1-2-3-4               0-1-2-3-4               0-1-2-3-4
             formats:    1111 1000 0000 0000     0000 0111 0011 0000     0000 0000 1100 1110</pre>
             
-No matter how I choose the group 5 pattern, I still use the same set of keys and formats.  
+No matter how I choose the group 5 pattern, I still use the same set of keys and formats.  And the key index and format index also represent it's pattern.
 genKeys() and genFormats() will create all these keys and formats and assigned a code for them.  
 Each key and format can be store in 16 bits, so each key x format individual pattern can be 
 store in 32 bits as an integer value.
