@@ -76,6 +76,12 @@ class SearchStatus(QThread):
         self._use_image = None
         self._image_list = None
         self._image_panda = image_panda
+        self._puzzle_pic = [self.pic0, self.pic1, self.pic2, self.pic3, self.pic4, 
+            self.pic5, self.pic6, self.pic7, self.pic8, self.pic9, self.pic10, 
+            self.pic11, self.pic12, self.pic13, self.pic14, self.pic15]
+        self._puzzle_val = [self.val0, self.val1, self.val2, self.val3, self.val4, 
+            self.val5, self.val6, self.val7, self.val8, self.val9, self.val10, 
+            self.val11, self.val12, self.val13, self.val14, self.val15]
 
     def setProperties(self, search, original, zero, use_image, image_list, speed):
         self._isRunning = False
@@ -143,138 +149,11 @@ class SearchStatus(QThread):
                 val = self._tiles[pos]
 
                 if self._use_image:
-                    if pos == 0:
-                        self.pic0.emit(QPixmap(""))
-                    elif pos == 1:
-                        self.pic1.emit(QPixmap(""))
-                    elif pos == 2:
-                        self.pic2.emit(QPixmap(""))
-                    elif pos == 3:
-                        self.pic3.emit(QPixmap(""))
-                    elif pos == 4:
-                        self.pic4.emit(QPixmap(""))
-                    elif pos == 5:
-                        self.pic5.emit(QPixmap(""))
-                    elif pos == 6:
-                        self.pic6.emit(QPixmap(""))
-                    elif pos == 7:
-                        self.pic7.emit(QPixmap(""))
-                    elif pos == 8:
-                        self.pic8.emit(QPixmap(""))
-                    elif pos == 9:
-                        self.pic9.emit(QPixmap(""))
-                    elif pos == 10:
-                        self.pic10.emit(QPixmap(""))
-                    elif pos == 11:
-                        self.pic11.emit(QPixmap(""))
-                    elif pos == 12:
-                        self.pic12.emit(QPixmap(""))
-                    elif pos == 13:
-                        self.pic13.emit(QPixmap(""))
-                    elif pos == 14:
-                        self.pic14.emit(QPixmap(""))
-                    elif pos == 15:
-                        self.pic15.emit(QPixmap(""))
-                
-                    if pos0 == 0:
-                        self.pic0.emit(QPixmap(self._image_list[val]))
-                    elif pos0 == 1:
-                        self.pic1.emit(QPixmap(self._image_list[val]))
-                    elif pos0 == 2:
-                        self.pic2.emit(QPixmap(self._image_list[val]))
-                    elif pos0 == 3:
-                        self.pic3.emit(QPixmap(self._image_list[val]))
-                    elif pos0 == 4:
-                        self.pic4.emit(QPixmap(self._image_list[val]))
-                    elif pos0 == 5:
-                        self.pic5.emit(QPixmap(self._image_list[val]))
-                    elif pos0 == 6:
-                        self.pic6.emit(QPixmap(self._image_list[val]))
-                    elif pos0 == 7:
-                        self.pic7.emit(QPixmap(self._image_list[val]))
-                    elif pos0 == 8:
-                        self.pic8.emit(QPixmap(self._image_list[val]))
-                    elif pos0 == 9:
-                        self.pic9.emit(QPixmap(self._image_list[val]))
-                    elif pos0 == 10:
-                        self.pic10.emit(QPixmap(self._image_list[val]))
-                    elif pos0 == 11:
-                        self.pic11.emit(QPixmap(self._image_list[val]))
-                    elif pos0 == 12:
-                        self.pic12.emit(QPixmap(self._image_list[val]))
-                    elif pos0 == 13:
-                        self.pic13.emit(QPixmap(self._image_list[val]))
-                    elif pos0 == 14:
-                        self.pic14.emit(QPixmap(self._image_list[val]))
-                    elif pos0 == 15:
-                        self.pic15.emit(QPixmap(self._image_list[val]))
+                    self._puzzle_pic[pos].emit(QPixmap(""))
+                    self._puzzle_pic[pos0].emit(QPixmap(self._image_list[val]))
                 else:
-                    if pos == 0:
-                        self.val0.emit("")
-                    elif pos == 1:
-                        self.val1.emit("")
-                    elif pos == 2:
-                        self.val2.emit("")
-                    elif pos == 3:
-                        self.val3.emit("")
-                    elif pos == 4:
-                        self.val4.emit("")
-                    elif pos == 5:
-                        self.val5.emit("")
-                    elif pos == 6:
-                        self.val6.emit("")
-                    elif pos == 7:
-                        self.val7.emit("")
-                    elif pos == 8:
-                        self.val8.emit("")
-                    elif pos == 9:
-                        self.val9.emit("")
-                    elif pos == 10:
-                        self.val10.emit("")
-                    elif pos == 11:
-                        self.val11.emit("")
-                    elif pos == 12:
-                        self.val12.emit("")
-                    elif pos == 13:
-                        self.val13.emit("")
-                    elif pos == 14:
-                        self.val14.emit("")
-                    elif pos == 15:
-                        self.val15.emit("")
-                    
-                    if pos0 == 0:
-                        self.val0.emit(str(val))
-                    elif pos0 == 1:
-                        self.val1.emit(str(val))
-                    elif pos0 == 2:
-                        self.val2.emit(str(val))
-                    elif pos0 == 3:
-                        self.val3.emit(str(val))
-                    elif pos0 == 4:
-                        self.val4.emit(str(val))
-                    elif pos0 == 5:
-                        self.val5.emit(str(val))
-                    elif pos0 == 6:
-                        self.val6.emit(str(val))
-                    elif pos0 == 7:
-                        self.val7.emit(str(val))
-                    elif pos0 == 8:
-                        self.val8.emit(str(val))
-                    elif pos0 == 9:
-                        self.val9.emit(str(val))
-                    elif pos0 == 10:
-                        self.val10.emit(str(val))
-                    elif pos0 == 11:
-                        self.val11.emit(str(val))
-                    elif pos0 == 12:
-                        self.val12.emit(str(val))
-                    elif pos0 == 13:
-                        self.val13.emit(str(val))
-                    elif pos0 == 14:
-                        self.val14.emit(str(val))
-                    elif pos0 == 15:
-                        self.val15.emit(str(val))
-                    
+                    self._puzzle_val[pos].emit("")
+                    self._puzzle_val[pos0].emit(str(val))
                 self._tiles[pos0] = val
                 self._tiles[pos] = 0
                 self._zero = pos
