@@ -1,3 +1,9 @@
+"""
+" author Meisze Wong
+"        www.linkedin.com/pub/macy-wong/46/550/37b/
+"        github.com/mwong510ca/Boggle_TrieDataStructure
+"""
+
 # -*- coding: utf-8 -*-
 
 # Form implementation generated from reading ui file 'appGame_Final.ui'
@@ -6,8 +12,9 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets,Qt
+from PyQt5 import QtCore, QtGui, QtWidgets
 from gui.customTileLabel import ImageLabel
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -347,9 +354,6 @@ class Ui_MainWindow(object):
         self.solverAdvanced.setObjectName("solverAdvanced")
         self.solverVersion.addButton(self.solverAdvanced)
         self.displayLayout.addWidget(self.solverAdvanced, 3, 2, 1, 1)
-        self.solverHidden = QtWidgets.QLabel(self.centralwidget)
-        self.solverHidden.setMaximumSize(0,0)
-        self.displayLayout.addWidget(self.solverHidden, 4, 0, 1, 1)
         self.solverHeuristic = QtWidgets.QComboBox(self.centralwidget)
         self.solverHeuristic.setSizePolicy(sizePolicy)
         self.solverHeuristic.setMinimumSize(QtCore.QSize(0, 30))
@@ -434,6 +438,10 @@ class Ui_MainWindow(object):
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+        self.actionAbout15Puzzle = QtWidgets.QAction(MainWindow)
+        self.actionAbout15Puzzle.setObjectName("actionAbout15Puzzle")
+        self.actionAboutAuthor = QtWidgets.QAction(MainWindow)
+        self.actionAboutAuthor.setObjectName("actionAboutAuthor")
         self.actionExit = QtWidgets.QAction(MainWindow)
         self.actionExit.setObjectName("actionExit")
         self.actionNumbers = QtWidgets.QAction(MainWindow)
@@ -446,11 +454,11 @@ class Ui_MainWindow(object):
         self.actionTimeoutLimit.setObjectName("actionTimeoutLimit")
         self.actionAutoMoveSpeed = QtWidgets.QAction(MainWindow)
         self.actionAutoMoveSpeed.setObjectName("actionAutoMoveSpeed")
-		
         self.actionInstructions = QtWidgets.QAction(MainWindow)
         self.actionInstructions.setObjectName("actionInstructions")
-        self.actionAbout = QtWidgets.QAction(MainWindow)
-        self.actionAbout.setObjectName("actionAbout")
+
+        self.menuFile.addAction(self.actionAbout15Puzzle)
+        self.menuFile.addAction(self.actionAboutAuthor)
         self.menuFile.addAction(self.actionExit)
         self.menuSettings.addAction(self.actionNumbers)
         self.menuSettings.addAction(self.actionPandaBabies)
@@ -459,7 +467,6 @@ class Ui_MainWindow(object):
         self.menuSettings.addAction(self.actionTimeoutLimit)
         self.menuSettings.addAction(self.actionAutoMoveSpeed)
         self.menuHelp.addAction(self.actionInstructions)
-        self.menuHelp.addAction(self.actionAbout)
         self.menuMain.addAction(self.menuFile.menuAction())
         self.menuMain.addAction(self.menuSettings.menuAction())
         self.menuMain.addAction(self.menuHelp.menuAction())
@@ -473,6 +480,8 @@ class Ui_MainWindow(object):
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuSettings.setTitle(_translate("MainWindow", "Settings"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
+        self.actionAbout15Puzzle.setText(_translate("MainWindow", "About 15 Puzzle"))
+        self.actionAboutAuthor.setText(_translate("MainWindow", "About Author"))
         self.actionExit.setText(_translate("MainWindow", "Exit"))
         self.actionNumbers.setText(_translate("MainWindow", "Numbers"))
         self.actionPandaBabies.setText(_translate("MainWindow", "Panda Babies"))
@@ -480,8 +489,7 @@ class Ui_MainWindow(object):
         self.actionTimeoutLimit.setText(_translate("MainWindow", "Timeout Limit"))
         self.actionAutoMoveSpeed.setText(_translate("MainWindow", "Auto Move Speed"))
         self.actionInstructions.setText(_translate("MainWindow", "Instructions"))
-        self.actionAbout.setText(_translate("MainWindow", "About"))
-
+        
         self.puzzleSetup.setText(_translate("MainWindow", "Click 2 tiles to swap or generate new puzzle:"))
         self.puzzleLevel.setItemText(0, _translate("MainWindow", "Goal State"))
         self.puzzleLevel.setItemText(1, _translate("MainWindow", "Random"))
