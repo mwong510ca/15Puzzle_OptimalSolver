@@ -2,10 +2,12 @@
 
 ### How to Install
 System Requirement :  
-* Java Virtual Machine version 8 (Most of the machines already have it)  
-* Python 3.5
-* PIL or Pillow for Python 3.5
-* PyQt 5.6 or 5.7 (may not work on older versions)
+* [Java Virtual Machine version 8]: (Most of the machines already have it)  
+* [Python 3.5]
+* [py4j] for Python
+* [PIL] or Pillow for Python 3.5
+* [Qt] 5.6 or 5.7 (may not work on older versions)
+* [PyQt5]
 
 Download and unzip the [app15Puzzle.zip] file from my cloud drive. (Include all components - jar files, images, data files, etc)  
 
@@ -27,4 +29,10 @@ Solver Section - Search for optimal solution and apply the solution
 Choose your choice of solver version and heuristic function, then click "Find optimal solution."  
 It will timeout after the preset limit excpet pattern database 7-8.  If a solution found before timeout, it will display a list of moves and apply the solution automatically.  
 
+[Java Virtual Machine version 8]: http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html
+[Python 3.5]: https://www.python.org/downloads/
+[py4j]: https://www.py4j.org/install.html
+[PIL]: https://wp.stolaf.edu/it/installing-pil-pillow-cimage-on-windows-and-mac/
+[Qt]: https://www.qt.io
+[PyQt5]: http://pyqt.sourceforge.net/Docs/PyQt5/installation.html
 [app15Puzzle.zip]: https://my.pcloud.com/publink/show?code=XZMP1qZoFVxbwyYKzJKQ8x8YiBdHRk7vOOX
