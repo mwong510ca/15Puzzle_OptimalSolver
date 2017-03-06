@@ -7,7 +7,7 @@ System Requirement :
 * PIL or Pillow for Python 3.5
 * PyQt 5.6 or 5.7 (may not work on older versions)
 
-Download and unzip the app15Puzzle.zip file from my cloud drive. (Include all components - jar files, images, data files, etc)  
+Download and unzip the [app15Puzzle.zip] file from my cloud drive. (Include all components - jar files, images, data files, etc)  
 
 Start from Terminal: python3 app15PuzzleGameSolver.py
 
