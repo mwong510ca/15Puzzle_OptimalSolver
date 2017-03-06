@@ -7,7 +7,9 @@ System Requirement :
 * PIL or Pillow for Python 3.5
 * PyQt 5.6 or 5.7 (may not work on older versions)
 
-[download] and unzip app15Puzzle.zip file, type python3 appGameSolver_15puzzle.py to start the application.
+Download and unzip the app15Puzzle.zip file from my cloud drive. (Include all components - jar files, images, data files, etc)  
+
+Start from Terminal: python3 app15PuzzleGameSolver.py
 
 ### How to Play
 Meun bar - Settings  
@@ -25,4 +27,4 @@ Solver Section - Search for optimal solution and apply the solution
 Choose your choice of solver version and heuristic function, then click "Find optimal solution."  
 It will timeout after the preset limit excpet pattern database 7-8.  If a solution found before timeout, it will display a list of moves and apply the solution automatically.  
 
-[download]: https://my.pcloud.com/publink/show?code=XZMP1qZoFVxbwyYKzJKQ8x8YiBdHRk7vOOX
+[app15Puzzle.zip]: https://my.pcloud.com/publink/show?code=XZMP1qZoFVxbwyYKzJKQ8x8YiBdHRk7vOOX
