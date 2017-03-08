@@ -547,8 +547,7 @@ class GameSolver15Puzzle(QMainWindow, MainWindow):
 
     # ---------------------------------------
 
-    @staticmethod
-    def custom_quit():
+    def custom_quit(self):
         if QMessageBox.question(None, '', 'Are you sure to quit?',
                                 QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.Yes:
             QApplication.quit()
@@ -617,8 +616,7 @@ class GameSolver15Puzzle(QMainWindow, MainWindow):
         if ok_pressed:
             self.display_rate = speed
 
-    @staticmethod
-    def popup_instructions():
+    def popup_instructions(self):
         QMessageBox.information(None, '15 puzzle: How to play', 'You may play with numbers or any images\n\n' +
                                 '1. Shuffle the puzzle to start the game.\n' +
                                 '2. Try to solve the puzzle yourself,\n' +
@@ -626,8 +624,7 @@ class GameSolver15Puzzle(QMainWindow, MainWindow):
                                 'Have fun!!!',
                                 QMessageBox.Close, QMessageBox.Close)
 
-    @staticmethod
-    def about_15_puzzle():
+    def about_15_puzzle(self):
         QMessageBox.information(None, 'About 15 puzzle game and solver', 'A 2-in-1 15 puzzle game and solver.\n' +
                                 'You may play with any custom board or 3 difficulty level to choose from.\n' +
                                 'You display the puzzle in 15 numbers or any images you like.\n' +
@@ -635,8 +632,7 @@ class GameSolver15Puzzle(QMainWindow, MainWindow):
                                 'Have fun and enjoy!',
                                 QMessageBox.Close, QMessageBox.Close)
 
-    @staticmethod
-    def about_author():
+    def about_author(self):
         QMessageBox.information(None, 'About Author', 'Author: Meisze Wong\n' +
                                 'www.linkedin.com/pub/macy-wong/46/550/37b/\n\n' +
                                 'view source code:\nhttps://github.com/mwong510ca/15Puzzle_OptimalSolver',

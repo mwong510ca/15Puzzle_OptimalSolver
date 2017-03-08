@@ -117,8 +117,7 @@ class TileImages(QObject):
             images_files.append(self.images_folder + "custom_" + str(idx) + ".png")
         return images_files
 
-    @staticmethod
-    def getFolderName():
+    def getFolderName(self):
         return IMG_FOLDER_NAME
 
     def hasNumberImages(self):
