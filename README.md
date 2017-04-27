@@ -11,7 +11,7 @@ While I learn the technique of Walking Distance by Ken'ichiro Takahashi, I figur
   * [pattern 6-6-3] 2 minutes
   * [pattern 7-8] 2.5+ hours (10 mins for group 7 and 2.5 hrs for group 8)
 
-Highlight recommended to [download] the pre-generated database files from the cloud storage for pattern 7-8.
+*** Highly recommended to [download] the pre-generated database files from the cloud storage for pattern 7-8.
 
 ### Enhancement - optimization
 After I finished my 15 puzzle optimal solver, most of the puzzles are solved within a second.  Only a few puzzles still take up to 2 minutes to solve. 
@@ -25,7 +25,7 @@ Moves:               70             72             74             76            
 Time:            111.4s          56.6s          13.7s           5.8s           5.7s           3.5s
 Nodes:        492357819      231367077       46383751       20187376       18363209       12715201
 </pre>
-I analysis the behavior of 15 puzzle and my solver.  I added [symmetry reduction (Section 4)] and circular reduction to speed up the process. It improve the process time from 2 mintue to 45 seconds.
+I analysis the behavior of 15 puzzle and my solver.  I added [symmetry (see Section 4)] reduction and circular reduction to speed up the process. It improve the process time from 2 mintue to 45 seconds.
 <pre>
 Added symmetry reduction:
 Time:             57.3s          27.9s           7.1s           2.9s           2.8s           3.2s
@@ -60,8 +60,12 @@ Changing the setting is not allow during the remote server is running.
 
 Same for the remote server, it cannnot start the remote service during the administrator is using.  
 
-### GUI - 15 puzzle game and solver 2 in 1 ([youtube demo])
-My gui application written in pyqt5 version 5.6.  It access my java modules using py4j.  The python program will start and close the java gateway server by itself.  It can play with numbers or any image in the local folder.  The player can solve the puzzle, the program will count the total time.  Or let the program search for solution.  Once solution found, it will playback the moves automatically.  
+### GUI - 15 puzzle game and solver 2 in 1 ([screenshots] / [youtube demo])
+![startup screen](screenshots/app-startup.png)  
+My gui application written in pyqt5 version 5.6.  It access my java modules using py4j.  The python program will start and close the java gateway server by itself.  
+* It can play with numbers or any image in the local folder.  
+* The player can solve the puzzle, the program will count the total time.  
+* Or let the program search for solution.  Once solution found, it will playback the moves automatically.  
 [View source code]  
 
 ### Console applications (screen recordings on youtube)
@@ -90,13 +94,14 @@ Additive Pattern Database 7-8                              (0.0082s)
 </pre>
 
 [View source code]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/tree/master/gui%20(pyqt5)
+[screenshots]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/tree/master/screenshots
 [youtube demo]: https://youtu.be/yswhj-ZHta4
 [15 slide puzzle]: https://en.wikipedia.org/wiki/15_puzzle
 [8puzzle]: http://algs4.cs.princeton.edu/24pq/
 [A* algorithm]: https://en.wikipedia.org/wiki/A*_search_algorithm
 [Iterative deepening A*]: https://en.wikipedia.org/wiki/Iterative_deepening_A*
 [Pattern database]: https://www.aaai.org/Papers/JAIR/Vol22/JAIR-2209.pdf
-[symmetry reduction (Section 4)]: https://heuristicswiki.wikispaces.com/file/view/Searching+with+pattern+database.pdf
+[symmetry (see Section 4)]: https://heuristicswiki.wikispaces.com/file/view/Searching+with+pattern+database.pdf
 [Herbert Kociemba's windows program]: http://kociemba.org/fifteen/fifteensolver.html
 [Walking Distance by Ken'ichiro Takahashi]: http://www.ic-net.or.jp/home/takaken/e/15pz/index.html
 [PatternElement.java]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/PatternElement.java%20-%20details.md
