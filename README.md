@@ -67,7 +67,6 @@ My gui application written in pyqt5 version 5.6.  It access my java modules usin
 * The player can solve the puzzle, the program will count the total time.  
 * Or let the program search for solution.  Once solution found, it will playback the moves automatically.  
 [System requirements and installation]
-[View source code]  
 
 ### Console applications (screen recordings on youtube)
 option 1 - demo [self learning feature] | text file [sample output 1]  
@@ -94,7 +93,6 @@ Additive Pattern Database 7-8                              (0.0082s)
               Manhattan distance 40+)     advanced version (0.29s)
 </pre>
 
-[View source code]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/tree/master/gui%20(pyqt5)
 [screenshots]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/tree/master/screenshots
 [youtube demo]: https://youtu.be/yswhj-ZHta4
 [15 slide puzzle]: https://en.wikipedia.org/wiki/15_puzzle
@@ -122,4 +120,4 @@ Additive Pattern Database 7-8                              (0.0082s)
 [sample output 1]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/console_output1.txt
 [sample output 2]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/console_output2.txt
 [sample output 3]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/console_output3.txt
-[System requirements and installation]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/tree/master/GUI%20(pyqt5)
+[System requirements and installation]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/GUI%20(pyqt5)
