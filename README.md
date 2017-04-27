@@ -120,4 +120,4 @@ Additive Pattern Database 7-8                              (0.0082s)
 [sample output 1]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/console_output1.txt
 [sample output 2]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/console_output2.txt
 [sample output 3]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/console_output3.txt
-[System requirements and installation]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/GUI%20(pyqt5)
+[System requirements and installation]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/tree/master/gui(pyqt5)
