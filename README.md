@@ -48,8 +48,7 @@ Now the solver has the self learning feature.   When it accumulate enough refere
 Read [Solver Enhancement - advanced version] for details.
 
 ----
-###Connection options
-Support standalone application and multi-users application.
+### Connection options - Support standalone application and multi-users application.
 * Standalone for single use on local machine - reference collection will be stored in a local file.  If user started multiple applications on the same machine.  Reference collection will not be in sync.
 * Remote server using RMI (Remote Method Invocation) support multiusers application - Mulitple applications will access the same reference collection instance and storage through RMI service.  If connection is lost, it will resume to standalone connection without terminate the application.  
 
@@ -61,11 +60,11 @@ Changing the setting is not allow during the remote server is running.
 
 Same for the remote server, it cannnot start the remote service during the administrator is using.  
 
-###GUI - 15 puzzle game and solver 2 in 1 ([youtube demo])
+### GUI - 15 puzzle game and solver 2 in 1 ([youtube demo])
 My gui application written in pyqt5 version 5.6.  It access my java modules using py4j.  The python program will start and close the java gateway server by itself.  It can play with numbers or any image in the local folder.  The player can solve the puzzle, the program will count the total time.  Or let the program search for solution.  Once solution found, it will playback the moves automatically.  
 [View source code]  
 
-###Console applications (screen recordings on youtube)
+### Console applications (screen recordings on youtube)
 option 1 - demo [self learning feature] | text file [sample output 1]  
 option 2 - [compare enhancement] | text file [sample output 2]  
 option 3 (default) - [compare heuristic functions]  | text file [sample output 3]  
