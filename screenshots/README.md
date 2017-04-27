@@ -1,23 +1,23 @@
 Start up screen:  
-![](app-startup.png)  
+![](app-startup.png)    
   
-Menu settings:
-![](app-settings.png)
+Menu settings:  
+![](app-settings.png)  
 
-Change to local image:
-![](app-image-change.png)
+Change to local image:  
+![](app-image-change.png)  
 
-Play with local image:
-![](app-image-play.png)
+Play with local image:  
+![](app-image-play.png)  
 
-Play the game:
-![](game-playing.png)
+Play the game:  
+![](game-playing.png)  
 
-Game win, puzzle solved:
-![](game-win.png)
+Game win, puzzle solved:  
+![](game-win.png)  
 
-Solver options:
-![](solver-options.png)
+Solver options:  
+![](solver-options.png)  
 
-Auto solved:
-![](solver-solved.png)
+Auto solved:  
+![](solver-solved.png)  
