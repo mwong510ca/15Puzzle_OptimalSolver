@@ -66,6 +66,7 @@ My gui application written in pyqt5 version 5.6.  It access my java modules usin
 * It can play with numbers or any image in the local folder.  
 * The player can solve the puzzle, the program will count the total time.  
 * Or let the program search for solution.  Once solution found, it will playback the moves automatically.  
+[System requirements and installation]
 [View source code]  
 
 ### Console applications (screen recordings on youtube)
@@ -104,20 +105,21 @@ Additive Pattern Database 7-8                              (0.0082s)
 [symmetry (see Section 4)]: https://heuristicswiki.wikispaces.com/file/view/Searching+with+pattern+database.pdf
 [Herbert Kociemba's windows program]: http://kociemba.org/fifteen/fifteensolver.html
 [Walking Distance by Ken'ichiro Takahashi]: http://www.ic-net.or.jp/home/takaken/e/15pz/index.html
-[PatternElement.java]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/PatternElement.java%20-%20details.md
-[PatternDatabase.java]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/PatternDatabase.java%20-%20details.md
-[Solver Enhancement - standard version]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/Solver%20Enhancement%20-%20Standard%20version.md
-[Solver Enhancement - advanced version]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/Solver%20Enhancement%20-%20Advanced%20version.md
+[PatternElement.java]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/PatternElement.java%20-%20details.md
+[PatternDatabase.java]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/PatternDatabase.java%20-%20details.md
+[Solver Enhancement - standard version]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/Solver%20Enhancement%20-%20Standard%20version.md
+[Solver Enhancement - advanced version]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/Solver%20Enhancement%20-%20Advanced%20version.md
 [download]: https://my.pcloud.com/publink/show?code=kZSoaLZgNeLhO2eu0RQcu9D2aXeOFgtioUV
-[pattern 5-5-5]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/default%20pattern%205-5-5.txt
-[pattern 6-6-3]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/default%20pattern%206-6-3.txt
-[pattern 7-8]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/default%20pattern%207-8.txt
+[pattern 5-5-5]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/default%20pattern%205-5-5.txt
+[pattern 6-6-3]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/default%20pattern%206-6-3.txt
+[pattern 7-8]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/default%20pattern%207-8.txt
 [self learning feature]: https://youtu.be/QBhoM1RySPQ
 [compare enhancement]: https://youtu.be/lKFi-05uIMc
 [compare heuristic functions]:  https://youtu.be/hdHWnHxvX5A 
 [custom pattern]: https://youtu.be/sY6JU2ElhdI
 [solver with display solution]: https://youtu.be/3Exp3QT5s_A
 [timeout counter and average time per puzzle]: https://youtu.be/TBsui-_b74A
-[sample output 1]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/console_output1.txt
-[sample output 2]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/console_output2.txt
-[sample output 3]: https://github.com/mwong510ca/HeuristicSearch-AdditivePatternDatabase-15Puzzle/blob/master/output/console_output3.txt
+[sample output 1]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/console_output1.txt
+[sample output 2]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/console_output2.txt
+[sample output 3]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/console_output3.txt
+[System requirements and installation]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/tree/master/GUI%20(pyqt5)
