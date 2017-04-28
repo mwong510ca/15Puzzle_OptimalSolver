@@ -75,7 +75,7 @@ java [applicationRun] option_number
 * 3 (default) - [compare heuristic functions]  | text file [sample output 3]  
 * 4 - [custom pattern]  
 * 5 - [solver with display solution]  
-* 6 - [timeout counter and average time per puzzle]  
+* 6 - [stats] solve a number of puzzle, calculate the average time and a counter of timeout of search.
 Notes: runtime takes a little longer due to screen recording.
 
 ### Heuristic Functions - 7 heuristic functions to choose from:  
@@ -117,7 +117,7 @@ Additive Pattern Database 7-8                              (0.0082s)
 [compare heuristic functions]:  https://youtu.be/hdHWnHxvX5A 
 [custom pattern]: https://youtu.be/sY6JU2ElhdI
 [solver with display solution]: https://youtu.be/3Exp3QT5s_A
-[timeout counter and average time per puzzle]: https://youtu.be/TBsui-_b74A
+[stats]: https://youtu.be/TBsui-_b74A
 [sample output 1]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/console_output1.txt
 [sample output 2]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/console_output2.txt
 [sample output 3]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/console_output3.txt
