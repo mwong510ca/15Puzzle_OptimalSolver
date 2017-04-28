@@ -69,15 +69,16 @@ My gui application written in pyqt5 version 5.6.  It access my java modules usin
 [System requirements and installation]
 
 ### Console applications (screen recordings on youtube)
-option 1 - demo [self learning feature] | text file [sample output 1]  
-option 2 - [compare enhancement] | text file [sample output 2]  
-option 3 (default) - [compare heuristic functions]  | text file [sample output 3]  
-option 4 - [custom pattern]  
-option 5 - [solver with display solution]  
-option 6 - [timeout counter and average time per puzzle]  
+java [applicationRun] option_number  
+* 1 - demo [self learning feature] | text file [sample output 1]  
+* 2 - [compare enhancement] | text file [sample output 2]  
+* 3 (default) - [compare heuristic functions]  | text file [sample output 3]  
+* 4 - [custom pattern]  
+* 5 - [solver with display solution]  
+* 6 - [timeout counter and average time per puzzle]  
 Notes: runtime takes a little longer due to screen recording.
 
-Heuristic Functions - 7 heuristic functions to choose from:  
+### Heuristic Functions - 7 heuristic functions to choose from:  
 Average search time of 250 random boards with Standard version 
 <pre>
 Manhattan Distance                                         (1.57s, exclude 42 timeout at 10s)
@@ -121,3 +122,4 @@ Additive Pattern Database 7-8                              (0.0082s)
 [sample output 2]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/console_output2.txt
 [sample output 3]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/console_output3.txt
 [System requirements and installation]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/tree/master/gui(pyqt5)
+[applicationRun]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/tree/master/src/mwong/myprojects/fifteenpuzzle
