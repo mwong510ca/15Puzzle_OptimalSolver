@@ -64,6 +64,7 @@ Same for the remote server, it cannnot start the remote service during the admin
 ![startup screen](screenshots/app-startup.png)  
 My gui application written in pyqt5 version 5.6.  It access my java modules using py4j.  The python program will start and close the java gateway server by itself.  
 * It can play with numbers or any image in the local folder.  
+* Choice of auto generate puzzle: Random, Easy (Manhattan distance 5 - 24), Moderate (Manhattan distance 21 - 45), Hard (Manhattan distance 41 and over)
 * The player can solve the puzzle, the program will count the total time.  
 * Or let the program search for solution.  Once solution found, it will playback the moves automatically.  
 [System requirements and installation]
@@ -75,7 +76,7 @@ java [applicationRun] option_number
 * 3 (default) - [compare heuristic functions]  | text file [sample output 3]  
 * 4 - [custom pattern]  
 * 5 - [solver with display solution]  
-* 6 - [stats] solve a number of puzzle, calculate the average time and a counter of timeout of search.
+* 6 - [stats] solve a number of puzzle, calculate the average time and a counter of timeout of search.  
 Notes: runtime takes a little longer due to screen recording.
 
 ### Heuristic Functions - 7 heuristic functions to choose from:  
@@ -87,11 +88,13 @@ Walking Distance                                           (0.95s, exclude 10 ti
 Walking Distance + Manhattan Distance with Linear Conflict (0.68s, exclude  5 timeout at 10s)
 Additive Pattern Database 5-5-5 + Walking Distance         (0.28s)
 Additive Pattern Database 6-6-3 + Walking Distance         (0.15s) 
-Additive Pattern Database 7-8                              (0.0082s)
-                 (5000 random boards)     standard version (0.0057s)
-                                          advanced version (0.0057s)
-             (250 random hard boards      standard version (0.73s, exclude  6 timeout at 10s)
-              Manhattan distance 40+)     advanced version (0.29s)
+Additive Pattern Database 7-8                              (0.0046s)
+                 (5000 random boards)     standard version (0.0049s)
+                                          advanced version (0.0071s)
+             (5000 random hard boards)    standard version (0.71s, exclude  9 timeout at 10s)
+                                          advanced version (0.31s, all solved)
+Notes: Advanced version takes slightly longer average time to solve the random puzzle due to 
+       additional checking.  But take less time to slove the hard puzzle.
 </pre>
 
 [screenshots]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/tree/master/screenshots
