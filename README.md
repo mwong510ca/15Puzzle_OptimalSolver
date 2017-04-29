@@ -76,7 +76,7 @@ java [applicationRun] option_number
 * 3 (default) - [compare heuristic functions]  | text file [sample output 3]  
 * 4 - [custom pattern]  
 * 5 - [solver with display solution]  
-* 6 - [stats] solve a number of puzzle, calculate the average time and a counter of timeout of search.  
+* 6 - [stats] solve a number of puzzle, calculate the average time and a timeout counter of search.  
 
 Notes: runtime takes a little longer on youtube due to screen recording.
 
