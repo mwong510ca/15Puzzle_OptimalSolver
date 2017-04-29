@@ -77,7 +77,8 @@ java [applicationRun] option_number
 * 4 - [custom pattern]  
 * 5 - [solver with display solution]  
 * 6 - [stats] solve a number of puzzle, calculate the average time and a counter of timeout of search.  
-Notes: runtime takes a little longer due to screen recording.
+
+Notes: runtime takes a little longer on youtube due to screen recording.
 
 ### Heuristic Functions - 7 heuristic functions to choose from:  
 Average search time of 250 random boards with Standard version 
@@ -91,10 +92,13 @@ Additive Pattern Database 6-6-3 + Walking Distance         (0.15s)
 Additive Pattern Database 7-8                              (0.0046s)
                  (5000 random boards)     standard version (0.0049s)
                                           advanced version (0.0071s)
-             (5000 random hard boards)    standard version (0.71s, exclude  9 timeout at 10s)
+              (500 random hard boards)    standard version (0.71s, exclude  9 timeout at 10s)
+                                                           (0.43s, exclude  4 timeout at 10s)
                                           advanced version (0.31s, all solved)
+Update April 29, 2017: Average time based on 6145 referene boards for advanced version.  
 Notes: Advanced version takes slightly longer average time to solve the random puzzle due to 
-       additional checking.  But take less time to slove the hard puzzle.
+       additional checking.  But take less time to slove the hard puzzle.  
+       Result may vary due to random puzzles and system performance.
 </pre>
 
 [screenshots]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/tree/master/screenshots
