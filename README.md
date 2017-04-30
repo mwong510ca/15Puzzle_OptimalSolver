@@ -95,7 +95,7 @@ Additive Pattern Database 7-8                              (0.0046s)
               (500 random hard boards)    standard version (0.71s, exclude  9 timeout at 10s)
                                                            (0.43s, exclude  4 timeout at 10s)
                                           advanced version (0.31s, all solved)
-Update April 29, 2017: Average time based on 6145 referene boards for advanced version.  
+Update: Average time based on 6145 referene boards (March 27, 2017) for advanced version.  
 Notes: Advanced version takes slightly longer average time to solve the random puzzle due to 
        additional checking.  But take less time to slove the hard puzzle.  
        Result may vary due to random puzzles and system performance.
