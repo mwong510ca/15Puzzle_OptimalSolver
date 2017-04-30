@@ -67,10 +67,11 @@ My gui application written in pyqt5 version 5.6.  It access my java modules usin
 * Choice of auto generate puzzle: Random, Easy (Manhattan distance 5 - 24), Moderate (Manhattan distance 21 - 45), Hard (Manhattan distance 41 and over)
 * The player can solve the puzzle, the program will count the total time.  
 * Or let the program search for solution.  Once solution found, it will playback the moves automatically.  
-[System requirements and installation]
+[System requirements and installation]  (Database ready, 6145 reference collection)
 
-### Console applications (screen recordings on youtube)
-java [applicationRun] option_number  
+### Console applications ([screen recordings] on youtube)
+Download and unzip [ConsoleAppFifteenPuzzle.zip]  (Database ready, initial set)  
+Start from terminal: java -jar ConsoleAppFifteenPuzzle.jar option_choice_below  
 * 1 - demo [self learning feature] | text file [sample output 1]  
 * 2 - [compare enhancement] | text file [sample output 2]  
 * 3 (default) - [compare heuristic functions]  | text file [sample output 3]  
@@ -95,7 +96,7 @@ Additive Pattern Database 7-8                              (0.0046s)
               (500 random hard boards)    standard version (0.71s, exclude  9 timeout at 10s)
                                                            (0.43s, exclude  4 timeout at 10s)
                                           advanced version (0.31s, all solved)
-Update: Average time based on 6145 referene boards (March 27, 2017) for advanced version.  
+Update: Average time based on 6145 reference boards (March 27, 2017) for advanced version.  
 Notes: Advanced version takes slightly longer average time to solve the random puzzle due to 
        additional checking.  But take less time to slove the hard puzzle.  
        Result may vary due to random puzzles and system performance.
@@ -129,4 +130,5 @@ Notes: Advanced version takes slightly longer average time to solve the random p
 [sample output 2]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/console_output2.txt
 [sample output 3]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/console_output3.txt
 [System requirements and installation]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/tree/master/gui(pyqt5)
-[applicationRun]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/tree/master/src/mwong/myprojects/fifteenpuzzle
+[ConsoleAppFifteenPuzzle.zip]: https://my.pcloud.com/publink/show?code=XZbosNZLoFkgiX8YkyUzRqgM7ubdHiFaqmy
+[screen recordings]: https://www.youtube.com/playlist?list=PLRnfrf3rzEFkDcssdh75pHjID6sWLiIGF
