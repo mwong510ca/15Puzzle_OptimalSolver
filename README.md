@@ -70,8 +70,8 @@ My gui application written in pyqt5 version 5.6.  It access my java modules usin
 [System requirements and installation]  (Database ready, 6145 reference collection)
 
 ### Console applications ([screen recordings] on youtube)
-Download and unzip [ConsoleAppFifteenPuzzle.zip]  (Database ready, initial set)  
-Start from terminal: java -jar ConsoleAppFifteenPuzzle.jar option_choice_below  
+Download and unzip [ConsoleApp15Puzzle.zip]  (Database ready, initial set)  
+Start from terminal: java -jar ConsoleApp15Puzzle.jar option_choice_below  
 * 1 - demo [self learning feature] | text file [sample output 1]  
 * 2 - [compare enhancement] | text file [sample output 2]  
 * 3 (default) - [compare heuristic functions]  | text file [sample output 3]  
@@ -130,5 +130,5 @@ Notes: Advanced version takes slightly longer average time to solve the random p
 [sample output 2]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/console_output2.txt
 [sample output 3]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/console_output3.txt
 [System requirements and installation]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/tree/master/gui(pyqt5)
-[ConsoleAppFifteenPuzzle.zip]: https://my.pcloud.com/publink/show?code=XZbosNZLoFkgiX8YkyUzRqgM7ubdHiFaqmy
+[ConsoleApp15Puzzle.zip]: https://my.pcloud.com/publink/show?code=XZbosNZLoFkgiX8YkyUzRqgM7ubdHiFaqmy
 [screen recordings]: https://www.youtube.com/playlist?list=PLRnfrf3rzEFkDcssdh75pHjID6sWLiIGF
