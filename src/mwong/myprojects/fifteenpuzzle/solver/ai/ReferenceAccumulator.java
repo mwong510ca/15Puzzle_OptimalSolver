@@ -5,6 +5,7 @@ import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
 import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
+import mwong.myprojects.fifteenpuzzle.solver.components.ApplicationMode;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
@@ -41,6 +42,7 @@ public class ReferenceAccumulator implements Reference {
     private final boolean symmetry;
     private final boolean onSwitch;
     private final boolean offSwitch;
+    private final ApplicationMode appMode;
 
     private HashMap<ReferenceBoard, ReferenceMoves> referenceMap;
     private HashMap<ReferenceBoard, ReferenceMoves> defaultMap;
@@ -55,6 +57,10 @@ public class ReferenceAccumulator implements Reference {
      * @throws RemoteException throw exception when connection lost
      */
     public ReferenceAccumulator() throws RemoteException {
+        this(ApplicationMode.CONSOLE);
+    }
+
+    public ReferenceAccumulator(ApplicationMode appMode) throws RemoteException {
         directory = FileProperties.getDirectory();
         filepath = FileProperties.getFilepathReference();
         coreSolverClassName = ReferenceConstants.getCoreSolverClassName();
@@ -62,7 +68,8 @@ public class ReferenceAccumulator implements Reference {
         symmetry = ReferenceConstants.isSymmetry();
         onSwitch = SolverConstants.isOnSwitch();
         offSwitch = !onSwitch;
-
+        this.appMode = appMode;
+        
         try {
             referenceMap = new HashMap<ReferenceBoard, ReferenceMoves>();
             loadFile();
@@ -72,8 +79,8 @@ public class ReferenceAccumulator implements Reference {
 
         updateData(createSolver());
         refreshFile();
-    }
-
+    }    
+    
     // load the default set
     void loadDefault() {
         defaultMap = new HashMap<ReferenceBoard, ReferenceMoves>();
@@ -266,7 +273,7 @@ public class ReferenceAccumulator implements Reference {
     SmartSolverPdb createSolver() {
         try {
             SmartSolverPdb solver = new SmartSolverPdb(PatternOptions.Pattern_78,
-                    new ReferenceAdapter(this));
+                    new ReferenceAdapter(this), appMode);
             solver.messageSwitch(offSwitch);
             solver.timeoutSwitch(offSwitch);
             solver.versionSwitch(onSwitch);
@@ -276,6 +283,13 @@ public class ReferenceAccumulator implements Reference {
         }
     }
 
+    public SmartSolverPdb getSolver() {
+    	if (appMode == ApplicationMode.GUI && validateSolver(localSolver)) {
+    		return localSolver;
+    	}
+    	return null;
+    }
+    
     /**
      * Returns the boolean value of the given solver is the valid for ReferenceAccumulator.
      *

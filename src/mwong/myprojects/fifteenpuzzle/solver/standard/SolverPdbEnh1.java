@@ -1,5 +1,7 @@
 package mwong.myprojects.fifteenpuzzle.solver.standard;
 
+import mwong.myprojects.fifteenpuzzle.solver.components.ApplicationMode;
+
 /**
  * SolverPdbEnh1 extends SolverPdbBase with enhancement 1 symmetry reduction.
  *
@@ -14,6 +16,10 @@ public class SolverPdbEnh1 extends SolverPdbBase {
      */
     SolverPdbEnh1() {}
 
+    protected SolverPdbEnh1(ApplicationMode appMode) {
+    	super(appMode);
+    }
+    
     /**
      * Initializes SolverPdbEnh1 object with a given standard version SolverPdb instance,
      * the concrete class of SolverPdbEnh1.

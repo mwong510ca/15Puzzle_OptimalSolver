@@ -2,6 +2,7 @@ package mwong.myprojects.fifteenpuzzle.solver.standard;
 
 import mwong.myprojects.fifteenpuzzle.solver.AbstractSmartSolver;
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
+import mwong.myprojects.fifteenpuzzle.solver.components.ApplicationMode;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.WalkingDistance;
@@ -41,15 +42,25 @@ public class SolverWd extends AbstractSmartSolver {
      * Initializes SolverWd object.
      */
     public SolverWd() {
-        super();
+        this(ApplicationMode.CONSOLE);
+    }
+
+    /**
+     * Initializes SolverWd object.
+     *
+     * @param appMode the given applicationMode for GUI or CONSOLE
+     */
+    public SolverWd(ApplicationMode appMode) {
+        super(appMode);
         inUseHeuristic = HeuristicOptions.WD;
+        this.appMode = appMode;
         loadWdComponents();
     }
 
     // load the walking distance components from the data file
     // if data file not exists, generate a new set
     private void loadWdComponents() {
-        WalkingDistance wd = new WalkingDistance();
+        WalkingDistance wd = new WalkingDistance(appMode);
         wdRowKeys = wd.getRowKeys();
         wdPtnKeys = wd.getPtnKeys();
         wdPattern = wd.getPattern();

@@ -1,8 +1,8 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
-import mwong.myprojects.fifteenpuzzle.solver.SmartSolverExtra;
 import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceRemote;
+import mwong.myprojects.fifteenpuzzle.solver.components.ApplicationMode;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
@@ -26,6 +26,13 @@ public class SmartSolverPdb extends SmartSolverPdbBase implements Serializable {
     private static final long serialVersionUID = 17195273121L;
 
     /**
+     * Initializes SmartSolverMd object.
+     */
+    public SmartSolverPdb() {
+        this(null);
+    }
+    
+    /**
      * Initializes SmartSolverPdb object using default preset pattern.
      *
      * @param refAccumulator the given ReferenceAccumulator object
@@ -44,6 +51,19 @@ public class SmartSolverPdb extends SmartSolverPdbBase implements Serializable {
         this(presetPattern, 0, refConnection);
     }
 
+    
+    /**
+     * Initializes SmartSolverPdb object using given preset pattern.
+     *
+     * @param presetPattern the given preset pattern type
+     * @param refConnection the given ReferenceRemote connection object
+     * @param appMode the given applicationMode for GUI or CONSOLE
+     */
+    public SmartSolverPdb(PatternOptions presetPattern, ReferenceRemote refConnection, ApplicationMode appMode) {
+        super(presetPattern, appMode);
+        setReferenceConnection(refConnection);
+    }
+
     /**
      * Initializes SmartSolverPdb object with choice of given preset pattern.  If refAccumlator
      * is null or empty, it will act as standard version.
@@ -55,23 +75,7 @@ public class SmartSolverPdb extends SmartSolverPdbBase implements Serializable {
     public SmartSolverPdb(PatternOptions presetPattern, int choice,
             ReferenceRemote refConnection) {
         super(presetPattern, choice);
-        try {
-            if (refConnection == null || refConnection.getActiveMap() == null) {
-                System.out.println("Referece board collection unavailable."
-                        + " Resume to the 15 puzzle solver standard version.");
-                extra = null;
-                this.refConnection = null;
-            } else {
-                activeSmartSolver = true;
-                extra = new SmartSolverExtra();
-                this.refConnection = refConnection;
-            }
-        } catch (RemoteException ex) {
-            System.err.println(this.getClass().getSimpleName()
-                    + " - Attention: Server connection failed. Resume to standard version.\n");
-            flagAdvancedVersion = tagStandard;
-            activeSmartSolver = false;
-        }
+        setReferenceConnection(refConnection);
     }
 
     /**
@@ -85,24 +89,7 @@ public class SmartSolverPdb extends SmartSolverPdbBase implements Serializable {
     public SmartSolverPdb(byte[] customPattern, boolean[] elementGroups,
             ReferenceRemote refConnection) {
         super(customPattern, elementGroups);
-
-        try {
-            if (refConnection == null || refConnection.getActiveMap() == null) {
-                System.out.println("Referece board collection unavailable."
-                        + " Resume to the 15 puzzle solver standard version.");
-                extra = null;
-                this.refConnection = null;
-            } else {
-                activeSmartSolver = true;
-                extra = new SmartSolverExtra();
-                this.refConnection = refConnection;
-            }
-        } catch (RemoteException ex) {
-            System.err.println(this.getClass().getSimpleName()
-                    + " - Attention: Server connection failed. Resume to standard version.\n");
-            flagAdvancedVersion = tagStandard;
-            activeSmartSolver = false;
-        }
+        setReferenceConnection(refConnection);
     }
 
     /**

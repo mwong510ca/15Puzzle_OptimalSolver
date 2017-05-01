@@ -1,6 +1,7 @@
 package mwong.myprojects.fifteenpuzzle.solver.standard;
 
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
+import mwong.myprojects.fifteenpuzzle.solver.components.ApplicationMode;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 
@@ -21,7 +22,16 @@ public class SolverWdMd extends SolverWd {
      * Initializes SolverWdMd object.
      */
     public SolverWdMd() {
-        super();
+       this(ApplicationMode.CONSOLE);
+    }
+
+    /**
+     * Initializes SolverWdMd object.
+     *
+     * @param appMode the given applicationMode for GUI or CONSOLE
+     */
+    public SolverWdMd(ApplicationMode appMode) {
+        super(appMode);
         inUseHeuristic = HeuristicOptions.WDMD;
     }
 

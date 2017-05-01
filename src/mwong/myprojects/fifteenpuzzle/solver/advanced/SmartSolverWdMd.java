@@ -1,12 +1,10 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
-import mwong.myprojects.fifteenpuzzle.solver.SmartSolverExtra;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceRemote;
+import mwong.myprojects.fifteenpuzzle.solver.components.ApplicationMode;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverWdMd;
-
-import java.rmi.RemoteException;
 
 /**
  * SmartSolverWdMd extends SolverWdMd.  The advanced version extend the standard solver
@@ -20,6 +18,13 @@ import java.rmi.RemoteException;
  */
 public class SmartSolverWdMd extends SolverWdMd {
     /**
+     * Initializes SmartSolverWdMd object.
+     */
+    public SmartSolverWdMd() {
+        this(null);
+    }
+
+    /**
      * Initializes SmartSolverWdMd object.  If refAccumlator is null or empty,
      * it will act as standard version.
      *
@@ -27,21 +32,19 @@ public class SmartSolverWdMd extends SolverWdMd {
      */
     public SmartSolverWdMd(ReferenceRemote refConnection) {
         super();
-        try {
-            if (refConnection == null || refConnection.getActiveMap() == null) {
-                System.out.println("Attention: Referece board collection unavailable."
-                        + " Advanced estimate will use standard estimate.");
-            } else {
-                activeSmartSolver = true;
-                extra = new SmartSolverExtra();
-                this.refConnection = refConnection;
-            }
-        } catch (RemoteException ex) {
-            System.err.println(this.getClass().getSimpleName()
-                    + " - Attention: Server connection failed. Resume to standard version.\n");
-            flagAdvancedVersion = tagStandard;
-            activeSmartSolver = false;
-        }
+        setReferenceConnection(refConnection);
+    }
+
+    /**
+     * Initializes SmartSolverWdMd object.  If refAccumlator is null or empty,
+     * it will act as standard version.
+     *
+     * @param refConnection the given ReferenceRemote connection object
+     * @param appMode the given applicationMode for GUI or CONSOLE
+     */
+    public SmartSolverWdMd(ReferenceRemote refConnection, ApplicationMode appMode) {
+        super(appMode);
+        setReferenceConnection(refConnection);
     }
 
     /**

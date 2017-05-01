@@ -1,6 +1,7 @@
 package mwong.myprojects.fifteenpuzzle.solver.standard;
 
 import mwong.myprojects.fifteenpuzzle.solver.AbstractSmartSolver;
+import mwong.myprojects.fifteenpuzzle.solver.components.ApplicationMode;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternConstants;
@@ -26,7 +27,7 @@ import java.util.HashMap;
  */
 public class SolverPdbBase extends AbstractSmartSolver {
     private final int offsetReverse = 2;
-    private final PatternElementMode mode = PatternElementMode.PUZZLE_SOLVER;
+    private final PatternElementMode action = PatternElementMode.PUZZLE_SOLVER;
 
     // Additive Pattern Database Components
     protected byte[] patternGroups;
@@ -60,6 +61,10 @@ public class SolverPdbBase extends AbstractSmartSolver {
      */
     SolverPdbBase() {}
 
+    protected SolverPdbBase(ApplicationMode appMode) {
+    	super(appMode);
+    }
+    
     /**
      * Initializes SolverPdbBase object with a given standard version SolverPdb instance,
      * the concrete class of SolverPdbBase.
@@ -97,24 +102,26 @@ public class SolverPdbBase extends AbstractSmartSolver {
     // generate a new set.  Estimate takes 15s for 555 pattern, 2 minutes for 663 pattern,
     // 2.5 - 3 hours for 78 pattern also require minimum 2gigabytes memory -Xms2g.
     protected void loadPdbComponents(PatternOptions presetPattern, int choice) {
-        PatternDatabase pdb = new PatternDatabase(presetPattern, choice);
-        patternGroups = pdb.getPatternGroups();
-        patternFormatSize = new int[patternGroups.length];
-        for (int i = 0; i < patternGroups.length; i++) {
-            patternFormatSize[i] = PatternConstants.getFormatSize()[patternGroups[i]];
-        }
-        patternSet = pdb.getPatternSet();
-        val2ptnKey = pdb.getVal2ptnKey();
-        val2ptnOrder = pdb.getVal2ptnOrder();
-        szGroup = patternGroups.length;
-        szPdKeys = szGroup * 4;
-        offsetPdSym = szGroup * 2;
+    	PatternDatabase pdb = new PatternDatabase(presetPattern, choice);
+        initialPdbComponents(pdb);
+    }
+
+    // load preset additive pattern database from a data file, if file not exists
+    // generate a new set.  Estimate takes 15s for 555 pattern, 2 minutes for 663 pattern,
+    // 2.5 - 3 hours for 78 pattern also require minimum 2gigabytes memory -Xms2g.
+    protected void loadPdbComponents(PatternOptions presetPattern, int choice, ApplicationMode appMode) {
+    	PatternDatabase pdb = new PatternDatabase(presetPattern, choice, appMode);
+        initialPdbComponents(pdb);
     }
 
     // generate the additive pattern database components with give user defined
     // custom pattern
     protected void customPdbComponents(byte[] customPattern) {
         PatternDatabase pdb = new PatternDatabase(customPattern);
+        initialPdbComponents(pdb);
+    }
+    
+    private void initialPdbComponents(PatternDatabase pdb) {
         patternGroups = pdb.getPatternGroups();
         patternFormatSize = new int[patternGroups.length];
         for (int i = 0; i < patternGroups.length; i++) {
@@ -131,7 +138,18 @@ public class SolverPdbBase extends AbstractSmartSolver {
     // load detected pattern key and format from a data file, if file not exists,
     // generate a new set
     protected void loadPdbElements(boolean[] elementGroups) {
-        PatternElement element = new PatternElement(elementGroups, mode);
+        PatternElement element = new PatternElement(elementGroups, action);
+        initialElements(element);
+    }
+
+    // load detected pattern key and format from a data file, if file not exists,
+    // generate a new set
+    protected void loadPdbElements(boolean[] elementGroups, ApplicationMode appMode) {
+        PatternElement element = new PatternElement(elementGroups, action, appMode);
+        initialElements(element);
+    }
+    
+    private void initialElements(PatternElement element) {
         keys = element.getKeys();
         formats = element.getFormats();
         linkFormatMove = new int[szGroup][];

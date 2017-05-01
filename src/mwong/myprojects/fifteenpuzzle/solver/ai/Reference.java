@@ -1,6 +1,7 @@
 package mwong.myprojects.fifteenpuzzle.solver.ai;
 
 import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
+import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 
@@ -17,6 +18,8 @@ import java.util.HashMap;
  *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public interface Reference {
+	SmartSolverPdb getSolver();
+	
     /**
      * Returns a HashMap of collection of reference boards.
      *

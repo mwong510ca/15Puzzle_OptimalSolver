@@ -1,5 +1,7 @@
 package mwong.myprojects.fifteenpuzzle.solver.standard;
 
+import mwong.myprojects.fifteenpuzzle.solver.components.ApplicationMode;
+
 /**
  * SolverPdbEnh2 extends SolverPdbEnh1 with enhancement 2 circular reduction.
  *
@@ -14,6 +16,10 @@ public class SolverPdbEnh2 extends SolverPdbEnh1 {
      */
     SolverPdbEnh2() {}
 
+    protected SolverPdbEnh2(ApplicationMode appMode) {
+    	super(appMode);
+    }
+    
     /**
      * Initializes SolverPdbEnh2 object with a given standard version SolverPdb instance,
      * the concrete class of SolverPdbEnh2.

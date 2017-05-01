@@ -49,16 +49,27 @@ public class PatternElement {
      * Initializes the PatternElement with standard groups in generator mode.
      */
     public PatternElement() {
-        this(PatternConstants.getStandatdGroups(), PatternElementMode.GENERATOR);
+        this(PatternConstants.getStandatdGroups(), PatternElementMode.GENERATOR, ApplicationMode.CONSOLE);
     }
 
     /**
      * Initializes the PatternElement with given pattern groups and generator mode.
      *
      * @param patternGroups boolean array of pattern groups in use
-     * @param mode PatternElementMode of Generator or PuzzleSolver
+     * @param action the PatternElementMode of Generator or PuzzleSolver
      */
-    public PatternElement(boolean[] patternGroups, PatternElementMode mode) {
+    public PatternElement(boolean[] patternGroups, PatternElementMode action) {
+        this(patternGroups, action, ApplicationMode.CONSOLE);
+    }
+
+    /**
+     * Initializes the PatternElement with given pattern groups, generator mode and application mode.
+     *
+     * @param patternGroups boolean array of pattern groups in use
+     * @param action the PatternElementMode of Generator or PuzzleSolver
+     * @param appMode the given applicationMode for GUI or CONSOLE
+     */
+    public PatternElement(boolean[] patternGroups, PatternElementMode action, ApplicationMode appMode) {
         puzzleSize = PuzzleConstants.getSize();
         // partial key - last # of keys (4 bits each)
         partialBits = new int[] {0, 0x000F, 0x00FF, 0x0FFF, 0x0000FFFF, 0x000FFFFF,
@@ -73,11 +84,11 @@ public class PatternElement {
             System.err.println("Invalid input - require boolean array of size 9 (0 to 8 group)");
             throw new IllegalArgumentException();
         }
-        loadData(patternGroups, mode);
+        loadData(patternGroups, action, appMode);
     }
 
     // load the database pattern components from file
-    private void loadData(boolean[] patternGroups, PatternElementMode mode) {
+    private void loadData(boolean[] patternGroups, PatternElementMode action, ApplicationMode appMode) {
         keys = new HashMap<Integer, Integer>();
         formats = new HashMap<Integer, Integer>();
         linkFormatCombo = new int[maxGroupSize + 1][0][0];
@@ -87,7 +98,7 @@ public class PatternElement {
         formats2combo = new int [maxGroupSize + 1][0];
 
         boolean printMsg = true;
-        if (mode == PatternElementMode.PUZZLE_SOLVER) {
+        if (action == PatternElementMode.PUZZLE_SOLVER) {
             printMsg = false;
         }
         Stopwatch stopwatch = new Stopwatch();
@@ -117,7 +128,7 @@ public class PatternElement {
                         formats.put(formats2combo[group][i], i);
                     }
 
-                    if (mode == PatternElementMode.PUZZLE_SOLVER) {
+                    if (action == PatternElementMode.PUZZLE_SOLVER) {
                         linkFormatMove[group] = new int[formatSize[group] * 64];
                         for (int i = 0; i < linkFormatMove[group].length; i++) {
                             linkFormatMove[group][i] = buffer.getInt();
@@ -137,9 +148,14 @@ public class PatternElement {
                         }
                     }
                 } catch (BufferUnderflowException | IOException ex) {
-                    build();
+                	if (appMode == ApplicationMode.GUI) {
+                		System.err.println("\n\t*** Data files missing or corrupted, please download from cloud drive. ***");
+                		System.err.println("\thttps://my.pcloud.com/publink/show?code=kZSoaLZgNeLhO2eu0RQcu9D2aXeOFgtioUV\n");
+                		throw new UnsupportedOperationException();
+                	}
+                	build();
                     saveData(patternGroups, printMsg);
-                    wrapup(patternGroups, mode);
+                    wrapup(patternGroups, action);
                     return;
                 }
             }
@@ -222,7 +238,7 @@ public class PatternElement {
     }
 
     // clear all unused components
-    private void wrapup(boolean[] groups, PatternElementMode mode) {
+    private void wrapup(boolean[] groups, PatternElementMode action) {
         for (int group = 1; group < groups.length; group++) {
             if (!groups[group]) {
                 if (group > 1) {
@@ -241,9 +257,9 @@ public class PatternElement {
             }
         }
 
-        if (mode == PatternElementMode.GENERATOR) {
+        if (action == PatternElementMode.GENERATOR) {
             linkFormatMove = null;
-        } else if (mode == PatternElementMode.PUZZLE_SOLVER) {
+        } else if (action == PatternElementMode.PUZZLE_SOLVER) {
             keys2combo = null;
             formats2combo = null;
             linkFormatCombo = null;

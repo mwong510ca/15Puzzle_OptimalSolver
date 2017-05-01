@@ -1,6 +1,8 @@
 package mwong.myprojects.fifteenpuzzle.solver.ai;
 
 import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
+import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
+import mwong.myprojects.fifteenpuzzle.solver.components.ApplicationMode;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 
@@ -27,11 +29,20 @@ public class ReferenceAdapter implements ReferenceRemote {
         refObject = new ReferenceAccumulator();
     }
 
+    // initialize the ReferenceAdapter object
+    public ReferenceAdapter(ApplicationMode appMode) throws RemoteException {
+        refObject = new ReferenceAccumulator(appMode);
+    }
+
     // initialize the ReferenceAdapter object with the given ReferenceAccumulator object
     public ReferenceAdapter(ReferenceAccumulator refAccumulator) throws RemoteException {
         refObject = refAccumulator;
     }
 
+    public SmartSolverPdb getSolver() {
+    	return refObject.getSolver();
+    }
+    
     /**
      * Returns a HashMap of collection of reference boards.
      *

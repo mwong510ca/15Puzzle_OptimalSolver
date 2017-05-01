@@ -39,17 +39,26 @@ public class WalkingDistance {
      * Initializes the WalkingDistance object.
      */
     public WalkingDistance() {
+        this(ApplicationMode.CONSOLE);
+    }
+
+    /**
+     * Initializes the WalkingDistance object with application mode.
+     *
+     * @param appMode the given applicationMode for GUI or CONSOLE
+     */
+    public WalkingDistance(ApplicationMode appMode) {
         rowSize = PuzzleConstants.getRowSize();
         keySize = 55;
         patternSize = 24964;
         priorKey = new int[] {0, 0x0E00, 0x0FC0, 0x0FF8};
         afterKey = new int[] {0x01FF, 0x003F, 0x0007, 0};
         partialPattern = new int[] {0x00000FFF, 0x00FC0000, 0x0000003F, 0x00FFF000};
-        loadData();
+        loadData(appMode);
     }
 
     // load the walking distance in file
-    private void loadData() {
+    private void loadData(ApplicationMode appMode) {
         rowKeys = new HashMap<Integer, Integer>();
         ptnKeys = new HashMap<Integer, Integer>();
         pattern = new byte[patternSize];
@@ -73,6 +82,11 @@ public class WalkingDistance {
                 ptnLink[i] = buf.getInt();
             }
         } catch (BufferUnderflowException | IOException ex) {
+        	if (appMode == ApplicationMode.GUI) {
+        		System.err.println("\n\t*** Data files missing or corrupted, please download from cloud drive. ***");
+        		System.err.println("\thttps://my.pcloud.com/publink/show?code=kZSoaLZgNeLhO2eu0RQcu9D2aXeOFgtioUV\n");
+        		throw new UnsupportedOperationException();
+        	}
             int [] keyLink = genKeys();
             genPattern(keyLink);
             saveData(filepath);

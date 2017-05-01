@@ -2,6 +2,7 @@ package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
 import mwong.myprojects.fifteenpuzzle.solver.SmartSolverExtra;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceRemote;
+import mwong.myprojects.fifteenpuzzle.solver.components.ApplicationMode;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdb;
@@ -32,6 +33,11 @@ public class SmartSolverPdbBase extends SolverPdb {
     // Initializes SmartSolverPdbBase object with choice of given preset pattern.
     SmartSolverPdbBase(PatternOptions presetPattern, int choice) {
         super(presetPattern, choice);
+    }
+
+    // Initializes SmartSolverPdbBase object with preset pattern type and application mode.
+    SmartSolverPdbBase(PatternOptions presetPattern, ApplicationMode appMode) {
+        super(presetPattern, appMode);
     }
 
     // Initializes SmartSolverPdbBase object with user defined custom pattern.

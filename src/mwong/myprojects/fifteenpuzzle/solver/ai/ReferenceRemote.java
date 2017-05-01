@@ -1,6 +1,7 @@
 package mwong.myprojects.fifteenpuzzle.solver.ai;
 
 import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
+import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 
@@ -52,6 +53,8 @@ public interface ReferenceRemote extends Remote {
      *  @param inSolver the SolverInterface object in use
      */
     void updatePending(SmartSolver inSolver) throws RemoteException;
+
+    public SmartSolverPdb getSolver() throws RemoteException;
 
     /**
      * If the given solver using pattern database 7-8, and it takes

@@ -66,6 +66,17 @@ public class PatternDatabase {
      * @param choice the integer of pattern option in PatternOptions
      */
     public PatternDatabase(PatternOptions type, int choice) {
+        this(type, choice, ApplicationMode.CONSOLE);
+    }
+
+    /**
+     * Initializes the PatternDatabase object using the given preset pattern and application mode.
+     *
+     * @param type the given PatternOptions type
+     * @param choice the integer of pattern option in PatternOptions
+     * @param appMode the given applicationMode for GUI or CONSOLE
+     */
+    public PatternDatabase(PatternOptions type, int choice, ApplicationMode appMode) {
         formatBit16 = PatternConstants.getFormatBit16();
         formatZero8Order
                 = new byte[] {(byte) (1 << 7), 1 << 6, 1 << 5, 1 << 4, 1 << 3, 1 << 2, 1 << 1, 1};
@@ -80,7 +91,7 @@ public class PatternDatabase {
             type = defaultPattern;
             choice = 0;
         }
-        loadData(type, choice);
+        loadData(type, choice, appMode);
     }
 
     /**
@@ -100,7 +111,7 @@ public class PatternDatabase {
 
     // load the pattern database from file if exists
     // otherwise, create a new set and save in file
-    private void loadData(PatternOptions type, int choice) {
+    private void loadData(PatternOptions type, int choice, ApplicationMode appMode) {
         String filepath = FileProperties.getFilepathPD(type, choice);
         try (FileInputStream fin = new FileInputStream(filepath);
                 FileChannel inChannel = fin.getChannel();) {
@@ -123,6 +134,11 @@ public class PatternDatabase {
                 buf.get(patterns[i]);
             }
         } catch (BufferUnderflowException | IOException ex) {
+        	if (appMode == ApplicationMode.GUI) {
+        		System.err.println("\n\t*** Data files missing or corrupted, please download from cloud drive. ***");
+        		System.err.println("\thttps://my.pcloud.com/publink/show?code=kZSoaLZgNeLhO2eu0RQcu9D2aXeOFgtioUV\n");
+        		throw new UnsupportedOperationException();
+        	}
             if (type == PatternOptions.Pattern_78) {
                 System.out.println("Warning: Please make sure increase minimum memory to -Xms2g");
                 System.out.println("         and it takes ~ 2.5-3 hours to generate 78 pattern.");

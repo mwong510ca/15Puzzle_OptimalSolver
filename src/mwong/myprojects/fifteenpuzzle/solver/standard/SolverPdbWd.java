@@ -2,6 +2,7 @@ package mwong.myprojects.fifteenpuzzle.solver.standard;
 
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
+import mwong.myprojects.fifteenpuzzle.solver.components.ApplicationMode;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternConstants;
@@ -26,7 +27,7 @@ import java.util.HashMap;
  */
 public class SolverPdbWd extends SolverWd {
     private final int offsetReverse = 2;
-    private final PatternElementMode mode = PatternElementMode.PUZZLE_SOLVER;
+    private final PatternElementMode action = PatternElementMode.PUZZLE_SOLVER;
 
     // Additive Pattern Database Components
     private byte[] patternGroups;
@@ -69,13 +70,27 @@ public class SolverPdbWd extends SolverWd {
     }
 
     /**
+     * Initializes SolverPdbWd object with given preset pattern.
+     *
+     * @param presetPattern the given preset pattern type
+     * @param appMode the given applicationMode for GUI or CONSOLE
+     */
+    protected SolverPdbWd(PatternOptions presetPattern, ApplicationMode appMode) {
+        this(presetPattern, 0, appMode);
+    }
+
+    /**
      * Initializes SolverPdbWd object with choice of given preset pattern.
      *
      * @param presetPattern the given preset pattern type
      * @param choice the number of preset pattern option
      */
     public SolverPdbWd(PatternOptions presetPattern, int choice) {
-        super();
+    	this(presetPattern, choice, ApplicationMode.CONSOLE);
+    }
+    
+    private SolverPdbWd(PatternOptions presetPattern, int choice, ApplicationMode appMode) {
+        super(appMode);
         loadPdbComponents(presetPattern, choice);
         loadPdbElements(presetPattern.getElements());
         inUsePtnArray = presetPattern.getPattern(choice);
@@ -99,7 +114,7 @@ public class SolverPdbWd extends SolverWd {
     // generate a new set.  Estimate takes 15s for 555 pattern, 2 minutes for 663 pattern,
     // 2.5 - 3 hours for 78 pattern also require minimum 2gigabytes memory -Xms2g.
     private void loadPdbComponents(PatternOptions presetPattern, int choice) {
-        PatternDatabase pdb = new PatternDatabase(presetPattern, choice);
+        PatternDatabase pdb = new PatternDatabase(presetPattern, choice, appMode);
         patternGroups = pdb.getPatternGroups();
         patternFormatSize = new int[patternGroups.length];
         for (int i = 0; i < patternGroups.length; i++) {
@@ -117,7 +132,7 @@ public class SolverPdbWd extends SolverWd {
     // load detected pattern key and format from a data file, if file not exists,
     // generate a new set
     private void loadPdbElements(boolean[] elementGroups) {
-        PatternElement element = new PatternElement(elementGroups, mode);
+        PatternElement element = new PatternElement(elementGroups, action, appMode);
         keys = element.getKeys();
         formats = element.getFormats();
         linkFormatMove = new int[szGroup][];

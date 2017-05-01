@@ -1,6 +1,7 @@
 package mwong.myprojects.fifteenpuzzle.solver.ai;
 
 import mwong.myprojects.fifteenpuzzle.PropertiesRemote;
+import mwong.myprojects.fifteenpuzzle.solver.components.ApplicationMode;
 
 import java.io.IOException;
 import java.rmi.Naming;
@@ -24,6 +25,12 @@ public class ReferenceFactory {
     public ReferenceRemote getReferenceLocal()
             throws RemoteException, IOException {
         refObj = new ReferenceAdapter();
+        return refObj;
+    }
+
+    public ReferenceRemote getReferenceLocal(ApplicationMode appMode)
+            throws RemoteException, IOException {
+        refObj = new ReferenceAdapter(appMode);
         return refObj;
     }
 

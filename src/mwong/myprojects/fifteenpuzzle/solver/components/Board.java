@@ -214,7 +214,7 @@ public class Board implements Serializable {
                 System.arraycopy(blocks, 0, tiles, 0, SIZE);
                 if (level == PuzzleDifficultyLevel.HARD && heuristic() > 40) {
                     break;
-                } else if (level == PuzzleDifficultyLevel.EASY && heuristic() > 3
+                } else if (level == PuzzleDifficultyLevel.EASY && heuristic() >= 5
                         && heuristic() < 25) {
                     break;
                 }

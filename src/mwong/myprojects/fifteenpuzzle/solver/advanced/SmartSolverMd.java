@@ -1,13 +1,10 @@
 package mwong.myprojects.fifteenpuzzle.solver.advanced;
 
-import mwong.myprojects.fifteenpuzzle.solver.SmartSolverExtra;
 import mwong.myprojects.fifteenpuzzle.solver.SolverConstants;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceRemote;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.standard.SolverMd;
-
-import java.rmi.RemoteException;
 
 /**
  * SmartSolverMd extends SolverMd.  The advanced version extend the standard solver
@@ -38,21 +35,7 @@ public class SmartSolverMd extends SolverMd {
      */
     public SmartSolverMd(boolean lcFlag, ReferenceRemote refConnection) {
         super(lcFlag);
-        try {
-            if (refConnection == null || refConnection.getActiveMap() == null) {
-                System.out.println("Attention: Refereence board collection unavailable."
-                        + " Advanced estimate will use standard estimate.");
-            } else {
-                activeSmartSolver = true;
-                extra = new SmartSolverExtra();
-                this.refConnection = refConnection;
-            }
-        } catch (RemoteException ex) {
-            System.err.println(this.getClass().getSimpleName()
-                    + " - Attention: Server connection failed. Resume to standard version.\n");
-            flagAdvancedVersion = tagStandard;
-            activeSmartSolver = false;
-        }
+        setReferenceConnection(refConnection);
     }
 
     /**

@@ -1,6 +1,7 @@
 package mwong.myprojects.fifteenpuzzle.solver;
 
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceRemote;
+import mwong.myprojects.fifteenpuzzle.solver.components.ApplicationMode;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 
@@ -31,6 +32,7 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
     protected boolean activeSmartSolver;
     protected ReferenceRemote refConnection;
     protected SmartSolverExtra extra;
+    protected ApplicationMode appMode;
     // search related
     protected byte priorityAdvanced;
 
@@ -52,6 +54,12 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
         numPartialMoves = SolverConstants.getNumPartialMoves();
         extra = null;
         this.refConnection = null;
+        appMode = ApplicationMode.CONSOLE;
+    }
+
+    protected AbstractSmartSolver(ApplicationMode appMode) {
+        this();
+        this.appMode = appMode;
     }
 
     // ----- solver information lookup -----
@@ -89,14 +97,21 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
      */
     @Override
     public void setReferenceConnection(ReferenceRemote refConnection) {
-        if (refConnection != null) {
-            activeSmartSolver = true;
-            flagAdvancedVersion = tagAdvanced;
-            this.refConnection = refConnection;
-        } else {
-            activeSmartSolver = false;
-            flagAdvancedVersion = tagStandard;
-            this.refConnection = null;
+    	activeSmartSolver = false;
+    	flagAdvancedVersion = tagStandard;
+    	this.refConnection = null;
+        try {
+            if (refConnection != null && refConnection.getActiveMap() == null) {
+                System.out.println("Attention: Reference board collection unavailable."
+                        + " Advanced estimate will use standard estimate.");
+            } else {
+                activeSmartSolver = true;
+                extra = new SmartSolverExtra();
+                this.refConnection = refConnection;
+            }
+        } catch (RemoteException ex) {
+            System.err.println(this.getClass().getSimpleName()
+                    + " - Attention: Server connection failed. Resume to standard version.\n");
         }
     }
 

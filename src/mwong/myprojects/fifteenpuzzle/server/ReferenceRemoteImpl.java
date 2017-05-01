@@ -1,6 +1,7 @@
 package mwong.myprojects.fifteenpuzzle.server;
 
 import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
+import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceAdapter;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceBoard;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceMoves;
@@ -29,6 +30,11 @@ public class ReferenceRemoteImpl extends UnicastRemoteObject implements Referenc
         refObject = new ReferenceAdapter();
     }
 
+    @Override
+    public SmartSolverPdb getSolver() throws RemoteException {
+    	return refObject.getSolver();
+    }
+    
     @Override
     public HashMap<ReferenceBoard, ReferenceMoves> getActiveMap() throws RemoteException {
         return refObject.getActiveMap();

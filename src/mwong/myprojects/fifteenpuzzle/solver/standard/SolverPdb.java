@@ -2,6 +2,7 @@ package mwong.myprojects.fifteenpuzzle.solver.standard;
 
 import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
 import mwong.myprojects.fifteenpuzzle.solver.SolverProperties;
+import mwong.myprojects.fifteenpuzzle.solver.components.ApplicationMode;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 
@@ -33,14 +34,29 @@ public class SolverPdb extends SolverPdbEnh2 {
     }
 
     /**
+     * Initializes SolverPdb object using given preset pattern.
+     *
+     * @param presetPattern the given preset pattern type
+     * @param appMode the given applicationMode for GUI or CONSOLE
+     */
+    protected SolverPdb(PatternOptions presetPattern, ApplicationMode appMode) {
+    	this(presetPattern, 0, appMode);
+    }
+
+    /**
      * Initializes SolverPdb object with choice of given preset pattern.
      *
      * @param presetPattern the given preset pattern type
      * @param choice the number of preset pattern option
      */
     public SolverPdb(PatternOptions presetPattern, int choice) {
-        loadPdbComponents(presetPattern, choice);
-        loadPdbElements(presetPattern.getElements());
+    	this(presetPattern, choice, ApplicationMode.CONSOLE);
+    }
+    
+    private SolverPdb(PatternOptions presetPattern, int choice, ApplicationMode appMode) {
+    	super(appMode);
+        loadPdbComponents(presetPattern, choice, appMode);
+        loadPdbElements(presetPattern.getElements(), appMode);
         inUsePattern = presetPattern;
         inUsePtnArray = presetPattern.getPattern(choice);
 
@@ -58,7 +74,7 @@ public class SolverPdb extends SolverPdbEnh2 {
                 System.err.println("SolverPdb invalid presetPattern " + presetPattern);
         }
     }
-
+    
     /**
      * Initializes SolverPdb object with user defined custom pattern.
      *

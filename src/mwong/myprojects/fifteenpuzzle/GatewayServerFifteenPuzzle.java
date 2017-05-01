@@ -8,6 +8,7 @@ import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverWd;
 import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverWdMd;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceFactory;
 import mwong.myprojects.fifteenpuzzle.solver.ai.ReferenceRemote;
+import mwong.myprojects.fifteenpuzzle.solver.components.ApplicationMode;
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
 import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleConstants;
@@ -15,6 +16,7 @@ import mwong.myprojects.fifteenpuzzle.solver.components.PuzzleDifficultyLevel;
 import py4j.GatewayServer;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 
 /**
  * GatewayServerFifteenPuzzle for pyqt5 GUI front end to connect to 15 puzzle solvers.
@@ -24,6 +26,7 @@ import java.io.IOException;
  *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class GatewayServerFifteenPuzzle {
+	private final ApplicationMode guiMode = ApplicationMode.GUI;
     private Board board;
     private SmartSolverMd solverMd;
     private SmartSolverWd solverWd;
@@ -40,7 +43,7 @@ public class GatewayServerFifteenPuzzle {
 
     void loadReferenceConnection() {
         try {
-            refConnection = (new ReferenceFactory()).getReferenceLocal();
+            refConnection = (new ReferenceFactory()).getReferenceLocal(guiMode);
         } catch (IOException ex) {
             refConnection = null;
         }
@@ -54,30 +57,40 @@ public class GatewayServerFifteenPuzzle {
                 // do nothing
             }
         }
-
+        
         solverMd = new SmartSolverMd(refConnection);
         solverMd.messageSwitch(messageOff);
         solverMd.setTimeoutLimit(timeoutLimit);
 
-        solverWd = new SmartSolverWd(refConnection);
+        solverWd = new SmartSolverWd(refConnection, guiMode);
         solverWd.messageSwitch(messageOff);
         solverWd.setTimeoutLimit(timeoutLimit);
 
-        solverWdMd = new SmartSolverWdMd(refConnection);
+        solverWdMd = new SmartSolverWdMd(refConnection, guiMode);
         solverWdMd.messageSwitch(messageOff);
         solverWdMd.setTimeoutLimit(timeoutLimit);
 
-        solverPdbWd555 = new SmartSolverPdbWd(PatternOptions.Pattern_555, refConnection);
+        solverPdbWd555 = new SmartSolverPdbWd(PatternOptions.Pattern_555, refConnection, guiMode);
         solverPdbWd555.messageSwitch(messageOff);
         solverPdbWd555.setTimeoutLimit(timeoutLimit);
 
-        solverPdbWd663 = new SmartSolverPdbWd(PatternOptions.Pattern_663, refConnection);
+        solverPdbWd663 = new SmartSolverPdbWd(PatternOptions.Pattern_663, refConnection, guiMode);
         solverPdbWd663.messageSwitch(messageOff);
         solverPdbWd663.setTimeoutLimit(timeoutLimit);
-
-        solverPdb78 = new SmartSolverPdb(PatternOptions.Pattern_78, refConnection);
-        solverPdb78.messageSwitch(messageOff);
-        solverPdb78.timeoutSwitch(!SolverConstants.isOnSwitch());
+		
+        try {
+			if (refConnection.getSolver() != null) {
+				solverPdb78 = refConnection.getSolver();
+			} else {
+				solverPdb78 = new SmartSolverPdb(PatternOptions.Pattern_78, refConnection, guiMode);
+				solverPdb78.messageSwitch(messageOff);
+				solverPdb78.timeoutSwitch(!SolverConstants.isOnSwitch());
+			}
+		} catch (RemoteException e) {
+			solverPdb78 = new SmartSolverPdb(PatternOptions.Pattern_78, refConnection, guiMode);
+			solverPdb78.messageSwitch(messageOff);
+			solverPdb78.timeoutSwitch(!SolverConstants.isOnSwitch());
+		}
     }
 
     public boolean isConnected() {
@@ -153,8 +166,12 @@ public class GatewayServerFifteenPuzzle {
      * @param args standard argument main function
      */
     public static void main(String[] args) {
-        GatewayServer gatewayServer = new GatewayServer(new GatewayServerFifteenPuzzle());
+    	int port = Integer.parseUnsignedInt(args[0]);
+        if (port < 25335 || port > 65535) {
+            throw new IllegalArgumentException("invalid port : " + port);
+        }
+        GatewayServer gatewayServer = new GatewayServer(new GatewayServerFifteenPuzzle(), port);
         gatewayServer.start();
-        System.out.println("Gateway server for 15 puzzle started");
+        System.out.println("Gateway server for 15 puzzle started using port " + port);
     }
 }
