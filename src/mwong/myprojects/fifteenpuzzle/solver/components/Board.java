@@ -364,7 +364,7 @@ public class Board implements Serializable {
     /**
      * Returns the boolean represent this board is the goal board.
      *
-     * @return boolean represent this board is the goal board
+     * @return boolean represents this board is the goal board
      */
     public boolean isGoal() {
         if (hashKey1 == GOAL_KEY1 && hashKey2 == GOAL_KEY2) {
@@ -391,7 +391,7 @@ public class Board implements Serializable {
     /**
      * Returns the column index of zero position.
      *
-     * @return integer represent the column index of zero space
+     * @return integer represents the column index of zero space
      */
     public int getZeroX() {
         return zeroX;
@@ -400,7 +400,7 @@ public class Board implements Serializable {
     /**
      * Returns the row index of zero position.
      *
-     * @return integer represent the row index of zero space
+     * @return integer represents the row index of zero space
      */
     public int getZeroY() {
         return zeroY;
@@ -409,7 +409,7 @@ public class Board implements Serializable {
     /**
      * Returns the index of zero position as 1d array.
      *
-     * @return integer represent the index of zero space as 1d array
+     * @return integer represents the index of zero space as 1d array
      */
     public byte getZero1d() {
         return (byte) (zeroY * ROW_SIZE + zeroX);
@@ -434,36 +434,36 @@ public class Board implements Serializable {
     }
 
     /**
-     * Returns the integer array of represent the valid moves.
+     * Returns the integer array represents the valid moves.
      *
-     * @return integer array of represent the valid moves
+     * @return integer array represents the valid moves
      */
     public final int[] getValidMoves() {
         return validMoves;
     }
 
     /**
-     * Returns the boolean represent this board is solvable.
+     * Returns the boolean represents this board is solvable.
      *
-     * @return boolean represent this board is solvable
+     * @return boolean represents this board is solvable
      */
     public boolean isSolvable() {
         return isSolvable;
     }
 
     /**
-     * Returns the boolean represent this board is a symmtry board.
+     * Returns the boolean represents this board is a symmtry board.
      *
-     * @return boolean represent this board is a symmtry board
+     * @return boolean represents this board is a symmtry board
      */
     public boolean isIdenticalSymmetry() {
         return isIdenticalSymmetry;
     }
 
     /**
-     * Returns a string representation of the board, 4 rows with 4 numbers.
+     * Returns a string represents of the board, 4 rows with 4 numbers.
      *
-     * @return a string representation of the board, 4 rows with 4 numbers
+     * @return a string represents of the board, 4 rows with 4 numbers
      */
     @Override
     public String toString() {
