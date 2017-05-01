@@ -9,7 +9,7 @@ System Requirement :
 * [Qt] 5.6 or 5.7 (may not work on older versions)
 * [PyQt5]
 
-Download and unzip the [app15Puzzle.zip] file from my cloud drive. (Include all components - jar files, images, data files, etc)  
+Download and unzip the [GuiApp15Puzzle.zip] file from my cloud drive. (Include all components - jar files, images, data files, etc)  
 
 Start from Terminal: python3 app15PuzzleGameSolver.py
 
@@ -35,4 +35,4 @@ It will timeout after the preset limit excpet pattern database 7-8.  If a soluti
 [PIL]: https://wp.stolaf.edu/it/installing-pil-pillow-cimage-on-windows-and-mac/
 [Qt]: https://www.qt.io
 [PyQt5]: http://pyqt.sourceforge.net/Docs/PyQt5/installation.html
-[app15Puzzle.zip]: https://my.pcloud.com/publink/show?code=XZMP1qZoFVxbwyYKzJKQ8x8YiBdHRk7vOOX
+[GuiApp15Puzzle.zip]: https://my.pcloud.com/publink/show?code=XZqDDNZVM7tX7qmwGzU2i8qPXqyiRt06n9V
