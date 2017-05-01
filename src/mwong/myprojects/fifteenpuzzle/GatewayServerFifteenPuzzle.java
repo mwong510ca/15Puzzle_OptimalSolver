@@ -163,6 +163,7 @@ public class GatewayServerFifteenPuzzle {
     
     /**
      * Main application to start the gateway server.
+     *
      * @param args standard argument main function
      */
     public static void main(String[] args) {
