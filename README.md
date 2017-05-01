@@ -54,15 +54,14 @@ Read [Solver Enhancement - advanced version] for details.
 
 Console applications may detect the server connection lost, restore in standalone or standard version temporary.  When conection is back, it will switch back to remote connection automatically.  
 
-Reference collection administrator allow to change the settings, such as:  
+[ReferenceAdministrator.java] allow to change the settings, such as:  
   cutoff limit, reset and restore to default setting, system update and refresh the data file etc...  
 Changing the setting is not allow during the remote server is running.  
-
 Same for the remote server, it cannnot start the remote service during the administrator is using.  
 
 ### GUI - 15 puzzle game and solver 2 in 1 ([screenshots] / [youtube demo])
 ![startup screen](screenshots/app-startup.png)  
-My gui application written in pyqt5 version 5.6.  It access my java modules using py4j.  The python program will start and close the java gateway server by itself.  
+My gui application written in pyqt5 version 5.6.  It access my java modules using py4j.  The python program will start and close the java gateway server by itself.  I chose standalone connection and database generation is not allowed for GUI application.
 * It can play with numbers or any image in the local folder.  
 * Choice of auto generate puzzle: Random, Easy (Manhattan distance 5 - 24), Moderate (Manhattan distance 21 - 45), Hard (Manhattan distance 41 and over)
 * The player can solve the puzzle, the program will count the total time.  
@@ -80,6 +79,8 @@ Start from terminal: java -jar ConsoleApp15Puzzle.jar option_choice_below
 * 6 - [stats] solve a number of puzzle, calculate the average time and a timeout counter of search.  
 
 Notes: runtime takes a little longer on youtube due to screen recording.
+
+To use remote server, simply start the [ReferenceRemoteServer.java] before the running the application.  Port setting located at [remote.properties].
 
 ### Heuristic Functions - 7 heuristic functions to choose from:  
 Average search time of 250 random boards with Standard version 
@@ -132,3 +133,6 @@ Notes: Advanced version takes slightly longer average time to solve the random p
 [System requirements and installation]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/tree/master/gui(pyqt5)
 [ConsoleApp15Puzzle.zip]: https://my.pcloud.com/publink/show?code=XZbosNZLoFkgiX8YkyUzRqgM7ubdHiFaqmy
 [screen recordings]: https://www.youtube.com/playlist?list=PLRnfrf3rzEFkDcssdh75pHjID6sWLiIGF
+[ReferenceRemoteServer.java]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/src/mwong/myprojects/fifteenpuzzle/server/ReferenceRemoteServer.java
+[remote.properties]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/resources/remote.properties
+[ReferenceAdministrator.java]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/src/mwong/myprojects/fifteenpuzzle/solver/ai/ReferenceAdministrator.java
