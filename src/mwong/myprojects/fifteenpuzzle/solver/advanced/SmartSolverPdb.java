@@ -31,7 +31,7 @@ public class SmartSolverPdb extends SmartSolverPdbBase implements Serializable {
     public SmartSolverPdb() {
         this(null);
     }
-    
+
     /**
      * Initializes SmartSolverPdb object using default preset pattern.
      *
@@ -51,7 +51,6 @@ public class SmartSolverPdb extends SmartSolverPdbBase implements Serializable {
         this(presetPattern, 0, refConnection);
     }
 
-    
     /**
      * Initializes SmartSolverPdb object using given preset pattern.
      *
@@ -59,7 +58,8 @@ public class SmartSolverPdb extends SmartSolverPdbBase implements Serializable {
      * @param refConnection the given ReferenceRemote connection object
      * @param appMode the given applicationMode for GUI or CONSOLE
      */
-    public SmartSolverPdb(PatternOptions presetPattern, ReferenceRemote refConnection, ApplicationMode appMode) {
+    public SmartSolverPdb(PatternOptions presetPattern, ReferenceRemote refConnection,
+            ApplicationMode appMode) {
         super(presetPattern, appMode);
         setReferenceConnection(refConnection);
     }

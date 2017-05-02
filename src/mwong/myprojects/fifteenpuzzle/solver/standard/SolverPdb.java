@@ -40,7 +40,7 @@ public class SolverPdb extends SolverPdbEnh2 {
      * @param appMode the given applicationMode for GUI or CONSOLE
      */
     protected SolverPdb(PatternOptions presetPattern, ApplicationMode appMode) {
-    	this(presetPattern, 0, appMode);
+        this(presetPattern, 0, appMode);
     }
 
     /**
@@ -50,11 +50,11 @@ public class SolverPdb extends SolverPdbEnh2 {
      * @param choice the number of preset pattern option
      */
     public SolverPdb(PatternOptions presetPattern, int choice) {
-    	this(presetPattern, choice, ApplicationMode.CONSOLE);
+        this(presetPattern, choice, ApplicationMode.CONSOLE);
     }
-    
+
     private SolverPdb(PatternOptions presetPattern, int choice, ApplicationMode appMode) {
-    	super(appMode);
+        super(appMode);
         loadPdbComponents(presetPattern, choice, appMode);
         loadPdbElements(presetPattern.getElements(), appMode);
         inUsePattern = presetPattern;
@@ -74,7 +74,7 @@ public class SolverPdb extends SolverPdbEnh2 {
                 System.err.println("SolverPdb invalid presetPattern " + presetPattern);
         }
     }
-    
+
     /**
      * Initializes SolverPdb object with user defined custom pattern.
      *

@@ -71,6 +71,4 @@ public class SolverProperties {
     public static final int getTimeoutLimit() {
         return defaultTimeoutLimit;
     }
-    
-    
 }

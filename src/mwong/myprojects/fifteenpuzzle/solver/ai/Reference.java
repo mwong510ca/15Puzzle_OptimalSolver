@@ -18,8 +18,8 @@ import java.util.HashMap;
  *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public interface Reference {
-	SmartSolverPdb getSolver();
-	
+    SmartSolverPdb getSolver();
+
     /**
      * Returns a HashMap of collection of reference boards.
      *

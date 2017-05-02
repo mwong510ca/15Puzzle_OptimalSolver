@@ -26,7 +26,7 @@ import java.rmi.RemoteException;
  *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class GatewayServerFifteenPuzzle {
-	private final ApplicationMode guiMode = ApplicationMode.GUI;
+    private final ApplicationMode guiMode = ApplicationMode.GUI;
     private Board board;
     private SmartSolverMd solverMd;
     private SmartSolverWd solverWd;
@@ -36,7 +36,7 @@ public class GatewayServerFifteenPuzzle {
     private SmartSolverPdb solverPdb78;
     private static ReferenceRemote refConnection;
     private int timeoutLimit;
-    
+
     public GatewayServerFifteenPuzzle() {
         loadReferenceConnection();
     }
@@ -47,7 +47,7 @@ public class GatewayServerFifteenPuzzle {
         } catch (IOException ex) {
             refConnection = null;
         }
-        boolean messageOff = !SolverConstants.isOnSwitch();
+
         timeoutLimit = 10;
         if (PropertiesCache.getInstance().containsKey("guiTimeoutLimit")) {
             try {
@@ -57,7 +57,8 @@ public class GatewayServerFifteenPuzzle {
                 // do nothing
             }
         }
-        
+
+        boolean messageOff = !SolverConstants.isOnSwitch();
         solverMd = new SmartSolverMd(refConnection);
         solverMd.messageSwitch(messageOff);
         solverMd.setTimeoutLimit(timeoutLimit);
@@ -77,20 +78,20 @@ public class GatewayServerFifteenPuzzle {
         solverPdbWd663 = new SmartSolverPdbWd(PatternOptions.Pattern_663, refConnection, guiMode);
         solverPdbWd663.messageSwitch(messageOff);
         solverPdbWd663.setTimeoutLimit(timeoutLimit);
-		
+
         try {
-			if (refConnection.getSolver() != null) {
-				solverPdb78 = refConnection.getSolver();
-			} else {
-				solverPdb78 = new SmartSolverPdb(PatternOptions.Pattern_78, refConnection, guiMode);
-				solverPdb78.messageSwitch(messageOff);
-				solverPdb78.timeoutSwitch(!SolverConstants.isOnSwitch());
-			}
-		} catch (RemoteException e) {
-			solverPdb78 = new SmartSolverPdb(PatternOptions.Pattern_78, refConnection, guiMode);
-			solverPdb78.messageSwitch(messageOff);
-			solverPdb78.timeoutSwitch(!SolverConstants.isOnSwitch());
-		}
+            if (refConnection.getSolver() != null) {
+                solverPdb78 = refConnection.getSolver();
+            } else {
+                solverPdb78 = new SmartSolverPdb(PatternOptions.Pattern_78, refConnection, guiMode);
+                solverPdb78.messageSwitch(messageOff);
+                solverPdb78.timeoutSwitch(!SolverConstants.isOnSwitch());
+            }
+        } catch (RemoteException ex) {
+            solverPdb78 = new SmartSolverPdb(PatternOptions.Pattern_78, refConnection, guiMode);
+            solverPdb78.messageSwitch(messageOff);
+            solverPdb78.timeoutSwitch(!SolverConstants.isOnSwitch());
+        }
     }
 
     public boolean isConnected() {
@@ -158,16 +159,15 @@ public class GatewayServerFifteenPuzzle {
     }
 
     public int getTimeoutLimit() {
-    	return timeoutLimit;
+        return timeoutLimit;
     }
-    
+
     /**
      * Main application to start the gateway server.
-     *
      * @param args standard argument main function
      */
     public static void main(String[] args) {
-    	int port = Integer.parseUnsignedInt(args[0]);
+        int port = Integer.parseUnsignedInt(args[0]);
         if (port < 25335 || port > 65535) {
             throw new IllegalArgumentException("invalid port : " + port);
         }

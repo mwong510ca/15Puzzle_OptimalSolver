@@ -49,7 +49,8 @@ public class PatternElement {
      * Initializes the PatternElement with standard groups in generator mode.
      */
     public PatternElement() {
-        this(PatternConstants.getStandatdGroups(), PatternElementMode.GENERATOR, ApplicationMode.CONSOLE);
+        this(PatternConstants.getStandatdGroups(), PatternElementMode.GENERATOR,
+                ApplicationMode.CONSOLE);
     }
 
     /**
@@ -63,13 +64,14 @@ public class PatternElement {
     }
 
     /**
-     * Initializes the PatternElement with given pattern groups, generator mode and application mode.
+     * Initializes the PatternElement with given pattern groups, generator and application modes.
      *
      * @param patternGroups boolean array of pattern groups in use
      * @param action the PatternElementMode of Generator or PuzzleSolver
      * @param appMode the given applicationMode for GUI or CONSOLE
      */
-    public PatternElement(boolean[] patternGroups, PatternElementMode action, ApplicationMode appMode) {
+    public PatternElement(boolean[] patternGroups, PatternElementMode action,
+            ApplicationMode appMode) {
         puzzleSize = PuzzleConstants.getSize();
         // partial key - last # of keys (4 bits each)
         partialBits = new int[] {0, 0x000F, 0x00FF, 0x0FFF, 0x0000FFFF, 0x000FFFFF,
@@ -88,7 +90,8 @@ public class PatternElement {
     }
 
     // load the database pattern components from file
-    private void loadData(boolean[] patternGroups, PatternElementMode action, ApplicationMode appMode) {
+    private void loadData(boolean[] patternGroups, PatternElementMode action,
+            ApplicationMode appMode) {
         keys = new HashMap<Integer, Integer>();
         formats = new HashMap<Integer, Integer>();
         linkFormatCombo = new int[maxGroupSize + 1][0][0];
@@ -148,12 +151,14 @@ public class PatternElement {
                         }
                     }
                 } catch (BufferUnderflowException | IOException ex) {
-                	if (appMode == ApplicationMode.GUI) {
-                		System.err.println("\n\t*** Data files missing or corrupted, please download from cloud drive. ***");
-                		System.err.println("\thttps://my.pcloud.com/publink/show?code=kZSoaLZgNeLhO2eu0RQcu9D2aXeOFgtioUV\n");
-                		throw new UnsupportedOperationException();
-                	}
-                	build();
+                    if (appMode == ApplicationMode.GUI) {
+                        System.err.println("\n\t*** Data files missing or corrupted, please "
+                                + "download from cloud drive. ***");
+                        System.err.println("\thttps://my.pcloud.com/publink/show?"
+                                + "code=kZSoaLZgNeLhO2eu0RQcu9D2aXeOFgtioUV\n");
+                        throw new UnsupportedOperationException();
+                    }
+                    build();
                     saveData(patternGroups, printMsg);
                     wrapup(patternGroups, action);
                     return;

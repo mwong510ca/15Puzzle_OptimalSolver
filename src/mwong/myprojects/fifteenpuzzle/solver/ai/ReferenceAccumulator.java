@@ -54,12 +54,20 @@ public class ReferenceAccumulator implements Reference {
     /**
      * Initializes ReferenceAccumulator object.  Load the stored collection from file.
      * Use default setting if not available.
+     *
      * @throws RemoteException throw exception when connection lost
      */
     public ReferenceAccumulator() throws RemoteException {
         this(ApplicationMode.CONSOLE);
     }
 
+    /**
+     * Initializes ReferenceAccumulator object.  Load the stored collection from file.
+     * Use default setting if not available.
+     *
+     * @param appMode the given application mode for Gui or Console.
+     * @throws RemoteException throw exception when connection lost
+     */
     public ReferenceAccumulator(ApplicationMode appMode) throws RemoteException {
         directory = FileProperties.getDirectory();
         filepath = FileProperties.getFilepathReference();
@@ -69,7 +77,7 @@ public class ReferenceAccumulator implements Reference {
         onSwitch = SolverConstants.isOnSwitch();
         offSwitch = !onSwitch;
         this.appMode = appMode;
-        
+
         try {
             referenceMap = new HashMap<ReferenceBoard, ReferenceMoves>();
             loadFile();
@@ -79,8 +87,8 @@ public class ReferenceAccumulator implements Reference {
 
         updateData(createSolver());
         refreshFile();
-    }    
-    
+    }
+
     // load the default set
     void loadDefault() {
         defaultMap = new HashMap<ReferenceBoard, ReferenceMoves>();
@@ -283,13 +291,16 @@ public class ReferenceAccumulator implements Reference {
         }
     }
 
+    /**
+     * Returns the local SmartSolverPdb for Gui application only. Otherwise, return null.
+     */
     public SmartSolverPdb getSolver() {
-    	if (appMode == ApplicationMode.GUI && validateSolver(localSolver)) {
-    		return localSolver;
-    	}
-    	return null;
+        if (appMode == ApplicationMode.GUI && validateSolver(localSolver)) {
+            return localSolver;
+        }
+        return null;
     }
-    
+
     /**
      * Returns the boolean value of the given solver is the valid for ReferenceAccumulator.
      *

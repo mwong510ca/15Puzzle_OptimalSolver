@@ -82,11 +82,13 @@ public class WalkingDistance {
                 ptnLink[i] = buf.getInt();
             }
         } catch (BufferUnderflowException | IOException ex) {
-        	if (appMode == ApplicationMode.GUI) {
-        		System.err.println("\n\t*** Data files missing or corrupted, please download from cloud drive. ***");
-        		System.err.println("\thttps://my.pcloud.com/publink/show?code=kZSoaLZgNeLhO2eu0RQcu9D2aXeOFgtioUV\n");
-        		throw new UnsupportedOperationException();
-        	}
+            if (appMode == ApplicationMode.GUI) {
+                System.err.println("\n\t*** Data files missing or corrupted, please download "
+                        + "from cloud drive. ***");
+                System.err.println("\thttps://my.pcloud.com/publink/show?"
+                        + "code=kZSoaLZgNeLhO2eu0RQcu9D2aXeOFgtioUV\n");
+                throw new UnsupportedOperationException();
+            }
             int [] keyLink = genKeys();
             genPattern(keyLink);
             saveData(filepath);

@@ -32,9 +32,9 @@ public class ReferenceRemoteImpl extends UnicastRemoteObject implements Referenc
 
     @Override
     public SmartSolverPdb getSolver() throws RemoteException {
-    	return refObject.getSolver();
+        return refObject.getSolver();
     }
-    
+
     @Override
     public HashMap<ReferenceBoard, ReferenceMoves> getActiveMap() throws RemoteException {
         return refObject.getActiveMap();

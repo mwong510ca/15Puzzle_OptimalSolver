@@ -134,11 +134,13 @@ public class PatternDatabase {
                 buf.get(patterns[i]);
             }
         } catch (BufferUnderflowException | IOException ex) {
-        	if (appMode == ApplicationMode.GUI) {
-        		System.err.println("\n\t*** Data files missing or corrupted, please download from cloud drive. ***");
-        		System.err.println("\thttps://my.pcloud.com/publink/show?code=kZSoaLZgNeLhO2eu0RQcu9D2aXeOFgtioUV\n");
-        		throw new UnsupportedOperationException();
-        	}
+            if (appMode == ApplicationMode.GUI) {
+                System.err.println("\n\t*** Data files missing or corrupted, please download "
+                        + "from cloud drive. ***");
+                System.err.println("\thttps://my.pcloud.com/publink/show?"
+                        + "code=kZSoaLZgNeLhO2eu0RQcu9D2aXeOFgtioUV\n");
+                throw new UnsupportedOperationException();
+            }
             if (type == PatternOptions.Pattern_78) {
                 System.out.println("Warning: Please make sure increase minimum memory to -Xms2g");
                 System.out.println("         and it takes ~ 2.5-3 hours to generate 78 pattern.");

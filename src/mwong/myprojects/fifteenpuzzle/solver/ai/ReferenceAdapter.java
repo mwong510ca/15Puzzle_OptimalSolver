@@ -40,9 +40,9 @@ public class ReferenceAdapter implements ReferenceRemote {
     }
 
     public SmartSolverPdb getSolver() {
-    	return refObject.getSolver();
+        return refObject.getSolver();
     }
-    
+
     /**
      * Returns a HashMap of collection of reference boards.
      *

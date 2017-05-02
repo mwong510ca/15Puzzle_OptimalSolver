@@ -97,9 +97,9 @@ public abstract class AbstractSmartSolver extends AbstractSolver implements Smar
      */
     @Override
     public void setReferenceConnection(ReferenceRemote refConnection) {
-    	activeSmartSolver = false;
-    	flagAdvancedVersion = tagStandard;
-    	this.refConnection = null;
+        activeSmartSolver = false;
+        flagAdvancedVersion = tagStandard;
+        this.refConnection = null;
         try {
             if (refConnection != null && refConnection.getActiveMap() == null) {
                 System.out.println("Attention: Reference board collection unavailable."

@@ -86,9 +86,9 @@ public class SolverPdbWd extends SolverWd {
      * @param choice the number of preset pattern option
      */
     public SolverPdbWd(PatternOptions presetPattern, int choice) {
-    	this(presetPattern, choice, ApplicationMode.CONSOLE);
+        this(presetPattern, choice, ApplicationMode.CONSOLE);
     }
-    
+
     private SolverPdbWd(PatternOptions presetPattern, int choice, ApplicationMode appMode) {
         super(appMode);
         loadPdbComponents(presetPattern, choice);

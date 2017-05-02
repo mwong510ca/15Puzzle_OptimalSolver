@@ -21,7 +21,7 @@ import mwong.myprojects.fifteenpuzzle.solver.standard.SolverPdbWd;
  */
 public class SmartSolverPdbWd extends SolverPdbWd {
     /**
-     * Initializes SmartSolverPdbWd object
+     * Initializes SmartSolverPdbWd object.
      */
     public SmartSolverPdbWd() {
         this(null);
@@ -53,9 +53,10 @@ public class SmartSolverPdbWd extends SolverPdbWd {
      * @param refConnection the given ReferenceRemote connection object
      * @param appMode the given applicationMode for GUI or CONSOLE
      */
-    public SmartSolverPdbWd(PatternOptions presetPattern, ReferenceRemote refConnection, ApplicationMode appMode) {
-    	super(presetPattern, appMode);
-    	setReferenceConnection(refConnection);
+    public SmartSolverPdbWd(PatternOptions presetPattern, ReferenceRemote refConnection,
+            ApplicationMode appMode) {
+        super(presetPattern, appMode);
+        setReferenceConnection(refConnection);
     }
 
     /**

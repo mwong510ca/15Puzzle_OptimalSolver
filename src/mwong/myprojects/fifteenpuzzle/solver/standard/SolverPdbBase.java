@@ -62,9 +62,9 @@ public class SolverPdbBase extends AbstractSmartSolver {
     SolverPdbBase() {}
 
     protected SolverPdbBase(ApplicationMode appMode) {
-    	super(appMode);
+        super(appMode);
     }
-    
+
     /**
      * Initializes SolverPdbBase object with a given standard version SolverPdb instance,
      * the concrete class of SolverPdbBase.
@@ -102,15 +102,16 @@ public class SolverPdbBase extends AbstractSmartSolver {
     // generate a new set.  Estimate takes 15s for 555 pattern, 2 minutes for 663 pattern,
     // 2.5 - 3 hours for 78 pattern also require minimum 2gigabytes memory -Xms2g.
     protected void loadPdbComponents(PatternOptions presetPattern, int choice) {
-    	PatternDatabase pdb = new PatternDatabase(presetPattern, choice);
+        PatternDatabase pdb = new PatternDatabase(presetPattern, choice);
         initialPdbComponents(pdb);
     }
 
     // load preset additive pattern database from a data file, if file not exists
     // generate a new set.  Estimate takes 15s for 555 pattern, 2 minutes for 663 pattern,
     // 2.5 - 3 hours for 78 pattern also require minimum 2gigabytes memory -Xms2g.
-    protected void loadPdbComponents(PatternOptions presetPattern, int choice, ApplicationMode appMode) {
-    	PatternDatabase pdb = new PatternDatabase(presetPattern, choice, appMode);
+    protected void loadPdbComponents(PatternOptions presetPattern, int choice,
+            ApplicationMode appMode) {
+        PatternDatabase pdb = new PatternDatabase(presetPattern, choice, appMode);
         initialPdbComponents(pdb);
     }
 
@@ -120,7 +121,7 @@ public class SolverPdbBase extends AbstractSmartSolver {
         PatternDatabase pdb = new PatternDatabase(customPattern);
         initialPdbComponents(pdb);
     }
-    
+
     private void initialPdbComponents(PatternDatabase pdb) {
         patternGroups = pdb.getPatternGroups();
         patternFormatSize = new int[patternGroups.length];
@@ -148,7 +149,7 @@ public class SolverPdbBase extends AbstractSmartSolver {
         PatternElement element = new PatternElement(elementGroups, action, appMode);
         initialElements(element);
     }
-    
+
     private void initialElements(PatternElement element) {
         keys = element.getKeys();
         formats = element.getFormats();

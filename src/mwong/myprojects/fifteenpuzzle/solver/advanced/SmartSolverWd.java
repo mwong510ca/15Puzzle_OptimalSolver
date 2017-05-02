@@ -18,7 +18,7 @@ import mwong.myprojects.fifteenpuzzle.solver.standard.SolverWd;
  */
 public class SmartSolverWd extends SolverWd {
     /**
-     * Initializes SmartSolverWd object.  
+     * Initializes SmartSolverWd object.
      */
     public SmartSolverWd() {
         this(null);
