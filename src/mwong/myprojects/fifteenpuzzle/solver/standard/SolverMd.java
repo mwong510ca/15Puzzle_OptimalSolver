@@ -155,7 +155,7 @@ public class SolverMd extends AbstractSmartSolver {
         searchDepth = limit;
         int zeroPos = orgY * rowSize + orgX;
         int zeroSym = symmetryPos[zeroPos];
-        int [] estimate1stMove = new int[4 * 2];
+        int[] estimate1stMove = new int[4 * 2];
         System.arraycopy(lastDepthSummary, 0, estimate1stMove, 0, 4 * 2);
 
         int estimate = limit;
@@ -438,7 +438,7 @@ public class SolverMd extends AbstractSmartSolver {
 
     // update horizontal linear conflict when the tile move vertically
     private int updateLinearConflict(int orgX, int orgY, int key, int oldValue, byte value,
-            int diff, byte [] tilesSet) {
+            int diff, byte[] tilesSet) {
         int newValue = oldValue;
         if (key == orgY) {
             int base = key * rowSize;

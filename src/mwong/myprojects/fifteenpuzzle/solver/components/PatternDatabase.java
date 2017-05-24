@@ -300,7 +300,7 @@ public class PatternDatabase {
     // return 16 bits short represents a set of final moves that stop by a tile only
     private short freeMoveByte(byte zeroOrder, int fmt) {
         short initMoves = 0;
-        boolean [] next = new boolean[puzzleSize];
+        boolean[] next = new boolean[puzzleSize];
         int order = 0;
         for (int zeroPos = 0; zeroPos < puzzleSize; zeroPos++) {
             if ((fmt & formatBit16[zeroPos]) > 0) {
@@ -322,7 +322,7 @@ public class PatternDatabase {
     // stop by a tile only
     private short freeMoveShort(short zeroPos, int fmt) {
         short initMoves = 0;
-        boolean [] next = new boolean[puzzleSize];
+        boolean[] next = new boolean[puzzleSize];
         for (int i = 0; i < puzzleSize; i++) {
             if ((fmt & formatBit16[i]) > 0) {
                 continue;
@@ -337,7 +337,7 @@ public class PatternDatabase {
     }
 
     // return 16 bits short represents a set of final moves that stop by a tile only
-    private short freeMove(short initMoves, int fmt, boolean [] next) {
+    private short freeMove(short initMoves, int fmt, boolean[] next) {
         boolean flag = true;
         short validMoves = initMoves;
         while (flag) {
@@ -574,7 +574,7 @@ public class PatternDatabase {
         int counter = 0;
 
         while (pending > 0) {
-            short [] nextMove = new short[sizeKey * sizeFmt];
+            short[] nextMove = new short[sizeKey * sizeFmt];
             for (int k = 0; k < sizeKey; k++) {
                 for (int f = 0; f < sizeFmt; f++) {
                     int fmt = formats2combo[f];

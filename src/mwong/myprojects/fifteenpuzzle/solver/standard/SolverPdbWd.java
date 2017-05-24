@@ -523,7 +523,7 @@ public class SolverPdbWd extends SolverWd {
 
     // shift the space to left
     private int shiftLeft(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
-            int orgValReg, int orgValSym, int [] orgCopy, int swirlKey) {
+            int orgValReg, int orgValSym, int[] orgCopy, int swirlKey) {
         if (terminated) {
             return endOfSearch;
         }
@@ -552,7 +552,7 @@ public class SolverPdbWd extends SolverWd {
 
     // shift the space to up
     private int shiftUp(int orgX, int orgY, int zeroPos, int zeroSym, int costPlus1, int limit,
-            int orgValReg, int orgValSym, int [] orgCopy, int swirlKey) {
+            int orgValReg, int orgValSym, int[] orgCopy, int swirlKey) {
         if (terminated) {
             return endOfSearch;
         }

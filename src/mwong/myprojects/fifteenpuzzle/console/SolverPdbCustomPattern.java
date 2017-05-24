@@ -135,7 +135,7 @@ public class SolverPdbCustomPattern extends AbstractApplication {
                     pending = false;
                     break;
                 case 4:
-                    byte [] pattern = new byte[16];
+                    byte[] pattern = new byte[16];
                     System.out.println("Enter 15 numbers (1, 2, 3 ... represent the group"
                             + " number) for your pattern, ");
                     System.out.println("min group size is 2 and max group 7, position 15 "
@@ -177,7 +177,7 @@ public class SolverPdbCustomPattern extends AbstractApplication {
                     }
                     System.out.println();
                     try {
-                        boolean [] elementGroups = pattern2elementGroups(pattern, 7);
+                        boolean[] elementGroups = pattern2elementGroups(pattern, 7);
 
                         if (elementGroups != null) {
                             solverPdb = null;
@@ -216,7 +216,7 @@ public class SolverPdbCustomPattern extends AbstractApplication {
     }
 
     // verify the user defined pattern and convert it to element groups
-    private boolean [] pattern2elementGroups(byte [] pattern, int maxSize) {
+    private boolean[] pattern2elementGroups(byte[] pattern, int maxSize) {
         if (pattern.length != 16) {
             return null;
         }
@@ -228,7 +228,7 @@ public class SolverPdbCustomPattern extends AbstractApplication {
         }
 
         int numPatterns = pattern[14];
-        byte [] patternGroups = new byte[numPatterns];
+        byte[] patternGroups = new byte[numPatterns];
         for (int i = 0; i < puzzleSize - 1; i++) {
             if (pattern[i] < 1 || pattern[i] > numPatterns) {
                 return null;
@@ -237,7 +237,7 @@ public class SolverPdbCustomPattern extends AbstractApplication {
             patternGroups[group]++;
         }
 
-        boolean [] elementGroups = new boolean [PatternConstants.getMaxGroupSize() + 1];
+        boolean[] elementGroups = new boolean [PatternConstants.getMaxGroupSize() + 1];
         for (byte group : patternGroups) {
             elementGroups[group] = true;
         }

@@ -27,10 +27,10 @@ public class SolverWd extends AbstractSmartSolver {
     // Walking Distance Components
     protected static HashMap<Integer, Integer> wdRowKeys;
     protected static HashMap<Integer, Integer> wdPtnKeys;
-    protected static byte [] wdPattern;
-    protected static int [] wdPtnLink;
+    protected static byte[] wdPattern;
+    protected static int[] wdPtnLink;
 
-    protected byte [] tilesSym;
+    protected byte[] tilesSym;
     protected byte wdValueH;
     protected byte wdValueV;
     protected int wdIdxH;
@@ -86,8 +86,8 @@ public class SolverWd extends AbstractSmartSolver {
             initialize(board);
             tilesSym = board.getTilesSym();
 
-            byte [] ctwdh = new byte[puzzleSize];
-            byte [] ctwdv = new byte[puzzleSize];
+            byte[] ctwdh = new byte[puzzleSize];
+            byte[] ctwdv = new byte[puzzleSize];
 
             for (int i = 0; i < 16; i++) {
                 int value = tiles[i];
@@ -161,7 +161,7 @@ public class SolverWd extends AbstractSmartSolver {
         searchDepth = limit;
         int zeroPos = orgY * rowSize + orgX;
         int zeroSym = symmetryPos[zeroPos];
-        int [] estimate1stMove = new int[rowSize * 2];
+        int[] estimate1stMove = new int[rowSize * 2];
         System.arraycopy(lastDepthSummary, 0, estimate1stMove, 0, rowSize * 2);
 
         int estimate = limit;
@@ -423,7 +423,7 @@ public class SolverWd extends AbstractSmartSolver {
 
     // take a set of walking distance values and row index of zero position,
     // compress into 32 bit key, and return the key index
-    protected int getWDPtnIdx(byte [] ctwd, int zeroRow) {
+    protected int getWDPtnIdx(byte[] ctwd, int zeroRow) {
         int key = 0;
         int count = 0;
 

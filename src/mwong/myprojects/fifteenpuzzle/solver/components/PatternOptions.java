@@ -17,39 +17,39 @@ public enum PatternOptions {
      * Static pattern 555.
      */
     Pattern_555("555",
-            new byte [][] {{ 2, 2, 1, 1, 2, 3, 1, 1, 2, 3, 3, 1, 2, 3, 3, 0 },
+            new byte[][] {{ 2, 2, 1, 1, 2, 3, 1, 1, 2, 3, 3, 1, 2, 3, 3, 0 },
                 { 1, 1, 1, 1, 2, 2, 1, 3, 2, 2, 3, 3, 2, 3, 3, 0 },
                 { 1, 1, 1, 1, 1, 2, 2, 2, 3, 2, 3, 2, 3, 3, 3, 0 },
                 { 1, 1, 1, 1, 2, 2, 1, 3, 2, 3, 3, 3, 2, 2, 3, 0 },
                 { 1, 2, 2, 2, 1, 1, 1, 2, 3, 3, 1, 2, 3, 3, 3, 0 },
                 { 1, 2, 2, 2, 1, 1, 2, 2, 1, 3, 3, 3, 1, 3, 3, 0 },
                 { 1, 1, 1, 2, 1, 1, 2, 2, 3, 3, 2, 2, 3, 3, 3, 0 }},
-            new boolean [] {false, false, false, false, false, true, false, false, false}),
+            new boolean[] {false, false, false, false, false, true, false, false, false}),
 
     /**
      * Static pattern 663.
      */
     Pattern_663("663",
-            new byte [][] {{ 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 3, 2, 3, 3, 3, 0 },
+            new byte[][] {{ 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 3, 2, 3, 3, 3, 0 },
                 { 1, 2, 2, 2, 1, 1, 3, 3, 1, 1, 3, 3, 1, 3, 3, 0 },
                 { 3, 1, 1, 1, 3, 2, 2, 1, 3, 2, 1, 1, 3, 3, 3, 0 },
                 { 1, 1, 1, 2, 1, 1, 1, 2, 3, 3, 3, 2, 3, 3, 3, 0 },
                 { 1, 2, 2, 2, 1, 2, 2, 2, 1, 1, 3, 3, 1, 1, 3, 0 },
                 { 1, 1, 1, 2, 3, 1, 1, 2, 3, 3, 1, 2, 3, 3, 3, 0 },
                 { 1, 1, 2, 2, 3, 1, 2, 2, 3, 3, 2, 2, 3, 3, 3, 0 }},
-            new boolean [] {false, false, false, true, false, false, true, false, false}),
+            new boolean[] {false, false, false, true, false, false, true, false, false}),
 
     /**
      * Static and disjoint pattern 78.
      */
     Pattern_78("78",
-            new byte [][] {{ 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 0 },
+            new byte[][] {{ 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 0 },
                 { 1, 1, 1, 1, 2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 0 },
                 { 1, 1, 1, 1, 1, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 0 },
                 { 1, 1, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 2, 2, 2, 0 },
                 { 2, 1, 1, 1, 2, 1, 1, 1, 2, 2, 1, 1, 2, 2, 2, 0 },
                 { 1, 1, 1, 1, 2, 1, 1, 1, 2, 2, 2, 1, 2, 2, 2, 0 }},
-            new boolean [] {false, false, false, false, false, false, false, true, true}),
+            new boolean[] {false, false, false, false, false, false, false, true, true}),
     /**
      * User defined custom pattern.
      */
@@ -62,7 +62,7 @@ public enum PatternOptions {
     /**
      * Initializes a PatternOptions reference type.
      */
-    PatternOptions(String type, byte [][] patterns, boolean [] elements) {
+    PatternOptions(String type, byte[][] patterns, boolean[] elements) {
         this.type = type;
         this.patterns = patterns;
         this.elements = elements;

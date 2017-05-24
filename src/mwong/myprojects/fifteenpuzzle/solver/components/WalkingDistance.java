@@ -32,8 +32,8 @@ public class WalkingDistance {
 
     private HashMap<Integer, Integer> rowKeys;  // 4 * 3 bits
     private HashMap<Integer, Integer> ptnKeys;  // 4 * 6 bits + 4 bits of zero row index
-    private byte [] pattern;
-    private int [] ptnLink;
+    private byte[] pattern;
+    private int[] ptnLink;
 
     /**
      * Initializes the WalkingDistance object.
@@ -89,7 +89,7 @@ public class WalkingDistance {
                         + "code=kZSoaLZgNeLhO2eu0RQcu9D2aXeOFgtioUV\n");
                 throw new UnsupportedOperationException();
             }
-            int [] keyLink = genKeys();
+            int[] keyLink = genKeys();
             genPattern(keyLink);
             saveData(filepath);
         }
@@ -192,7 +192,7 @@ public class WalkingDistance {
 
         // 2nd set starts with 0003, 0030, 0300, 3000
         for (int i = 0; i < rowSize; i++) {
-            int [] temp = new int[rowSize];
+            int[] temp = new int[rowSize];
             temp[i] = rowSize - 1;
             key = rowCombo2Key(temp);
             rowKeys2combo[counter] = key;
@@ -230,8 +230,8 @@ public class WalkingDistance {
     }
 
     // generate all key link for the walking distance
-    private int [] genKeyLink(int splitIdx, int [] rowKeys2combo) {
-        int [] rowKeyLink = new int[keySize * rowSize];
+    private int[] genKeyLink(int splitIdx, int[] rowKeys2combo) {
+        int[] rowKeyLink = new int[keySize * rowSize];
         final int keyBitsSize = 3;
 
         // shift out from column, from 4 tiles to 3 tiles
@@ -265,7 +265,7 @@ public class WalkingDistance {
     }
 
     // generate all patterns for the walking distance
-    private void genPattern(int [] rowKeyLink) {
+    private void genPattern(int[] rowKeyLink) {
         ptnKeys = new HashMap<Integer, Integer>();
         pattern = new byte[patternSize];
         ptnLink = new int[patternSize * rowSize * 2];
@@ -447,7 +447,7 @@ public class WalkingDistance {
     }
 
     // compress the rowKey set to pattern key
-    private int rowCombo2Key(int [] combo) {
+    private int rowCombo2Key(int[] combo) {
         int key = 0;
         for (int i : combo) {
             key = (key << 3) | i;

@@ -10,7 +10,7 @@ public class PuzzleConstants {
     private static final byte SIZE = 16;
     private static final byte ROW_SIZE = 4;
     private static final byte MAX_MOVES = 80;
-    private static final byte [] GOAL_TILES =
+    private static final byte[] GOAL_TILES =
         {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0};
     private static final int GOAL_KEY1 = 0x12345678;
     private static final int GOAL_KEY2 = 0x9ABCDEF0;

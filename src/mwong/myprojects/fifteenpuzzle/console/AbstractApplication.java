@@ -231,7 +231,7 @@ public abstract class AbstractApplication {
     // create the Board object with use entry
     Board keyInBoard() {
         byte[] blocks = new byte[puzzleSize];
-        boolean [] used = new boolean[puzzleSize];
+        boolean[] used = new boolean[puzzleSize];
         int count = 0;
 
         while (count < puzzleSize) {

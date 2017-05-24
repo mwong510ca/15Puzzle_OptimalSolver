@@ -59,7 +59,7 @@ public class Board implements Serializable {
      *
      * @param blocks the byte array of 16 tiles
      */
-    public Board(byte [] blocks) {
+    public Board(byte[] blocks) {
         setBasicPriorities(blocks);
         setAdvancedProperties();
     }
@@ -76,7 +76,7 @@ public class Board implements Serializable {
 
     // loop over the board and determine if the board is solvable
     // and initializes zero position
-    private void setBasicPriorities(byte [] blocks) {
+    private void setBasicPriorities(byte[] blocks) {
         isSolvable = true;
         tiles = new byte[SIZE];
         System.arraycopy(blocks, 0, tiles, 0, SIZE);
@@ -158,7 +158,7 @@ public class Board implements Serializable {
                 estimate = heuristic();
             }
         } else {
-            byte [] blocks = new byte[SIZE];
+            byte[] blocks = new byte[SIZE];
             int zero = 15;
 
             while (true) {
@@ -229,7 +229,7 @@ public class Board implements Serializable {
     // generate a solvable random board using Knuth Shuffle
     private void generateRandomBoard() {
         Random random = new Random();
-        byte [] blocks = new byte[SIZE];
+        byte[] blocks = new byte[SIZE];
         int count = 1;
         while (count < SIZE) {
             int rand = random.nextInt(count + 1);
@@ -420,7 +420,7 @@ public class Board implements Serializable {
      *
      * @return byte array of board tiles
      */
-    public final byte [] getTiles() {
+    public final byte[] getTiles() {
         return tiles;
     }
 

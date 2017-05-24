@@ -344,7 +344,7 @@ public class PatternElement {
     //                                        000    010
     // even: tile UP,   tile 2 shift to left  000 => 002
     //                                        012    010
-    private void genRotateKeys(int group, int [] initKeys) {
+    private void genRotateKeys(int group, int[] initKeys) {
         if (group < 2) {
             return;
         }
@@ -473,7 +473,7 @@ public class PatternElement {
 
     // generate the format link of 4 direction of moves of each bit represents a tile location
     // and the key shift reference code
-    private void genLinkFormats(int group, int [] initFormat) {
+    private void genLinkFormats(int group, int[] initFormat) {
         linkFormatCombo[group] = new int[formatSize[group]][0];
         linkFormatMove[group] = new int[formatSize[group] * 64];
         HashSet<Integer> set = new HashSet<Integer>();
