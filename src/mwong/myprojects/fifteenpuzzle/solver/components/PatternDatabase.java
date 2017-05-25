@@ -435,11 +435,11 @@ public class PatternDatabase {
             byte[] nextMove = new byte[sizeKey * sizeFmt];
             for (int k = 0; k < sizeKey; k++) {
                 for (int f = 0; f < sizeFmt; f++) {
-                    int fmt = formats2combo[f];
                     if (currMove[k * sizeFmt + f] == 0) {
                         continue;
                     }
 
+                    int fmt = formats2combo[f];
                     counter++;
                     short freeMove = freeMoveByte(currMove[k * sizeFmt + f], fmt);
 
@@ -577,11 +577,11 @@ public class PatternDatabase {
             short[] nextMove = new short[sizeKey * sizeFmt];
             for (int k = 0; k < sizeKey; k++) {
                 for (int f = 0; f < sizeFmt; f++) {
-                    int fmt = formats2combo[f];
                     if (currMove[k * sizeFmt + f] == 0) {
                         continue;
                     }
 
+                    int fmt = formats2combo[f];
                     counter++;
                     short freeMove = freeMoveShort(currMove[k * sizeFmt + f], fmt);
 
