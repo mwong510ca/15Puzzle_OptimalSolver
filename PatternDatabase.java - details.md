@@ -34,10 +34,9 @@ Validate the pattern in appropriate format.  Save a 2 ways conversions of tiles 
 The maximum move is 80, so the pattern value can store in byte value. For group 8, it take about 518918400 * 1 byte = .52 gigabytes.  
 For pattern expansions, I need 2 set values.  One for current patterns, and one for next patterns after zero space shift with a tile.  To record these moves, all I need to store are the zeroes positions.  Group 2 - 7 use short value, and group 8 use byte value.  They will store in 2D \[key size\]\[format size\] array.
 
-    <pre>
-Group 2 - 7: pattern size x (1 byte pattern value + 2 byte x 2 current and next moves)
-Group 8:     pattern size x (1 byte pattern value + 1 byte x 2 current and next moves)
-                 518918400 x (1 byte + 1 byte x 2) = 1.6 GB.</pre>
+<pre>Group 2 - 7: pattern size x (1 byte pattern value + 2 byte x 2 current and next moves)
+Group 8    : pattern size x (1 byte pattern value + 1 byte x 2 current and next moves)
+                518918400 x (1 byte + 1 byte x 2) = 1.6 GB.</pre>
 3. Think of the moves of zero space, instead of 1 shift at a time.  Here is how my FreeMove functions works:  
   * Zero is free to move on any (x) until it trigger changed.  It will stop next to any tiles.  If the moves are block by the tiles, it cannot across to the other side.  Group of 2 to 7, it will pass in 16 bits of its position 0000 0000 0000 0001, and group 8 as 8 bits of space order 0000 0001.  But both will return in 16 bits.  
 
