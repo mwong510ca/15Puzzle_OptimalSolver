@@ -1,4 +1,4 @@
-###How it works:  
+### How it works:  
 Generate the components will be use by the pattern database generator 
 and puzzle solver.  [View Source Code]
 
