@@ -649,16 +649,34 @@ if __name__ == "__main__":
         s.close()
     try:
         p = subprocess.Popen(['java', '-jar', 'FifteenPuzzleGateway.jar', str(port_number)])
-        time.sleep(4)
-        gateway_server = JavaGateway(GatewayClient(address=host, port=port_number))
-        gateway_server.entry_point.getGoal()
-        app = QApplication(sys.argv)
-        window = GameSolver15Puzzle(gateway_server)
-        window.show()
-        while app.exec_() > 0:
+        count = 0;
+        while count < 15:
             time.sleep(1)
-        gateway_server.shutdown()
-        sys.exit()
+            gateway_server = JavaGateway(GatewayClient(address=host, port=port_number))
+            count += 1
+            connected = True
+            try:
+                gateway_server.entry_point.isConnected()
+            except:
+                connected = False
+            if connected:
+                break
+            else:
+                print("Connecting to server ... " + str(count) + " seconds.  Please wait.")
+        if not connected:
+            print("Connection time out over " + str(count) + " seconds")
+            gateway_server.shutdown()
+            p.kill()
+            sys.exit()
+        else:
+            gateway_server.entry_point.getGoal()
+            app = QApplication(sys.argv)
+            window = GameSolver15Puzzle(gateway_server)
+            window.show()
+            while app.exec_() > 0:
+                time.sleep(1)
+            gateway_server.shutdown()
+            sys.exit()
     except:
         gateway_server.shutdown()
         p.kill()
