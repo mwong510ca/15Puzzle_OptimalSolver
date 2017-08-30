@@ -671,7 +671,6 @@ if __name__ == "__main__":
             p.kill()
             sys.exit()
         else:
-            gateway_server.entry_point.getGoal()
             app = QApplication(sys.argv)
             window = GameSolver15Puzzle(gateway_server)
             window.show()
