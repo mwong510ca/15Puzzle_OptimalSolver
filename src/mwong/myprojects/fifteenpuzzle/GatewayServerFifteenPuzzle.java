@@ -61,40 +61,34 @@ public class GatewayServerFifteenPuzzle {
         boolean messageOff = !SolverConstants.isOnSwitch();
         solverMd = new SmartSolverMd(refConnection);
         solverMd.messageSwitch(messageOff);
-        solverMd.setTimeoutLimit(timeoutLimit);
 
         solverWd = new SmartSolverWd(refConnection, guiMode);
         solverWd.messageSwitch(messageOff);
-        solverWd.setTimeoutLimit(timeoutLimit);
 
         solverWdMd = new SmartSolverWdMd(refConnection, guiMode);
         solverWdMd.messageSwitch(messageOff);
-        solverWdMd.setTimeoutLimit(timeoutLimit);
 
         solverPdbWd555 = new SmartSolverPdbWd(PatternOptions.Pattern_555, refConnection, guiMode);
         solverPdbWd555.messageSwitch(messageOff);
-        solverPdbWd555.setTimeoutLimit(timeoutLimit);
 
         solverPdbWd663 = new SmartSolverPdbWd(PatternOptions.Pattern_663, refConnection, guiMode);
         solverPdbWd663.messageSwitch(messageOff);
-        solverPdbWd663.setTimeoutLimit(timeoutLimit);
+        setTimeoutLimit(timeoutLimit);
 
         try {
             if (refConnection.getSolver() != null) {
                 solverPdb78 = refConnection.getSolver();
             } else {
                 solverPdb78 = new SmartSolverPdb(PatternOptions.Pattern_78, refConnection, guiMode);
-                solverPdb78.messageSwitch(messageOff);
-                solverPdb78.timeoutSwitch(!SolverConstants.isOnSwitch());
             }
         } catch (RemoteException ex) {
             solverPdb78 = new SmartSolverPdb(PatternOptions.Pattern_78, refConnection, guiMode);
-            solverPdb78.messageSwitch(messageOff);
-            solverPdb78.timeoutSwitch(!SolverConstants.isOnSwitch());
         }
+        solverPdb78.messageSwitch(messageOff);
+        solverPdb78.timeoutSwitch(!SolverConstants.isOnSwitch());
     }
 
-    public boolean isConnected() {
+    public static boolean isConnected() {
         return true;
     }
 
@@ -160,6 +154,15 @@ public class GatewayServerFifteenPuzzle {
 
     public int getTimeoutLimit() {
         return timeoutLimit;
+    }
+
+    public void setTimeoutLimit(int limit) {
+    	timeoutLimit = limit;
+    	solverMd.setTimeoutLimit(timeoutLimit);
+    	solverWd.setTimeoutLimit(timeoutLimit);
+    	solverWdMd.setTimeoutLimit(timeoutLimit);
+        solverPdbWd555.setTimeoutLimit(timeoutLimit);
+        solverPdbWd663.setTimeoutLimit(timeoutLimit);
     }
 
     /**

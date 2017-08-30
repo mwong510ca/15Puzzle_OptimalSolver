@@ -642,6 +642,7 @@ class GameSolver15Puzzle(QMainWindow, MainWindow):
 if __name__ == "__main__":
     host = '127.0.0.1'
     port_number = 25334
+    connectionTimeout = 15
     while port_number < 25335:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.bind(('', 0))
@@ -650,7 +651,8 @@ if __name__ == "__main__":
     try:
         p = subprocess.Popen(['java', '-jar', 'FifteenPuzzleGateway.jar', str(port_number)])
         count = 0;
-        while count < 15:
+        print("Connecting to server.  Please wait.")
+        while count < connectionTimeout:
             time.sleep(1)
             gateway_server = JavaGateway(GatewayClient(address=host, port=port_number))
             count += 1
@@ -661,10 +663,10 @@ if __name__ == "__main__":
                 connected = False
             if connected:
                 break
-            else:
-                print("Connecting to server ... " + str(count) + " seconds.  Please wait.")
+            elif count % 2 == 0 and count < connectionTimeout:
+                print(str(count) + " seconds passed, continue to wait.")
         if not connected:
-            print("Connection time out over " + str(count) + " seconds")
+            print("Connection time out over " + str(connectionTimeout) + " seconds")
             gateway_server.shutdown()
             p.kill()
             sys.exit()
