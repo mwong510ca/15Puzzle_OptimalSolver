@@ -151,81 +151,102 @@ public class Board implements Serializable {
     // MODERATE - Manhattan distance between 20 to 45
     // HARD - Manhattan distance > 40
     private void generateBoard(PuzzleDifficultyLevel level) {
-        if (level == PuzzleDifficultyLevel.MODERATE) {
-            int estimate = 0;
-            while (estimate < 20 || estimate > 45) {
-                generateRandomBoard();
-                estimate = heuristic();
+    	byte[] blocks = new byte[SIZE];
+        System.arraycopy(PuzzleConstants.getGoalTiles(), 0, blocks, 0, SIZE);
+        int zero = 15;
+        if (level == PuzzleDifficultyLevel.HARD) {
+            int rand = new Random().nextInt(5);
+            if (rand == 0 && PuzzleProperties.getHardZero15Size() > 0) {
+            	rand = new Random().nextInt(PuzzleProperties.getHardZero15Size());
+            	System.arraycopy(PuzzleProperties.getHardZero15(rand),
+            			0, blocks, 0, SIZE);
+            } else if (PuzzleProperties.getHardZero0Size() > 0) {
+            	rand = new Random().nextInt(PuzzleProperties.getHardZero0Size());
+            	System.arraycopy(PuzzleProperties.getHardZero0(rand),
+            			0, blocks, 0, SIZE);
+                zero = 0;
             }
-        } else {
-            byte[] blocks = new byte[SIZE];
-            int zero = 15;
+        } else if (level == PuzzleDifficultyLevel.MODERATE) {
+        	Random random = new Random();
+            int count = 0;
+        	while (count < 4) {
+        		int rand1 = random.nextInt(14);
+        		int rand2 = random.nextInt(14) + 1;
+        		if (rand1 == rand2) {
+        			rand2 = rand1 + 1;
+        		}
+        		byte temp = blocks[rand1];
+                blocks[rand1] = blocks[rand2];
+                blocks[rand2] = temp;
+                count++;
+            }
 
-            while (true) {
-                System.arraycopy(PuzzleConstants.getGoalTiles(), 0, blocks, 0, SIZE);
-                zero = 15;
-                if (level == PuzzleDifficultyLevel.HARD) {
-                    int rand = new Random().nextInt(5);
-                    if (rand == 0) {
-                        if (PuzzleProperties.getHardZero15Size() > 0) {
-                            rand = new Random().nextInt(PuzzleProperties.getHardZero15Size());
-                            System.arraycopy(PuzzleProperties.getHardZero15(rand),
-                                    0, blocks, 0, SIZE);
-                        }
-                    } else {
-                        if (PuzzleProperties.getHardZero0Size() > 0) {
-                            rand = new Random().nextInt(PuzzleProperties.getHardZero0Size());
-                            System.arraycopy(PuzzleProperties.getHardZero0(rand),
-                                    0, blocks, 0, SIZE);
-                            zero = 0;
-                        }
-                    }
-                }
+            setBasicPriorities(blocks);
+            // if the random board is not solvable, swap a pair of tiles.
+            if (!isSolvable) {
+            	byte temp = blocks[10];
+            	blocks[10] = blocks[11];
+            	blocks[11] = temp;
+            }
+        }
 
-                int shuffle = new Random().nextInt(100);
-                int count = 0;
-                while (count < shuffle) {
-                    int dir = new Random().nextInt(4);
-                    if (dir == 0 && zero % 4 < 3) {
-                        blocks[zero] = blocks[zero + 1];
-                        blocks[zero + 1] = 0;
-                        zero = zero + 1;
-                    } else if (dir == 1 && zero % 4 > 0) {
-                        blocks[zero] = blocks[zero - 1];
-                        blocks[zero - 1] = 0;
-                        zero = zero - 1;
-                    } else if (dir == 2 && zero > 3) {
-                        blocks[zero] = blocks[zero - 4];
-                        blocks[zero - 4] = 0;
-                        zero = zero - 4;
-                    } else if (dir == 3 && zero < 12) {
-                        blocks[zero] = blocks[zero + 4];
-                        blocks[zero + 4] = 0;
-                        zero = zero + 4;
-                    }
-                    count++;
-                }
-
-                if (isGoal(blocks, zero)) {
-                    continue;
-                }
-
+        int numShuffle = 10 + (new Random().nextInt(50));
+        if (level == PuzzleDifficultyLevel.HARD) {
+        	numShuffle += (new Random().nextInt(50));
+        }
+        zero = shuffle(numShuffle, zero, blocks);
+        
+        while (true) {
+            if (!isGoal(blocks, zero)) {
                 tiles = new byte[SIZE];
                 System.arraycopy(blocks, 0, tiles, 0, SIZE);
                 if (level == PuzzleDifficultyLevel.HARD && heuristic() > 40) {
-                    break;
-                } else if (level == PuzzleDifficultyLevel.EASY && heuristic() >= 5
-                        && heuristic() < 25) {
-                    break;
+                	break;
+                } else if (level == PuzzleDifficultyLevel.MODERATE && heuristic() >= 20
+                		&& heuristic() < 50) {
+                	break;
+                } else  if (level == PuzzleDifficultyLevel.EASY && heuristic() >= 5
+                		&& heuristic() < 25) {
+                	break;
                 }
             }
+            
+            numShuffle = 10 + (new Random().nextInt(50));
+            zero = shuffle(numShuffle, zero, blocks);    
 
-            isSolvable = true;
-            zeroX = (byte) (zero % ROW_SIZE);
-            zeroY = (byte) (zero / ROW_SIZE);
         }
+
+        isSolvable = true;
+        zeroX = (byte) (zero % ROW_SIZE);
+        zeroY = (byte) (zero / ROW_SIZE);
     }
 
+    private int shuffle(int numShuffle, int zero, byte[] blocks) {
+    	int count = 0;
+        while (count < numShuffle) {
+            int dir = new Random().nextInt(4);
+            if (dir == 0 && zero % 4 < 3) {
+                blocks[zero] = blocks[zero + 1];
+                blocks[zero + 1] = 0;
+                zero = zero + 1;
+            } else if (dir == 1 && zero % 4 > 0) {
+                blocks[zero] = blocks[zero - 1];
+                blocks[zero - 1] = 0;
+                zero = zero - 1;
+            } else if (dir == 2 && zero > 3) {
+                blocks[zero] = blocks[zero - 4];
+                blocks[zero - 4] = 0;
+                zero = zero - 4;
+            } else if (dir == 3 && zero < 12) {
+                blocks[zero] = blocks[zero + 4];
+                blocks[zero + 4] = 0;
+                zero = zero + 4;
+            }
+            count++;
+        }
+        return zero;
+    }
+    
     // generate a solvable random board using Knuth Shuffle
     private void generateRandomBoard() {
         Random random = new Random();
@@ -240,14 +261,14 @@ public class Board implements Serializable {
         setBasicPriorities(blocks);
         // if the random board is not solvable, swap a pair of tiles.
         if (!isSolvable) {
-            if (zeroY == 0)  {
-                byte temp = tiles[4];
-                tiles[4] = tiles[5];
-                tiles[5] = temp;
+            if (zeroY == 3)  {
+                byte temp = tiles[10];
+                tiles[10] = tiles[11];
+                tiles[11] = temp;
             } else {
-                byte temp = tiles[0];
-                tiles[0] = tiles[1];
-                tiles[1] = temp;
+                byte temp = tiles[14];
+                tiles[14] = tiles[15];
+                tiles[15] = temp;
             }
             isSolvable = true;
         }

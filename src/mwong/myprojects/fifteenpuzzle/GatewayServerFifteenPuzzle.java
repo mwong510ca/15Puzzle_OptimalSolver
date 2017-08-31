@@ -27,6 +27,7 @@ import java.rmi.RemoteException;
  */
 public class GatewayServerFifteenPuzzle {
     private final ApplicationMode guiMode = ApplicationMode.GUI;
+    private final boolean timeoutOn = SolverConstants.isOnSwitch();
     private Board board;
     private SmartSolverMd solverMd;
     private SmartSolverWd solverWd;
@@ -85,7 +86,8 @@ public class GatewayServerFifteenPuzzle {
             solverPdb78 = new SmartSolverPdb(PatternOptions.Pattern_78, refConnection, guiMode);
         }
         solverPdb78.messageSwitch(messageOff);
-        solverPdb78.timeoutSwitch(!SolverConstants.isOnSwitch());
+        solverPdb78.setTimeoutLimit(1);
+        solverPdb78.timeoutSwitch(!timeoutOn);
     }
 
     public static boolean isConnected() {
@@ -104,16 +106,50 @@ public class GatewayServerFifteenPuzzle {
 
     public Board getEasy() {
         board = new Board(PuzzleDifficultyLevel.EASY);
+        solverPdb78.versionSwitch(false);
+        solverPdb78.findOptimalPath(board);
+        
+        int moves = solverPdb78.moves();
+        while (moves > 25) {
+        	board = new Board(PuzzleDifficultyLevel.EASY);
+        	solverPdb78.findOptimalPath(board);
+            moves = solverPdb78.moves();
+        }
+        solverPdb78.findOptimalPath(new Board(PuzzleConstants.getGoalTiles()));
         return board;
     }
 
     public Board getModerate() {
         board = new Board(PuzzleDifficultyLevel.MODERATE);
+        solverPdb78.versionSwitch(false);
+        solverPdb78.timeoutSwitch(timeoutOn);      
+        solverPdb78.findOptimalPath(board);
+        
+        int moves = solverPdb78.moves();
+        while (solverPdb78.isSearchTimeout() || moves <= 25 || moves > 50) {
+        	board = new Board(PuzzleDifficultyLevel.MODERATE);
+        	solverPdb78.findOptimalPath(board);
+            moves = solverPdb78.moves();
+        }
+        solverPdb78.findOptimalPath(new Board(PuzzleConstants.getGoalTiles()));
+        solverPdb78.timeoutSwitch(!timeoutOn);      
         return board;
     }
 
     public Board getHard() {
         board = new Board(PuzzleDifficultyLevel.HARD);
+        solverPdb78.versionSwitch(false);
+        solverPdb78.timeoutSwitch(timeoutOn);      
+        solverPdb78.findOptimalPath(board);
+        
+        int moves = solverPdb78.moves();
+        while (!solverPdb78.isSearchTimeout() && moves <= 50) {
+        	board = new Board(PuzzleDifficultyLevel.HARD);
+        	solverPdb78.findOptimalPath(board);
+            moves = solverPdb78.moves();
+        }
+        solverPdb78.findOptimalPath(new Board(PuzzleConstants.getGoalTiles()));
+        solverPdb78.timeoutSwitch(!timeoutOn);      
         return board;
     }
 
