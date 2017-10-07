@@ -3,6 +3,7 @@
 ### How to Install
 System Requirement :  
 * [Java Virtual Machine version 8]: (Most of the machines already have it)  
+  Notes: Also work on Java 7, but do NOT work on Java 9.
 * [Python 3.5]
 * [py4j] for Python
 * [PIL] or Pillow for Python 3.5
