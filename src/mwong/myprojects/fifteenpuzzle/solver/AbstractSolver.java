@@ -1,10 +1,11 @@
 package mwong.myprojects.fifteenpuzzle.solver;
 
+import java.util.Arrays;
+
 import mwong.myprojects.fifteenpuzzle.solver.components.Board;
 import mwong.myprojects.fifteenpuzzle.solver.components.Direction;
 import mwong.myprojects.fifteenpuzzle.utilities.Stopwatch;
 
-import java.util.Arrays;
 
 /**
  * AbstractSolver is the abstract class extends Solver Interface of 15 puzzle that
@@ -216,12 +217,12 @@ public abstract class AbstractSolver implements Solver {
     // initialize lastDepthSummary from the given board object
     protected final void setLastDepthSummary(Board board) {
         lastDepthSummary = new int[4 * 2];
-        int[] validMoves = board.getValidMoves();
+        boolean[] validMoves = board.getValidMoves();
         for (int i = 0; i < 4; i++) {
-            if (validMoves[i] == 0) {
-                lastDepthSummary[i] = endOfSearch;
+            if (validMoves[i]) {
+            	lastDepthSummary[i + 4] = 1;
             } else {
-                lastDepthSummary[i + 4] = board.getValidMoves()[i];
+                lastDepthSummary[i] = endOfSearch;
             }
         }
     }

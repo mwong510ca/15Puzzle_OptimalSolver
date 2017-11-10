@@ -28,6 +28,7 @@ import java.util.HashMap;
 public class SolverPdbBase extends AbstractSmartSolver {
     private final int offsetReverse = 2;
     private final PatternElementMode action = PatternElementMode.PUZZLE_SOLVER;
+    private final int movesPerFormat = 64;  // 16 tiles x 4 directions
 
     // Additive Pattern Database Components
     protected byte[] patternGroups;
@@ -533,12 +534,12 @@ public class SolverPdbBase extends AbstractSmartSolver {
             int posRowShift, int ptnRowShift, int keyRowShift, int offset) {
         // LEFT or RIGHT
         int oldFmt = pdKeys[keyColShift] % patternFormatSize[ptnColShift];
-        int move = linkFormatMove[ptnColShift][oldFmt * 64 + posColShift * 4 + offset];
+        int move = linkFormatMove[ptnColShift][oldFmt * movesPerFormat + posColShift * 4 + offset];
         pdKeys[keyColShift] += (move >> 8) - oldFmt;
 
         // UP or DOWN
         oldFmt = pdKeys[keyRowShift] % patternFormatSize[ptnRowShift];
-        move = linkFormatMove[ptnRowShift][oldFmt * 64 + posRowShift * 4 + 1 + offset];
+        move = linkFormatMove[ptnRowShift][oldFmt * movesPerFormat + posRowShift * 4 + 1 + offset];
         int shift = move & 0x000F;
         if (shift > 0) {
             pdKeys[keyRowShift] = getKeyPtnShift(ptnRowShift,

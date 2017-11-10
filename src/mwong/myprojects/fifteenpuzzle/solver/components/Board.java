@@ -30,7 +30,7 @@ public class Board implements Serializable {
     private int hashKey2;
     private byte[] tiles;
     private byte[] tilesSym;
-    private int[] validMoves;
+    private boolean[] validMoves;
 
     /**
      * Initializes a Board object, generate a random board.
@@ -119,18 +119,18 @@ public class Board implements Serializable {
 
         tilesSym = PuzzleConstants.tiles2sym(tiles);
 
-        validMoves = new int[4];
+        validMoves = new boolean[4];
         if (zeroX < ROW_SIZE - 1) {
-            validMoves[Direction.RIGHT.getValue()] = 1;
+            validMoves[Direction.RIGHT.getValue()] = true;
         }
         if (zeroY < ROW_SIZE - 1) {
-            validMoves[Direction.DOWN.getValue()] = 1;
+            validMoves[Direction.DOWN.getValue()] = true;
         }
         if (zeroX > 0) {
-            validMoves[Direction.LEFT.getValue()] = 1;
+            validMoves[Direction.LEFT.getValue()] = true;
         }
         if (zeroY > 0) {
-            validMoves[Direction.UP.getValue()] = 1;
+            validMoves[Direction.UP.getValue()] = true;
         }
 
         isIdenticalSymmetry = true;
@@ -141,8 +141,8 @@ public class Board implements Serializable {
             }
         }
         if (isIdenticalSymmetry) {
-            validMoves[Direction.DOWN.getValue()] = 0;
-            validMoves[Direction.UP.getValue()] = 0;
+            validMoves[Direction.DOWN.getValue()] = false;
+            validMoves[Direction.UP.getValue()] = false;
         }
     }
 
@@ -459,7 +459,7 @@ public class Board implements Serializable {
      *
      * @return integer array of represent the valid moves
      */
-    public final int[] getValidMoves() {
+    public final boolean[] getValidMoves() {
         return validMoves;
     }
 

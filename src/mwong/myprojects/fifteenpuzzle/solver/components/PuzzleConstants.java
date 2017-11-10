@@ -98,13 +98,10 @@ public class PuzzleConstants {
      * @return byte array of tiles after symmetry conversion
      */
     public static final byte[] tiles2sym(byte[] original) {
-        final int puzzleSize = PuzzleConstants.getSize();
-        final byte[] symmetryPos = PuzzleConstants.getSymmetryPos();
-        final byte[] symmetryVal = PuzzleConstants.getSymmetryVal();
-        byte[] tiles2sym = new byte[puzzleSize];
+        byte[] tiles2sym = new byte[SIZE];
 
-        for (int i = 0; i < puzzleSize; i++) {
-            tiles2sym[symmetryPos[i]] = symmetryVal[original[i]];
+        for (int i = 0; i < SIZE; i++) {
+            tiles2sym[SYMMETRY_POS[i]] = SYMMETRY_VAL[original[i]];
         }
         return tiles2sym;
     }
