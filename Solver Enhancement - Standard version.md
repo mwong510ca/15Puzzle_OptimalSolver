@@ -42,7 +42,8 @@
    x x x x      x x x x      x x x x      x x x x      x x x x      x x x x      x x x x
    x x x x      x x x x      x x x x      x x x x      x x x x      x x x x      x x x x
    original     1st move     cw:   1      cw:   2      cw:   3      cw:   4      cw:   5
-   ccw: 11      ccw: 10      ccw:  9      ccw:  8      ccw:  7      ccw:  6      ccw:  5  
+   ccw: 11      ccw: 10      ccw:  9      ccw:  8      ccw:  7      ccw:  6      ccw:  5 
+   
                 move: 7      move: 8      move: 9      move: 10     move: 11     move: 12
                 2 3 x x      0 3 x x      3 0 x x      3 1 x x      3 1 x x      0 1 x x
                 0 1 x x      2 1 x x      2 1 x x      2 0 x x      0 2 x x      3 2 x x
@@ -64,26 +65,24 @@ Notes: There are other longer complex circular paths, but those are too expansiv
   * Example 2: Puzzle solved on 1st expansion at depth 67.
   * Example 3: Puzzle solved on 2nd expansion at depth 70.  It slow than hard code order, right will be the 1st move.
 
-  
 <pre>
         Example 1:         Depth
              6  5  9 14     54    (54) Right   -> (54) Down  -> (54) Left    -> (54) Up
              2  0  1 10     56    (37) Left    -> (41) Up    -> (45) Down    -> (51) Right
              8  3 12 13     58    (33) Up      -> (33) Down  -> (35) Left    -> (39) Right
-             4  7 15 11                147             427
-            estimate 54     60    (23) Left    -> (32) Down  -> (33) Up      -> (35) Right
-                            62    (15) Down    -> (18) Left  -> (25) Up      -> (32) Right
+             4  7 15 11     60    (23) Left    -> (32) Down  -> (33) Up      -> (35) Right
+            estimate 54     62    (15) Down    -> (18) Left  -> (25) Up      -> (32) Right
                             64    (11) Down       (11) Left     (14) Up         (20) Right
-                                       163182          164378
                                   Solved  
+
         Example 2:         Depth
             12 11 13 10     59    (59) Right   -> (59) Left  -> (59) Up
              6 15  3 14     61    (56) Right   -> (56) Left  -> (60) Up
-             5  4  9  2                3               4
-             8  7  0  1     63    (40) Up      -> (50) Right -> (53) Left
-            estimate 59     65    (34) Up      -> (41) Right -> (45) Left
-                            67    (16) Up         (26) Right    (38) Left
+             5  4  9  2     63    (40) Up      -> (50) Right -> (53) Left
+             8  7  0  1     65    (34) Up      -> (41) Right -> (45) Left
+            estimate 59     67    (16) Up         (26) Right    (38) Left
                                   Solved  
+
         Example 3:         Depth
             12 10  0 13     64    (64) Right   -> (64) Down  -> (64) Left
             15  9  5 14     66    (53) Right   -> (54) Down  -> (62) Left
