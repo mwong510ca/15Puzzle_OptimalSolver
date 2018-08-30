@@ -1,4 +1,4 @@
-###Advanced Version  
+### Advanced Version  
 Use a reference board to boost the initial estimate closer to solution moves:  
 
 1.  If the initial estimate is way off the optimal solution, it waste a lot of time to scan all the boards until it reach the solution depth.  Boost the initial estimate will reduce the search time.
