@@ -3,11 +3,14 @@ Use a reference board to boost the initial estimate closer to solution moves:
 
 1.  If the initial estimate is way off the optimal solution, it waste a lot of time to scan all the boards until it reach the solution depth.  Boost the initial estimate will reduce the search time.
 
-  The maximum moves of 15 puzzle is 80, and there are 17 boards of it.  Let's take a start point of the selected 80 move board as below and the end point is goal state.    
-  I also use the start point as the goal state.  Now I can have 2 estimates instead of 1, one towards the goal state and the other one towards the 80 move board.
-  If I take a board on the shortest path to the 80 move board that is 5 moves to the 80 move board.  Which means it is exactly (80 - 5) 75 moves towards the goal state.
+  The maximum moves of 15 puzzle is 80, and there are 17 boards of it.  Let's take a start point of the selected 80 move board as below and the end point is goal state.  
+  
+  I also use the start point as the goal state.  Now I can have 2 estimates instead of 1, one towards the goal state and the other one towards the 80 move board.  
+  
+  If I take a board on the shortest path to the 80 move board that is 5 moves to the 80 move board.  Which means it is exactly (80 - 5) 75 moves towards the goal state.  
   If the is off the shortest path and it take 5 moves to the 80 move board, it take at least 75+ moves to the goal state.
-    <pre>
+    
+<pre>
         (80 moves)
       Reference board:      Example 1:      Example 2:      Example 3:      Example 4:
        0 15  9 13           11  0  9 13      0 15  9 13     12 11  9 13     11 15  9 13
@@ -24,35 +27,38 @@ Use a reference board to boost the initial estimate closer to solution moves:
   * First step, move the zero space to the corner.  
   * Second step, rotate the board and make zero at position 15.  
   * Third step, generate the conversion key.  
-    <pre>
+<pre>
      Example
      68 moves board    Step 1         Step 2                            Step 3
      15 11  8  3    15 11  8  0     9 14 12 15    0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15
      12  7  4  0 -> 12  7  4  3 -> 13 10  7 11 -> |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
      14 10  6  5    14 10  6  5     2  6  4  8    0 13  9 15 11 14 10  7 12  1  6  8  3  5  2  4
-       9 13  2  1     9 13  2  1     1  5  3  0</pre>
+      9 13  2  1     9 13  2  1     1  5  3  0</pre>
 
   I divided the board in 4 groups.  For each entry, it will store 4 boards per group.
-    <pre>
+<pre>
         2 2 1 1      Group     0 1 x x    1 0 x x    1 2 x x    1 2 x x
         2 2 1 1      idx 2:    3 2 x x    3 2 x x    3 0 x x    0 3 x x
         3 3 0 0                x x x x    x x x x    x x x x    x x x x
         3 3 0 0                x x x x    x x x x    x x x x    x x x x  
+
                      Group     x x 3 0    x x 3 1    x x 3 1    x x 0 1
                      idx 1:    x x 2 1    x x 2 0    x x 0 2    x x 3 2
                                x x x x    x x x x    x x x x    x x x x
                                x x x x    x x x x    x x x x    x x x x  
+
                      Group     x x x x    x x x x    x x x x    x x x x
                      idx 3:    x x x x    x x x x    x x x x    x x x x
                                3 2 x x    3 2 x x    3 0 x x    0 3 x x
                                0 1 x x    1 0 x x    1 2 x x    1 2 x x
                                Transfer to symmetry board and store as Group 1  
+
                      Group     x x x x    x x x x    x x x x    x x x x
                      idx 0:    x x x x    x x x x    x x x x    x x x x
                                x x 2 3    x x 2 3    x x 0 3    x x 3 0
-                               x x 1 0    x x 0 1    x x 2 1    x x 2 1</pre>
-                               
-    If the board matched exactly the same these board, it will use pre-stored value.  Otherwise, only the corner zero will be use for advanced estimate calculation.
+                               x x 1 0    x x 0 1    x x 2 1    x x 2 1 </pre>
+
+If the board matched exactly the same these board, it will use pre-stored value.  Otherwise, only the corner zero will be use for advanced estimate calculation.
 
 3.  The cost is tiny.  Compare to million of expansions, checking an additional thousand of reference boards is cheap.  To pick a good range is a little tricky, I try my best to explain in English. 
   * At least 30 initial estimate from goal state. - For any puzzle is far away from the goal state, it will check the reference collection.  
@@ -69,6 +75,7 @@ Use a reference board to boost the initial estimate closer to solution moves:
        max range:     out of      (67 - 52) 15    out of      (65 - 56)  9
        dist to ref:   range                 11    range                  3
        new est:       no change   (67 - 11) 56    no change   (65 -  3) 62   
+       
        Example 2:    Reference 1:   Reference 2:   Reference 3:   Reference 4:   Reference 5:
        12 15 4 8       0 15 4 8       0 12 8 3       0 15 8 3       0 15 4 8      12 15 8 0
        14  7 6 3      12 11 7 3      14 15 7 4      12 14 7 4      12 14 7 3      14  7 4 3
@@ -95,7 +102,7 @@ Use a reference board to boost the initial estimate closer to solution moves:
   * Over 8 seconds using Advanced Search, always store the board.
 
   Each store board contain a set of 4 boards as describe above.  These other 3 boards will store an estimate without solution.  It will wait for next system update to complete the full set.  
-  <pre>
+<pre>
     Example 1:    Standard estimate: 52    Advanced estimate: same      Actual moves: 68    
                   Search time: 26.4s       
                   Add to reference collection after the search, either std/adv version.
@@ -121,7 +128,7 @@ Use a reference board to boost the initial estimate closer to solution moves:
     15 11  0  3   Search time: 8.4s        Search time: 0.47s      
     12  7  8  4   Skip                     Skip         
     14 10  6  5 
-     9 13  2  1</pre>
+     9 13  2  1 </pre>
 
 [video]: https://youtu.be/QBhoM1RySPQ
 
