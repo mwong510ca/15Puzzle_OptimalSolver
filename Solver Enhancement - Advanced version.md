@@ -80,7 +80,7 @@ If the board matched exactly the same these board, it will use pre-stored value.
        12 15 4 8       0 15 4 8       0 12 8 3       0 15 8 3       0 15 4 8      12 15 8 0
        14  7 6 3      12 11 7 3      14 15 7 4      12 14 7 4      12 14 7 3      14  7 4 3
        11 13 0 2      10 14 6 2      11 13 6 2      11 13 6 2      11 13 6 2      11 13 6 2
-       10  9 5 1       9 13   1      10  9 5 1      10  9 5 1      10  9 5 1      10  9 5 1
+       10  9 5 1       9 13 5 1      10  9 5 1      10  9 5 1      10  9 5 1      10  9 5 1
        init est 52
        ref moves:            68             68             70             68             69
        max range:    (68-52) 16     (68-58) 10     (70-60) 10      (68-62) 6      (69-64) 5
@@ -110,8 +110,8 @@ If the board matched exactly the same these board, it will use pre-stored value.
                        lookup 0           lookup 1           lookup 2           lookup 3
     15 11  8  3        12 15  4  0        12 15  4  7        12 15  4  7        12 15  0  7 
     12 14  7  4        11  8  3  7        11  8  3  0        11  8  0  3        11  8  4  3 
-     0 13  6  2        14 10  6  2        14 10  6  2        14 10  6  2        14 10  6  2        
-    10  9  5  1         4  3  5  1         4  3  5  1         4  3  5  1         4  3  5  1   
+     0 13  6  2        13 10  6  2        13 10  6  2        13 10  6  2        13 10  6  2        
+    10  9  5  1         9 14  5  1         9 14  5  1         9 14  5  1         9 14  5  1   
     store value    est (68 - 3) 65    est (68 - 2) 66    est (68 - 1) 67                 68
     partial solution            NO                 NO                 NO                YES
     after review full set

@@ -9,7 +9,7 @@
   * pattern_555_default.db
   * pattern_663_default.db
   * pattern_78_default.db
-  * reference_accumulator.db  
+  * reference.db  
     The cutoff limit at 8 seconds with 30 default reference boards.
 
 * reference_accumlator.db file - latest collection from my local machine.  

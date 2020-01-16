@@ -1,320 +1,288 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
-import mwong.myprojects.fifteenpuzzle.solver.HeuristicOptions;
-import mwong.myprojects.fifteenpuzzle.solver.SmartSolver;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverMd;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdbWd;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverWd;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverWdMd;
-import mwong.myprojects.fifteenpuzzle.solver.components.Board;
-import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
-
+import java.io.IOException;
 import java.rmi.RemoteException;
 
+import mwong.myprojects.fifteenpuzzle.puzzle.Board;
+import mwong.myprojects.fifteenpuzzle.puzzle.HeuristicOptions;
+import mwong.myprojects.fifteenpuzzle.puzzle.PatternOptions;
+import mwong.myprojects.fifteenpuzzle.solution.Solver;
+import mwong.myprojects.fifteenpuzzle.solution.SolverBuilder;
+import mwong.myprojects.fifteenpuzzle.solution.Solver.ApplicationMode;
+import mwong.myprojects.fifteenpuzzle.solution.SolverQuick;
+
 /**
- * SolverHeuristic is the console application extends AbstractApplication.  User can select the
- * choice of heuristic function and version.  It takes a 16 numbers or choice of random board.
- * It display the process time and number of nodes generated at each depth.  It will timeout
- * after timeout setting (in resources/config.properties or default is 10 seconds), except pattern
- * database 78.
+ * SolverHeuristic is the final concrete class of console application extends AbstractApplication.
+ * User can select the choice of heuristic function and version. It takes a 16 numbers or choice
+ * of random board. It display the process time and number of nodes generated at each depth.
+ * It will timeout after timeout setting (in resources/config.properties or default is 10 seconds),
+ * except pattern database 78.
  *
- * <p>Dependencies : AbstractApplication.java, Board.java, PatternOptions.java,
- *                   HeuristicOptions.java, SmartSolver.java, SmartSolverMd.java,
- *                   SmartSolverPdb.java, SmartSolverPdbWd.java, SmartSolverWd.java,
- *                   SmartSolverWdMd.java
+ * <p>Dependencies : AbstractApplication.java, Board.java, HeuristicOptions.java,
+ *                   PatternOptions.java, Solver.java, SolverBuilder.java, SolverQuick.java,
+ *                   UniversalSolverFactory.java
  *
- * @author Meisze Wong
- *         www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author <a href="http://www.linkedin.com/pub/macy-wong/46/550/37b/"
+ *            target="_blank">Meisze Wong (linkedin)</a>
+ * @see <a href="http://www.github.com/mwong510ca/15PuzzleOptimalSolver/"
+ *         target="_blank">GitHub (full project)</a>
  */
-public class SolverHeuristic extends AbstractApplication {
-    private SmartSolver solver;
-    private HeuristicOptions inUseHeuristic;
+public final class SolverHeuristic extends AbstractApplication {
+  /** The variable of custom maximum timeout limit. */
+  private static final int FIXED_MAX_TIMEOUT = 30;
+  /** The default heuristic function to start the application. */
+  private static final MenuHeuristic DEFAULT_HEURISTIC = MenuHeuristic.PATTERN_DB_663;
+  /** The instance of SolverBuilder. */
+  private SolverBuilder builder;
+  /** The instance of Solver object. */
+  private Solver solver;
+  /** The instance of SolverQuick object for non optimal solution. */
+  private SolverQuick quickSolver;
+  /** The MenuOptions array of default menu. */
+  private final MenuOptions[] defaultMenu;
+
+  // Verify the sub-menu.
+  static {
+    if (!verifySubmenuOrdering(MenuHeuristic.values())) {
+      throw new RuntimeException(MenuHeuristic.class.getName() + " - check distint key setting");
+    }
+  }
+
+  /**
+   * Create SolverHeuristic application object.
+   *
+   * @throws IOException any unexpected IOException
+   */
+  public SolverHeuristic() throws IOException {
+    super(FIXED_MAX_TIMEOUT);
+    builder = new SolverBuilder(ApplicationMode.CONSOLE, true, getTimeoutLimit());
+    builder.setReference(getRefConnection());
+    solver = builder.createSolver(DEFAULT_HEURISTIC.getHeuristic(), true);
+    quickSolver = new SolverQuick();
+    defaultMenu = new MenuOptions[] {MenuOptions.CHANGE_HEURISTIC, MenuOptions.TIMEOUT_LIMIT,
+        MenuOptions.CREATE_PUZZLE, MenuOptions.KEY_IN_PUZZLE};
+  }
+
+  /**
+   * Display a list of main menu options.
+   *
+   * @return Board object to main function
+   */
+  private Board menuMain() {
+    return menuMain(null, -1, null);
+  }
+
+  /**
+   * Display a list of main menu options with solution display from search results.
+   *
+   * @param lastBoard the last search board with solution
+   * @param steps the given number of moves from solution
+   * @param moves the Board.Move array of solution
+   * @return Board object to main function
+   */
+  private Board menuMain(final Board lastBoard, final int steps, final Board.Move[] moves) {
+    boolean[] mainList = createMenuList(defaultMenu);
+    boolean flagSolution = false;
+    if (lastBoard != null) {
+      mainList = createMenuList(defaultMenu, MenuOptions.LIST_MOVES, MenuOptions.DISPLAY_MOVES);
+      flagSolution = true;
+    }
+    if (solver.getHeuristic() == HeuristicOptions.PD78) {
+      mainList[MenuOptions.TIMEOUT_LIMIT.getIndex()] = false;
+    }
+    String optionStr = menuOption(mainList, solver, MenuHeuristic.class);
+
+    Board board = null;
+    while (true) {
+      if (scanner.hasNextInt()) {
+        board = keyInBoard();
+        if (board != null) {
+          return board;
+        }
+        System.out.println(optionStr);
+      } else {
+        char choice = scanner.next().toUpperCase().charAt(0);
+        if (choice == 'Q') {
+          appExit();
+        } else if (mainList[MenuOptions.CHANGE_HEURISTIC.getIndex()] && choice == 'C') {
+          solver = menuChangeSolver(builder, solver, MenuHeuristic.class);
+          solver.printDescription();
+          if (solver.getHeuristic() == HeuristicOptions.PD78) {
+            mainList[MenuOptions.TIMEOUT_FEATURE.getIndex()] = true;
+          } else {
+            mainList[MenuOptions.TIMEOUT_FEATURE.getIndex()] = false;
+          }
+          mainList[MenuOptions.CHANGE_HEURISTIC.getIndex()] = false;
+          optionStr = menuOption(mainList, solver);
+        } else if (mainList[MenuOptions.SWITCH_VERSION.getIndex()] && choice == 'V') {
+          builder.setVersion(flipVersion(solver));
+          mainList[MenuOptions.SWITCH_VERSION.getIndex()] = false;
+          optionStr = menuOption(mainList, solver);
+        } else if (mainList[MenuOptions.TIMEOUT_LIMIT.getIndex()] && choice == 'T'
+            && solver.isTimerOn()) {
+          changeTimeout(solver);
+          builder.setTimeoutLimit(getTimeoutLimit());
+          mainList[MenuOptions.TIMEOUT_LIMIT.getIndex()] = false;
+          optionStr = menuOption(mainList, solver);
+        } else if (flagSolution) {
+          if (choice == 'L') {
+            solutionList(lastBoard, steps, moves);
+          } else if (choice == 'D') {
+            solutionDetail(lastBoard, steps, moves);
+          } else {
+            board = createBoard(choice);
+            if (board != null) {
+              return board;
+            }
+          }
+          flagSolution = false;
+          mainList = createMenuList(defaultMenu);
+          optionStr = menuOption(mainList, solver);
+        } else {
+          board = createBoard(choice);
+          if (board != null) {
+            return board;
+          }
+          System.out.println(optionStr);
+        }
+      }
+    }
+  }
+
+  @Override
+  public void run() {
+    solver.printDescription();
+    Board board = menuMain();
+    while (true) {
+      System.out.print(solver.getHeuristic().getDescription());
+      if (solver.getVersion().isOptimum()) {
+        System.out.print(" (Otpimum version) ");
+      } else {
+        System.out.print(" (Prime version) ");
+      }
+
+      if (solver.isTimerOn()) {
+        System.out.println("will timeout at " + solver.getTimeoutLimit() + "s:");
+      } else {
+        System.out.println("will run until solution found:");
+      }
+
+      System.out.println(board);
+      if (!board.isSolvable()) {
+        System.out.println("The board is unsolvable, try again!\n");
+        board = menuMain();
+        continue;
+      }
+
+      System.out.println(solver.heuristic(board));
+
+      solver.findOptimalPath(board);
+      if (solver.isSearchTimeout()) {
+        System.out.println("Search terminated at " + solver.searchTime() + "s.\n");
+        quickSolver.findPathQuickSearch(board, solver);
+        System.out.println("Alternative non optimal solution:");
+        System.out.println("Number of moves " + quickSolver.moves() + ", search time "
+            + quickSolver.searchTime() + " seconds.\n");
+
+        board = menuMain(board, quickSolver.moves(), quickSolver.solution());
+      } else {
+        System.out.println("Minimum number of moves = "
+            + solver.moves() + "\n");
+
+        // Notes: updateLastSearch is optional.
+        if (solver.isNewReference()) {
+          try {
+            getRefConnection().updateLastSearch(solver);
+          } catch (RemoteException ex) {
+            // Standalone.
+          }
+        }
+        board = menuMain(board, solver.moves(), solver.solution());
+      }
+    }
+  }
+
+  /**
+   * Sub-menu of heuristic choices with easy maintenance.
+   * Notes: Remove an item, simply comment out the item.
+   *        For ordering: simply change the order numbers, make sure from 1 to size.
+   *
+   * @author <a href="http://www.linkedin.com/pub/macy-wong/46/550/37b/"
+   *            target="_blank">Meisze Wong (linkedin)</a>
+   */
+  private enum MenuHeuristic implements SubmenuHeuristic {
+    /** Manhattan distance. */
+    MANHATTAN_DISTANCE(1, HeuristicOptions.MD, false, "SolverMd"),
+    /** Manhattan distance with linear conflict. */
+    MANHATTAN_LINEAR_CONFLICT(2, HeuristicOptions.MDLC, false, "SolverMd"),
+    /** Walking distance. */
+    WALKING_DISTANCE(3, HeuristicOptions.WD, false, "SolverWd"),
+    /** Walking distance with Manhattan distance. */
+    MANHATTAN_X_WALKING(4, HeuristicOptions.WDMD, false, "SolverWdMd"),
+    /** Pattern database use 555 pattern. */
+    PATTERN_DB_555(5, HeuristicOptions.PD555, false, "SolverPdb"),
+    /** Pattern database use 555 pattern with Walking distance. */
+    PDB555_X_WALKING(6, HeuristicOptions.PD555, true, "SolverPdbWd"),
+    /** Pattern database use 663 pattern. */
+    PATTERN_DB_663(7, HeuristicOptions.PD663, false, "SolverPdb"),
+    /** Pattern database use 663 pattern with Walking distance. */
+    PDB663_X_WALKING(8, HeuristicOptions.PD663, true, "SolverPdbWd"),
+    /** Pattern database use 78 pattern. */
+    PATTERN_DB_78(9, HeuristicOptions.PD78, false, "SolverPdb");
+
+    /** The variable of order number. */
+    private int order;
+    /** The variable of HeuristicOptions. */
+    private HeuristicOptions heuristic;
+    /** The boolean value of walking distance. */
+    private boolean optionalWd;
+    /** The variable of String of simple class name. */
+    private String className;
 
     /**
-     * Initial SolverHeuristic object.
+     * Initialize the heuristic menu option.
+     *
+     * @param order the given menu order
+     * @param heuristic the given HeuristicOptions
+     * @param optionalWd the boolean flag represents walking distance in use
+     * @param className the given String of simple class name
      */
-    public SolverHeuristic() {
-        super();
-        solver = new SmartSolverPdbWd(defaultPattern, refConnection);
-        inUseHeuristic = solver.getHeuristicOptions();
-        setSolverVersion();
+    MenuHeuristic(final int order, final HeuristicOptions heuristic,
+        final boolean optionalWd, final String className) {
+      this.order = order;
+      this.heuristic = heuristic;
+      this.optionalWd = optionalWd;
+      this.className = className;
     }
 
-    private void setSolverVersion() {
-        solver.setReferenceConnection(refConnection);
-        printConnection();
+    @Override
+    public int getOrder() {
+      return order;
     }
 
-    // display the solver options and change it with the user's choice
-    private Board menuChangeSolver() {
-        menuOption('s');
-        boolean pending = true;
-        while (pending) {
-            if (!scanner.hasNextInt()) {
-                scanner.next();
-                continue;
-            }
-            int option = scanner.nextInt();
-
-            switch (option) {
-                case 0:
-                    pending = false;
-                    break;
-                case 1:
-                    if (inUseHeuristic != HeuristicOptions.MD) {
-                        solver = new SmartSolverMd(refConnection);
-                    } else {
-                        System.out.println("No Change, currently in use.");
-                    }
-                    pending = false;
-                    break;
-                case 2:
-                    if (inUseHeuristic != HeuristicOptions.MDLC) {
-                        solver = new SmartSolverMd(tagLinearConflict, refConnection);
-                    } else {
-                        System.out.println("No Change, currently in use.");
-                    }
-                    pending = false;
-                    break;
-                case 3:
-                    if (inUseHeuristic != HeuristicOptions.WD) {
-                        solver = new SmartSolverWd(refConnection);
-                    } else {
-                        System.out.println("No Change, currently in use.");
-                    }
-                    pending = false;
-                    break;
-                case 4:
-                    if (inUseHeuristic != HeuristicOptions.WDMD) {
-                        solver = new SmartSolverWdMd(refConnection);
-                    } else {
-                        System.out.println("No Change, currently in use.");
-                    }
-                    pending = false;
-                    break;
-                case 5:
-                    if (inUseHeuristic != HeuristicOptions.PD555) {
-                        solver = new SmartSolverPdbWd(PatternOptions.Pattern_555, refConnection);
-                    } else {
-                        System.out.println("No Change, currently in use.");
-                    }
-                    pending = false;
-                    break;
-                case 6:
-                    if (inUseHeuristic != HeuristicOptions.PD663) {
-                        solver = new SmartSolverPdbWd(PatternOptions.Pattern_663, refConnection);
-                    } else {
-                        System.out.println("No Change, currently in use.");
-                    }
-                    pending = false;
-                    break;
-                case 7:
-                    if (inUseHeuristic != HeuristicOptions.PD78) {
-                        solver = new SmartSolverPdb(PatternOptions.Pattern_78, refConnection);
-                    } else {
-                        System.out.println("No Change, currently in use.");
-                    }
-                    pending = false;
-                    break;
-                default:
-                    System.out.println("Enter '1 - 5' for heuristic function, '0' no change");
-            }
-        }
-
-        inUseHeuristic = solver.getHeuristicOptions();
-        solver.versionSwitch(flagAdvVersion);
-        solver.setReferenceConnection(refConnection);
-        solver.printDescription();
-        if (inUseHeuristic == HeuristicOptions.PD78) {
-            solver.timeoutSwitch(timeoutOff);
-        }
-        return menuSub();
+    @Override
+    public HeuristicOptions getHeuristic() {
+      return heuristic;
     }
 
-    // display a list of main menu options
-    private Board menuMain() {
-        menuOption('q');
-        menuOption('c');
-        menuOption(flagAdvVersion);
-        menuOption('b');
-
-        while (true) {
-            if (scanner.hasNextInt()) {
-                return keyInBoard();
-            }
-
-            char choice = scanner.next().charAt(0);
-            if (choice == 'q') {
-                System.out.println("Goodbye!\n");
-                System.exit(0);
-            }
-
-            Board board = action(choice, null);
-            if (board != null) {
-                return board;
-            }
-            System.out.println("Please enter 'Q', 'C', 'V', 'E', 'M', 'H', 'R'"
-                    + " or 16 numbers (0 - 15):");
-        }
+    @Override
+    public PatternOptions getPtnOption() {
+      throw new UnsupportedOperationException();
     }
 
-    // display a menu to create a board object
-    private Board menuCreateBoard() {
-        menuOption('q');
-        menuOption('b');
-
-        while (true) {
-            if (scanner.hasNextInt()) {
-                return keyInBoard();
-            }
-
-            char choice = scanner.next().charAt(0);
-            Board board = createBoard(choice);
-            if (board != null) {
-                return board;
-            }
-            System.out.println("Please enter 'Q', 'E', 'M', 'H', 'R' or 16 numbers (0 - 15):");
-        }
+    @Override
+    public boolean getWdFlag() {
+      return optionalWd;
     }
 
-    // display a list of options after user changed the solver
-    private Board menuSub() {
-        menuOption('q');
-        menuOption(flagAdvVersion);
-        menuOption('b');
-
-        while (true) {
-            if (scanner.hasNextInt()) {
-                return keyInBoard();
-            }
-
-            char choice = scanner.next().charAt(0);
-            if (choice == 'q') {
-                System.out.println("Goodbye!\n");
-                System.exit(0);
-            }
-
-            Board board = action(choice, null);
-            if (board != null) {
-                return board;
-            }
-            System.out.println("Please enter 'Q', 'V', 'E', 'M', 'H', 'R' or 16 numbers (0 - 15):");
-        }
+    @Override
+    public String getClassName() {
+      return className;
     }
 
-    // display a list of options after the puzzle has solved
-    private Board menuSubSolution(Board initial) {
-        menuOption('q');
-        menuOption('m');
-        menuOption('c');
-        menuOption(flagAdvVersion);
-        menuOption('b');
-
-        while (true) {
-            if (scanner.hasNextInt()) {
-                return keyInBoard();
-            }
-
-            char choice = scanner.next().charAt(0);
-            if (choice == 'q') {
-                System.out.println("Goodbye!\n");
-                System.exit(0);
-            }
-
-            Board board = action(choice, initial);
-            if (board != null) {
-                return board;
-            }
-            System.out.println("Please enter 'L', 'D', 'Q', 'C', 'V', 'E', 'M', 'H', 'R'"
-                    + " or 16 numbers"
-                    + " (0 - 15):");
-        }
+    @Override
+    public String getMessage() {
+      throw new UnsupportedOperationException();
     }
-
-    // create a board object after the user pick an option from the menu
-    private Board action(char choice, Board initial) {
-        switch (choice) {
-            case 'L': case 'l':
-                solutionList(solver);
-                return menuMain();
-            case 'D': case'd':
-                solutionDetail(initial, solver);
-                return menuMain();
-            case 'C': case 'c':
-                return menuChangeSolver();
-            case 'V': case 'v':
-                flipVersion(solver);
-                return menuCreateBoard();
-            case 'E':  case 'e': case 'M': case 'm': case 'H': case 'h':case 'R': case 'r':
-                return createBoard(choice);
-            default: return null;
-        }
-    }
-
-    /**
-     * Start the application.
-     */
-    public void run() {
-        solver.printDescription();
-        solver.messageSwitch(messageOn);
-        solver.versionSwitch(flagAdvVersion);
-
-        Board board = menuMain();
-        while (true) {
-            if (!testConnection()) {
-                setSolverVersion();
-            }
-
-            System.out.print(solver.getHeuristicOptions().getDescription());
-            if (flagAdvVersion) {
-                System.out.print(" (Advanced version) ");
-            } else {
-                System.out.print(" (Standard version) ");
-            }
-
-            if (solver.isFlagTimeout()) {
-                System.out.println("will timeout at " + solver.getSearchTimeoutLimit() + "s:");
-            } else {
-                System.out.println("will run until solution found:");
-            }
-
-            System.out.println(board);
-            if (!board.isSolvable()) {
-                System.out.println("The board is unsolvable, try again!\n");
-                board = menuMain();
-                continue;
-            }
-
-            solver.findOptimalPath(board);
-
-            if (solver.isSearchTimeout()) {
-                System.out.println("Search terminated after " + timeoutLimit + "s.\n");
-                board = menuMain();
-            } else {
-                solutionSummary(solver);
-                // Notes: updateLastSearch is optional.
-                if (solver.getClass().getSimpleName().equals("SmartSolverPdb")
-                        && solver.getHeuristicOptions() == HeuristicOptions.PD78
-                        && ((SmartSolverPdb) solver).isAddedReference()) {
-                    try {
-                        refConnection.updateLastSearch(board, solver);
-                    } catch (RemoteException ex) {
-                        System.err.println("Counnection lost: " + ex);
-                        loadReferenceConnection();
-                        setSolverVersion();
-                    }
-                }
-
-                if (solver.moves() > 0) {
-                    System.out.println("A");
-                    board = menuSubSolution(board);
-                } else {
-                    // search has timeout after 10 seconds.
-                    System.out.println("B");
-                    board = menuMain();
-                }
-            }
-        }
-    }
+  }
 }

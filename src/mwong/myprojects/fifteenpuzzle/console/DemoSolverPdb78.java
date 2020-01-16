@@ -1,161 +1,164 @@
 package mwong.myprojects.fifteenpuzzle.console;
 
-import mwong.myprojects.fifteenpuzzle.solver.SmartSolverExtra;
-import mwong.myprojects.fifteenpuzzle.solver.advanced.SmartSolverPdb;
-import mwong.myprojects.fifteenpuzzle.solver.components.Board;
-import mwong.myprojects.fifteenpuzzle.solver.components.PatternOptions;
-
+import java.io.IOException;
 import java.rmi.RemoteException;
 
+import mwong.myprojects.fifteenpuzzle.puzzle.Board;
+import mwong.myprojects.fifteenpuzzle.puzzle.HeuristicOptions;
+import mwong.myprojects.fifteenpuzzle.solution.Solver;
+import mwong.myprojects.fifteenpuzzle.solution.Solver.ApplicationMode;
+import mwong.myprojects.fifteenpuzzle.solution.SolverBuilder;
+import mwong.myprojects.fifteenpuzzle.solution.ai.Reference.ConnectionType;
+
 /**
- * DemoSolverPdb78 is the console application extends AbstractApplication.  It use default
- * pattern database 7-8 heuristic function with monitor the changes on reference collection.
- * It takes a 16 numbers or choice of random board. It solved with standard version and
- * advanced version, while the estimate are different.  If it takes more than cutoff setting
- * with buffer and added to reference collection, it will display the new count of reference
- * collection.  It will search again to showed the difference after the puzzle added to the
- * reference collection.
+ * DemoSolverPdb78 is the final concrete class of console application extends AbstractApplication.
+ * It use pattern database 7-8 heuristic function with monitor the changes on reference collection.
+ * It takes a 16 numbers or choice of random board. It solved with prime and optimum version, while
+ * the estimate are different. If it takes more than cutoff setting with buffer and added to
+ * reference collection, it will display the new count of reference collection. It will search again
+ * and showed the reduced search time after the puzzle added to the reference collection.
  *
- * <p>Dependencies : AdvancedRecord.java, Board.java, PatternOptions.java, SmartSolverExtra.java,
- *                   SmartSolverPdbBase.java
+ * <p>Dependencies : AbstractApplication.java, Board.java, SolverBuilder.java, Reference.java,
+ *                   SolverPdb78.java
  *
- * @author Meisze Wong
- *         www.linkedin.com/pub/macy-wong/46/550/37b/
+ * @author <a href="http://www.linkedin.com/pub/macy-wong/46/550/37b/"
+ *            target="_blank">Meisze Wong (linkedin)</a>
+ * @see <a href="http://www.github.com/mwong510ca/15PuzzleOptimalSolver/"
+ *         target="_blank">GitHub (full project)</a>
  */
-public class DemoSolverPdb78 extends AbstractApplication {
-    private SmartSolverPdb solverPdb78;
-    private SmartSolverExtra extra;
+public final class DemoSolverPdb78 extends AbstractApplication {
+  /** The instance of Solver object using pattern database 78. */
+  private Solver solver;
 
-    /**
-     * Initial DemoSolverPdb78 object.
-     */
-    public DemoSolverPdb78() {
-        super();
-        solverPdb78 = new SmartSolverPdb(PatternOptions.Pattern_78, refConnection);
-        solverPdb78.timeoutSwitch(timeoutOff);
-        extra = new SmartSolverExtra();
-        setSolverVersion();
-    }
+  /**
+   * Create DemoSolverPdb78 application object.
+   *
+   * @throws IOException any unexpected IOException
+   */
+  public DemoSolverPdb78() throws IOException {
+    super(ConnectionType.REMOTESERVER);
+    SolverBuilder builder = new SolverBuilder(ApplicationMode.CONSOLE, true);
+    builder.setReference(getRefConnection());
+    solver = builder.createSolver(HeuristicOptions.PD78);
+  }
 
-    private void setSolverVersion() {
-        loadReferenceConnection();
-        solverPdb78.setReferenceConnection(refConnection);
-        printConnection();
-    }
+  /**
+   * It take a solver and a 15 puzzle board with pattern database 78 standard version.
+   * Solver will automatically add to reference collection. And search again to display the
+   * searching time has improved.
+   *
+   * @param board the given Board object
+   * @throws IOException any unexpected IOException
+   */
+  private void solvePuzzle(final Board board) throws IOException {
+    try {
+      if (referenceContains(board)) {
+        System.out.println("\t\tThis is NOT a reference board.\n");
+      } else {
+        System.out.println("\t\tExists in stored reference collection.\n");
+      }
+      solver.shiftPrime();
+      int heuristicStandard = solver.heuristicBasis(board);
 
-    // It take a solver and a 15 puzzle board with pattern database 78 standard version.
-    // Solver will automatically add to reference collection. And search again to display the
-    // searching time has improved.
-    private void solvePuzzle(Board board) {
-        try {
-            if (extra.advancedContains(board, false, refConnection.getActiveMap()) == null) {
-                System.out.println("\t\tThis is NOT a reference board.\n");
-            } else {
-                System.out.println("\t\tExists in stored reference collection.\n");
-                solverPdb78.timeoutSwitch(timeoutOn);
-            }
-            solverPdb78.versionSwitch(!tagAdvanced);
-            int heuristicStandard = solverPdb78.heuristicStandard(board);
+      System.out.println("Standard Estimate\t" + heuristicStandard);
+      solver.findOptimalPath(board);
+      if (solver.isSearchTimeout()) {
+        System.out.println("\t\tTimeout: " + solver.searchTime() + "s at depth "
+            + solver.searchDepth() + "\t"
+            + solver.searchNodeCount());
+      } else {
+        System.out.printf("\t\tTotal : %-15s Time : "
+            + solver.searchTime() + "s\n\n", solver.searchNodeCount());
+      }
 
-            System.out.println("Standard Estimate\t" + heuristicStandard);
-            solverPdb78.findOptimalPath(board);
-            if (solverPdb78.isSearchTimeout()) {
-                System.out.println("\t\tTimeout: " + solverPdb78.searchTime() + "s at depth "
-                        + solverPdb78.searchDepth() + "\t"
-                        + solverPdb78.searchNodeCount());
-            } else {
-                System.out.printf("\t\tTotal : %-15s  Time : "
-                        + solverPdb78.searchTime() + "s\n\n", solverPdb78.searchNodeCount());
-            }
-            if (solverPdb78.isAddedReference()) {
-                System.out.println("System detect the dvanced estimate is the same, added to"
-                        + " reference collection after the search.");
-                System.out.println(refConnection.getActiveMap().size()
-                        + " reference board in system.\n");
-                refConnection.updateLastSearch(solverPdb78);
-            }
+      boolean flagNewReference = solver.isNewReference();
+      if (flagNewReference) {
+        System.out.println("System detect the boost estimate is the same, added to"
+            + " reference collection after the search.");
+        System.out.println(getRefConnection().getActiveMap().size()
+            + " reference board in system.\n");
+      }
 
-            solverPdb78.timeoutSwitch(timeoutOff);
-            solverPdb78.versionSwitch(tagAdvanced);
-            int heuristicAdvanced = solverPdb78.heuristicAdvanced(board);
-            if (heuristicStandard == heuristicAdvanced) {
-                System.out.println("Advanced Estimate\t" + "Same value");
-            } else {
-                final boolean justAdded = solverPdb78.isAddedReference();
-                System.out.println("Advanced Estimate \t" + heuristicAdvanced);
-                solverPdb78.findOptimalPath(board);
-                System.out.printf("\t\tTotal : %-15s  Time : "
-                        + solverPdb78.searchTime() + "s\n", solverPdb78.searchNodeCount());
-                if (justAdded != solverPdb78.isAddedReference()) {
-                    System.out.println("\nIt added to reference collection after the search.");
-                    System.out.println(refConnection.getActiveMap().size()
-                            + " reference board in system.\n");
-                    heuristicAdvanced = solverPdb78.heuristicAdvanced(board);
-                    System.out.println("Estimate change to\t" + heuristicAdvanced
-                            + "\t\t(Search again)");
-                    solverPdb78.findOptimalPath(board);
-                    System.out.printf("\t\tTotal : %-15s  Time : "
-                            + solverPdb78.searchTime() + "s\n", solverPdb78.searchNodeCount());
-                }
-                if (justAdded) {
-                    refConnection.updateLastSearch(board, solverPdb78);
-                }
-            }
-        } catch (RemoteException ex) {
-            System.err.println("Counnection lost: " + ex);
-            loadReferenceConnection();
-            setSolverVersion();
-            System.out.println("Try again:");
-            solvePuzzle(board);
+      if (isRequestedRemote()) {
+        resetRemoteConnection(solver);
+      }
+
+      solver.shiftOptimum();
+      int heuristicAdvanced = solver.heuristicBoost(board);
+      if (heuristicStandard == heuristicAdvanced) {
+        System.out.println("Advanced Estimate\t" + "Same value");
+      } else {
+        System.out.println("Advanced Estimate \t" + heuristicAdvanced);
+        solver.findOptimalPath(board);
+        System.out.printf("\t\tTotal : %-15s Time : "
+            + solver.searchTime() + "s\n", solver.searchNodeCount());
+
+        if (solver.isNewReference()) {
+          flagNewReference = true;
+          System.out.println("\nIt added to reference collection after the search.");
+          System.out.println(getRefConnection().getActiveMap().size()
+              + " reference board in system.\n");
+          heuristicAdvanced = solver.heuristicBoost(board);
+          System.out.println("Estimate change to\t" + heuristicAdvanced
+              + "\t\t(Search again)");
+          solver.findOptimalPath(board);
+          System.out.printf("\t\tTotal : %-15s Time : "
+              + solver.searchTime() + "s\n", solver.searchNodeCount());
         }
-    }
 
-    /**
-     * Start the application.
-     */
-    public void run() {
-        try {
-            System.out.println(refConnection.getActiveMap().size()
-                    + " reference boards in system.");
-        } catch (RemoteException ex) {
-            System.err.println("Counnection lost: " + ex);
-            System.exit(0);
+        if (flagNewReference) {
+          System.out.println("System update in process, please wait...");
+          getRefConnection().updateLastSearch(solver, board);
+          System.out.println("System update completed.");
         }
-        while (true) {
-            menuOption('q');
-            menuOption('b');
-
-            Board board = null;
-            while (true) {
-                if (scanner.hasNextInt()) {
-                    board = keyInBoard();
-                    break;
-                }
-                char choice = scanner.next().charAt(0);
-                if (choice == 'q') {
-                    System.out.println("Goodbye!\n");
-                    System.exit(0);
-                }
-                board = createBoard(choice);
-                if (board != null) {
-                    break;
-                }
-                System.out.println("Please enter 'Q', 'E', 'M', 'H', 'R' or 16 numbers (0 - 15):");
-            }
-
-            if (!testConnection()) {
-                setSolverVersion();
-            } else {
-                System.out.println();
-            }
-            System.out.print(board);
-
-            if (board.isSolvable()) {
-                solvePuzzle(board);
-            } else {
-                System.out.println("The board is unsolvable, try again!");
-            }
-            System.out.println();
-        }
+      }
+    } catch (RemoteException ex) {
+      System.err.println("Counnection lost: " + ex);
+      resetRemoteConnection(solver);
+      System.out.println("Try again:");
+      solvePuzzle(board);
     }
+  }
+
+  @Override
+  public void run() throws IOException {
+    try {
+      System.out.println(getRefConnection().getActiveMap().size()
+          + " reference boards in system.");
+    } catch (RemoteException ex) {
+      System.err.println("Counnection lost: " + ex);
+      System.exit(0);
+    }
+    boolean[] menuList = createMenuList(MenuOptions.CREATE_PUZZLE, MenuOptions.KEY_IN_PUZZLE);
+
+    while (true) {
+      String optionStr = menuOption(menuList);
+
+      Board board = null;
+      while (true) {
+        if (scanner.hasNextInt()) {
+          board = keyInBoard();
+          break;
+        }
+        char choice = scanner.next().toUpperCase().charAt(0);
+        if (choice == 'Q') {
+          appExit();
+        }
+        board = createBoard(choice);
+        if (board != null) {
+          break;
+        }
+        System.out.println(optionStr);
+      }
+
+      System.out.print(board);
+
+      if (board.isSolvable()) {
+        solvePuzzle(board);
+      } else {
+        System.out.println("The board is unsolvable, try again!");
+      }
+      System.out.println();
+    }
+  }
 }
