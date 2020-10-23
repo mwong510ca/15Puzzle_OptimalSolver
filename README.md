@@ -11,7 +11,7 @@ While I learned the technique of Walking Distance by Ken'ichiro Takahashi, I fig
   * [pattern 6-6-3] 2 minutes
   * [pattern 7-8] 2.5+ hours (10 mins for group 7 and 2.5 hrs for group 8)
 
-*** Highly recommended to [download] the pre-generated database files from the cloud storage for pattern 7-8.
+*** Download link temporary not available.
 
 ### Enhancement - optimization
 After I finished my 15 puzzle optimal solver, most of the puzzles are solved within a second.  Only a few puzzles still take up to 2 minutes to solve. 
@@ -69,7 +69,7 @@ My gui application written in pyqt5 version 5.6.  It access my java modules usin
 [System requirements and installation]  (Database ready, 6145 reference collection)
 
 ### Console applications ([screen recordings] on youtube)
-Download and unzip [ConsoleApp15Puzzle.zip]  (Database ready, initial set)  
+* ConsoleApp15Puzzle.zip] - Download link temporary unavailable.
 Start from terminal: java -jar ConsoleApp15Puzzle.jar option_choice_below  
 * 1 - demo [self learning feature] | text file [sample output 1]  
 * 2 - [compare enhancement] | text file [sample output 2]  
@@ -117,7 +117,6 @@ Notes: Advanced version takes slightly longer average time to solve the random p
 [PatternDatabase.java]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/PatternDatabase.java%20-%20details.md
 [Solver Enhancement - standard version]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/Solver%20Enhancement%20-%20Standard%20version.md
 [Solver Enhancement - advanced version]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/Solver%20Enhancement%20-%20Advanced%20version.md
-[download]: https://my.pcloud.com/publink/show?code=kZSoaLZgNeLhO2eu0RQcu9D2aXeOFgtioUV
 [pattern 5-5-5]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/default%20pattern%205-5-5.txt
 [pattern 6-6-3]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/default%20pattern%206-6-3.txt
 [pattern 7-8]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/default%20pattern%207-8.txt
@@ -131,7 +130,6 @@ Notes: Advanced version takes slightly longer average time to solve the random p
 [sample output 2]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/console_output2.txt
 [sample output 3]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/output/console_output3.txt
 [System requirements and installation]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/tree/master/gui(pyqt5)
-[ConsoleApp15Puzzle.zip]: https://my.pcloud.com/publink/show?code=XZbosNZLoFkgiX8YkyUzRqgM7ubdHiFaqmy
 [screen recordings]: https://www.youtube.com/playlist?list=PLRnfrf3rzEFkDcssdh75pHjID6sWLiIGF
 [ReferenceRemoteServer.java]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/src/mwong/myprojects/fifteenpuzzle/server/ReferenceRemoteServer.java
 [remote.properties]: https://github.com/mwong510ca/15Puzzle_OptimalSolver/blob/master/resources/remote.properties
