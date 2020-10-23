@@ -10,7 +10,7 @@ System Requirement :
 * [Qt] 5.6 or 5.7 (may not work on older versions)
 * [PyQt5]
 
-Download and unzip the [GuiApp15Puzzle.zip] file from my cloud drive. (Include all components - jar files, images, data files, etc)  
+* Download link temporary not available.
 
 Start from Terminal: python3 app15PuzzleGameSolver.py
 
